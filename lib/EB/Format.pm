@@ -1,0 +1,216 @@
+#!/usr/bin/perl -w
+
+package EB::Finance;
+
+use EB::Globals;
+
+use strict;
+
+use base qw(Exporter);
+
+my $stdfmt0;
+my $stdfmtw;
+
+our @EXPORT;
+BEGIN {
+    push(@EXPORT, qw(amount numdebcrd numfmt numfmtw numfmtv numround));
+    $stdfmt0 = '%.' . AMTPRECISION . 'f';
+    $stdfmtw = '%' . AMTWIDTH . "." . AMTPRECISION . 'f';
+}
+
+my $numpat;
+BEGIN {
+    $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
+}
+
+sub amount {
+    if ( @_ == 2 ) {
+	my ($amt, $btw_id) = @_;
+	if ( $amt =~ /^(.+)\@(\d)$/ ) {
+	    $amt = $1;
+	    $btw_id = $2;
+	}
+	return (amount($amt), $btw_id);
+    }
+    return undef unless $_[0] =~ $numpat;
+    my ($s, $w, $f) = ($1 || "", $2 || 0, $3 || 0);
+    $f .= "0" x (AMTPRECISION - length($f));
+    return 0 + ($s.$w.$f);
+}
+
+sub numfmt {
+    sprintf($stdfmt0, $_[0]/AMTSCALE);
+}
+
+sub numfmtw {
+    sprintf($stdfmtw, $_[0]/AMTSCALE);
+}
+
+sub numfmtv {
+    sprintf('%' . ($_[1]||'') . "." . AMTPRECISION . 'f', $_[0]/AMTSCALE);
+}
+
+sub numround {
+    0 + sprintf("%.0f", $_[0]);
+}
+
+sub numdebcrd {
+    $_[0] >= 0 ? ($_[0], undef) : (undef, -$_[0]);
+}
+
+sub norm_btw {
+    my ($bsr_amt, $bsr_btw_id);
+    my ($btw_perc, $btw_incl, $btw_acc_inkoop, $btw_acc_verkoop);
+    if ( @_ == 2 ) {
+	($bsr_amt, $bsr_btw_id) = @_;
+	if ( $bsr_btw_id ) {
+	    my $rr = $::dbh->do("SELECT btw_perc, btw_incl, btw_acc_inkoop, btw_acc_verkoop".
+				" FROM BTWTabel".
+				" WHERE btw_id = ?", $bsr_btw_id);
+	    ($btw_perc, $btw_incl, $btw_acc_inkoop, $btw_acc_verkoop) = @$rr;
+	}
+    }
+    else {
+	($bsr_amt, $btw_perc, $btw_incl) = @_;
+    }
+
+    my $bruto = $bsr_amt;
+    my $netto = $bsr_amt;
+
+    if ( $btw_perc ) {
+	if ( $btw_incl ) {
+	    $netto = numround($bruto * (1 / (1 + $btw_perc/BTWSCALE)));
+	}
+	else {
+	    $bruto = numround($netto * (1 + $btw_perc/BTWSCALE));
+	}
+    }
+
+    [ $bruto, $bruto - $netto, $btw_acc_inkoop, $btw_acc_verkoop ];
+}
+
+sub norm_boeking {
+    my ($bsk_dbk_id, $bsk_id, $bsk_desc) = @_;
+
+    my ($dbktype, $dbkacct) =
+      @{$::dbh->do("SELECT dbk_type,dbk_acc_id".
+		   " FROM Dagboeken".
+		   " WHERE dbk_id = ?", $bsk_dbk_id)};
+
+    my $sth = $::dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
+			       "bsr_desc, bsr_amount, bsr_btw_id, ".
+			       "bsr_btw_acc, bsr_type, bsr_acc_id, bsr_rel_code ".
+			       " FROM Boekstukregels".
+			       " WHERE bsr_bsk_id = ?", $bsk_id);
+    my $ret0 = [];
+    my $tot = 0;
+    my $rr;
+
+    while ( $rr = $sth->fetchrow_arrayref ) {
+	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
+	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
+
+	$bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_BANK;
+	$bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_KAS;
+
+	my $btw = 0;
+	my $amt = $bsr_amount;
+
+	if ( $bsr_btw_id ) {
+	    ( $bsr_amount, $btw ) =
+	      @{EB::Finance::norm_btw($bsr_amount, $bsr_btw_id)};
+	    $amt = $bsr_amount - $btw;
+	}
+
+	push(@$ret0, [$bsr_type ?
+		      $::dbh->std_acc($bsr_type == 2 ? "crd" : "deb" )
+		      : $bsr_acc_id, $bsr_desc, $amt]);
+	push(@$ret0, [$bsr_btw_acc, "BTW ".$bsr_desc, $btw]) if $btw;
+
+	$tot += $bsr_amount;
+
+    }
+    $ret0 = [sort { $a->[0] <=> $b->[0] } @$ret0];
+
+    # Add dbk total, if this dbk is tied to an account.
+    unshift(@$ret0, [$dbkacct, $bsk_desc, -$tot])
+      if $dbkacct;
+
+#    use Data::Dumper;
+#    print Dumper($ret0);
+
+    $ret0;
+}
+
+sub journalise {
+    my ($bsk_id) = @_;
+
+    # date  bsk_id  bsr_seq(0)   dbk_id  (acc_id) amount debcrd desc(bsk) (rel)
+    # date (bsk_id) bsr_seq(>0) (dbk_id)  acc_id  amount debcrd desc(bsr) rel(acc=1200/1600)
+    my ($jnl_date, $jnl_bsk_id, $jnl_bsr_seq, $jnl_dbk_id, $jnl_acc_id,
+	$jnl_amount, $jnl_desc, $jnl_rel);
+
+    my $rr = $::dbh->do("SELECT bsk_nr, bsk_desc, bsk_dbk_id, bsk_date, bsk_paid".
+		      " FROM boekstukken".
+		      " WHERE bsk_id = ?", $bsk_id);
+    my ($bsk_nr, $bsk_desc, $bsk_dbk_id, $bsk_date, $bsk_paid) = @$rr;
+
+    my ($dbktype, $dbk_acc_id) =
+      @{$::dbh->do("SELECT dbk_type, dbk_acc_id".
+		 " FROM Dagboeken".
+		 " WHERE dbk_id = ?", $bsk_dbk_id)};
+    my $sth = $::dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
+			     "bsr_desc, bsr_amount, bsr_btw_id, ".
+			     "bsr_btw_acc, bsr_type, bsr_acc_id, bsr_rel_code ".
+			     " FROM Boekstukregels".
+			     " WHERE bsr_bsk_id = ?", $bsk_id);
+
+    my $ret = [];
+    my $tot = 0;
+    my $nr = 1;
+
+    while ( $rr = $sth->fetchrow_arrayref ) {
+	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
+	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
+	my $bsr_bsk_id = $bsk_id;
+
+	# Flip sign for credit accounts.
+	$bsr_amount = -$bsr_amount
+	  unless $::dbh->lookup($bsr_acc_id,
+				qw(Accounts acc_id acc_debcrd));
+
+	my $btw = 0;
+	my $amt = $bsr_amount;
+
+	if ( $bsr_btw_id ) {
+	    # The 'excl.' codes are for display purposes only.
+	    $bsr_btw_id = 1 if $bsr_btw_id == 2; # ####TODO
+	    $bsr_btw_id = 3 if $bsr_btw_id == 4; # ####TODO
+
+	    ( $bsr_amount, $btw ) =
+	      @{EB::Finance::norm_btw($bsr_amount, $bsr_btw_id)};
+	    $amt = $bsr_amount - $btw;
+	}
+	$tot += $bsr_amount;
+
+	push(@$ret, [$bsr_date,  $bsk_dbk_id, $bsk_id, $nr++,
+		     $bsr_acc_id,
+		     $bsr_amount - $btw, $bsr_desc,
+		     $bsr_type ? $bsr_rel_code : undef]);
+	push(@$ret, [$bsr_date,  $bsk_dbk_id, $bsk_id, $nr++,
+		     $bsr_btw_acc,
+		     $btw, "BTW ".$bsr_desc,
+		     undef]) if $btw;
+    }
+
+    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $nr++, $dbk_acc_id,
+		 -$tot, $bsk_desc, undef])
+      unless $dbktype == DBKTYPE_MEMORIAAL;
+
+    unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, 0, undef,
+		    undef, $bsk_desc, undef]);
+
+    $ret;
+}
+
+1;
