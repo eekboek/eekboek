@@ -127,17 +127,25 @@ sub norm_boeking {
 		      : $bsr_acc_id, $bsr_desc, $amt]);
 	push(@$ret0, [$bsr_btw_acc, "BTW ".$bsr_desc, $btw]) if $btw;
 
-	$tot += $bsr_amount;
+	if ( $::dbh->lookup($bsr_acc_id,
+			    qw(Accounts acc_id acc_debcrd)) ) {
+	    $tot += $bsr_amount;
+	}
+	else {
+	    $tot -= $bsr_amount;
+	}
 
     }
     $ret0 = [sort { $a->[0] <=> $b->[0] } @$ret0];
 
     # Add dbk total, if this dbk is tied to an account.
-    unshift(@$ret0, [$dbkacct, $bsk_desc, -$tot])
+    unshift(@$ret0, [$dbkacct, $bsk_desc,
+		     $::dbh->lookup($dbkacct,
+				    qw(Accounts acc_id acc_debcrd)) ? $tot : -$tot])
       if $dbkacct;
 
-#    use Data::Dumper;
-#    print Dumper($ret0);
+    use Data::Dumper;
+    print Dumper($ret0);
 
     $ret0;
 }

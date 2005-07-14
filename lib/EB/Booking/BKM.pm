@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.2 2005/07/14 19:39:42 jv Exp $ ';
 
 package EB::Booking::BKM;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 14 14:49:20 2005
-# Update Count    : 137
+# Last Modified On: Thu Jul 14 21:38:54 2005
+# Update Count    : 141
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -25,7 +25,7 @@ use EB::Finance;
 use EB::Journal::Text;
 use locale;
 
-my $trace_updates = 0;		# for debugging
+my $trace_updates = $ENV{EB_TRACE_UPDATES};		# for debugging
 
 sub new {
     return bless {};
@@ -175,7 +175,8 @@ sub perform {
 	    $::dbh->sql_insert("Boekstukregels",
 			       [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				   bsr_btw_id bsr_type bsr_acc_id bsr_rel_code)],
-			       $nr++, $date, $bsk_id, "*".$bsk_desc, $amt,
+			       $nr++, $date, $bsk_id, "*".$bsk_desc,
+			       $debcrd ? -$amt : $amt,
 			       0, $type eq "deb" ? 1 : 2, $acct, $rel);
 	    my $id = $::dbh->get_sequence("boekstukregels_bsr_id_seq", "noincr");
 	    $::dbh->sql_exec("UPDATE Boekstukken".
@@ -183,7 +184,7 @@ sub perform {
 			     " WHERE bsk_id = ?",
 			     $id, $bskid);
 
-	    $amt = -$amt if $debcrd;
+#	    $amt = -$amt if $debcrd;
 
 	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
 	    $::dbh->upd_account($acct, -$amt);

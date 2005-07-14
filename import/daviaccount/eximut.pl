@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.2 2005/07/14 19:39:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 14 14:43:22 2005
-# Update Count    : 129
+# Last Modified On: Thu Jul 14 15:05:24 2005
+# Update Count    : 130
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -193,7 +193,8 @@ sub fixbtw {
     return "" if $b eq "";
 
     # Het lijkt erop dat FMUTA6.CSV altijd alle bedragen inclusief BTW opneemt.
-    warn("!!! BTW CODE EXCL --- CHECK !!!\n") if $b == 2 || $b == 4;
+    # warn("!!! BTW CODE EXCL --- CHECK !!!\n") if $b == 2 || $b == 4;
+    $b-- if $b == 2 || $b == 4;
 
     my $br = btw_code($r->{reknr});
     return "" if $b == $br;

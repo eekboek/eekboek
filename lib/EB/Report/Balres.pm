@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.2 2005/07/14 19:39:42 jv Exp $ ';
 
 package EB::Report::Balres;
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 12 16:23:35 2005
-# Update Count    : 138
+# Last Modified On: Thu Jul 14 15:47:09 2005
+# Update Count    : 143
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -73,8 +73,8 @@ sub perform {
 
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($acc_id, $balance,$ibalance, $sum) = @$rr;
-	next if $balance == $sum;
 	$sum += $ibalance;
+	next if $balance == $sum;
 	warn("!Grootboekrekening $acc_id, totaal " .
 	     numfmt($balance) . ", moet zijn " . numfmt($sum) . ", aangepast\n");
 	$::dbh->sql_exec("UPDATE Accounts".
