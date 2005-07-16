@@ -173,6 +173,8 @@ UPDATE Dagboeken
   SET dbk_acc_id = (SELECT std_acc_deb FROM Standaardrekeningen)
   WHERE dbk_type = 2;		-- Verkoop
 
+CREATE SEQUENCE bsk_nr_0_seq;
+
 -- Debiteuren / Crediteuren
 
 -- Note that rel_debcrd is for convenience only, since it always
@@ -211,9 +213,11 @@ CREATE TABLE Boekstukregels (
   bsr_btw_acc  int references Accounts,
 --
   bsr_type      smallint,
-                -- I: Standaard, [- Artikel (levering van) -]
+                -- I: Standaard, [- Artikel (levering van) -], ...,
+                --    Open post vorige periode
                 -- KMB: Standaard, Debiteur (betaling), Crediteur (betaling)
-                -- V: -
+                -- V: -, ...,
+                --    Open post vorige periode
   bsr_acc_id    int references Accounts,
                 -- IKMB: Standaard
                 -- V
@@ -242,6 +246,9 @@ CREATE TABLE Journal (
 );
 
 CREATE TABLE Metadata (
+  adm_scm_majversion smallint NOT NULL,
+  adm_scm_minversion smallint NOT NULL,
+  adm_scm_revision   smallint NOT NULL,
   adm_name	text,
   adm_begin	date,
     -- btw periode: 0 = geen, 1 = jaar, 4 = kwartaal
@@ -249,5 +256,9 @@ CREATE TABLE Metadata (
   adm_opened	date
 );
 
-INSERT INTO Metadata (adm_begin) VALUES(date_trunc('year',now()));
-
+INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision, adm_begin)
+  values((select value from constants where name = 'SCM_MAJVERSION'),
+	 (select value from constants where name = 'SCM_MINVERSION'),
+	 (select value from constants where name = 'SCM_REVISION'),
+	 date_trunc('year',now())
+	);

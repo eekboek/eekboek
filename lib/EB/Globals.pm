@@ -14,6 +14,10 @@ sub _newconst($$) {
 }
 
 BEGIN {
+    _newconst("SCM_MAJVERSION", 1);
+    _newconst("SCM_MINVERSION", 0);
+    _newconst("SCM_REVISION", 0);
+
     _newconst("AMTPRECISION", 2);
     _newconst("AMTWIDTH", 9);
     _newconst("BTWPRECISION", 4);
