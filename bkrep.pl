@@ -36,8 +36,8 @@ my $did = 0;
 
 my @bsr_types =
   ([],
-   [ "Standaard" ],
-   [ "Standaard" ],
+   [ "Standaard", ("") x 8, "Open post vorige periode" ],
+   [ "Standaard", ("") x 8, "Open post vorige periode" ],
    [ "Standaard", "Betaling van debiteur", "Betaling aan crediteur" ],
    [ "Standaard", "Betaling van debiteur", "Betaling aan crediteur" ],
    [],
@@ -80,10 +80,12 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	    print("\"$bsk_desc\"", $bsk_paid ? ", *$bsk_paid" : ", open", "\n");
 	}
 
-	my ($rd, $rt) = @{$::dbh->do("SELECT acc_desc,acc_debcrd".
-				     " FROM Accounts".
-				     " WHERE acc_id = ?",
-				     $bsr_acc_id)};
+	my ($rd, $rt) = $bsr_acc_id ?
+	  @{$::dbh->do("SELECT acc_desc,acc_debcrd".
+		       " FROM Accounts".
+		       " WHERE acc_id = ?",
+		       $bsr_acc_id)}
+	    : ("[Open posten vorige periode]", 1);
 
 	print(" Boekstukregel $bsr_id, nr $bsr_nr, datum $bsr_date, ",
 	      "\"$bsr_desc\"",
@@ -92,9 +94,10 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	      "\"$bsr_desc\", ",
 	      "bedrag ", numfmt($bsr_amount),
 #	      " ", $bsr_amount >= 0 ? "debet" : "credit",
-	      ", BTW code $bsr_btw_id (",
+	      defined($bsr_btw_id) ?
+	      (", BTW code $bsr_btw_id (",
 	      $dbh->lookup($bsr_btw_id, qw(BTWTabel btw_id btw_desc)),
-	      ")",
+	      ")") : (),
 	      $bsr_acc_id ? (", rek $bsr_acc_id (", $rt ? "D/" : "C/", $rd, ")",) : (),
 	      "\n");
 

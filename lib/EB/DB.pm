@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.2 2005/07/16 16:43:51 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 11 17:55:21 2005
-# Update Count    : 43
+# Last Modified On: Sat Jul 16 18:10:49 2005
+# Update Count    : 44
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -160,6 +160,15 @@ sub get_sequence {
     my $sth = $self->sql_exec("SELECT ".
 			      ($noinc ? "currval" : "nextval").
 			      "('$seq')");
+    my $rr = $sth->fetchrow_arrayref;
+    $sth->finish;
+
+    return ($rr && defined($rr->[0]) ? $rr->[0] : undef);
+}
+
+sub set_sequence {
+    my ($self, $seq, $value) = @_;
+    my $sth = $self->sql_exec("SELECT setval('$seq',$value)");
     my $rr = $sth->fetchrow_arrayref;
     $sth->finish;
 

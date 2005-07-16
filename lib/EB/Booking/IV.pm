@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.2 2005/07/14 19:39:42 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.3 2005/07/16 16:43:51 jv Exp $ ';
 
 package EB::Booking::IV;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 14 21:39:11 2005
-# Update Count    : 56
+# Last Modified On: Sat Jul 16 15:08:41 2005
+# Update Count    : 57
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -134,23 +134,6 @@ sub perform {
 			 $btw_id, $btw_acc, 0, $acct, $debcode);
     }
 
-=begin nono
-
-    #### DANGEROUS -- norm_boeking elimineren!
-    my $ret = EB::Finance::norm_boeking($dagboek, $bsk_id, $gdesc);
-    foreach my $r ( @$ret ) {
-	my ($ac, undef, $amt) = @$r;
-	$amt = -$amt if $dagboek_type == DBKTYPE_VERKOOP;
-	warn("update $ac with ".numfmt($amt)."\n") if $trace_updates;
-	$::dbh->upd_account($ac, $amt);
-    }
-    $::dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
-	     $ret->[0]->[2], $bsk_id)->finish;
-
-    $::dbh->store_journal(EB::Finance::journalise($bsk_id));
-
-=cut
-
     my $ret = EB::Finance::journalise($bsk_id);
     $rr = [ @$ret ];
     shift(@$rr);
@@ -158,7 +141,6 @@ sub perform {
     foreach my $r ( @$rr ) {
 	my (undef, undef, undef, $nr, $ac, $amt) = @$r;
 	next unless $nr;
-#	$amt = -$amt if $dagboek_type == DBKTYPE_VERKOOP;
 	warn("update $ac with ".numfmt($amt)."\n") if $trace_updates;
 	$::dbh->upd_account($ac, $amt);
     }

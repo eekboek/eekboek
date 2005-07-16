@@ -89,67 +89,6 @@ sub norm_btw {
     [ $bruto, $bruto - $netto, $btw_acc_inkoop, $btw_acc_verkoop ];
 }
 
-sub norm_boeking {
-    my ($bsk_dbk_id, $bsk_id, $bsk_desc) = @_;
-
-    my ($dbktype, $dbkacct) =
-      @{$::dbh->do("SELECT dbk_type,dbk_acc_id".
-		   " FROM Dagboeken".
-		   " WHERE dbk_id = ?", $bsk_dbk_id)};
-
-    my $sth = $::dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
-			       "bsr_desc, bsr_amount, bsr_btw_id, ".
-			       "bsr_btw_acc, bsr_type, bsr_acc_id, bsr_rel_code ".
-			       " FROM Boekstukregels".
-			       " WHERE bsr_bsk_id = ?", $bsk_id);
-    my $ret0 = [];
-    my $tot = 0;
-    my $rr;
-
-    while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
-	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
-
-	$bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_BANK;
-	$bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_KAS;
-
-	my $btw = 0;
-	my $amt = $bsr_amount;
-
-	if ( $bsr_btw_id ) {
-	    ( $bsr_amount, $btw ) =
-	      @{EB::Finance::norm_btw($bsr_amount, $bsr_btw_id)};
-	    $amt = $bsr_amount - $btw;
-	}
-
-	push(@$ret0, [$bsr_type ?
-		      $::dbh->std_acc($bsr_type == 2 ? "crd" : "deb" )
-		      : $bsr_acc_id, $bsr_desc, $amt]);
-	push(@$ret0, [$bsr_btw_acc, "BTW ".$bsr_desc, $btw]) if $btw;
-
-	if ( $::dbh->lookup($bsr_acc_id,
-			    qw(Accounts acc_id acc_debcrd)) ) {
-	    $tot += $bsr_amount;
-	}
-	else {
-	    $tot -= $bsr_amount;
-	}
-
-    }
-    $ret0 = [sort { $a->[0] <=> $b->[0] } @$ret0];
-
-    # Add dbk total, if this dbk is tied to an account.
-    unshift(@$ret0, [$dbkacct, $bsk_desc,
-		     $::dbh->lookup($dbkacct,
-				    qw(Accounts acc_id acc_debcrd)) ? $tot : -$tot])
-      if $dbkacct;
-
-    use Data::Dumper;
-    print Dumper($ret0);
-
-    $ret0;
-}
-
 sub journalise {
     my ($bsk_id) = @_;
 
