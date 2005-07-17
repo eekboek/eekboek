@@ -21,6 +21,7 @@ BEGIN {
     _newconst("AMTPRECISION", 2);
     _newconst("AMTWIDTH", 9);
     _newconst("BTWPRECISION", 4);
+    _newconst("BTWWIDTH", 5);
     _newconst("AMTSCALE", 100);
     _newconst("BTWSCALE", 10000);
 

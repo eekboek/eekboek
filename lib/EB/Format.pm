@@ -10,17 +10,23 @@ use base qw(Exporter);
 
 my $stdfmt0;
 my $stdfmtw;
+my $btwfmt0;
+my $btwfmtw;
 
 our @EXPORT;
 BEGIN {
-    push(@EXPORT, qw(amount numdebcrd numfmt numfmtw numfmtv numround));
+    push(@EXPORT, qw(amount numdebcrd numfmt numfmtw numfmtv numround btwfmt));
     $stdfmt0 = '%.' . AMTPRECISION . 'f';
     $stdfmtw = '%' . AMTWIDTH . "." . AMTPRECISION . 'f';
+    $btwfmt0 = '%.' . (BTWPRECISION-2) . 'f';
+    $btwfmtw = '%' . BTWWIDTH . "." . (BTWPRECISION-2) . 'f';
 }
 
 my $numpat;
+my $btwpat;
 BEGIN {
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
+    $btwpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[BTWPRECISION-2]}})?$/;
 }
 
 sub amount {
@@ -56,6 +62,10 @@ sub numround {
 
 sub numdebcrd {
     $_[0] >= 0 ? ($_[0], undef) : (undef, -$_[0]);
+}
+
+sub btwfmt {
+    sprintf($btwfmt0, 100*$_[0]/BTWSCALE);
 }
 
 sub norm_btw {

@@ -73,6 +73,13 @@ CREATE TRIGGER std_change
   ON Standaardrekeningen
   EXECUTE PROCEDURE check_opened();
 
+-- BTW Tariefgroepen
+CREATE TABLE BTWTariefgroepen (
+  btg_id     smallint not null primary key,
+  btg_desc   text not null,
+  btg_perc   int not null,
+);
+
 -- BTW tarieven
 CREATE TABLE BTWTabel (
   btw_id     int not null primary key,
@@ -80,7 +87,7 @@ CREATE TABLE BTWTabel (
   btw_perc   int not null,      -- perc * BTWSCALE
   btw_acc_inkoop int references Accounts,
   btw_acc_verkoop int references Accounts,
-  btw_tariefgroep smallint not null,
+  btw_tariefgroep smallint not null references BTWTariefgroepen,
   btw_incl   boolean    -- inclusief / exclusief
 );
 

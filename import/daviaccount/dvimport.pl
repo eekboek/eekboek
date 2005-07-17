@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.2 2005/07/17 19:40:22 jv Exp $ ';
 
 # Skeleton for Getopt::Long with Pod::Parser.
 
 # Author          : Johan Vromans
 # Created On      : Sun Sep 15 18:39:01 1996
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 12 21:42:21 2005
-# Update Count    : 172
+# Last Modified On: Sun Jul 17 21:33:39 2005
+# Update Count    : 193
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -56,6 +56,8 @@ my $tsdate = strftime("%Y-%m-%d %k:%M:%S +0100", @tm[0..5], -1, -1, -1);
 ################ The Process ################
 
 use Digest::MD5 qw(md5_hex);
+use EB::Globals;
+use EB::Finance;
 
 read_exact_data();
 
@@ -182,10 +184,68 @@ sub read_grootboek {
     }
 }
 
+my @btwtable;
+
 sub read_btw {
+    my $hi;
+    my $lo;
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
+	# Nr.   Omschrijving                             Perc.  Type  Ink.reknr. Verk.reknr.
+	# ----------------------------------------------------------------------------------
+	# 1     BTW 17,5% incl.                          17,50  Incl. 1520       1500       
+	# 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+	#          1         2         3         4         5         6         7         8         9
+	my @a = unpack("a6a41a7a6a11a*", $_);
+	for ( @a[1,2,3] ) {
+	    s/\s+$//;
+	}
+
+	my $btw = amount($a[2]);
+	if ( AMTPRECISION > BTWPRECISION-2 ) {
+	    $btw = substr($btw, 0, length($btw) - (AMTPRECISION - BTWPRECISION-2))
+	}
+	elsif ( AMTPRECISION < BTWPRECISION-2 ) {
+	    $btw .= "0" x (BTWPRECISION-2 - AMTPRECISION);
+	}
+	$btwtable[$a[0]] = [ $a[1], $btw,
+			     $a[3] eq "Incl." ? 't' : 'f' ];
+	if ( $btw ) {
+	    if ( !$lo || $btw < $lo ) {
+		$lo = $btw;
+	    }
+	    if ( !$hi || $btw > $hi ) {
+		$hi = $btw;
+	    }
+	}
     }
+    foreach ( @btwtable ) {
+	push(@$_, $_->[1] == 0 ? 3 :
+	     $_->[1] == $hi ? 1 :
+	     $_->[1] == $lo ? 2 : warn("Onbekende BTW group: $_->[1]\n"));
+    }
+
+    open(OUT, ">btw.sql");
+
+    print OUT ("-- BTW Tariefgroepen\n\n",
+	       "COPY BTWTariefgroepen (btg_id, btg_desc, btg_perc) FROM stdin;\n",
+	       "1\tBTW Hoog ".btwfmt($hi)."%\t$hi\n",
+	       "2\tBTW Laag ".btwfmt($lo)."%\t$lo\n",
+	       "1\tBTW Geen\t0\n",
+	       "\\.\n\n");
+
+    print OUT ("-- BTW Tabel\n\n",
+	       "COPY BTWTabel (btw_id, btw_desc, btw_perc, btw_incl, btw_tariefgroep) FROM stdin;\n");
+
+    for ( my $i = 0; $i < @btwtable; $i++ ) {
+	next unless exists $btwtable[$i];
+	my $b = $btwtable[$i];
+	print OUT (join("\t", $i, @$b), "\n");
+    }
+
+    print OUT ("\\.\n\n");
+    close(OUT);
+
 }
 
 sub write_rekeningschema {
@@ -271,6 +331,7 @@ sub write_rekeningschema {
     }
     print("\n");
 
+    close(OUT);
     select(STDOUT);
 
     open(OUT, ">open.dat");
