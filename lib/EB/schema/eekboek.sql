@@ -84,13 +84,7 @@ CREATE TABLE BTWTabel (
   btw_incl   boolean    -- inclusief / exclusief
 );
 
-COPY BTWTabel from stdin;
-0	BTW Geen	0	\N	\N	3	t
-1	BTW 19% incl.	1900	\N	\N	1	t
-2	BTW 19% excl.	1900	\N	\N	1	f
-3	BTW 6.0% incl.	600	\N	\N	2	t
-4	BTW 6.0% excl.	600	\N	\N	2	f
-\.
+\i btw.sql
 
 UPDATE BTWTabel
 SET btw_acc_inkoop =

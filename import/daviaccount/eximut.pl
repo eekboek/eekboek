@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.2 2005/07/14 19:39:42 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.3 2005/07/17 09:48:03 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 14 15:05:24 2005
-# Update Count    : 130
+# Last Modified On: Sun Jul 17 00:18:48 2005
+# Update Count    : 158
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -55,6 +55,7 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 ################ The Process ################
 
 use Text::CSV_XS;
+use EB::Finance;
 
 @ARGV = ("FMUTA6.CSV") unless @ARGV;
 
@@ -155,18 +156,21 @@ sub flush {
     elsif ( $dbktype =~ /^[GBKM]$/ ) {	# Bank/Giro/Kas/Memoriaal;
 	return unless @$mut;
 	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
+	my $tot = 0;
 	foreach my $r ( @$mut ) {
 	    if ( $r->{crdnr} ) {
 		print join(" ", " crd",
 			   '"'.uc($r->{crdnr}).'"',
 			   sprintf("%.2f", $r->{bedrag}),
 			  );
+		$tot += $r->{bedrag};
 	    }
 	    elsif ( $r->{debnr} ) {
 		print join(" ", " deb",
 			   '"'.uc($r->{debnr}).'"',
 			   sprintf("%.2f", 0-$r->{bedrag}),
 			  );
+		$tot += $r->{bedrag};
 	    }
 	    else {
 		print join(" ", " std",
@@ -176,13 +180,20 @@ sub flush {
 			   fixbtw($r),
 			   $r->{reknr},
 			  );
+		$tot += $r->{bedrag};
+
 	    }
 	}
 	print("\n");
+	warn("?MEMORIAAL BOEKSTUK ".$r0->{bkstnr}.
+	     " IS NIET IN BALANS ($tot)\n")
+	  if $dbktype eq "M" && abs($tot) >= 0.01;
     }
 
     #use Data::Dumper;
     #print Dumper($mut);
+
+    $mut = 0;
     #exit;
 }
 
@@ -190,6 +201,7 @@ sub fixbtw {
     # Correctie BTW code indien niet conform de grootboekrekening.
     my $r = shift;
     my $b = $r->{btw_code};
+
     return "" if $b eq "";
 
     # Het lijkt erop dat FMUTA6.CSV altijd alle bedragen inclusief BTW opneemt.
