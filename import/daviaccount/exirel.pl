@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: exirel.pl,v 1.2 2005/07/18 14:33:09 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 12 13:38:03 2005
-# Update Count    : 74
+# Last Modified On: Mon Jul 18 12:49:45 2005
+# Update Count    : 75
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -29,6 +29,7 @@ $my_version .= '*' if length('$Locker:  $ ') > 12;
 use Getopt::Long 2.13;
 
 # Command line options.
+my $all = 0;		# all
 my $verbose = 0;		# verbose processing
 
 # Development options (not shown with -help).
@@ -94,11 +95,11 @@ while ( <> ) {
     if ( @a == @debfieldnames ) {	# debiteur
 	@a{@debfieldnames} = @a;
 	if ( $a{debzk} ) {
-	    next unless $used{$a{debzk}};
+	    next unless $all || $used{$a{debzk}};
 	}
 	elsif ( $debmap->{$a{naam}} ) {
 	    $a{debzk} = $debmap->{$a{naam}};
-	    next unless $used{$a{debzk}};
+	    next unless $all || $used{$a{debzk}};
 	}
 	else {
 	    warn("Geen relatiecode voor debiteur $a{naam} -- overgeslagen\n");
@@ -115,11 +116,11 @@ while ( <> ) {
     if ( @a == @crdfieldnames ) {	# crediteur
 	@a{@crdfieldnames} = @a;
 	if ( $a{crdzk} ) {
-	    next unless $used{$a{crdzk}};
+	    next unless $all || $used{$a{crdzk}};
 	}
 	elsif ( $crdmap->{$a{naam}} ) {
 	    $a{crdzk} = $crdmap->{$a{naam}};
-	    next unless $used{$a{crdzk}};
+	    next unless $all || $used{$a{crdzk}};
 	}
 	else {
 	    warn("Geen relatiecode voor crediteur $a{naam} -- overgeslagen\n");
@@ -152,6 +153,7 @@ sub app_options {
     return unless @ARGV > 0;
 
     if ( !GetOptions(
+		     'all'	=> \$all,
 		     'ident'	=> \$ident,
 		     'verbose'	=> \$verbose,
 		     'trace'	=> \$trace,
