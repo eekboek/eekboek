@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.2 2005/07/18 14:33:09 jv Exp $ ';
+my $RCS_Id = '$Id: exirel.pl,v 1.3 2005/07/18 19:59:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 18 12:49:45 2005
-# Update Count    : 75
+# Last Modified On: Mon Jul 18 21:57:15 2005
+# Update Count    : 80
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -50,6 +50,7 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 ################ The Process ################
 
 use Text::CSV_XS;
+use EB::Globals;
 
 @ARGV = ("DEBITR.CSV", "CREDIT.CSV") unless @ARGV;
 
@@ -109,7 +110,7 @@ while ( <> ) {
 	      '"', $a{debzk}, '"', " ",
 	      '"', $a{naam}, '"', " ",
 	      8000,
-	      $a{btw_nummer} ne "" ? " 99 " : "",
+	      $a{btw_nummer} ne "" ? " @{[BTWEXTRA]} " : "",
 	      "\n");
 	next;
     }

@@ -184,7 +184,7 @@ CREATE TABLE Relaties (
   rel_code      char(10) not null primary key,
   rel_desc 	text not null,
   rel_debcrd 	boolean,	-- t: debiteur f: crediteur
-  rel_country 	int references Landen,
+  rel_btw_status smallint default 0, -- 0 = normaal, 1 = verlegd, 2 = intracomm, 3 = extra.
   rel_ledger    int references Dagboeken,  -- verkoop/inkoopdagboek
   rel_acc_id    int references Accounts	   -- standaard grootboekrekening
 );

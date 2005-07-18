@@ -17,7 +17,7 @@ sub new {
 
 sub add {
 
-    my ($self, $code, $desc, $acct, $country) = @_;
+    my ($self, $code, $desc, $acct, $bstate) = @_;
 
     # Invoeren nieuwe relatie.
 
@@ -51,8 +51,8 @@ sub add {
     $sth->finish;
 
     $::dbh->sql_insert("Relaties",
-		       [qw(rel_code rel_desc rel_debcrd rel_country rel_ledger rel_acc_id)],
-		       $code, $desc, $debcrd, $country || 18, $rr->[0], $acct);
+		       [qw(rel_code rel_desc rel_debcrd rel_btw_status rel_ledger rel_acc_id)],
+		       $code, $desc, $debcrd, $bstate || 0, $rr->[0], $acct);
 
     $::dbh->commit;
     ($debcrd ? "Debiteur" : "Crediteur") . " " . $code;

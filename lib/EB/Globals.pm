@@ -36,6 +36,10 @@ BEGIN {
     $i = 0;
     map { _newconst("BTWPER_$_", $i++) }
       qw(GEEN JAAR HALFJAAR TRIMESTER KWARTAAL);
+
+    $i = 0;
+    map { _newconst("BTW$_", $i++) }
+      qw(NORMAAL VERLEGD INTRA EXTRA);
 }
 
 unless ( caller ) {
