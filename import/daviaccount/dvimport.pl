@@ -1,26 +1,19 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.3 2005/07/18 14:32:53 jv Exp $ ';
-
-# Skeleton for Getopt::Long with Pod::Parser.
+my $RCS_Id = '$Id: dvimport.pl,v 1.4 2005/07/18 20:00:24 jv Exp $ ';
 
 # Author          : Johan Vromans
-# Created On      : Sun Sep 15 18:39:01 1996
+# Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 18 12:38:41 2005
-# Update Count    : 196
+# Last Modified On: Mon Jul 18 21:36:48 2005
+# Update Count    : 211
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 
-# Package or program libraries, if appropriate.
-# $LIBDIR = $ENV{'LIBDIR'} || '/usr/local/lib/sample';
-# use lib qw($LIBDIR);
-# require 'common.pl';
-
 # Package name.
-my $my_package = 'Sciurix';
+my $my_package = 'EekBoek';
 # Program name and version.
 my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
 # Tack '*' if it is not checked in into RCS.
@@ -55,17 +48,10 @@ my $tsdate = strftime("%Y-%m-%d %k:%M:%S +0100", @tm[0..5], -1, -1, -1);
 
 ################ The Process ################
 
-use Digest::MD5 qw(md5_hex);
 use EB::Globals;
 use EB::Finance;
 
 read_exact_data();
-
-#read_dagboeken();
-#read_hoofdverdichtingen();
-#read_verdichtingen();
-#read_grootboek();
-#read_btw();
 
 write_rekeningschema();
 
@@ -103,9 +89,8 @@ sub read_exact_data {
 }
 
 
-my @dagboeken;
-
 sub read_dagboeken {
+    my @dagboeken;
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
 	# 1     Kas                                      Kas                 1000
@@ -115,7 +100,32 @@ sub read_dagboeken {
 	}
 	$dagboeken[0+$a[0]] = [ @a[1,2], $a[3] eq "N.v.t." ? "\\N" : 0+$a[3] ];
     }
-    # print Dumper(\@dagboeken);
+
+    open(my $f, ">dbk.sql") or die("Cannot create dbk.sql: $!\n");
+
+    print $f ("-- Dagboeken\n\n",
+	      "COPY Dagboeken FROM stdin;\n");
+    my %dbmap = ("Kas"	      => DBKTYPE_KAS,
+		 "Bank/Giro"  => DBKTYPE_BANK,
+		 "Inkoop"     => DBKTYPE_INKOOP,
+		 "Verkoop"    => DBKTYPE_VERKOOP,
+		 "Memoriaal"  => DBKTYPE_MEMORIAAL );
+
+    for ( my $i = 0; $i < @dagboeken; $i++ ) {
+	next unless exists $dagboeken[$i];
+	my $db = $dagboeken[$i];
+	print $f (join("\t", $i, $db->[0], $dbmap{$db->[1]}, $db->[2]), "\n");
+    }
+    print $f ("\\.\n\n");
+
+    print $f("-- Sequences for Boekstuknummers, one for each Dagboek\n\n");
+
+    for ( my $i = 0; $i < @dagboeken; $i++ ) {
+	next unless exists $dagboeken[$i];
+	print $f ("CREATE SEQUENCE bsk_nr_${i}_seq;\n");
+    }
+    print $f ("\n");
+    close($f);
 }
 
 my @hoofdverdichtingen;
@@ -184,11 +194,11 @@ sub read_grootboek {
     }
 }
 
-my @btwtable;
-
 sub read_btw {
     my $hi;
     my $lo;
+    my @btwtable;
+
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
 	# Nr.   Omschrijving                             Perc.  Type  Ink.reknr. Verk.reknr.
@@ -225,123 +235,95 @@ sub read_btw {
 	     $_->[1] == $lo ? 2 : warn("Onbekende BTW group: $_->[1]\n"));
     }
 
-    open(OUT, ">btw.sql");
+    open(my $f, ">btw.sql") or die("Cannot create btw.sql: $!\n");
 
-    print OUT ("-- BTW Tariefgroepen\n\n",
-	       "COPY BTWTariefgroepen (btg_id, btg_desc) FROM stdin;\n",
-	       "1\tBTW Hoog\n",
-	       "2\tBTW Laag\n",
-	       "3\tBTW Geen\n",
-	       "\\.\n\n");
+    print $f ("-- BTW Tariefgroepen\n\n",
+	      "COPY BTWTariefgroepen (btg_id, btg_desc) FROM stdin;\n",
+	      "1\tBTW Hoog\n",
+	      "2\tBTW Laag\n",
+	      "3\tBTW Geen\n",
+	      "\\.\n\n");
 
-    print OUT ("-- BTW Tabel\n\n",
-	       "COPY BTWTabel (btw_id, btw_desc, btw_perc, btw_incl, btw_tariefgroep) FROM stdin;\n");
+    print $f ("-- BTW Tabel\n\n",
+	      "COPY BTWTabel (btw_id, btw_desc, btw_perc, btw_incl, btw_tariefgroep) FROM stdin;\n");
 
     for ( my $i = 0; $i < @btwtable; $i++ ) {
 	next unless exists $btwtable[$i];
 	my $b = $btwtable[$i];
-	print OUT (join("\t", $i, @$b), "\n");
+	print $f (join("\t", $i, @$b), "\n");
     }
 
-    print OUT ("\\.\n\n");
-    close(OUT);
+    print $f ("\\.\n\n");
+    close($f);
 
 }
 
 sub write_rekeningschema {
 
-    open(OUT, ">vrd.sql");
-    select(OUT);
+    open(my $f, ">vrd.sql") or die("Cannot create vrd.sql: $!\n");
 
-    print("-- Hoofdverdichtingen\n\n",
-	  "COPY Verdichtingen (vdi_id, vdi_desc, vdi_balres, vdi_kstomz, vdi_struct) FROM stdin;\n");
+    print $f ("-- Hoofdverdichtingen\n\n",
+	      "COPY Verdichtingen (vdi_id, vdi_desc, vdi_balres, vdi_kstomz, vdi_struct)".
+	      " FROM stdin;\n");
     for ( my $i = 0; $i < @hoofdverdichtingen; $i++ ) {
 	next unless exists $hoofdverdichtingen[$i];
 	my $v = $hoofdverdichtingen[$i];
 	# Skip unused verdichtingen.
 	next unless defined($v->[1]) && defined($v->[2]);
-	print(join("\t", $i,
-		   $v->[0],
-		   $v->[1] eq 'B' ? 't' : 'f',
-		   $v->[2] eq 'N' ? 't' : 'f',
-		   "\\N"), "\n");
+	print $f (join("\t", $i,
+		       $v->[0],
+		       $v->[1] eq 'B' ? 't' : 'f',
+		       $v->[2] eq 'N' ? 't' : 'f',
+		       "\\N"), "\n");
     }
-    print("\\.\n\n");
+    print $f ("\\.\n\n");
 
-    print("-- Verdichtingen\n\n",
-	  "COPY Verdichtingen (vdi_id, vdi_desc, vdi_balres, vdi_kstomz, vdi_struct) FROM stdin;\n");
+    print $f ("-- Verdichtingen\n\n",
+	      "COPY Verdichtingen (vdi_id, vdi_desc, vdi_balres, vdi_kstomz, vdi_struct) FROM stdin;\n");
     for ( my $i = 0; $i < @verdichtingen; $i++ ) {
 	next unless exists $verdichtingen[$i];
 	my $v = $verdichtingen[$i];
 	# Skip unused verdichtingen.
 	next unless defined($v->[1]) && defined($v->[2]);
-	print(join("\t", $i,
-		   $v->[0],
-		   $v->[1] eq 'B' ? 't' : $v->[1] eq 'W' ? 'f' : '?',
-		   $v->[2] eq 'N' ? 't' : $v->[2] eq 'J' ? 'f' : '?',
-		   $v->[3]), "\n");
+	print $f (join("\t", $i,
+		       $v->[0],
+		       $v->[1] eq 'B' ? 't' : $v->[1] eq 'W' ? 'f' : '?',
+		       $v->[2] eq 'N' ? 't' : $v->[2] eq 'J' ? 'f' : '?',
+		       $v->[3]), "\n");
     }
-    print("\\.\n\n");
+    print $f ("\\.\n\n");
+    close($f);
 
-    open(OUT, ">acc.sql");
-    select(OUT);
+    open($f, ">acc.sql") or die("Cannot create acc.sql: $!\n");
 
-    print("-- Grootboekrekeningen\n\n",
-	  "COPY Accounts (acc_id, acc_desc, acc_struct, acc_balres, acc_debcrd,".
-	  " acc_kstomz, acc_btw, acc_ibalance, acc_balance) FROM stdin;\n");
+    print $f ("-- Grootboekrekeningen\n\n",
+	      "COPY Accounts (acc_id, acc_desc, acc_struct, acc_balres, acc_debcrd,".
+	      " acc_kstomz, acc_btw, acc_ibalance, acc_balance) FROM stdin;\n");
 
     for my $i ( sort { $a <=> $b } keys(%grootboek) ) {
 	my $g = $grootboek{$i};
 	# desc B/W D/C N/.. struct btw N/J(omzet)?
-	print(join("\t", $i,
-		   $g->[0],
-		   $g->[4],
-		   $g->[1] eq 'B' ? 't' : 'f',
-		   $g->[2] eq 'D' ? 't' : 'f',
-		   $g->[6] eq 'N' ? 't' : 'f',
-		   $g->[5],
-		   0,
-		   0), "\n");
+	print $f (join("\t", $i,
+		       $g->[0],
+		       $g->[4],
+		       $g->[1] eq 'B' ? 't' : 'f',
+		       $g->[2] eq 'D' ? 't' : 'f',
+		       $g->[6] eq 'N' ? 't' : 'f',
+		       $g->[5],
+		       0,
+		       0), "\n");
     }
-    print("\\.\n\n");
+    print $f ("\\.\n\n");
+    close($f);
 
-    open(OUT, ">dbk.sql");
-    select(OUT);
+    open($f, ">open.dat") or die("Cannot create open.dat: $!\n");
 
-    print("-- Dagboeken\n\n",
-	  "COPY Dagboeken FROM stdin;\n");
-    my %dbmap = ("Kas" => 4,
-		 "Bank/Giro" => 3,
-		 "Inkoop" => 1,
-		 "Verkoop" => 2,
-		 "Memoriaal" => 5 );
-
-    for ( my $i = 0; $i < @dagboeken; $i++ ) {
-	next unless exists $dagboeken[$i];
-	my $db = $dagboeken[$i];
-	print(join("\t", $i, $db->[0], $dbmap{$db->[1]}, $db->[2]), "\n");
-    }
-    print("\\.\n\n");
-
-    print("-- Sequences for Boekstuknummers, one for each Dagboek\n\n");
-
-    for ( my $i = 0; $i < @dagboeken; $i++ ) {
-	next unless exists $dagboeken[$i];
-	print("CREATE SEQUENCE bsk_nr_${i}_seq;\n");
-    }
-    print("\n");
-
-    close(OUT);
-    select(STDOUT);
-
-    open(OUT, ">open.dat");
-
-    print OUT ("# Data voor openingsbalans:\n\n");
+    print $f ("# Data voor openingsbalans:\n\n");
     foreach ( @transactions ) {
-	print OUT ("@$_\n");
+	print $f ("@$_\n");
     }
 
-    close(OUT)
+    close($f)
 
 }
 
