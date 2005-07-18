@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.2 2005/07/17 19:40:22 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.3 2005/07/18 14:32:53 jv Exp $ ';
 
 # Skeleton for Getopt::Long with Pod::Parser.
 
 # Author          : Johan Vromans
 # Created On      : Sun Sep 15 18:39:01 1996
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 17 21:33:39 2005
-# Update Count    : 193
+# Last Modified On: Mon Jul 18 12:38:41 2005
+# Update Count    : 196
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -228,10 +228,10 @@ sub read_btw {
     open(OUT, ">btw.sql");
 
     print OUT ("-- BTW Tariefgroepen\n\n",
-	       "COPY BTWTariefgroepen (btg_id, btg_desc, btg_perc) FROM stdin;\n",
-	       "1\tBTW Hoog ".btwfmt($hi)."%\t$hi\n",
-	       "2\tBTW Laag ".btwfmt($lo)."%\t$lo\n",
-	       "1\tBTW Geen\t0\n",
+	       "COPY BTWTariefgroepen (btg_id, btg_desc) FROM stdin;\n",
+	       "1\tBTW Hoog\n",
+	       "2\tBTW Laag\n",
+	       "3\tBTW Geen\n",
 	       "\\.\n\n");
 
     print OUT ("-- BTW Tabel\n\n",

@@ -76,8 +76,7 @@ CREATE TRIGGER std_change
 -- BTW Tariefgroepen
 CREATE TABLE BTWTariefgroepen (
   btg_id     smallint not null primary key,
-  btg_desc   text not null,
-  btg_perc   int not null,
+  btg_desc   text not null
 );
 
 -- BTW tarieven
