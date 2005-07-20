@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.4 2005/07/18 20:00:24 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.5 2005/07/20 13:09:48 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 18 21:36:48 2005
-# Update Count    : 211
+# Last Modified On: Wed Jul 20 10:31:51 2005
+# Update Count    : 218
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -197,7 +197,11 @@ sub read_grootboek {
 sub read_btw {
     my $hi;
     my $lo;
-    my @btwtable;
+    my $btw_acc_hi_i;
+    my $btw_acc_hi_v;
+    my $btw_acc_lo_i;
+    my $btw_acc_lo_v;
+   my @btwtable;
 
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
@@ -220,12 +224,33 @@ sub read_btw {
 	}
 	$btwtable[$a[0]] = [ $a[1], $btw,
 			     $a[3] eq "Incl." ? 't' : 'f' ];
+
 	if ( $btw ) {
 	    if ( !$lo || $btw < $lo ) {
 		$lo = $btw;
 	    }
 	    if ( !$hi || $btw > $hi ) {
 		$hi = $btw;
+	    }
+	}
+	next unless $btw;
+
+	if ( $btw == $hi ) {
+	    if ( $btw_acc_hi_i && ($btw_acc_hi_i != $a[4] || $btw_acc_hi_v != $a[5]) ) {
+		warn("BTW probleem 1\n");
+	    }
+	    else {
+		$btw_acc_hi_i = 0+$a[4];
+		$btw_acc_hi_v = 0+$a[5];
+	    }
+	}
+	elsif ( $btw == $lo ) {
+	    if ( $btw_acc_lo_i && ($btw_acc_lo_i != $a[4] || $btw_acc_lo_v != $a[5]) ) {
+		warn("BTW probleem 2\n");
+	    }
+	    else {
+		$btw_acc_lo_i = 0+$a[4];
+		$btw_acc_lo_v = 0+$a[5];
 	    }
 	}
     }
@@ -238,10 +263,10 @@ sub read_btw {
     open(my $f, ">btw.sql") or die("Cannot create btw.sql: $!\n");
 
     print $f ("-- BTW Tariefgroepen\n\n",
-	      "COPY BTWTariefgroepen (btg_id, btg_desc) FROM stdin;\n",
-	      "1\tBTW Hoog\n",
-	      "2\tBTW Laag\n",
-	      "3\tBTW Geen\n",
+	      "COPY BTWTariefgroepen (btg_id, btg_desc, btg_acc_verkoop, btg_acc_inkoop) FROM stdin;\n",
+	      "1\tBTW Hoog\t$btw_acc_hi_v\t$btw_acc_hi_i\n",
+	      "2\tBTW Laag\t$btw_acc_lo_v\t$btw_acc_lo_i\n",
+	      "3\tBTW Geen\t\\N\t\\N\n",
 	      "\\.\n\n");
 
     print $f ("-- BTW Tabel\n\n",

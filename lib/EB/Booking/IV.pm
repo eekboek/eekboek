@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.4 2005/07/18 19:59:36 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.5 2005/07/20 13:09:48 jv Exp $ ';
 
 package EB::Booking::IV;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 18 21:55:39 2005
-# Update Count    : 59
+# Last Modified On: Wed Jul 20 15:06:48 2005
+# Update Count    : 66
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -99,14 +99,6 @@ sub perform {
 	    #return;
 	}
 
-	# Geen BTW voor non-EU.
-	if ( $sbtw == BTWEXTRA || $sbtw == BTWVERLEGD ) {
-	    $btw_id = 0;
-	}
-
-	# Amount can override BTW id with @X postfix.
-	($amt, $btw_id) = amount($amt, $btw_id);
-
 	if ( $nr == 1 ) {
 	    $::dbh->sql_insert("Boekstukken",
 			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_paid)],
@@ -115,10 +107,24 @@ sub perform {
 	    $gdesc = $desc;
 	    $bsk_id = $::dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
 	}
+
+	# btw_id    btw_acc
+	#   0         \N          zonder BTW, extra/verlegd
+	#   0         nnnn        zonder BTW
+	#   n         nnnn        normaal
+	#   n         \N          extra/verlegd
+
+	# Amount can override BTW id with @X postfix.
+	($amt, $btw_id) = amount($amt, $btw_id);
+
 	my $btw_acc;
-	if ( $btw_id ) {
-	    $btw_acc = $::dbh->lookup($btw_id, "BTWTabel", "btw_id",
-				      "btw_acc_".($dagboek_type == DBKTYPE_INKOOP ? "inkoop" : "verkoop"));
+	# Geen BTW voor non-EU.
+	if ( $sbtw == BTWNORMAAL || $sbtw == BTWINTRA ) {
+	    ($btw_acc) = @{$::dbh->do("SELECT btg_acc_".
+				      ($dagboek_type == DBKTYPE_INKOOP ? "inkoop" : "verkoop").
+				      " FROM BTWTabel, BTWTariefgroepen".
+				      " WHERE btw_tariefgroep = btg_id AND btw_id = ?",
+				      $btw_id)};
 	    die("D/C mismatch, accounts $acct <> $btw_acc")
 	      unless $::dbh->lookup($acct,
 				    qw(Accounts acc_id acc_debcrd))

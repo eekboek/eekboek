@@ -74,9 +74,9 @@ sub norm_btw {
     if ( @_ == 2 ) {
 	($bsr_amt, $bsr_btw_id) = @_;
 	if ( $bsr_btw_id ) {
-	    my $rr = $::dbh->do("SELECT btw_perc, btw_incl, btw_acc_inkoop, btw_acc_verkoop".
-				" FROM BTWTabel".
-				" WHERE btw_id = ?", $bsr_btw_id);
+	    my $rr = $::dbh->do("SELECT btw_perc, btw_incl, btg_acc_inkoop, btg_acc_verkoop".
+				" FROM BTWTabel, BTWTariefgroepen".
+				" WHERE btw_tariefgroep = btg_id AND btw_id = ?", $bsr_btw_id);
 	    ($btw_perc, $btw_incl, $btw_acc_inkoop, $btw_acc_verkoop) = @$rr;
 	}
     }
@@ -139,7 +139,7 @@ sub journalise {
 	my $btw = 0;
 	my $amt = $bsr_amount;
 
-	if ( $bsr_btw_id ) {
+	if ( $bsr_btw_id && $bsr_btw_acc ) {
 	    # The 'excl.' codes are for display purposes only.
 	    $bsr_btw_id = 1 if $bsr_btw_id == 2; # ####TODO
 	    $bsr_btw_id = 3 if $bsr_btw_id == 4; # ####TODO

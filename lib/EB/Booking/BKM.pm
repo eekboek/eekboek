@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.4 2005/07/20 08:18:01 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.5 2005/07/20 13:09:48 jv Exp $ ';
 
 package EB::Booking::BKM;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 19 17:05:54 2005
-# Update Count    : 143
+# Last Modified On: Wed Jul 20 15:07:32 2005
+# Update Count    : 146
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -93,8 +93,11 @@ sub perform {
 	    ($amt, $btw_id) = amount($amt, $btw_id);
 
 	    my $btw_acc;
-	    $btw_acc = $::dbh->lookup($btw_id, "BTWTabel", "btw_id",
-				      $debcrd ? "btw_acc_inkoop" : "btw_acc_verkoop");
+	    ($btw_acc) = @{$::dbh->do("SELECT btg_acc_".
+				      ($debcrd ? "inkoop" : "verkoop").
+				      " FROM BTWTabel, BTWTariefgroepen".
+				      " WHERE btw_tariefgroep = btg_id AND btw_id = ?",
+				      $btw_id)};
 
 	    my $btw = 0;
 	    my $bsr_amount = $amt;
