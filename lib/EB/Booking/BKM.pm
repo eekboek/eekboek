@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.3 2005/07/17 09:48:03 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.4 2005/07/20 08:18:01 jv Exp $ ';
 
 package EB::Booking::BKM;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 17 11:02:21 2005
-# Update Count    : 142
+# Last Modified On: Tue Jul 19 17:05:54 2005
+# Update Count    : 143
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -183,8 +183,6 @@ sub perform {
 			     " SET bsk_paid = ?".
 			     " WHERE bsk_id = ?",
 			     $id, $bskid);
-
-#	    $amt = -$amt if $debcrd;
 
 	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
 	    $::dbh->upd_account($acct, -$amt);
