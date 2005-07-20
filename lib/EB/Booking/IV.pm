@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.5 2005/07/20 13:09:48 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.6 2005/07/20 14:22:56 jv Exp $ ';
 
 package EB::Booking::IV;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 20 15:06:48 2005
-# Update Count    : 66
+# Last Modified On: Wed Jul 20 16:18:19 2005
+# Update Count    : 71
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -119,9 +119,9 @@ sub perform {
 
 	my $btw_acc;
 	# Geen BTW voor non-EU.
-	if ( $sbtw == BTWNORMAAL || $sbtw == BTWINTRA ) {
-	    ($btw_acc) = @{$::dbh->do("SELECT btg_acc_".
-				      ($dagboek_type == DBKTYPE_INKOOP ? "inkoop" : "verkoop").
+	if ( $btw_id && ($sbtw == BTWNORMAAL || $sbtw == BTWINTRA) ) {
+	    ($btw_acc) = @{$::dbh->do("SELECT ".
+				      ($dagboek_type == DBKTYPE_INKOOP ? "btg_acc_inkoop" : "btg_acc_verkoop").
 				      " FROM BTWTabel, BTWTariefgroepen".
 				      " WHERE btw_tariefgroep = btg_id AND btw_id = ?",
 				      $btw_id)};

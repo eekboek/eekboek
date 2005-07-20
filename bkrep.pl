@@ -102,6 +102,9 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	      "\n");
 
 	$bsr_amount = -$bsr_amount unless $rt;
+#	# The 'excl.' codes are for display purposes only.
+#	$bsr_btw_id = 1 if $bsr_btw_id == 2; # ####TODO
+#	$bsr_btw_id = 3 if $bsr_btw_id == 4; # ####TODO
 	my $a = EB::Finance::norm_btw($bsr_amount, $bsr_btw_id);
 #	print("=> ", (map { defined($_) ? numfmt($_) : "<undef>", " " } @$a), "\n");
 	$tot += $a->[0];

@@ -140,9 +140,9 @@ sub journalise {
 	my $amt = $bsr_amount;
 
 	if ( $bsr_btw_id && $bsr_btw_acc ) {
-	    # The 'excl.' codes are for display purposes only.
-	    $bsr_btw_id = 1 if $bsr_btw_id == 2; # ####TODO
-	    $bsr_btw_id = 3 if $bsr_btw_id == 4; # ####TODO
+#	    # The 'excl.' codes are for display purposes only.
+#	    $bsr_btw_id = 1 if $bsr_btw_id == 2; # ####TODO
+#	    $bsr_btw_id = 3 if $bsr_btw_id == 4; # ####TODO
 
 	    ( $bsr_amount, $btw ) =
 	      @{EB::Finance::norm_btw($bsr_amount, $bsr_btw_id)};

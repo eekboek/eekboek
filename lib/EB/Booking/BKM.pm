@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.5 2005/07/20 13:09:48 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.6 2005/07/20 14:22:56 jv Exp $ ';
 
 package EB::Booking::BKM;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 20 15:07:32 2005
-# Update Count    : 146
+# Last Modified On: Wed Jul 20 16:12:02 2005
+# Update Count    : 147
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -101,6 +101,7 @@ sub perform {
 
 	    my $btw = 0;
 	    my $bsr_amount = $amt;
+	    my $orig_amount = $amt;
 	    my ($btw_ink, $btw_verk);
 	    if ( $btw_id ) {
 		( $bsr_amount, $btw, $btw_ink, $btw_verk ) =
@@ -111,7 +112,7 @@ sub perform {
 	    $::dbh->sql_insert("Boekstukregels",
 			       [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				   bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
-			       $nr++, $date, $bsk_id, $desc, $bsr_amount,
+			       $nr++, $date, $bsk_id, $desc, $orig_amount,
 			       $btw_id, $btw_acc, 0, $acct, undef);
 
 	    $amt = -$amt, $btw = -$btw if $debcrd;
