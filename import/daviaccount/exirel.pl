@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.3 2005/07/18 19:59:55 jv Exp $ ';
+my $RCS_Id = '$Id: exirel.pl,v 1.4 2005/07/20 14:37:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 18 21:57:15 2005
-# Update Count    : 80
+# Last Modified On: Wed Jul 20 16:37:41 2005
+# Update Count    : 81
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -131,7 +131,7 @@ while ( <> ) {
 	      '"', $a{crdzk}, '"', " ",
 	      '"', $a{naam}, '"', " ",
 	      4000,
-	      $a{btw_nummer} ne "" ? " 99 " : "",
+	      $a{btw_nummer} ne "" ? " @{[BTWEXTRA]} " : "",
 	      "\n");
 	next;
     }
