@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.2 2005/07/16 16:43:51 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.3 2005/07/21 15:30:25 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul 16 18:10:49 2005
-# Update Count    : 44
+# Last Modified On: Thu Jul 21 17:27:58 2005
+# Update Count    : 55
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -14,6 +14,7 @@ package EB::DB;
 
 use strict;
 
+use EB::Globals;
 use DBI;
 
 my $postgres = 1;		# PostgreSQL
@@ -25,6 +26,89 @@ my $verbose = 0;
 my $trace = 0;
 
 ################ high level ################
+
+sub check_stdacc {
+    my ($self) = @_;
+
+    my ($std_acc_deb, $std_acc_crd, $std_acc_btw_ih, $std_acc_btw_il,
+	$std_acc_btw_vh, $std_acc_btw_vl, $std_acc_btw_paid, $std_acc_winst) =
+      @{$self->do("SELECT std_acc_deb, std_acc_crd,".
+		  " std_acc_btw_ih, std_acc_btw_il,".
+		  " std_acc_btw_vh, std_acc_btw_vl,".
+		  " std_acc_btw_paid, std_acc_winst".
+		  " FROM Standaardrekeningen")};
+    my $fail = 0;
+
+    my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $std_acc_deb);
+    $fail++, warn("?Geen grootboekrekening voor debiteuren ($std_acc_deb)\n")
+      unless $rr;
+    $fail++, warn("?Verkeerde grootboekrekening voor debiteuren ($std_acc_deb)\n")
+      unless $rr->[0] && $rr->[1];
+
+    $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $std_acc_crd);
+    $fail++, warn("?Geen grootboekrekening voor crediteuren ($std_acc_crd)\n")
+      unless $rr;
+    $fail++, warn("?Verkeerde grootboekrekening voor crediteuren ($std_acc_crd)\n")
+      if $rr->[0] || !$rr->[1];
+
+    $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $std_acc_btw_paid);
+    $fail++, warn("?Geen grootboekrekening voor BTW betaald ($std_acc_btw_paid)\n")
+      unless $rr;
+    $fail++, warn("?Verkeerde grootboekrekening voor BTW betaald ($std_acc_btw_paid)\n")
+      unless $rr->[0];
+
+    $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $std_acc_winst);
+    $fail++, warn("?Geen grootboekrekening voor overboeking winst ($std_acc_winst)\n")
+      unless $rr;
+    $fail++, warn("?Verkeerde grootboekrekening voor overboeking winst ($std_acc_winst)\n")
+      unless $rr->[0];
+
+    my $sth = $self->sql_exec("SELECT acc_id, acc_desc, dbk_id, dbk_type, dbk_desc FROM Dagboeken, Accounts".
+			      " WHERE dbk_acc_id = acc_id");
+    while ( $rr = $sth->fetchrow_arrayref ) {
+	my ($acc_id, $acc_desc, $dbk_id, $dbk_type, $dbk_desc) = @$rr;
+	if ( $dbk_type == DBKTYPE_INKOOP && $acc_id != $std_acc_crd ) {
+	    $fail++;
+	    warn("?Verkeerde grootboekrekening $acc_id ($acc_desc) voor dagboek $dbk_id ($dbk_desc)\n")
+	}
+	elsif ( $dbk_type == DBKTYPE_VERKOOP && $acc_id != $std_acc_deb ) {
+	    $fail++;
+	    warn("?Verkeerde grootboekrekening $acc_id ($acc_desc) voor dagboek $dbk_id ($dbk_desc)\n")
+	}
+    }
+
+    $sth = $self->sql_exec("SELECT btw_id, btw_desc, btg_id, btg_desc, btg_acc_inkoop, btg_acc_verkoop".
+			   " FROM BTWTabel, BTWTariefgroepen".
+			   " WHERE btw_tariefgroep = btg_id");
+    while ( $rr = $sth->fetchrow_arrayref ) {
+	my ($btw_id, $btw_desc, $btg_id, $btg_desc, $btg_acc_inkoop, $btg_acc_verkoop) = @$rr;
+	if ( $btg_id == BTWTYPE_GEEN && $btg_acc_inkoop ) {
+	    $fail++;
+	    warn("?BTW tariefgroep $btg_id ($btg_desc) mag geen grootboekrekening voor inkoop hebben\n");
+	}
+	if ( $btg_id == BTWTYPE_GEEN && $btg_acc_verkoop ) {
+	    $fail++;
+	    warn("?BTW tariefgroep $btg_id ($btg_desc) mag geen grootboekrekening voor verkoop hebben\n");
+	}
+	if ( $btg_id == BTWTYPE_HOOG && $btg_acc_inkoop != $std_acc_btw_ih ) {
+	    $fail++;
+	    warn("?Verkeerde grootboekrekening voor inkoop ($btg_acc_inkoop) voor BTW tariefgroep $btg_id ($btg_desc) -- moet zijn $std_acc_btw_ih\n");
+	}
+	if ( $btg_id == BTWTYPE_HOOG && $btg_acc_verkoop != $std_acc_btw_vh ) {
+	    $fail++;
+	    warn("?Verkeerde grootboekrekening voor verkoop ($btg_acc_verkoop) voor BTW tariefgroep $btg_id ($btg_desc) -- moet zijn $std_acc_btw_vh\n");
+	}
+	if ( $btg_id == BTWTYPE_LAAG && $btg_acc_inkoop != $std_acc_btw_il ) {
+	    $fail++;
+	    warn("?Verkeerde grootboekrekening voor inkoop ($btg_acc_inkoop) voor BTW tariefgroep $btg_id ($btg_desc) -- moet zijn $std_acc_btw_il\n");
+	}
+	if ( $btg_id == BTWTYPE_LAAG && $btg_acc_verkoop != $std_acc_btw_vl ) {
+	    $fail++;
+	    warn("?Verkeerde grootboekrekening voor verkoop ($btg_acc_verkoop) voor BTW tariefgroep $btg_id ($btg_desc) -- moet zijn $std_acc_btw_vl\n");
+	}
+    }
+    die("?CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT\n") if $fail;
+}
 
 sub upd_account {
     my ($self, $acc, $amt) = @_;
@@ -93,6 +177,7 @@ sub connectdb {
       or die("Cannot connect to database: $DBI::errstr\n");
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
+    $self->check_stdacc;
     $dbh;
 }
 
