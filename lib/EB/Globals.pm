@@ -30,16 +30,17 @@ BEGIN {
       qw(INKOOP VERKOOP BANK KAS MEMORIAAL);
     _newconst("DBKTYPES",
 	      "[qw(-- Inkoop Verkoop Bank Kas Memoriaal)]");
-    $i = 1;
+    $i = 0;
     map { _newconst("BTWTYPE_$_", $i++) }
-      qw(HOOG LAAG GEEN);
+      qw(GEEN HOOG LAAG);
     $i = 0;
     map { _newconst("BTWPER_$_", $i++) }
       qw(GEEN JAAR HALFJAAR TRIMESTER KWARTAAL);
 
     $i = 0;
-    map { _newconst("BTW$_", $i++) }
+    map { _newconst("BTW_$_", $i++) }
       qw(NORMAAL VERLEGD INTRA EXTRA);
+
 }
 
 unless ( caller ) {

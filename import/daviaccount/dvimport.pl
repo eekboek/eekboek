@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.5 2005/07/20 13:09:48 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.6 2005/07/21 10:26:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 20 10:31:51 2005
-# Update Count    : 218
+# Last Modified On: Thu Jul 21 12:23:50 2005
+# Update Count    : 221
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -255,18 +255,18 @@ sub read_btw {
 	}
     }
     foreach ( @btwtable ) {
-	push(@$_, $_->[1] == 0 ? 3 :
-	     $_->[1] == $hi ? 1 :
-	     $_->[1] == $lo ? 2 : warn("Onbekende BTW group: $_->[1]\n"));
+	push(@$_, $_->[1] == 0 ? BTWTYPE_GEEN :
+	     $_->[1] == $hi ? BTWTYPE_HOOG :
+	     $_->[1] == $lo ? BTWTYPE_LAAG : warn("Onbekende BTW group: $_->[1]\n"));
     }
 
     open(my $f, ">btw.sql") or die("Cannot create btw.sql: $!\n");
 
     print $f ("-- BTW Tariefgroepen\n\n",
 	      "COPY BTWTariefgroepen (btg_id, btg_desc, btg_acc_verkoop, btg_acc_inkoop) FROM stdin;\n",
-	      "1\tBTW Hoog\t$btw_acc_hi_v\t$btw_acc_hi_i\n",
-	      "2\tBTW Laag\t$btw_acc_lo_v\t$btw_acc_lo_i\n",
-	      "3\tBTW Geen\t\\N\t\\N\n",
+	      "@{[BTWTYPE_GEEN]}\tBTW Geen\t\\N\t\\N\n",
+	      "@{[BTWTYPE_HOOG]}\tBTW Hoog\t$btw_acc_hi_v\t$btw_acc_hi_i\n",
+	      "@{[BTWTYPE_LAAG]}\tBTW Laag\t$btw_acc_lo_v\t$btw_acc_lo_i\n",
 	      "\\.\n\n");
 
     print $f ("-- BTW Tabel\n\n",
