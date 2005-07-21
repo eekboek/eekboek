@@ -83,11 +83,11 @@ CREATE TABLE BTWTariefgroepen (
 
 -- BTW tarieven
 CREATE TABLE BTWTabel (
-  btw_id     int not null primary key,
-  btw_desc   text not null,
-  btw_perc   int not null,      -- perc * BTWSCALE
+  btw_id          smallint not null primary key,
+  btw_desc        text not null,
+  btw_perc        int not null,      -- perc * BTWSCALE
   btw_tariefgroep smallint not null references BTWTariefgroepen,
-  btw_incl   boolean    -- inclusief / exclusief
+  btw_incl        boolean    -- inclusief / exclusief
 );
 
 \i btw.sql
@@ -109,51 +109,6 @@ WHERE btw_tariefgroep = 2;
 ALTER TABLE ONLY Accounts
     add constraint "$2"
         FOREIGN KEY (acc_btw) REFERENCES BTWTabel(btw_id);
-
--- Landentabel
-
-CREATE TABLE Landen (
-
-  -- Enkel de EU-lid status is belangrijk i.v.m. aangifte OB /
-  -- inter-communale leveringen.
-
-  lnd_id 	int not null primary key,
-  lnd_desc 	text not null,
-  lnd_eu        boolean not null 	-- EU-lid
-);
-
-COPY Landen(lnd_id, lnd_desc, lnd_eu) FROM stdin;
-1	België	t
-2	Bulgarije	f
-3	Cyprus	t
-4	Denemarken	t
-5	Duitsland	t
-6	Estland	t
-7	Finland	t
-8	Frankrijk	t
-9	Griekenland	t
-10	Hongarije	t
-11	Ierland	t
-12	Italië	t
-13	Kroatië	f
-14	Letland	t
-15	Litouwen	t
-16	Luxemburg	t
-17	Malta	t
-18	Nederland	t
-19	Oostenrijk	t
-20	Polen	t
-21	Portugal	t
-22	Roemenië	f
-23	Slovenië	t
-24	Slowakije	t
-25	Spanje	t
-26	Tsjechië	t
-27	Turkije	f
-28	Verenigd Koninkrijk	t
-29	Zweden	t
-99	Verenigde Staten van Noord-Amerika	f
-\.
 
 CREATE TABLE Dagboeken (
 
@@ -184,7 +139,7 @@ CREATE TABLE Relaties (
   rel_code      char(10) not null primary key,
   rel_desc 	text not null,
   rel_debcrd 	boolean,	-- t: debiteur f: crediteur
-  rel_btw_status smallint default 0, -- 0 = normaal, 1 = verlegd, 2 = intracomm, 3 = extra.
+  rel_btw_status smallint default 0, -- BTW_NORMAAL, BTW_VERLEGD, BTW_INTRA, BTW_EXTRA.
   rel_ledger    int references Dagboeken,  -- verkoop/inkoopdagboek
   rel_acc_id    int references Accounts	   -- standaard grootboekrekening
 );
@@ -215,16 +170,16 @@ CREATE TABLE Boekstukregels (
   bsr_type      smallint,
                 -- I: Standaard, [- Artikel (levering van) -], ...,
                 --    Open post vorige periode
-                -- KMB: Standaard, Debiteur (betaling), Crediteur (betaling)
+                -- BKM: Standaard, Debiteur (betaling), Crediteur (betaling)
                 -- V: -, ...,
                 --    Open post vorige periode
   bsr_acc_id    int references Accounts,
-                -- IKMB: Standaard
+                -- IBKM: Standaard
                 -- V
 --  #bsr_art_id   I: Artikel (levering van)
 --  #bsr_art_num  I: Artikel (levering van)
   bsr_rel_code  CHAR(10) references Relaties,
-                -- KMB: Debiteur (betaling van), Crediteur (betaling aan)
+                -- BKM: Debiteur (betaling van), Crediteur (betaling aan)
                 -- I: Crediteur, V: Debiteur
   UNIQUE(bsr_nr, bsr_bsk_id)
 );
@@ -253,7 +208,8 @@ CREATE TABLE Metadata (
   adm_begin	date,
     -- btw periode: 0 = geen, 1 = jaar, 4 = kwartaal
   adm_btwperiod	smallint,
-  adm_opened	date
+  adm_opened	date,
+  adm_closed	date
 );
 
 INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision, adm_begin)

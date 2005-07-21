@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: btwaangifte.pl,v 1.2 2005/07/21 10:40:06 jv Exp $ ';
+my $RCS_Id = '$Id: btwaangifte.pl,v 1.3 2005/07/21 15:30:32 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 21 12:19:07 2005
-# Update Count    : 78
+# Last Modified On: Thu Jul 21 14:23:46 2005
+# Update Count    : 113
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,14 +21,28 @@ $my_version .= '*' if length('$Locker:  $ ') > 12;
 
 ################ Command line parameters ################
 
+use EB::DB;
+my $trace = $ENV{EB_SQL_TRACE};
+our $dbh = EB::DB->new(trace=>$trace);
+
+my ($adm_begin, $adm_name, $adm_btw_periode) =
+  @{$dbh->do("SELECT adm_begin, adm_name, adm_btwperiod FROM Metadata")};
+$adm_btw_periode ||= 4;
+
+unless ( $adm_begin ) {
+    die("?Administratie is nog niet geopend\n");
+}
+
 use Getopt::Long 2.13;
 
 # Command line options.
+my $periode;
+my $p_start;
+my $p_end;
 my $verbose = 0;		# verbose processing
 
 # Development options (not shown with -help).
 my $debug = 0;			# debugging
-my $trace = 0;			# trace (show process)
 my $test = 0;			# test mode.
 
 # Process command line options.
@@ -36,6 +50,7 @@ app_options();
 
 # Post-processing.
 $trace |= ($debug || $test);
+$dbh->trace($trace);
 
 ################ Presets ################
 
@@ -43,11 +58,7 @@ $trace |= ($debug || $test);
 
 use EB::Globals;
 use EB::Finance;
-use EB::DB;
 use POSIX qw(ceil floor);
-
-our $trace = $ENV{EB_SQL_TRACE};
-our $dbh = EB::DB->new(trace=>$trace);
 
 my $v;
 my $tot = 0;
@@ -98,11 +109,41 @@ my $xx = 0;			# ongeclassificeerd (fout, dus)
 
 # Target: alle boekstukken van type 0 (inkoop/verkoop).
 
+unless ( $periode ) {
+    my @tm = localtime(time);
+    if ( $adm_btw_periode == 1 ) {
+	$p_start = sprintf("%04d-01-01", $tm[5] + 1899);
+	$p_end   = sprintf("%04d-12-31", $tm[5] + 1899);
+	$periode = substr($p_start, 0, 4);
+    }
+    elsif ( $adm_btw_periode == 4 ) {
+	if ( $tm[4] <= 2 ) {
+	    use Time::Local;
+	    $p_end   = sprintf("%04d-12-31", $tm[5] + 1899);
+	    @tm = localtime(timelocal(0,0,0,1,int((1+$tm[4])/3)*3,2004)-24*3600);
+	    $p_start = sprintf("%04d-%02d-01", $tm[5] + 1899, 1+$tm[4]);
+	    $periode = "3e kwartaal " . substr($p_start, 0, 4);
+	}
+	else {
+	    my $tm4 = $tm[4]+1;
+	    @tm = localtime(timelocal(0,0,0,1,int(($tm4)/3)*3,2004)-24*3600);
+	    $p_end = sprintf("%04d-%02d-%02d", $tm[5] + 1900, 1+$tm[4], $tm[3]);
+	    @tm = localtime(timelocal(0,0,0,1,int(($tm4)/3 - 1)*3,2004));
+	    $p_start   = sprintf("%04d-%02d-01", $tm[5] + 1900, 1+$tm[4]);
+	    $periode = (int($tm4/3)+1) ."e kwartaal " . substr($p_start, 0, 4);
+	}
+    }
+}
+
+warn("p_start = $p_start, p_end = $p_end\n");
+
 my $sth = $dbh->sql_exec
   ("SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,rel_debcrd,rel_btw_status".
    " FROM Boekstukregels, Relaties".
    " WHERE bsr_rel_code = rel_code".
-   " AND bsr_type = 0");
+   ($periode ? " AND bsr_date >= ? AND bsr_date <= ?" : "").
+   " AND bsr_type = 0",
+   $periode ? ( $p_start, $p_end ) : ());
 
 my $rr;
 while ( $rr = $sth->fetchrow_arrayref ) {
@@ -166,6 +207,9 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	$xx += $amt;
     }
 }
+
+print("BTW Aangifte $periode",
+      " -- $adm_name\n\n");
 
 
 # Binnenland
@@ -234,7 +278,9 @@ outline("5a", "Subtotaal", undef, $tot);
 
 my ($vb) = @{$dbh->do("SELECT SUM(jnl_amount)".
 		      " FROM Journal".
-		      " WHERE jnl_acc_id = 1530 OR jnl_acc_id = 1520")};
+		      " WHERE ( jnl_acc_id = 1530 OR jnl_acc_id = 1520 )".
+		      ($periode ? " AND jnl_date >= ? AND jnl_date <= ?" : ""),
+		      $periode ? ( $p_start, $p_end ) : ())};
 my $btw_delta = $vb - $crd_btw;
 
 
@@ -293,6 +339,11 @@ sub outline {
 
 ################ Subroutines ################
 
+sub parse_periode {
+    my ($o, $v) = @_;
+    die("Waarde \"$v\" is niet geldig voor optie \"$o\"\n");
+}
+
 sub app_options {
     my $help = 0;		# handled locally
     my $ident = 0;		# handled locally
@@ -302,6 +353,7 @@ sub app_options {
     return unless @ARGV > 0;
 
     if ( !GetOptions(
+		     'periode=s' => \&parse_periode,
 		     'ident'	=> \$ident,
 		     'verbose'	=> \$verbose,
 		     'trace'	=> \$trace,
