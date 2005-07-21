@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: btwaangifte.pl,v 1.1 2005/07/20 15:58:04 jv Exp $ ';
+my $RCS_Id = '$Id: btwaangifte.pl,v 1.2 2005/07/21 10:40:06 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 20 17:57:06 2005
-# Update Count    : 73
+# Last Modified On: Thu Jul 21 12:19:07 2005
+# Update Count    : 78
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -51,20 +51,52 @@ our $dbh = EB::DB->new(trace=>$trace);
 
 my $v;
 my $tot = 0;
+
+# 1. Door mij verrichte leveringen/diensten
+# 1a. Belast met hoog tarief
+
 my $deb_h = 0;
-my $deb_l = 0;
-my $deb_0 = 0;
-my $deb_x = 0;
 my $deb_btw_h = 0;
+
+# 1b. Belast met laag tarief
+
+my $deb_l = 0;
 my $deb_btw_l = 0;
+
+# 1c. Belast met ander, niet-nul tarief
+
+my $deb_x = 0;
 my $deb_btw_x = 0;
-my $crd_btw = 0;
+
+# 1d. Belast met 0%/verlegd
+
+my $deb_0 = 0;
 my $verlegd = 0;
-my $intra_deb = 0;
+
+# 3. Door mij verrichte leveringen
+# 3a. Buiten de EU
+
 my $extra_deb = 0;
-my $intra_crd = 0;
+
+# 3b. Binnen de EU
+
+my $intra_deb = 0;
+
+# 4. Aan mij verrichte leveringen
+# 4a. Van buiten de EU
+
 my $extra_crd = 0;
-my $xx = 0;
+
+# 4b. Verwervingen van goederen uit de EU.
+
+my $intra_crd = 0;
+
+# Totaaltellingen.
+
+my $crd_btw = 0;		# BTW betaald (voorheffingen)
+my $xx = 0;			# ongeclassificeerd (fout, dus)
+
+# Target: alle boekstukken van type 0 (inkoop/verkoop).
 
 my $sth = $dbh->sql_exec
   ("SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,rel_debcrd,rel_btw_status".
@@ -79,24 +111,25 @@ while ( $rr = $sth->fetchrow_arrayref ) {
     my $btw = 0;
     $amt = -$amt if $dbh->lookup($acc, qw(Accounts acc_id acc_debcrd));
     if ( $btw_id ) {
+	# Bepaal tariefgroep en splits bedrag uit.
 	$btg_id = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
 	my $a = EB::Finance::norm_btw($amt, $btw_id);
-	$amt = $a->[0] - ($btw = $a->[1]);
+	$amt = $a->[0] - ($btw = $a->[1]); # ex BTW
     }
 
-    if ( $btw_status == BTWNORMAAL ) {
+    if ( $btw_status == BTW_NORMAAL ) {
 	if ( $debcrd ) {
-	    if ( $btg_id == 1 ) {
+	    if ( $btg_id == BTWTYPE_HOOG ) {
 		$deb_h += $amt;
 		$deb_btw_h += $btw;
 	    }
-	    elsif ( $btg_id == 2 ) {
+	    elsif ( $btg_id == BTWTYPE_LAAG ) {
 		$deb_l += $amt;
 		$deb_btw_l += $btw;
 	    }
-	    elsif ( $btg_id == 0 ) {
+	    elsif ( $btg_id == BTWTYPE_GEEN ) {
 		$deb_0 += $amt
-		  if $btw_acc;
+		  if $btw_acc;	# ???
 	    }
 	    else {
 		$deb_x += $amt;
@@ -107,12 +140,12 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	    $crd_btw -= $btw;
 	}
     }
-    elsif ( $btw_status == BTWVERLEGD ) {
+    elsif ( $btw_status == BTW_VERLEGD ) {
 	if ( $debcrd ) {
 	    $verlegd += $amt;
 	}
     }
-    elsif ( $btw_status == BTWINTRA ) {
+    elsif ( $btw_status == BTW_INTRA ) {
 	if ( $debcrd ) {
 	    $intra_deb += $amt;
 	}
@@ -120,7 +153,7 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	    $intra_crd -= $amt;
 	}
     }
-    elsif ( $btw_status == BTWEXTRA ) {
+    elsif ( $btw_status == BTW_EXTRA ) {
 	if ( $debcrd ) {
 	    $extra_deb += $amt;
 	}
@@ -129,6 +162,7 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	}
     }
     else {
+	# Foutvanger.
 	$xx += $amt;
     }
 }
