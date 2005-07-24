@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.2 2005/07/24 15:32:38 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.3 2005/07/24 19:33:02 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 24 16:07:47 2005
-# Update Count    : 184
+# Last Modified On: Sun Jul 24 20:53:29 2005
+# Update Count    : 190
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -257,5 +257,26 @@ sub intro {
 }
 sub outro { undef }
 sub postcmd { shift; $::dbh->rollback; shift }
+
+sub do_btwaangifte {
+    my $self = shift;
+    use EB::BTWAangifte::Text;
+    EB::BTWAangifte::Text->new->perform({periode => shift});
+    undef;
+}
+
+sub help_btwaangifte {
+    <<EOS;
+Print de BTW aangifte.
+
+  btwaangifte [ periode ]
+
+Aangifteperiode kan zijn:
+
+  j            het gehele jaar
+  h1 h2        1e/2e helft van het jaar (ook: s1, ...)
+  k1 k2 k3 k4  1e/2e/3e/4e kwartaal (ook: q1, ...)
+EOS
+}
 
 1;
