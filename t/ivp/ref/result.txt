@@ -1,0 +1,15 @@
+Verlies/Winst -- Periode 2004-01-01 - 2005-07-24
+
+RekNr   Grootboekrekening                             Debet     Credit
+----------------------------------------------------------------------
+4330    Afschr. kosten inv. & inr                    411.26           
+4340    Afschr. kosten computers                     396.82           
+4900    Telefoon- en faxkosten                       530.62           
+4905    Internetkosten                               229.92           
+4980    Bankkosten                                    32.40           
+8000    Omzet advisering BTW hoog                              1200.00
+8200    Omzet editing                                          1000.00
+8300    Omzet cursussen                                        6500.00
+        << Winst >>                                 7098.98           
+----------------------------------------------------------------------
+        TOTAAL Resultaten                           8700.00    8700.00

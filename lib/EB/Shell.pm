@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.2 2005/07/24 15:32:38 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 12 12:10:36 2005
-# Update Count    : 183
+# Last Modified On: Sun Jul 24 16:07:47 2005
+# Update Count    : 184
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -51,7 +51,6 @@ sub _plug_cmds {
 	    my $self = shift;
 	    $self->_add($dbk_id, @_);
 	};
-	*{"do_add$dbk_id"} = *{"do_$dbk"};
 	*{"help_$dbk"} = sub {
 	    my $self = shift;
 	    $self->_help($dbk, $dbk_id, $dbk_desc, $dbk_type, @_);
@@ -61,7 +60,7 @@ sub _plug_cmds {
 
 sub _help {
     my ($self, $dbk, $dbk_id, $dbk_desc, $dbk_type) = @_;
-    my $cmd = "{ $dbk | add$dbk_id }";
+    my $cmd = "$dbk";
     my $text = "Toevoegen boekstuk in dagboek $dbk_desc (dagboek $dbk_id, type " .
       DBKTYPES->[$dbk_type] . ").\n\n";
 
@@ -75,18 +74,14 @@ EOS
   $cmd [ <datum> ] <debiteur> "Omschrijving" <bedrag> [ <rekening> ]
 EOS
     }
-    elsif ( $dbk_type == DBKTYPE_BANK || $dbk_type == DBKTYPE_KAS ) {
+    elsif ( $dbk_type == DBKTYPE_BANK || $dbk_type == DBKTYPE_KAS 
+	    || $dbk_type == DBKTYPE_MEMORIAAL
+	  ) {
 	$text .= <<EOS;
   $cmd [ <datum> ] "Omschrijving"    gevolgd door een of meer:
     std "Omschrijving" <bedrag> <rekening> -- gewone betaling
     crd <code> <bedrag>                    -- betaling van crediteur
     deb <code> <bedrag>                    -- betaling van debiteur
-EOS
-    }
-    elsif ( $dbk_type == DBKTYPE_MEMORIAAL ) {
-	$text .= <<EOS;
-  $cmd [ <datum> ] gevolgd door een of meer
-     "Omschrijving" <bedrag> <rekening>
 EOS
     }
     $text;

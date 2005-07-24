@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.2 2005/07/24 15:32:38 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul  9 17:33:29 2005
-# Update Count    : 157
+# Last Modified On: Sun Jul 24 16:49:15 2005
+# Update Count    : 160
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -49,14 +49,25 @@ sub new {
 	no strict 'refs';
 	*{"readline"} = sub {
 	    my $line;
+	    my $pre = "";
 	    while ( 1 ) {
 		$line = <>;
 		return unless $line;
-		print($opts->{echo}, $line) if $opts->{echo};
+		if ( $opts->{echo} ) {
+		    my $pr = $opts->{echo};
+		    $pr =~ s/\>/>>/ if $pre;
+		    print($pr, $line);
+		}
 		next unless $line =~ /\S/;
 		next if $line =~ /^\s*#/;
 		chomp($line);
-		return $line;
+		if ( $line =~ /(^.*)\\$/ ) {
+		    $line = $1;
+		    $line =~ s/\s+$/ /;
+		    $pre .= $line;
+		    next;
+		}
+		return $pre.$line;
 	    }
 	};
 	*{"init_rl"} = sub {};

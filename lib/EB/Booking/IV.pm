@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.7 2005/07/21 10:26:55 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.8 2005/07/24 15:32:38 jv Exp $ ';
 
 package EB::Booking::IV;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 21 12:25:40 2005
-# Update Count    : 72
+# Last Modified On: Sun Jul 24 16:56:29 2005
+# Update Count    : 73
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -80,7 +80,7 @@ sub perform {
     while ( @$args ) {
 	my ($desc, $amt, $acct) = splice(@$args, 0, 3);
 	$acct ||= $rr->[0];
-	warn(" add$dagboek $desc $amt $acct\n")
+	warn(" boekstuk: $desc $amt $acct\n")
 	  if $did++ || @$args || $opts->{verbose};
 
 	my $rr = $::dbh->do("SELECT acc_desc,acc_balres,acc_debcrd,acc_btw".

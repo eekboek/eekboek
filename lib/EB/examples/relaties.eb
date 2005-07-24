@@ -1,0 +1,9 @@
+# Relatie <code> "<omschrijving>" standaardrekening
+relatie XS4ALL "XS4All Internet B.V." 4905
+relatie KPN "KPN" 4900
+
+# Relatie <code> "<omschrijving>" standaardrekening
+relatie ACME "Acme Corp." 8000
+
+# De laatste "3" geeft aan dat dit een relatie buiten Europa is.
+relatie ORA "O'Reilly & Associates" 8100 3

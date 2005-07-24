@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.6 2005/07/20 14:22:56 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.7 2005/07/24 15:32:38 jv Exp $ ';
 
 package EB::Booking::BKM;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 20 16:12:02 2005
-# Update Count    : 147
+# Last Modified On: Sun Jul 24 16:56:52 2005
+# Update Count    : 148
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -71,7 +71,7 @@ sub perform {
 
 	if ( $type eq "std" ) {
 	    my ($desc, $amt, $acct) = splice(@$args, 0, 3);
-	    warn(" add$dagboek std $desc $amt $acct\n")
+	    warn(" boekstuk: std $desc $amt $acct\n")
 	      if $did++ || @$args || $opts->{verbose};
 
 	    my $rr = $::dbh->do("SELECT acc_desc,acc_balres,acc_debcrd,acc_btw".
@@ -134,7 +134,7 @@ sub perform {
 	    my $debcrd = $type eq "deb" ? 1 : 0;
 
 	    my ($rel, $amt) = splice(@$args, 0, 2);
-	    warn(" add$dagboek $type $rel $amt\n")
+	    warn(" boekstuk: $type $rel $amt\n")
 	      if $did++ || @$args || $opts->{verbose};
 
 	    $amt = amount($amt);

@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Opening.pm,v 1.2 2005/07/16 16:43:51 jv Exp $ ';
+my $RCS_Id = '$Id: Opening.pm,v 1.3 2005/07/24 15:32:38 jv Exp $ ';
 
 # Skeleton for Getopt::Long.
 
 # Author          : Johan Vromans
 # Created On      : Sat Jul 16 15:21:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul 16 18:40:34 2005
-# Update Count    : 42
+# Last Modified On: Sun Jul 24 15:00:51 2005
+# Update Count    : 43
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -327,6 +327,10 @@ sub app_usage {
     app_ident();
     print STDERR <<EndOfUsage;
 Usage: $0 [options] [file ...]
+    -admin NNN		naam van deze administratie
+    -periode YYYY	jaar
+    -check NNN.NN	balanstotaal openingsbalans
+    -btw-periode { 1 | 4 }	periode BTW aangifte
     -help		this message
     -ident		show identification
     -verbose		verbose information

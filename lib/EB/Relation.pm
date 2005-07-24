@@ -55,7 +55,8 @@ sub add {
 		       $code, $desc, $debcrd, $bstate || 0, $rr->[0], $acct);
 
     $::dbh->commit;
-    ($debcrd ? "Debiteur" : "Crediteur") . " " . $code;
+    ($debcrd ? "Debiteur" : "Crediteur") . " " . $code .
+      " -> $acct ($adesc)";
 }
 
 1;
