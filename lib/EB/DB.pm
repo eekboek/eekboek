@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.3 2005/07/21 15:30:25 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.4 2005/07/25 20:52:26 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 21 17:27:58 2005
-# Update Count    : 55
+# Last Modified On: Mon Jul 25 22:34:34 2005
+# Update Count    : 56
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -183,8 +183,10 @@ sub connectdb {
 
 sub trace {
     my ($self, $value) = @_;
-    $trace = !$trace, return unless defined $value;
+    my $cur = $trace;
+    $trace = !$trace, return $cur unless defined $value;
     $trace = $value;
+    $cur;
 }
 
 sub sql_insert {

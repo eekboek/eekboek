@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.2 2005/07/25 20:52:26 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 11 16:41:13 2005
-# Update Count    : 102
+# Last Modified On: Mon Jul 25 22:48:36 2005
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -25,14 +25,14 @@ sub new {
 
 use locale;
 
-my $repfmt = "%-10s  %3s  %-30.30s  %5s  %9s  %9s  %-30.30s  %s\n";
+my $repfmt = "%-10s  %3s  %-4s  %-30.30s  %5s  %9s  %9s  %-30.30s  %s\n";
 
 sub journal {
     my ($self, $bsk) = @_;
-    my $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq, ".
+    my $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
 			     "jnl_acc_id, jnl_amount, jnl_desc, jnl_rel".
-			     " FROM Journal".
-			     ($bsk ? " WHERE jnl_bsk_id = ?" : "").
+			     " FROM Journal, Boekstukken".
+			     ($bsk ? " WHERE jnl_bsk_id = ? AND jnl_bsk_id = bsk_id" : " WHERE jnl_bsk_id = bsk_id").
 			     " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq",
 			     $bsk ? $bsk : ());
     my $rr;
@@ -40,33 +40,33 @@ sub journal {
     my $totd = my $totc = 0;
 
     while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($jnl_date, $jnl_dbk_id, $jnl_bsk_id, $jnl_bsr_seq, $jnl_acc_id,
+	my ($jnl_date, $jnl_dbk_id, $jnl_bsk_id, $bsk_nr, $jnl_bsr_seq, $jnl_acc_id,
 	    $jnl_amount, $jnl_desc, $jnl_rel) = @$rr;
 
 	if ( $jnl_bsr_seq == 0 ) {
 	    printf($repfmt,
-		   qw(Datum Nr Dag/Grootboek Rek Debet Credit Boekstuk/regel Relatie)) unless $nl;
+		   qw(Datum Id Nr Dag/Grootboek Rek Debet Credit Boekstuk/regel Relatie)) unless $nl;
 	    print("\n") if $nl++;
-	    $self->_repline($jnl_date, $jnl_bsk_id, _dbk_desc($jnl_dbk_id), '',
+	    $self->_repline($jnl_date, $jnl_bsk_id, $bsk_nr, _dbk_desc($jnl_dbk_id), '',
 			    '', '', $jnl_desc);
 	    next;
 	}
 
 	$totd += $jnl_amount if $jnl_amount > 0;
 	$totc -= $jnl_amount if $jnl_amount < 0;
-	$self->_repline($jnl_date, '', "  "._acc_desc($jnl_acc_id),
+	$self->_repline($jnl_date, '', '', "  "._acc_desc($jnl_acc_id),
 			$jnl_acc_id, numdebcrd($jnl_amount), "  ".$jnl_desc, $jnl_rel);
     }
     $self->_repline('', '', 'Totaal', '', $totd, $totc);
 }
 
 sub _repline {
-    my ($self, $date, $bsk, $loc, $acc, $deb, $crd, $desc, $rel) = (@_, ('') x 7);
+    my ($self, $date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel) = (@_, ('') x 7);
     for ( $deb, $crd ) {
 	$_ = $_ ? numfmt($_) : '';
     }
     printf($repfmt,
-	   $date, $bsk, $loc, $acc, $deb, $crd, $desc, $rel || '');
+	   $date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel || '');
 }
 
 my %dbk_desc;

@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.3 2005/07/24 19:33:02 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.4 2005/07/25 20:52:26 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 24 20:53:29 2005
-# Update Count    : 190
+# Last Modified On: Mon Jul 25 22:49:30 2005
+# Update Count    : 206
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -121,11 +121,6 @@ sub do_confirm {
     "Bevestiging: " . ($self->{confirm} ? "AAN" : "UIT");
 }
 
-# POC: Inkoopboeking (dagboek type 1), dagboek Inkopen (6).
-# POC: Verkoopboeking (dagboek type 2), dagboek Verkopen (7).
-# POC: Memoriaalboeking (dagboek type 2), dagboek Memoriaal (8).
-# POC: Bankboeking (dagboek type 5), dagboek Postgiro (4).
-
 use EB::Finance;
 use EB::Journal::Text;
 
@@ -151,12 +146,22 @@ sub _add {
       die("Onbekend of verkeerd dagboek: $dagboek [$dagboek_type]\n");
     }
 
-    $bsk = $action->perform(\@args,
-			    { dagboek	     => $dagboek,
-			      dagboek_type   => $dagboek_type,
-			      journal	     => $self->{journal},
-			      verbose	     => $self->{verbose},
-			    });
+    my $opts = { dagboek      => $dagboek,
+		 dagboek_type => $dagboek_type,
+		 journal      => $self->{journal},
+		 verbose      => $self->{verbose},
+	       };
+
+    my $args = \@args;
+    parse_args($args,
+	       [ 'boekstuk|nr=s',
+		 'journal!',
+		 'verbose!',
+		 'confirm!',
+		 'trace!',
+	       ], $opts);
+
+    $bsk = $action->perform($args, $opts);
     $bsk ? "Boekstuk: $bsk" : "";
 }
 
@@ -277,6 +282,16 @@ Aangifteperiode kan zijn:
   h1 h2        1e/2e helft van het jaar (ook: s1, ...)
   k1 k2 k3 k4  1e/2e/3e/4e kwartaal (ook: q1, ...)
 EOS
+}
+
+use Getopt::Long;
+
+sub parse_args {
+    my ($args, $ctl, $opts) = @_;
+    local(*ARGV) = $args;
+    Getopt::Long::Configure("prefix_pattern=--");
+    my $ret = GetOptions($opts, @$ctl);
+    $ret;
 }
 
 1;

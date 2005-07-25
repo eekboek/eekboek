@@ -40,13 +40,14 @@ my @bsr_types =
    [ "Standaard", ("") x 8, "Open post vorige periode" ],
    [ "Standaard", "Betaling van debiteur", "Betaling aan crediteur" ],
    [ "Standaard", "Betaling van debiteur", "Betaling aan crediteur" ],
+   [ "Standaard", "Betaling van debiteur", "Betaling aan crediteur" ],
    [],
   );
 
 while ( $rr = $sth->fetchrow_arrayref ) {
     my ($bsk_id, $bsk_nr, $bsk_desc, $bsk_dbk_id,
 	$bsk_date, $bsk_amount, $bsk_paid) = @$rr;
-
+    $bsk_nr =~ s/\s+$//;
     my $sth = $dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
 			     "bsr_desc, bsr_amount, bsr_btw_id, ".
 			     "bsr_type, bsr_acc_id, bsr_rel_code ".
@@ -98,7 +99,7 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	      (", BTW code $bsr_btw_id (",
 	      $dbh->lookup($bsr_btw_id, qw(BTWTabel btw_id btw_desc)),
 	      ")") : (),
-	      $bsr_acc_id ? (", rek $bsr_acc_id (", $rt ? "D/" : "C/", $rd, ")",) : (),
+	      defined($bsr_acc_id) ? (", rek $bsr_acc_id (", $rt ? "D/" : "C/", $rd, ")",) : (),
 	      "\n");
 
 	$bsr_amount = -$bsr_amount unless $rt;
@@ -110,6 +111,7 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	$tot += $a->[0];
     }
 
+    next unless $acct;
     my ($rd, $rt) = @{$::dbh->do("SELECT acc_desc,acc_debcrd".
 				 " FROM Accounts".
 				 " WHERE acc_id = ?",

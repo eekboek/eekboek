@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.8 2005/07/24 15:32:38 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.9 2005/07/25 20:52:26 jv Exp $ ';
 
 package EB::Booking::IV;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 24 16:56:29 2005
-# Update Count    : 73
+# Last Modified On: Mon Jul 25 22:50:09 2005
+# Update Count    : 74
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -100,10 +100,10 @@ sub perform {
 	}
 
 	if ( $nr == 1 ) {
+	    $bsk_id = $opts->{boekstuk} || $::dbh->get_sequence("bsk_nr_${dagboek}_seq");
 	    $::dbh->sql_insert("Boekstukken",
 			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_paid)],
-			     $::dbh->get_sequence("bsk_nr_${dagboek}_seq"),
-			     $desc, $dagboek, $date, undef);
+			     $bsk_id, $desc, $dagboek, $date, undef);
 	    $gdesc = $desc;
 	    $bsk_id = $::dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
 	}

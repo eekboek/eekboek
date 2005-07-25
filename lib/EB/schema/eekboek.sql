@@ -147,7 +147,7 @@ CREATE TABLE Relaties (
 CREATE TABLE Boekstukken (
 
   bsk_id       serial not null primary key,
-  bsk_nr       int,	-- free choice
+  bsk_nr       char(4),	-- free choice
   bsk_desc     text not null,
   bsk_dbk_id   int references Dagboeken,
   bsk_date     date,
