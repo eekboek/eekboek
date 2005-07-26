@@ -41,7 +41,7 @@ sub amount {
     }
 
     my $val = shift;
-    if ( $val =~ /[-+*\/\(\)]/ ) {
+    if ( $val =~ /.[-+*\/\(\)]/ ) {
 	my $expr = EB::Expression->new;
 	my $tree = $expr->Parse($val);
 	$val = sprintf($stdfmt0, $expr->EvalToScalar($tree));
