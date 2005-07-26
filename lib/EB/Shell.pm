@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.6 2005/07/26 14:19:45 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.7 2005/07/26 18:05:25 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 26 16:18:23 2005
-# Update Count    : 212
+# Last Modified On: Tue Jul 26 19:53:13 2005
+# Update Count    : 215
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -170,6 +170,8 @@ sub _add {
 		 'journal!',
 		 'verbose!',
 		 'confirm!',
+		 ( $dagboek_type == DBKTYPE_BANK
+		   || $dagboek_type == DBKTYPE_KAS ) ? ( 'saldo=s' ) : (),
 		 'trace!',
 	       ], $opts);
 

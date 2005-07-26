@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.8 2005/07/25 20:52:26 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.9 2005/07/26 18:05:12 jv Exp $ ';
 
 package EB::Booking::BKM;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 25 22:26:17 2005
-# Update Count    : 151
+# Last Modified On: Tue Jul 26 19:55:35 2005
+# Update Count    : 152
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -203,8 +203,15 @@ sub perform {
     if ( $gacct ) {
 	warn("update $gacct with ".numfmt($tot)."\n") if $trace_updates;
 	$::dbh->upd_account($gacct, $tot);
-	print("Nieuw saldo: ",
-	      numfmt($::dbh->lookup($gacct, qw(Accounts acc_id acc_balance))), "\n");
+	my $new = $::dbh->lookup($gacct, qw(Accounts acc_id acc_balance));
+	print("Nieuw saldo: ", numfmt($new), "\n");
+	if ( $opts->{saldo} ) {
+	    my $exp = amount($opts->{saldo});
+	    unless ( $exp == $new ) {
+		warn("?Saldo ",numfmt($new)." klopt niet met de vereiste waarde ".numfmt($exp)."\n");
+		$fail++;
+	    }
+	}
     }
     elsif ( $tot ) {
 	warn("?Boekstuk is niet in balans (verschil is ".numfmt($tot).")\n");
