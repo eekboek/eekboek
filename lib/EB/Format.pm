@@ -3,6 +3,7 @@
 package EB::Finance;
 
 use EB::Globals;
+use EB::Expression;
 
 use strict;
 
@@ -38,7 +39,15 @@ sub amount {
 	}
 	return (amount($amt), $btw_id);
     }
-    return undef unless $_[0] =~ $numpat;
+
+    my $val = shift;
+    if ( $val =~ /[-+*\/\(\)]/ ) {
+	my $expr = EB::Expression->new;
+	my $tree = $expr->Parse($val);
+	$val = sprintf($stdfmt0, $expr->EvalToScalar($tree));
+    }
+
+    return undef unless $val =~ $numpat;
     my ($s, $w, $f) = ($1 || "", $2 || 0, $3 || 0);
     $f .= "0" x (AMTPRECISION - length($f));
     return 0 + ($s.$w.$f);
