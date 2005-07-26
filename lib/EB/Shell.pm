@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.4 2005/07/25 20:52:26 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.5 2005/07/26 14:06:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 25 22:49:30 2005
-# Update Count    : 206
+# Last Modified On: Tue Jul 26 16:05:29 2005
+# Update Count    : 208
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -171,16 +171,18 @@ sub do_journaal {
     $b = shift(@args) if @args;
     undef $b if $b && $b eq "all";
     EB::Journal::Text->new->journal($b);
-    "";
+    undef;
 }
 
 sub help_journaal {
     <<EOS;
 Print journaalposten.
 
-  journal all            -- alle posten
-  journal NN             -- alleen boekstuknummer NN
-  journal                -- journaalposten van de laatste boeking
+  journaal all           -- alle posten
+  journaal <id>          -- alleen boekstuknummer met dit id
+  journaal <dagboek>     -- alle journaalposten van dit dagboek
+  journaal <dagboek>:<n> -- boekstuk n van dit dagboek
+  journaal               -- journaalposten van de laatste boeking
 EOS
 }
 
