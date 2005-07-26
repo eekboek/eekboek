@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.2 2005/07/25 20:52:26 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.3 2005/07/26 13:18:33 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 25 22:48:36 2005
-# Update Count    : 110
+# Last Modified On: Tue Jul 26 15:18:05 2005
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -57,7 +57,7 @@ sub journal {
 	$self->_repline($jnl_date, '', '', "  "._acc_desc($jnl_acc_id),
 			$jnl_acc_id, numdebcrd($jnl_amount), "  ".$jnl_desc, $jnl_rel);
     }
-    $self->_repline('', '', 'Totaal', '', $totd, $totc);
+    $self->_repline('', '', '', 'Totaal', '', $totd, $totc);
 }
 
 sub _repline {
