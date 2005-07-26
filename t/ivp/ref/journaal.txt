@@ -1,4 +1,4 @@
-Datum        Nr  Dag/Grootboek                     Rek      Debet     Credit  Boekstuk/regel                  Relatie
+Datum        Nr ag/Grootboek                     Rek      Debet     Credit  Boekstuk/regel                  Relatie
 2004-01-05    1  Inkoop                                                       ADSL                            
 2004-01-05         Internetkosten                 4905      19.16               ADSL                          
 2004-01-05         BTW Inkoop Hoog                1520       3.64               BTW ADSL                      
@@ -233,5 +233,5 @@ Datum        Nr  Dag/Grootboek                     Rek      Debet     Credit  Bo
 2004-12-31   50  Memoriaal                                                    Afschrijving computers          
 2004-12-31         Afschr. kosten computers       4340     396.82               Afschrijving                  
 2004-12-31         Afschrijving computers          241                396.82    Afschrijving                  
-                 Totaal                                  22823.34   22823.34                                  
+                 Totaal                                  2282334   22823.34                                             
 
