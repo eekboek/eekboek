@@ -18,21 +18,29 @@ my $sth;
 if ( @ARGV ) {
     my $nr = shift;
     if ( $nr =~ /^([[:alpha:]].+):(\d+)$/ ) {
+	my $dbk = $::dbh->lookup($1, qw(Dagboeken dbk_desc dbk_id ilike));
+	unless ( $dbk ) {
+	    die("?Onbekend dagboek: $1\n");
+	}
 	$sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
 			      "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
 			      " FROM Boekstukken, Dagboeken".
 			      " WHERE bsk_nr = ?".
-			      " AND dbk_desc ILIKE ?".
+			      " AND dbk_id = ?".
 			      " AND bsk_dbk_id = dbk_id".
-			      " ORDER BY bsk_dbk_id,bsk_nr", $2, $1);
+			      " ORDER BY bsk_dbk_id,bsk_nr", $2, $dbk);
     }
     elsif ( $nr =~ /^([[:alpha:]].+)$/ ) {
+	my $dbk = $::dbh->lookup($1, qw(Dagboeken dbk_desc dbk_id ilike));
+	unless ( $dbk ) {
+	    die("?Onbekend dagboek: $1\n");
+	}
 	$sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
 			      "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
 			      " FROM Boekstukken, Dagboeken".
-			      " WHERE dbk_desc ILIKE ?".
+			      " WHERE dbk_id = ?".
 			      " AND bsk_dbk_id = dbk_id".
-			      " ORDER BY bsk_dbk_id,bsk_nr", $nr);
+			      " ORDER BY bsk_dbk_id,bsk_nr", $dbk);
     }
     else {
 	$sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
