@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.5 2005/07/26 14:06:57 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.6 2005/07/26 14:19:45 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 26 16:05:29 2005
-# Update Count    : 208
+# Last Modified On: Tue Jul 26 16:18:23 2005
+# Update Count    : 212
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -60,7 +60,7 @@ sub _plug_cmds {
 
 sub _help {
     my ($self, $dbk, $dbk_id, $dbk_desc, $dbk_type) = @_;
-    my $cmd = "$dbk";
+    my $cmd = "$dbk"."[:nr]";
     my $text = "Toevoegen boekstuk in dagboek $dbk_desc (dagboek $dbk_id, type " .
       DBKTYPES->[$dbk_type] . ").\n\n";
 
@@ -119,6 +119,18 @@ sub do_confirm {
     my ($self, $state) = @_;
     $self->{confirm} = _state($self->{confirm}, $state);
     "Bevestiging: " . ($self->{confirm} ? "AAN" : "UIT");
+}
+
+sub parseline {
+    my ($self, $line) = @_;
+
+    my ($cmd, $env, @args) = $self->SUPER::parseline($line);
+
+    if ( $cmd =~ /^(.+):(\S+)$/ ) {
+	$cmd = $1;
+	unshift(@args, "--nr=$2");
+    }
+    ($cmd, $env, @args);
 }
 
 use EB::Finance;
