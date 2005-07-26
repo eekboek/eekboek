@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.3 2005/07/26 13:18:33 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.4 2005/07/26 13:57:45 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 26 15:18:05 2005
-# Update Count    : 111
+# Last Modified On: Tue Jul 26 15:56:51 2005
+# Update Count    : 114
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -28,13 +28,48 @@ use locale;
 my $repfmt = "%-10s  %3s  %-4s  %-30.30s  %5s  %9s  %9s  %-30.30s  %s\n";
 
 sub journal {
-    my ($self, $bsk) = @_;
-    my $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
-			     "jnl_acc_id, jnl_amount, jnl_desc, jnl_rel".
-			     " FROM Journal, Boekstukken".
-			     ($bsk ? " WHERE jnl_bsk_id = ? AND jnl_bsk_id = bsk_id" : " WHERE jnl_bsk_id = bsk_id").
-			     " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq",
-			     $bsk ? $bsk : ());
+    my ($self, $nr) = @_;
+
+    my $sth;
+    if ( $nr ) {
+	if ( $nr =~ /^([[:alpha:]].+):(\d+)$/ ) {
+	    $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
+				    "jnl_acc_id, jnl_amount, jnl_desc, jnl_rel".
+				    " FROM Journal, Boekstukken, Dagboeken".
+				    " WHERE bsk_nr = ?".
+				    " AND dbk_desc ILIKE ?".
+				    " AND jnl_bsk_id = bsk_id".
+				    " AND jnl_dbk_id = dbk_id".
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq",
+				    $2, $1);
+	}
+	elsif ( $nr =~ /^([[:alpha:]].+)$/ ) {
+	    $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
+				    "jnl_acc_id, jnl_amount, jnl_desc, jnl_rel".
+				    " FROM Journal, Boekstukken, Dagboeken".
+				    " WHERE dbk_desc ILIKE ?".
+				    " AND jnl_bsk_id = bsk_id".
+				    " AND jnl_dbk_id = dbk_id".
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq",
+				    $nr);
+	}
+	else {
+	    $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
+				    "jnl_acc_id, jnl_amount, jnl_desc, jnl_rel".
+				    " FROM Journal, Boekstukken".
+				    " WHERE jnl_bsk_id = ?".
+				    " AND jnl_bsk_id = bsk_id".
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq",
+				    $nr);
+	}
+    }
+    else {
+	$sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
+				"jnl_acc_id, jnl_amount, jnl_desc, jnl_rel".
+				" FROM Journal, Boekstukken".
+				" WHERE jnl_bsk_id = bsk_id".
+				" ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq");
+    }
     my $rr;
     my $nl = 0;
     my $totd = my $totc = 0;

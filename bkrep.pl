@@ -16,11 +16,31 @@ our $dbh = EB::DB->new(trace => $trace);
 my $sth;
 
 if ( @ARGV ) {
-    $sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
-			  "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
-			  " FROM Boekstukken".
-			  " WHERE bsk_id = ?".
-			  " ORDER BY bsk_dbk_id,bsk_nr", shift);
+    my $nr = shift;
+    if ( $nr =~ /^([[:alpha:]].+):(\d+)$/ ) {
+	$sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
+			      "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
+			      " FROM Boekstukken, Dagboeken".
+			      " WHERE bsk_nr = ?".
+			      " AND dbk_desc ILIKE ?".
+			      " AND bsk_dbk_id = dbk_id".
+			      " ORDER BY bsk_dbk_id,bsk_nr", $2, $1);
+    }
+    elsif ( $nr =~ /^([[:alpha:]].+)$/ ) {
+	$sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
+			      "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
+			      " FROM Boekstukken, Dagboeken".
+			      " WHERE dbk_desc ILIKE ?".
+			      " AND bsk_dbk_id = dbk_id".
+			      " ORDER BY bsk_dbk_id,bsk_nr", $nr);
+    }
+    else {
+	$sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
+			      "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
+			      " FROM Boekstukken".
+			      " WHERE bsk_id = ?".
+			      " ORDER BY bsk_dbk_id,bsk_nr", $nr);
+    }
 }
 else {
     $sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
@@ -111,7 +131,11 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	$tot += $a->[0];
     }
 
-    next unless $acct;
+    unless ( $acct ) {
+	print("BOEKSTUK IS NIET IN BALANS -- VERSCHIL IS ", numfmt($tot), "\n")
+	  if $tot;
+	next;
+    }
     my ($rd, $rt) = @{$::dbh->do("SELECT acc_desc,acc_debcrd".
 				 " FROM Accounts".
 				 " WHERE acc_id = ?",
