@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.7 2005/07/26 18:05:25 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.8 2005/07/27 10:56:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 26 19:53:13 2005
-# Update Count    : 215
+# Last Modified On: Wed Jul 27 12:22:28 2005
+# Update Count    : 216
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -231,6 +231,20 @@ sub help_result {
 Print de resultatenrekening.
 
 Optionele parameter (0, 1, 2) bepaalt te mate van detail.
+EOS
+}
+
+sub do_proefensaldibalans {
+    my ($self, @args) = @_;
+    require EB::Report::Proof;
+    my $opts = {};
+    EB::Report::Proof->new->perform($opts);
+    undef;
+}
+
+sub help_proefensaldibalans {
+    <<EOS;
+Print de Proef- en Saldibalans.
 EOS
 }
 
