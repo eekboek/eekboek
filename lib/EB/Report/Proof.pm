@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.1 2005/07/27 10:56:16 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.2 2005/07/28 16:55:25 jv Exp $ ';
 
 package EB::Report::Proof;
 
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 27 12:55:52 2005
-# Update Count    : 16
+# Last Modified On: Thu Jul 28 18:55:08 2005
+# Update Count    : 21
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -23,8 +23,6 @@ use EB::Finance;
 use EB::Report::Text;
 
 use locale;
-
-my $fmt = "%-6s  %-40.40s  %9s  %9s\n";
 
 ################ Subroutines ################
 
@@ -54,13 +52,30 @@ sub perform {
     my $dtot = 0;
     my $ctot = 0;
 
+    my $fmt = "%5s  %-30s  %10s %10s  %10s %10s\n";
+    my $line;
+    my @tot;
+
     my $flush = sub {
-	printf("%5d  %-25s  %9s %9s  %9s %9s\n",
+	unless ( $line ) {
+	    $line = sprintf($fmt, qw(GrBk Grootboekrekening Debet Credit),
+			    "Saldo Db", "Saldo Cr");
+	    print($line);
+	    $line =~ s/./-/g;
+	    print($line);
+	}
+	my ($sd, $sc) = $dtot >= $ctot ? ($dtot - $ctot, 0)
+	  : (0, $ctot - $dtot);
+	printf($fmt,
 	       $cur->[0], $cur->[2], numfmt($dtot), numfmt($ctot),
-	       $dtot >= $ctot ? ( numfmt($dtot - $ctot), "" )
-	       : ( "", numfmt($ctot - $dtot) ));
+	       $sd >= 0 ? ( numfmt($sd), "" )
+	       : ( "", numfmt($sc) ));
 	warn("?Totaal is ".numfmt($dtot - $ctot).", moet zijn ".numfmt($cur->[3])."\n")
 	  unless $dtot - $ctot == $cur->[3];
+	$tot[0] += $dtot;
+	$tot[1] += $ctot;
+	$tot[2] += $sd;
+	$tot[3] += $sc;
     };
 
     while ( $rr = $sth->fetchrow_arrayref ) {
@@ -82,7 +97,11 @@ sub perform {
 	}
 	$cur = [ @$rr ];
     }
-    $flush->() if $cur->[0];
+    if ( $cur->[0] ) {
+	$flush->();
+	print($line);
+	printf($fmt, "", "Totaal", map { numfmt($_) } @tot);
+    }
 }
 
 1;
