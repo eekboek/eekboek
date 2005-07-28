@@ -25,9 +25,12 @@ BEGIN {
 
 my $numpat;
 my $btwpat;
+my $decimalpt;
+
 BEGIN {
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
     $btwpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[BTWPRECISION-2]}})?$/;
+    $decimalpt = ",";
 }
 
 sub amount {
@@ -54,15 +57,44 @@ sub amount {
 }
 
 sub numfmt {
-    sprintf($stdfmt0, $_[0]/AMTSCALE);
+    my $v = shift;
+    if ( $v == int($v) ) {
+	$v = ("0" x (AMTPRECISION - length($v) + 1)) . $v if length($v) < AMTPRECISION;
+	substr($v, length($v) - AMTPRECISION, 0) = $decimalpt;
+    }
+    else {
+	$v = sprintf($stdfmt0, $v/AMTSCALE);
+	$v =~ s/\./$decimalpt/;
+    }
+    $v;
 }
 
 sub numfmtw {
-    sprintf($stdfmtw, $_[0]/AMTSCALE);
+    my $v = shift;
+    if ( $v == int($v) ) {
+	$v = ("0" x (AMTPRECISION - length($v) + 1)) . $v if length($v) < AMTPRECISION;
+	$v = (" " x (AMTWIDTH - length($v))) . $v if length($v) < AMTWIDTH;
+	substr($v, length($v) - AMTPRECISION, 0) = $decimalpt;
+    }
+    else {
+	$v = sprintf($stdfmtw, $v/AMTSCALE);
+	$v =~ s/\./$decimalpt/;
+    }
+    $v;
 }
 
 sub numfmtv {
-    sprintf('%' . ($_[1]||'') . "." . AMTPRECISION . 'f', $_[0]/AMTSCALE);
+    my $v = shift;
+    if ( $v == int($v) ) {
+	$v = ("0" x (AMTPRECISION - length($v) + 1)) . $v if length($v) < AMTPRECISION;
+	$v = (" " x ($_[0] - length($v))) . $v if length($v) < $_[0];
+	substr($v, length($v) - AMTPRECISION, 0) = $decimalpt;
+    }
+    else {
+	$v = sprintf('%'.$_[0].'.'.AMTPRECISION.'f', $v/AMTSCALE);
+	$v =~ s/\./$decimalpt/;
+    }
+    $v;
 }
 
 sub numround {
@@ -74,7 +106,9 @@ sub numdebcrd {
 }
 
 sub btwfmt {
-    sprintf($btwfmt0, 100*$_[0]/BTWSCALE);
+    my $v = sprintf($btwfmt0, 100*$_[0]/BTWSCALE);
+    $v =~ s/\./$decimalpt/;
+    $v;
 }
 
 sub norm_btw {
