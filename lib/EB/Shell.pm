@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.8 2005/07/27 10:56:23 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.9 2005/07/28 20:12:36 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 27 12:22:28 2005
-# Update Count    : 216
+# Last Modified On: Thu Jul 28 19:12:44 2005
+# Update Count    : 229
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -182,9 +182,22 @@ sub _add {
 sub do_journaal {
     my ($self, @args) = @_;
     my $b = $bsk;
+    my $opts = { dagboeken    => 0,
+		 detail       => 1,
+		 verbose      => $self->{verbose},
+	       };
+
+    parse_args(\@args,
+	       [ 'dagboeken',
+		 'detail!',
+		 'verbose!',
+		 'trace!',
+	       ], $opts);
+
     $b = shift(@args) if @args;
-    undef $b if $b && $b eq "all";
-    EB::Journal::Text->new->journal($b);
+    undef $b if $b && lc($b) eq "all";
+    $opts->{select} = $b;
+    EB::Journal::Text->new->journal($opts);
     undef;
 }
 
@@ -237,7 +250,17 @@ EOS
 sub do_proefensaldibalans {
     my ($self, @args) = @_;
     require EB::Report::Proof;
-    my $opts = {};
+
+    my $opts = { detail       => 1,
+		 verbose      => $self->{verbose},
+	       };
+
+    parse_args(\@args,
+	       [ 'detail!',
+		 'verbose!',
+		 'trace!',
+	       ], $opts);
+
     EB::Report::Proof->new->perform($opts);
     undef;
 }
@@ -245,13 +268,41 @@ sub do_proefensaldibalans {
 sub help_proefensaldibalans {
     <<EOS;
 Print de Proef- en Saldibalans.
+
+  proefensaldibalans [ --nodetail ]
+EOS
+}
+
+sub do_grootboek {
+    my ($self, @args) = @_;
+    require EB::Report::Grootboek;
+
+    my $opts = { detail       => 1,
+		 verbose      => $self->{verbose},
+	       };
+
+    parse_args(\@args,
+	       [ 'detail!',
+		 'verbose!',
+		 'trace!',
+	       ], $opts);
+
+    EB::Report::Grootboek->new->perform($opts);
+    undef;
+}
+
+sub help_grootboek {
+    <<EOS;
+Print het Grootboek
+
+  grootboek 
 EOS
 }
 
 sub do_dagboeken {
     my ($self, @args) = @_;
     my $rr;
-    my $sth = $::dbh->exec_sql("SELECT dbk_id, dbk_desc, dbk_type, dbk_acc_id".
+    my $sth = $::dbh->sql_exec("SELECT dbk_id, dbk_desc, dbk_type, dbk_acc_id".
 			       " FROM Dagboeken".
 			       " ORDER BY dbk_id");
     my $fmt = "%2s  %-16s %-12s %5s\n";

@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.2 2005/07/28 16:55:25 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.3 2005/07/28 20:12:03 jv Exp $ ';
 
 package EB::Report::Proof;
 
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 28 18:55:08 2005
-# Update Count    : 21
+# Last Modified On: Thu Jul 28 22:11:37 2005
+# Update Count    : 28
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -33,9 +33,14 @@ sub new {
 sub perform {
     my ($self, $opts) = @_;
 
+    my $detail = $opts->{detail};
+
     my $rr = $::dbh->do("SELECT adm_begin FROM Metadata");
     my $date = $rr->[0];
     $rr = $::dbh->do("SELECT now()");
+
+    print("Proef- en Saldibalans -- Periode $date - " .
+		  substr($rr->[0],0,10), "\n\n");
 
     my $sth;
 
@@ -68,8 +73,8 @@ sub perform {
 	  : (0, $ctot - $dtot);
 	printf($fmt,
 	       $cur->[0], $cur->[2], numfmt($dtot), numfmt($ctot),
-	       $sd >= 0 ? ( numfmt($sd), "" )
-	       : ( "", numfmt($sc) ));
+	       $sc > 0 ? ( "", numfmt($sc) )
+	       : ( numfmt($sd), "" )) if $detail;
 	warn("?Totaal is ".numfmt($dtot - $ctot).", moet zijn ".numfmt($cur->[3])."\n")
 	  unless $dtot - $ctot == $cur->[3];
 	$tot[0] += $dtot;
@@ -99,7 +104,7 @@ sub perform {
     }
     if ( $cur->[0] ) {
 	$flush->();
-	print($line);
+	print($line) if $detail;
 	printf($fmt, "", "Totaal", map { numfmt($_) } @tot);
     }
 }
