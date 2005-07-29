@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.2 2005/07/14 19:39:42 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.3 2005/07/29 16:14:03 jv Exp $ ';
 
 package EB::Report::Balres;
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 14 15:47:09 2005
-# Update Count    : 143
+# Last Modified On: Fri Jul 29 15:21:34 2005
+# Update Count    : 166
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -49,11 +49,12 @@ sub perform {
 
     my $balans = $opts->{balans};
     my $detail = $opts->{detail};
-    $detail = -1 unless defined $detail;
+    $detail = $opts->{verdicht} ? 2 : -1 unless defined $detail;
 
     my $dtot = 0;
     my $ctot = 0;
-    my $rep = new EB::Report::Text;
+    my $rep = new EB::Report::Text(detail   => $detail,
+				   verdicht => $detail >= 0);
 
     my $rr = $::dbh->do("SELECT adm_begin FROM Metadata");
     my $date = $rr->[0];
@@ -84,7 +85,7 @@ sub perform {
     }
     $::dbh->commit;
 
-    if ( $detail >= 0 ) {
+    if ( $detail >= 0 ) {	# Verdicht
 	my @vd;
 	my @hvd;
 	$sth = $::dbh->sql_exec("SELECT vdi_id, vdi_desc".
@@ -125,9 +126,9 @@ sub perform {
 		my $dsstot = 0;
 		my $csstot = 0;
 		while ( $rr = $sth->fetchrow_arrayref ) {
-		    $rep->addline('H1', $hvd->[0], $hvd->[1], undef, undef)
+		    $rep->addline('H1', $hvd->[0], $hvd->[1])
 		      unless $detail < 1 || $did_hvd++;
-		    $rep->addline('H2', $vd->[0], " ".$vd->[1], undef, undef)
+		    $rep->addline('H2', $vd->[0], " ".$vd->[1])
 		      unless $detail < 2 || $did_vd++;
 		    my ($acc_id, $acc_desc, $acc_balance) = @$rr;
 		    if ( $acc_balance >= 0 ) {
@@ -143,20 +144,23 @@ sub perform {
 		}
 		$sth->finish;
 		if ( $detail >= 1 && ($csstot || $dsstot) ) {
-		    $rep->addline('T2', $vd->[0], ($detail > 1 ? "Totaal " : "").$vd->[1], $dsstot, $csstot);
+		    $rep->addline('T2', $vd->[0], ($detail > 1 ? "Totaal " : "").$vd->[1],
+				  $dsstot >= $csstot ? ($dsstot-$csstot, undef) : (undef, $csstot-$dsstot));
 		}
-		$cstot += $csstot;
-		$dstot += $dsstot;
+		$cstot += $csstot-$dsstot if $csstot>$dsstot;
+		$dstot += $dsstot-$csstot if $dsstot>$csstot;
 	    }
 	    if ( $detail >= 0  && ($cstot || $dstot) ) {
-		$rep->addline('T1', $hvd->[0], ($detail > 0 ? "Totaal " : "").$hvd->[1], $dstot, $cstot);
+		$rep->addline('T1', $hvd->[0], ($detail > 0 ? "Totaal " : "").$hvd->[1],
+			      $dstot >= $cstot ? ($dstot-$cstot, undef) : (undef, $cstot-$dstot));
+
 	    }
-	    $ctot += $cstot;
-	    $dtot += $dstot;
+	    $ctot += $cstot-$dstot if $cstot>$dstot;
+	    $dtot += $dstot-$cstot if $dstot>$cstot;
 	}
 
     }
-    else {
+    else {			# Op Grootboek
 	$sth = $::dbh->sql_exec("SELECT acc_id, acc_desc, acc_debcrd, acc_balance".
 			      " FROM Accounts".
 			      " WHERE".($balans ? "" : " NOT")." acc_balres".
