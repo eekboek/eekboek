@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.1 2005/07/14 12:54:08 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.2 2005/07/29 10:42:36 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 10 16:29:46 2005
-# Update Count    : 149
+# Last Modified On: Fri Jul 29 12:42:06 2005
+# Update Count    : 154
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -33,6 +33,7 @@ use Getopt::Long 2.13;
 my $interactive = -t;
 my $command;
 my $echo;
+my $dataset;
 my $confirm = 0;
 my $journal = 0;
 my $verbose = 0;		# verbose processing
@@ -60,6 +61,15 @@ my $app = $my_package;
 my $userdir = glob("~/.".lc($app));
 mkdir($userdir) unless -d $userdir;
 $echo = "eb> " if $echo;
+
+if ( $dataset ) {
+    $ENV{EB_DB_NAME} = $dataset;
+    $ENV{EB_DB} = "dbi:Pg:dbname=$dataset";
+}
+
+unless ( $ENV{EB_DB_NAME} ) {
+    die("?Geen database opgegeven. Gebruik de environment variabele EB_DB_NAME om een database te selecteren, of geef een database naam mee op de command line met \"--data=...\".\n");
+}
 
 my $shell = EB::Shell->new
   ({ HISTFILE	  => $userdir."/history",
@@ -89,11 +99,15 @@ sub app_options {
     return unless @ARGV > 0;
 
     if ( !GetOptions(
-		     'command'	=> \$command,
+		     'command'	=> sub {
+			 $command = 1;
+			 die("!FINISH\n");
+		     },
 		     'echo!'	=> \$echo,
 		     'ident'	=> \$ident,
 		     'journal'	=> \$journal,
 		     'verbose'	=> \$verbose,
+		     'data=s'	=> \$dataset,
 		     'trace'	=> \$trace,
 		     'help|?'	=> \$help,
 		     'debug'	=> \$debug,
@@ -113,6 +127,11 @@ sub app_usage {
     app_ident();
     print STDERR <<EndOfUsage;
 Usage: $0 [options] [file ...]
+
+    -command            voer de rest van de opdrachtregel uit als command
+    -echo               echo ingelezen opdrachten
+    -journal            print journaalregels na elke opdracht
+    -data=DB            specificeer database
     -help		this message
     -ident		show identification
     -verbose		verbose information
