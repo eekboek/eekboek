@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.1 2005/07/28 20:12:12 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.2 2005/07/29 16:48:13 jv Exp $ ';
 
 package EB::Report::Grootboek;
 
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 28 22:10:36 2005
-# Update Count    : 44
+# Last Modified On: Fri Jul 29 18:45:41 2005
+# Update Count    : 65
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -51,6 +51,9 @@ sub perform {
 
     my $dgrand = 0;
     my $cgrand = 0;
+    my $mdgrand = 0;
+    my $mcgrand = 0;
+    my $n0 = numfmt(0);
 
     my $fmt = "%5s  %-30.30s  %4s  %10s %10s %10s  %-10.10s  %4s  %-8s\n";
     my $line;
@@ -68,18 +71,18 @@ sub perform {
 	}
 	printf($fmt, $acc_id, $acc_desc, ("") x 7) if $detail;
 
+	my @d = ($n0, $n0);
 	if ( $acc_ibalance ) {
-	    my @d;
 	    if ( $acc_ibalance > 0 ) {
-		@d = ( numfmt($acc_ibalance), "" );
+		$d[0] = numfmt($acc_ibalance);
 	    }
 	    else {
-		@d = ( "", numfmt(-$acc_ibalance) );
+		$d[1] = numfmt(-$acc_ibalance);
 	    }
-	    printf($fmt, "", " Beginsaldo", "", "", @d, ("") x 3) if $detail;
 	}
+	printf($fmt, "", " Beginsaldo", "", "", @d, ("") x 3) if $detail > 0;
 
-	my $sth = $::dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_date,jnl_rel".
+	my $sth = $::dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_date,jnl_desc,jnl_rel".
 				   " FROM journal, Boekstukken, Dagboeken".
 				   " WHERE jnl_dbk_id = dbk_id".
 				   " AND jnl_bsk_id = bsk_id".
@@ -90,7 +93,7 @@ sub perform {
 	my $dtot = 0;
 	my $ctot = 0;
 	while ( my $rr = $sth->fetchrow_arrayref ) {
-	    my ($amount, $bsk_id, $bsk_desc, $bsk_nr, $dbk_desc, $date, $rel) = @$rr;
+	    my ($amount, $bsk_id, $bsk_desc, $bsk_nr, $dbk_desc, $date, $desc, $rel) = @$rr;
 
 	    if ( $amount < 0 ) {
 		$ctot -= $amount;
@@ -98,26 +101,40 @@ sub perform {
 	    else {
 		$dtot += $amount;
 	    }
-	    next unless $detail;
-	    printf($fmt, "", "  " . $bsk_desc, $bsk_id, $date,
-		   $amount >= 0 ? (numfmt($amount), numfmt(0)) : (numfmt(0),numfmt(-$amount)),
-		   $dbk_desc, $bsk_nr, $rel||"");
+	    printf($fmt, "", "  " . $desc, $bsk_id, $date,
+		   $amount >= 0 ? (numfmt($amount), $n0) : ($n0, numfmt(-$amount)),
+		   $dbk_desc, $bsk_nr, $rel||"") if $detail > 1;
 	}
 
 	printf($fmt, "", " Totaal mutaties", "", "",
-	       $ctot > $dtot ? ("", numfmt($ctot-$dtot)) : (numfmt($dtot-$ctot),""),
-	       ("") x 3) if $detail && ($dtot || $ctot);
+	       $ctot > $dtot ? ("", numfmt($ctot-$dtot)) : (numfmt($dtot-$ctot), ""),
+	       ("") x 3) if $detail && ($dtot || $ctot || $acc_ibalance);
 
-	printf($fmt, "", "Totaal $acc_desc", "", "",
+	if ( $dtot > $ctot ) {
+	    $mdgrand += $dtot - $ctot;
+	}
+	else {
+	    $mcgrand += $ctot - $dtot;
+	}
+
+	printf($fmt, $acc_id, "Totaal $acc_desc", "", "",
 	       $ctot > $dtot + $acc_ibalance ? ("", numfmt($ctot-$dtot-$acc_ibalance)) : (numfmt($dtot+$acc_ibalance-$ctot),""),
 	       ("") x 3);
-	$cgrand += $ctot;
-	$dgrand += $dtot;
+	if ( $ctot > $dtot + $acc_ibalance ) {
+	    $cgrand += $ctot - $dtot-$acc_ibalance;
+	}
+	else {
+	    $dgrand += $dtot+$acc_ibalance - $ctot;
+	}
     }
 
+    print("\n");
+    printf($fmt, "", "Totaal Mutaties", "", "",
+	       numfmt($mdgrand), numfmt($mcgrand),
+	       ("") x 3);
     print($line);
     printf($fmt, "", "Totaal", "", "",
-	       $cgrand > $dgrand ? ("", numfmt($cgrand-$dgrand)) : (numfmt($dgrand-$cgrand),""),
+	       numfmt($dgrand), numfmt($cgrand),
 	       ("") x 3);
 }
 
