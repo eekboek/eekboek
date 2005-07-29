@@ -1,0 +1,109 @@
+Datum        Id  Nr    Dag/Grootboek                     Rek      Debet     Credit  Boekstuk/regel                  Relatie
+2004-01-06   25  1     Postbank                                                     Girotel                         
+2004-01-06               Bankkosten                     4980       2,70               Girotel                       
+2004-01-06               Postbank                       1120                  2,70    Girotel                       
+
+2004-01-19   26  2     Postbank                                                     ADSL                            
+2004-01-19               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-01-19               Postbank                       1120                 22,80    ADSL                          
+
+2004-01-31   27  3     Postbank                                                     Tel.                            
+2004-01-31               Crediteuren                    1600     104,65               *ADSL + Telefoon              KPN       
+2004-01-31               Postbank                       1120                104,65    Tel.                          
+
+2004-02-10   28  4     Postbank                                                     Girotel                         
+2004-02-10               Bankkosten                     4980       2,70               Girotel                       
+2004-02-10               Postbank                       1120                  2,70    Girotel                       
+
+2004-02-23   29  5     Postbank                                                     ADSL                            
+2004-02-23               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-02-23               Postbank                       1120                 22,80    ADSL                          
+
+2004-03-09   30  6     Postbank                                                     Girotel                         
+2004-03-09               Bankkosten                     4980       2,70               Girotel                       
+2004-03-09               Postbank                       1120                  2,70    Girotel                       
+
+2004-03-18   31  7     Postbank                                                     ACME                            
+2004-03-18               Postbank                       1120    3570,00               ACME                          
+2004-03-18               Debiteuren                     1200               3570,00    *Perl Cursus 1e bet.          ACME      
+
+2004-03-31   32  8     Postbank                                                     ADSL, Tel.                      
+2004-03-31               Crediteuren                    1600     101,52               *ADSL + Telefoon              KPN       
+2004-03-31               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-03-31               Postbank                       1120                124,32    ADSL, Tel.                    
+
+2004-04-06   33  9     Postbank                                                     Girotel, ADSL                   
+2004-04-06               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-04-06               Bankkosten                     4980       2,70               Girotel                       
+2004-04-06               Postbank                       1120                 25,50    Girotel, ADSL                 
+
+2004-04-12   34  10    Postbank                                                     ACME                            
+2004-04-12               Postbank                       1120    3570,00               ACME                          
+2004-04-12               Debiteuren                     1200               3570,00    *Perl Cursus 2e bet.          ACME      
+
+2004-05-11   35  11    Postbank                                                     Girotel                         
+2004-05-11               Bankkosten                     4980       2,70               Girotel                       
+2004-05-11               Postbank                       1120                  2,70    Girotel                       
+
+2004-05-31   36  12    Postbank                                                     ADSL, ACME, Tel.                
+2004-05-31               Postbank                       1120     469,98               ADSL, ACME, Tel.              
+2004-05-31               Crediteuren                    1600     102,22               *ADSL + Telefoon              KPN       
+2004-05-31               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-05-31               Debiteuren                     1200                595,00    *Perl Cursus rest             ACME      
+
+2004-06-08   37  13    Postbank                                                     Girotel, ACME                   
+2004-06-08               Postbank                       1120     711,30               Girotel, ACME                 
+2004-06-08               Bankkosten                     4980       2,70               Girotel                       
+2004-06-08               Debiteuren                     1200                714,00    *Consultancy                  ACME      
+
+2004-06-21   38  14    Postbank                                                     ADSL                            
+2004-06-21               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-06-21               Postbank                       1120                 22,80    ADSL                          
+
+2004-07-06   39  15    Postbank                                                     Girotel                         
+2004-07-06               Bankkosten                     4980       2,70               Girotel                       
+2004-07-06               Postbank                       1120                  2,70    Girotel                       
+
+2004-07-31   40  16    Postbank                                                     ADSL, Tel.                      
+2004-07-31               Crediteuren                    1600     104,66               *ADSL + Telefoon              KPN       
+2004-07-31               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-07-31               Postbank                       1120                127,46    ADSL, Tel.                    
+
+2004-08-10   41  17    Postbank                                                     Girotel, ACME, ADSL             
+2004-08-10               Postbank                       1120     688,50               Girotel, ACME, ADSL           
+2004-08-10               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-08-10               Bankkosten                     4980       2,70               Girotel                       
+2004-08-10               Debiteuren                     1200                714,00    *Consultancy                  ACME      
+
+2004-08-19   42  18    Postbank                                                     O'Reilly                        
+2004-08-19               Postbank                       1120    1000,00               O'Reilly                      
+2004-08-19               Debiteuren                     1200               1000,00    *Produktie boek               ORA       
+
+2004-09-17   43  19    Postbank                                                     Girotel                         
+2004-09-17               Bankkosten                     4980       2,70               Girotel                       
+2004-09-17               Postbank                       1120                  2,70    Girotel                       
+
+2004-09-30   44  20    Postbank                                                     ADSL, Tel.                      
+2004-09-30               Crediteuren                    1600     108,72               *ADSL + Telefoon              KPN       
+2004-09-30               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-09-30               Postbank                       1120                131,52    ADSL, Tel.                    
+
+2004-10-12   45  21    Postbank                                                     Girotel, ADSL                   
+2004-10-12               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-10-12               Bankkosten                     4980       2,70               Girotel                       
+2004-10-12               Postbank                       1120                 25,50    Girotel, ADSL                 
+
+2004-11-08   46  22    Postbank                                                     Girotel                         
+2004-11-08               Bankkosten                     4980       2,70               Girotel                       
+2004-11-08               Postbank                       1120                  2,70    Girotel                       
+
+2004-11-30   47  23    Postbank                                                     ADSL, Tel.                      
+2004-11-30               Crediteuren                    1600     109,67               *ADSL + Telefoon              KPN       
+2004-11-30               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-11-30               Postbank                       1120                132,47    ADSL, Tel.                    
+
+2004-12-07   48  24    Postbank                                                     Girotel, ADSL                   
+2004-12-07               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-12-07               Bankkosten                     4980       2,70               Girotel                       
+2004-12-07               Postbank                       1120                 25,50    Girotel, ADSL                 
+                       Totaal Dagboek Postbank                 10947,22   10947,22                                  

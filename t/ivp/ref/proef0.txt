@@ -1,0 +1,12 @@
+Proef- en Saldibalans -- Periode 2004-01-01 - 2005-07-29
+
+RekNr   Verdichting/Grootboekrekening                 Debet     Credit   Saldo Db   Saldo Cr
+--------------------------------------------------------------------------------------------
+1       Totaal Vaste Activa                        14722,85   14219,67     503,18
+2       Totaal Vlottende activa                    21304,70   10947,22   10357,48
+3       Totaal Eigen vermogen                                  2443,18               2443,18
+4       Totaal Vreemd vermogen                      1049,54    2368,04               1318,50
+5       Totaal Bedrijfsopbrengsten                             8700,00               8700,00
+6       Totaal Personeelslasten                     1601,02               1601,02
+--------------------------------------------------------------------------------------------
+        TOTAAL                                     38678,11   38678,11   12461,68   12461,68
