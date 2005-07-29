@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.9 2005/07/28 20:12:36 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.10 2005/07/29 16:49:11 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 28 19:12:44 2005
-# Update Count    : 229
+# Last Modified On: Fri Jul 29 18:44:08 2005
+# Update Count    : 240
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -216,8 +216,16 @@ EOS
 sub do_balans {
     my ($self, @args) = @_;
     require EB::Report::Balres;
-    my $opts = {};
-    $opts->{detail} = $args[0] if @args;
+    my $opts = { verbose      => $self->{verbose},
+	       };
+
+    parse_args(\@args,
+	       [ 'detail=i',
+		 'verdicht',
+		 'verbose!',
+		 'trace!',
+	       ], $opts);
+    warn("?Te veel argumenten voor deze opdracht\n"), return if @args;
     EB::Report::Balres->new->balans($opts);
     undef;
 }
@@ -226,15 +234,26 @@ sub help_balans {
     <<EOS;
 Print de balansrekening.
 
-Optionele parameter (0, 1, 2) bepaalt te mate van detail.
+Opties:
+  <geen>        Balans op grootboekrekening
+  --verdicht    verdicht, gedetailleerd
+  --detail=N    verdicht, mate van detail N = 0, 1 of 2
 EOS
 }
 
 sub do_result {
     my ($self, @args) = @_;
     require EB::Report::Balres;
-    my $opts = {};
-    $opts->{detail} = $args[0] if @args;
+    my $opts = { verbose      => $self->{verbose},
+	       };
+
+    parse_args(\@args,
+	       [ 'detail=i',
+		 'verdicht',
+		 'verbose!',
+		 'trace!',
+	       ], $opts);
+    warn("?Te veel argumenten voor deze opdracht\n"), return if @args;
     EB::Report::Balres->new->result($opts);
     undef;
 }
@@ -243,7 +262,10 @@ sub help_result {
     <<EOS;
 Print de resultatenrekening.
 
-Optionele parameter (0, 1, 2) bepaalt te mate van detail.
+Opties:
+  <geen>        Resultatenrekening op grootboekrekening
+  --verdicht    verdicht, gedetailleerd
+  --detail=N    verdicht, mate van detail N = 0, 1 of 2
 EOS
 }
 
@@ -251,17 +273,17 @@ sub do_proefensaldibalans {
     my ($self, @args) = @_;
     require EB::Report::Proof;
 
-    my $opts = { detail       => 1,
-		 verbose      => $self->{verbose},
+    my $opts = { verbose      => $self->{verbose},
 	       };
 
     parse_args(\@args,
-	       [ 'detail!',
+	       [ 'detail=i',
+		 'verdicht',
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
-
-    EB::Report::Proof->new->perform($opts);
+    warn("?Te veel argumenten voor deze opdracht\n"), return if @args;
+    EB::Report::Proof->new->proefensaldibalans($opts);
     undef;
 }
 
@@ -269,7 +291,10 @@ sub help_proefensaldibalans {
     <<EOS;
 Print de Proef- en Saldibalans.
 
-  proefensaldibalans [ --nodetail ]
+Opties:
+  <geen>        Proef- en Saldibalans op grootboekrekening
+  --verdicht    verdicht, gedetailleerd
+  --detail=N    verdicht, mate van detail N = 0, 1 of 2
 EOS
 }
 
@@ -277,12 +302,12 @@ sub do_grootboek {
     my ($self, @args) = @_;
     require EB::Report::Grootboek;
 
-    my $opts = { detail       => 1,
+    my $opts = { detail       => 2,
 		 verbose      => $self->{verbose},
 	       };
 
     parse_args(\@args,
-	       [ 'detail!',
+	       [ 'detail=i',
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
