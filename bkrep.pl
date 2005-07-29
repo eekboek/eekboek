@@ -120,7 +120,6 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	      "\"$bsr_desc\"",
 	      ", type $bsr_type (", $bsr_types[$dbktype][$bsr_type], ")\n",
 	      "  ",
-	      "\"$bsr_desc\", ",
 	      "bedrag ", numfmt($bsr_amount),
 #	      " ", $bsr_amount >= 0 ? "debet" : "credit",
 	      defined($bsr_btw_id) ?

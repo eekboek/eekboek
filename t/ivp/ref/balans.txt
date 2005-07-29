@@ -1,15 +1,15 @@
-Balans -- Periode 2004-01-01 - 2005-07-24
+Balans -- Periode 2004-01-01 - 2005-07-29
 
 RekNr   Grootboekrekening                             Debet     Credit
 ----------------------------------------------------------------------
-230     Inventaris en inrichting                    1344.37           
-231     Afschrijving inventaris & inrichting                   1716.07
-240     Computers                                  13378.48           
-241     Afschrijving computers                                12503.60
-500     Kapitaal                                               2443.18
-1120    Postbank                                   10357.48           
-1500    BTW Verkoop Hoog                                       1463.00
-1520    BTW Inkoop Hoog                              144.50           
-        << Winst >>                                            7098.98
+230     Inventaris en inrichting                    1344,37
+231     Afschrijving inventaris & inrichting                   1716,07
+240     Computers                                  13378,48
+241     Afschrijving computers                                12503,60
+500     Kapitaal                                               2443,18
+1120    Postbank                                   10357,48
+1500    BTW Verkoop Hoog                                       1463,00
+1520    BTW Inkoop Hoog                              144,50
+        << Winst >>                                            7098,98
 ----------------------------------------------------------------------
-        TOTAAL Balans                              25224.83   25224.83
+        TOTAAL Balans                              25224,83   25224,83
