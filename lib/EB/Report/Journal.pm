@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.5 2005/07/26 14:03:22 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.6 2005/07/29 16:48:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 26 16:00:56 2005
-# Update Count    : 117
+# Last Modified On: Fri Jul 29 13:07:07 2005
+# Update Count    : 135
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -28,13 +28,20 @@ use locale;
 my $repfmt = "%-10s  %3s  %-4s  %-30.30s  %5s  %9s  %9s  %-30.30s  %s\n";
 
 sub journal {
-    my ($self, $nr) = @_;
+    my ($self, $opts) = @_;
+
+    my $nr = $opts->{select};
+    my $pfx = $opts->{postfix} || "";
+    my $detail = $opts->{detail};
 
     my $sth;
     if ( $nr ) {
 	if ( $nr =~ /^([[:alpha:]].+):(\d+)$/ ) {
-	    my $dbk = $::dbh->lookup($1, qw(Dagboeken dbk_desc dbk_id ilike));
-	    unless ( $dbk ) {
+	    my $rr = $::dbh->do("SELECT dbk_desc, dbk_id".
+				" FROM Dagboeken".
+				" WHERE dbk_desc ILIKE ?",
+				$1);
+	    unless ( $rr ) {
 		warn("?Onbekend dagboek: $1\n");
 		return;
 	    }
@@ -45,12 +52,16 @@ sub journal {
 				    " AND dbk_id = ?".
 				    " AND jnl_bsk_id = bsk_id".
 				    " AND jnl_dbk_id = dbk_id".
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq",
-				    $2, $dbk);
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
+				    $2, $rr->[1]);
+	    $pfx ||= "Boekstuk $rr->[0]:$2";
 	}
 	elsif ( $nr =~ /^([[:alpha:]].+)$/ ) {
-	    my $dbk = $::dbh->lookup($1, qw(Dagboeken dbk_desc dbk_id ilike));
-	    unless ( $dbk ) {
+	    my $rr = $::dbh->do("SELECT dbk_desc, dbk_id".
+				" FROM Dagboeken".
+				" WHERE dbk_desc ILIKE ?",
+				$1);
+	    unless ( $rr ) {
 		warn("?Onbekend dagboek: $1\n");
 		return;
 	    }
@@ -60,8 +71,9 @@ sub journal {
 				    " WHERE dbk_id = ?".
 				    " AND jnl_bsk_id = bsk_id".
 				    " AND jnl_dbk_id = dbk_id".
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq",
-				    $dbk);
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
+				    $rr->[1]);
+	    $pfx ||= "Dagboek $rr->[0]";
 	}
 	else {
 	    $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
@@ -69,8 +81,9 @@ sub journal {
 				    " FROM Journal, Boekstukken".
 				    " WHERE jnl_bsk_id = ?".
 				    " AND jnl_bsk_id = bsk_id".
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq",
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
 				    $nr);
+	    $pfx ||= "Boekstuk $nr";
 	}
     }
     else {
@@ -78,7 +91,7 @@ sub journal {
 				"jnl_acc_id, jnl_amount, jnl_desc, jnl_rel".
 				" FROM Journal, Boekstukken".
 				" WHERE jnl_bsk_id = bsk_id".
-				" ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsr_seq");
+				" ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, sign(jnl_amount) DESC, jnl_acc_id, jnl_bsr_seq");
     }
     my $rr;
     my $nl = 0;
@@ -91,6 +104,7 @@ sub journal {
 	if ( $jnl_bsr_seq == 0 ) {
 	    printf($repfmt,
 		   qw(Datum Id Nr Dag/Grootboek Rek Debet Credit Boekstuk/regel Relatie)) unless $nl;
+	    $nl++, next unless $detail;
 	    print("\n") if $nl++;
 	    $self->_repline($jnl_date, $jnl_bsk_id, $bsk_nr, _dbk_desc($jnl_dbk_id), '',
 			    '', '', $jnl_desc);
@@ -99,10 +113,11 @@ sub journal {
 
 	$totd += $jnl_amount if $jnl_amount > 0;
 	$totc -= $jnl_amount if $jnl_amount < 0;
+	next unless $detail;
 	$self->_repline($jnl_date, '', '', "  "._acc_desc($jnl_acc_id),
 			$jnl_acc_id, numdebcrd($jnl_amount), "  ".$jnl_desc, $jnl_rel);
     }
-    $self->_repline('', '', '', 'Totaal', '', $totd, $totc);
+    $self->_repline('', '', '', "Totaal $pfx", '', $totd, $totc);
 }
 
 sub _repline {
