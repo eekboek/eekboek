@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: bkrep.pl,v 1.9 2005/07/30 18:24:24 jv Exp $ ';
+my $RCS_Id = '$Id: bkrep.pl,v 1.10 2005/07/30 20:18:53 jv Exp $ ';
 
 # Skeleton for Getopt::Long.
 
 # Author          : Johan Vromans
 # Created On      : 2005.07.14.12.54.08
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul 30 18:45:37 2005
-# Update Count    : 47
+# Last Modified On: Sat Jul 30 22:16:16 2005
+# Update Count    : 50
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -135,8 +135,7 @@ while ( $rr = $sth->fetchrow_arrayref ) {
     my ($dbktype, $acct, $dbk_desc) = @{$dbh->do("SELECT dbk_type, dbk_acc_id, dbk_desc".
 						 " FROM Dagboeken".
 						 " WHERE dbk_id = ?", $bsk_dbk_id)};
-    my $cmd = lc($dbk_desc);
-    $cmd =~ s/[^[:alnum:]]/_/g;
+    my $cmd = "";
 
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
@@ -145,6 +144,8 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 
 	if ( $bsr_nr == 1) {
 	    if ( $trail ) {
+		$cmd = lc($dbk_desc);
+		$cmd =~ s/[^[:alnum:]]/_/g;
 		$cmd .= ":$bsk_nr $bsk_date ";
 		$cmd .= "\"$bsr_rel_code\""
 		  if $dbktype == DBKTYPE_VERKOOP || $dbktype == DBKTYPE_INKOOP;
@@ -220,7 +221,10 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 
     }
 
-    print($cmd, "\n"), next if $trail;
+    if ( $trail ) {
+	print($cmd, "\n") if $cmd;
+	next;
+    }
 
     unless ( $acct ) {
 	print("BOEKSTUK IS NIET IN BALANS -- VERSCHIL IS ", numfmt($tot), "\n")
