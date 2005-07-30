@@ -116,12 +116,13 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 		       $bsr_acc_id)}
 	    : ("[Open posten vorige periode]", 1);
 
+	my $dc = $bsr_amount >= 0 ? "debet" : "credit";
+	$dc = uc($dc) unless ($bsr_amount < 0) ^ $rt;
 	print(" Boekstukregel $bsr_id, nr $bsr_nr, datum $bsr_date, ",
 	      "\"$bsr_desc\"",
 	      ", type $bsr_type (", $bsr_types[$dbktype][$bsr_type], ")\n",
 	      "  ",
-	      "bedrag ", numfmt($bsr_amount),
-#	      " ", $bsr_amount >= 0 ? "debet" : "credit",
+	      "bedrag ", numfmt(abs($bsr_amount)), " ", $dc,
 	      defined($bsr_btw_id) ?
 	      (", BTW code $bsr_btw_id (",
 	      $dbh->lookup($bsr_btw_id, qw(BTWTabel btw_id btw_desc)),
@@ -129,12 +130,8 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	      defined($bsr_acc_id) ? (", rek $bsr_acc_id (", $rt ? "D/" : "C/", $rd, ")",) : (),
 	      "\n");
 
-	$bsr_amount = -$bsr_amount unless $rt;
-#	# The 'excl.' codes are for display purposes only.
-#	$bsr_btw_id = 1 if $bsr_btw_id == 2; # ####TODO
-#	$bsr_btw_id = 3 if $bsr_btw_id == 4; # ####TODO
+	#$bsr_amount = -$bsr_amount unless $rt;
 	my $a = EB::Finance::norm_btw($bsr_amount, $bsr_btw_id);
-#	print("=> ", (map { defined($_) ? numfmt($_) : "<undef>", " " } @$a), "\n");
 	$tot += $a->[0];
     }
 
@@ -149,11 +146,11 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 				 $acct)};
 
     $tot = -$tot if $rt;
-    $bsk_amount = -$bsk_amount if $rt;
-    print("TOTAAL Bedrag ", numfmt($tot),
-	  ", rek $acct (",
-	  $rt ? "D/" : "C/",
-	  $rd, ")\n");
+    #$bsk_amount = -$bsk_amount if $rt;
+    my $dc = $tot >= 0 ? "debet" : "credit";
+    $dc = uc($dc) unless ($tot < 0) ^ $rt;
+    print("TOTAAL Bedrag ", numfmt(abs($tot)), " ", $dc,
+	  ", rek $acct (", $rt ? "D/" : "C/", $rd, ")\n");
     print("TOTAAL BEDRAG ", numfmt($tot), " KLOPT NIET MET BOEKSTUK $bsk_id TOTAAL ", numfmt($bsk_amount), "\n")
 #      unless $bsk_amount == $tot;
       # This silences a lot of warnings, have to find out why.
