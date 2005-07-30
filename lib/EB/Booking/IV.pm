@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.9 2005/07/25 20:52:26 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.10 2005/07/30 15:08:30 jv Exp $ ';
 
 package EB::Booking::IV;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 25 22:50:09 2005
-# Update Count    : 74
+# Last Modified On: Sat Jul 30 15:09:33 2005
+# Update Count    : 84
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -83,7 +83,12 @@ sub perform {
 	warn(" boekstuk: $desc $amt $acct\n")
 	  if $did++ || @$args || $opts->{verbose};
 
-	my $rr = $::dbh->do("SELECT acc_desc,acc_balres,acc_debcrd,acc_btw".
+	my $dc = "acc_debcrd";
+	if ( $acct =~ /^(\d+)([cd])/i ) {
+	    $acct = $1;
+	    $dc = lc($2) eq 'd' ? 1 : 0;
+	}
+	my $rr = $::dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
 			    " FROM Accounts".
 			    " WHERE acc_id = ?", $acct);
 	unless ( $rr ) {
@@ -116,6 +121,8 @@ sub perform {
 
 	# Amount can override BTW id with @X postfix.
 	($amt, $btw_id) = amount($amt, $btw_id);
+
+	$amt = -$amt unless $debcrd;
 
 	my $btw_acc;
 	# Geen BTW voor non-EU.
@@ -156,7 +163,7 @@ sub perform {
 
     $::dbh->commit;
 
-    EB::Journal::Text->new->journal($bsk_id) if $opts->{journal};
+    EB::Journal::Text->new->journal({select => $bsk_id, detail=>1}) if $opts->{journal};
 
     $bsk_id;
 }

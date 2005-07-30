@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.1 2005/07/24 19:33:02 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.2 2005/07/30 15:08:30 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 24 21:31:17 2005
-# Update Count    : 186
+# Last Modified On: Sat Jul 30 17:03:56 2005
+# Update Count    : 188
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -181,7 +181,7 @@ sub _perform {
 	my ($amt, $acc, $btw_id, $btw_acc, $debcrd, $btw_status) = @$rr;
 	my $btg_id = 0;
 	my $btw = 0;
-	$amt = -$amt if $::dbh->lookup($acc, qw(Accounts acc_id acc_debcrd));
+	$amt = -$amt;
 	if ( $btw_id && $btw_acc ) {
 	    # Bepaal tariefgroep en splits bedrag uit.
 	    $btg_id = $::dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));

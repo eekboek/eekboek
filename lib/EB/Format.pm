@@ -174,19 +174,15 @@ sub journalise {
 	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
 	my $bsr_bsk_id = $bsk_id;
 
-	# Flip sign for credit accounts.
-	$bsr_amount = -$bsr_amount
-	  unless $::dbh->lookup($bsr_acc_id,
-				qw(Accounts acc_id acc_debcrd));
+#	# Flip sign for credit accounts.
+#	$bsr_amount = -$bsr_amount
+#	  unless $::dbh->lookup($bsr_acc_id,
+#				qw(Accounts acc_id acc_debcrd));
 
 	my $btw = 0;
 	my $amt = $bsr_amount;
 
 	if ( $bsr_btw_id && $bsr_btw_acc ) {
-#	    # The 'excl.' codes are for display purposes only.
-#	    $bsr_btw_id = 1 if $bsr_btw_id == 2; # ####TODO
-#	    $bsr_btw_id = 3 if $bsr_btw_id == 4; # ####TODO
-
 	    ( $bsr_amount, $btw ) =
 	      @{EB::Finance::norm_btw($bsr_amount, $bsr_btw_id)};
 	    $amt = $bsr_amount - $btw;

@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.9 2005/07/26 18:05:12 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.10 2005/07/30 15:08:30 jv Exp $ ';
 
 package EB::Booking::BKM;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 26 19:55:35 2005
-# Update Count    : 152
+# Last Modified On: Sat Jul 30 15:29:17 2005
+# Update Count    : 157
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -74,9 +74,14 @@ sub perform {
 	    warn(" boekstuk: std $desc $amt $acct\n")
 	      if $did++ || @$args || $opts->{verbose};
 
-	    my $rr = $::dbh->do("SELECT acc_desc,acc_balres,acc_debcrd,acc_btw".
-			      " FROM Accounts".
-			      " WHERE acc_id = ?", $acct);
+	    my $dc = "acc_debcrd";
+	    if ( $acct =~ /^(\d+)([cd])/i ) {
+		$acct = $1;
+		$dc = lc($2) eq 'd' ? 1 : 0;
+	    }
+	    my $rr = $::dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
+				" FROM Accounts".
+				" WHERE acc_id = ?", $acct);
 	    unless ( $rr ) {
 		warn("?Onbekend rekeningnummer: $acct\n");
 		$fail++;
@@ -108,6 +113,7 @@ sub perform {
 		  @{EB::Finance::norm_btw($bsr_amount, $btw_id)};
 		$amt = $bsr_amount - $btw;
 	    }
+	    $orig_amount = -$orig_amount unless $debcrd;
 
 	    $::dbh->sql_insert("Boekstukregels",
 			       [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
@@ -180,7 +186,8 @@ sub perform {
 			       [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				   bsr_btw_id bsr_type bsr_acc_id bsr_rel_code)],
 			       $nr++, $date, $bsk_id, "*".$bsk_desc,
-			       $debcrd ? -$amt : $amt,
+#			       $debcrd ? -$amt : $amt,
+			       -$amt,
 			       0, $type eq "deb" ? 1 : 2, $acct, $rel);
 	    my $id = $::dbh->get_sequence("boekstukregels_bsr_id_seq", "noincr");
 	    $::dbh->sql_exec("UPDATE Boekstukken".
@@ -228,7 +235,7 @@ sub perform {
     }
     $::dbh->commit;
 
-    EB::Journal::Text->new->journal($bsk_id) if $opts->{journal};
+    EB::Journal::Text->new->journal({select => $bsk_id, detail => 1}) if $opts->{journal};
 
     $bsk_id;
 }
