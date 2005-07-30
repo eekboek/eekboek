@@ -1,7 +1,55 @@
 #!/usr/bin/perl -w
+my $RCS_Id = '$Id: bkrep.pl,v 1.9 2005/07/30 18:24:24 jv Exp $ ';
+
+# Skeleton for Getopt::Long.
+
+# Author          : Johan Vromans
+# Created On      : 2005.07.14.12.54.08
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jul 30 18:45:37 2005
+# Update Count    : 47
+# Status          : Unknown, Use with caution!
+
+################ Common stuff ################
 
 use strict;
-use warnings;
+
+# Package or program libraries, if appropriate.
+# $LIBDIR = $ENV{'LIBDIR'} || '/usr/local/lib/sample';
+# use lib qw($LIBDIR);
+# require 'common.pl';
+
+# Package name.
+my $my_package = 'Sciurix';
+# Program name and version.
+my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
+# Tack '*' if it is not checked in into RCS.
+$my_version .= '*' if length('$Locker:  $ ') > 12;
+
+################ Command line parameters ################
+
+use Getopt::Long 2.13;
+
+# Command line options.
+my $verbose = 0;		# verbose processing
+my $trail = 0;
+
+# Development options (not shown with -help).
+my $debug = 0;			# debugging
+my $trace = 0;			# trace (show process)
+my $test = 0;			# test mode.
+
+# Process command line options.
+app_options();
+
+# Post-processing.
+$trace |= ($debug || $test);
+
+################ Presets ################
+
+my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
+
+################ The Process ################
 
 use EB::Globals;
 use EB::DB;
@@ -9,11 +57,11 @@ use EB::Finance;
 
 use locale;
 
-our $trace = 0;
-
 our $dbh = EB::DB->new(trace => $trace);
 
 my $sth;
+
+my $ob = $trail ? "bsk_date," : "";
 
 if ( @ARGV ) {
     my $nr = shift;
@@ -28,7 +76,7 @@ if ( @ARGV ) {
 			      " WHERE bsk_nr = ?".
 			      " AND dbk_id = ?".
 			      " AND bsk_dbk_id = dbk_id".
-			      " ORDER BY bsk_dbk_id,bsk_nr", $2, $dbk);
+			      " ORDER BY ${ob}bsk_dbk_id,bsk_nr", $2, $dbk);
     }
     elsif ( $nr =~ /^([[:alpha:]].+)$/ ) {
 	my $dbk = $::dbh->lookup($1, qw(Dagboeken dbk_desc dbk_id ilike));
@@ -40,21 +88,21 @@ if ( @ARGV ) {
 			      " FROM Boekstukken, Dagboeken".
 			      " WHERE dbk_id = ?".
 			      " AND bsk_dbk_id = dbk_id".
-			      " ORDER BY bsk_dbk_id,bsk_nr", $dbk);
+			      " ORDER BY ${ob}bsk_dbk_id,bsk_nr", $dbk);
     }
     else {
 	$sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
 			      "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
 			      " FROM Boekstukken".
 			      " WHERE bsk_id = ?".
-			      " ORDER BY bsk_dbk_id,bsk_nr", $nr);
+			      " ORDER BY ${ob}bsk_dbk_id,bsk_nr", $nr);
     }
 }
 else {
     $sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc, ".
 			  "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
 			  " FROM Boekstukken".
-			  " ORDER BY bsk_dbk_id,bsk_nr");
+			  " ORDER BY ${ob}bsk_dbk_id,bsk_nr");
 }
 
 my $rr;
@@ -84,29 +132,41 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 			     " ORDER BY bsr_nr", $bsk_id);
     my $tot = 0;
     my $rr;
-    my ($dbktype, $acct) = @{$dbh->do("SELECT dbk_type, dbk_acc_id".
-				      " FROM Dagboeken".
-				      " WHERE dbk_id = ?", $bsk_dbk_id)};
+    my ($dbktype, $acct, $dbk_desc) = @{$dbh->do("SELECT dbk_type, dbk_acc_id, dbk_desc".
+						 " FROM Dagboeken".
+						 " WHERE dbk_id = ?", $bsk_dbk_id)};
+    my $cmd = lc($dbk_desc);
+    $cmd =~ s/[^[:alnum:]]/_/g;
+
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
 	    $bsr_btw_id, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
 	$bsr_rel_code =~ s/\s+$// if $bsr_rel_code;
 
 	if ( $bsr_nr == 1) {
-	    print("\n") if $did++;
-	    print("Boekstuk $bsk_id, nr $bsk_nr, dagboek ",
-		  $dbh->lookup($bsk_dbk_id, qw(Dagboeken dbk_id dbk_desc =)),
-		  "($bsk_dbk_id)",
-		  ", datum $bsk_date",
-		  ", ");
-	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
-		my ($rd, $rt) = @{$::dbh->do("SELECT rel_desc,rel_debcrd".
-					     " FROM Relaties".
-					     " WHERE rel_code = ?",
-					     $bsr_rel_code)};
-		print($rt ? "deb " : "crd ", "$bsr_rel_code ($rd), ");
+	    if ( $trail ) {
+		$cmd .= ":$bsk_nr $bsk_date ";
+		$cmd .= "\"$bsr_rel_code\""
+		  if $dbktype == DBKTYPE_VERKOOP || $dbktype == DBKTYPE_INKOOP;
+		$cmd .= "\"$bsk_desc\""
+		  if $dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS || $dbktype == DBKTYPE_MEMORIAAL;
 	    }
-	    print("\"$bsk_desc\"", $bsk_paid ? ", *$bsk_paid" : ", open", "\n");
+	    else {
+		print("\n") if $did++;
+		print("Boekstuk $bsk_id, nr $bsk_nr, dagboek ",
+		      $dbh->lookup($bsk_dbk_id, qw(Dagboeken dbk_id dbk_desc =)),
+		      "($bsk_dbk_id)",
+		      ", datum $bsk_date",
+		      ", ");
+		if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
+		    my ($rd, $rt) = @{$::dbh->do("SELECT rel_desc,rel_debcrd".
+						 " FROM Relaties".
+						 " WHERE rel_code = ?",
+						 $bsr_rel_code)};
+		    print($rt ? "deb " : "crd ", "$bsr_rel_code ($rd), ");
+		}
+		print("\"$bsk_desc\"", $bsk_paid ? ", *$bsk_paid" : ", open", "\n");
+	    }
 	}
 
 	my ($rd, $rt) = $bsr_acc_id ?
@@ -128,12 +188,39 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 	      $dbh->lookup($bsr_btw_id, qw(BTWTabel btw_id btw_desc)),
 	      ")") : (),
 	      defined($bsr_acc_id) ? (", rek $bsr_acc_id (", $rt ? "D/" : "C/", $rd, ")",) : (),
-	      "\n");
+	      "\n") unless $trail;
 
 	#$bsr_amount = -$bsr_amount unless $rt;
 	my $a = EB::Finance::norm_btw($bsr_amount, $bsr_btw_id);
 	$tot += $a->[0];
+
+	next unless $trail;
+
+	if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
+	    $cmd .= " \"$bsr_desc\" " .
+	      numfmt(abs($bsr_amount)) . "@" . $bsr_btw_id . " " .
+		$bsr_acc_id . uc(substr($dc,0,1));
+	}
+	elsif ( $dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS
+		|| $dbktype == DBKTYPE_MEMORIAAL ) {
+	    if ( $bsr_type == 0 ) {
+		$cmd .= " std \"$bsr_desc\" " .
+		  numfmt(abs($bsr_amount)) . "@" . $bsr_btw_id . " " .
+		    $bsr_acc_id . uc(substr($dc,0,1));
+	    }
+	    elsif ( $bsr_type == 1 ) {
+		$cmd .= " deb \"$bsr_rel_code\" " .
+		  numfmt($bsr_amount);
+	    }
+	    elsif ( $bsr_type == 2 ) {
+		$cmd .= " crd \"$bsr_rel_code\" " .
+		  numfmt($bsr_amount);
+	    }
+	}
+
     }
+
+    print($cmd, "\n"), next if $trail;
 
     unless ( $acct ) {
 	print("BOEKSTUK IS NIET IN BALANS -- VERSCHIL IS ", numfmt($tot), "\n")
@@ -155,4 +242,45 @@ while ( $rr = $sth->fetchrow_arrayref ) {
 #      unless $bsk_amount == $tot;
       # This silences a lot of warnings, have to find out why.
       unless abs($bsk_amount) == abs($tot);
+}
+
+################ Subroutines ################
+
+sub app_options {
+    my $help = 0;		# handled locally
+    my $ident = 0;		# handled locally
+
+    # Process options, if any.
+    # Make sure defaults are set before returning!
+    return unless @ARGV > 0;
+
+    if ( !GetOptions(
+		     'trail'    => \$trail,
+		     'ident'	=> \$ident,
+		     'verbose'	=> \$verbose,
+		     'trace'	=> \$trace,
+		     'help|?'	=> \$help,
+		     'debug'	=> \$debug,
+		    ) or $help )
+    {
+	app_usage(2);
+    }
+    app_ident() if $ident;
+}
+
+sub app_ident {
+    print STDERR ("This is $my_package [$my_name $my_version]\n");
+}
+
+sub app_usage {
+    my ($exit) = @_;
+    app_ident();
+    print STDERR <<EndOfUsage;
+Usage: $0 [options] [file ...]
+    -trail		produce trail
+    -help		this message
+    -ident		show identification
+    -verbose		verbose information
+EndOfUsage
+    exit $exit if defined $exit && $exit != 0;
 }
