@@ -1,5 +1,5 @@
 setenv EB_LIB ..
-setenv EB_DB_NAME sample
+setenv EB_DB_NAME ebsample
 setenv EB_DB "dbi:Pg:dbname=${EB_DB_NAME}"
 setenv PERL5LIB ${EB_LIB}:$PERL5LIB
 
