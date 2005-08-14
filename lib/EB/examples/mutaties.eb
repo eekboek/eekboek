@@ -114,7 +114,10 @@ postbank 2004-10-12 "Girotel, ADSL" std "Girotel" 2,70 4980 crd XS4ALL 22,80
 postbank 2004-11-08 "Girotel" std "Girotel" 2,70 4980
 postbank 2004-11-30 "ADSL, Tel." crd XS4ALL 22,80 crd KPN 109,67
 
-postbank 2004-12-07 "Girotel, ADSL" std "Girotel" 2,70 4980 crd XS4ALL 22,80
+# Er kan een expliciet volgnummer worden opgegeven.
+# Ook kan het saldo na boeking worden geverifiëerd.
+postbank:24 --saldo 10357,48 2004-12-07 "Girotel, ADSL" \
+	 std "Girotel" 2,70 4980 crd XS4ALL 22,80
 
 # Afschrijvingen
 #
