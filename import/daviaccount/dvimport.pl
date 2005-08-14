@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.6 2005/07/21 10:26:55 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.7 2005/08/14 09:00:31 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 21 12:23:50 2005
-# Update Count    : 221
+# Last Modified On: Sat Aug 13 19:17:20 2005
+# Update Count    : 243
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -65,23 +65,29 @@ my $db;
 
 sub read_exact_data {
 
-    open ($db, "<EXACT61.TXT") || die("Missing: EXACT61.TXT\n");
+    open ($db, "<EXACT61.TXT") ||
+      open ($db, "<exact61.txt") || die("Missing: EXACT61.TXT\n");
     my $next;
     while ( <$db> ) {
-	if ( /^HOOFDVERDICHTINGEN/ ) {
+	if ( /^ ?HOOFDVERDICHTINGEN/ ) {
 	    $next = \&read_hoofdverdichtingen;
 	}
-	elsif ( /^VERDICHTINGEN/ ) {
+	elsif ( /^ ?VERDICHTINGEN/ ) {
 	    $next = \&read_verdichtingen;
 	}
-	elsif ( /^BTW-TARIEVEN/ ) {
+	elsif ( /^ ?BTW-TARIEVEN/ ) {
 	    $next = \&read_btw;
 	}
-	elsif ( /^DAGBOEKEN/ ) {
+	elsif ( /^ ?DAGBOEKEN/ ) {
 	    $next = \&read_dagboeken;
 	}
 	elsif ( /^-{40}/ ) {
-	    $next->();
+	    next unless $next;
+	    $next->(0);
+	}
+	elsif ( /^ Í{40}/ ) {
+	    next unless $next;
+	    $next->(1);
 	}
     }
     close($db);
@@ -90,15 +96,18 @@ sub read_exact_data {
 
 
 sub read_dagboeken {
+    my ($off) = @_;
     my @dagboeken;
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
+	substr($_, 0, $off) = "" if $off;
 	# 1     Kas                                      Kas                 1000
-	my @a = unpack("a6a41a20a6", $_);
+	#my @a = unpack("a6a41a20a6", $_);
+	my @a = /^(\d+)\s+(\S+)\s+(\S+)\s+(\d+|n\.v\.t\.)\s*$/i;
 	for ( @a[1,2] ) {
 	    s/\s+$//;
 	}
-	$dagboeken[0+$a[0]] = [ @a[1,2], $a[3] eq "N.v.t." ? "\\N" : 0+$a[3] ];
+	$dagboeken[0+$a[0]] = [ @a[1,2], lc($a[3]) eq "n.v.t." ? "\\N" : 0+$a[3] ];
     }
 
     open(my $f, ">dbk.sql") or die("Cannot create dbk.sql: $!\n");
@@ -107,6 +116,7 @@ sub read_dagboeken {
 	      "COPY Dagboeken FROM stdin;\n");
     my %dbmap = ("Kas"	      => DBKTYPE_KAS,
 		 "Bank/Giro"  => DBKTYPE_BANK,
+		 "Giro"       => DBKTYPE_BANK,
 		 "Inkoop"     => DBKTYPE_INKOOP,
 		 "Verkoop"    => DBKTYPE_VERKOOP,
 		 "Memoriaal"  => DBKTYPE_MEMORIAAL );
@@ -131,10 +141,12 @@ sub read_dagboeken {
 my @hoofdverdichtingen;
 
 sub read_hoofdverdichtingen {
+    my ($off) = @_;
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
+	substr($_,0,$off) = "" if $off;
 	# 2        Vlottende activa
-	my @a = unpack("a9a*", $_);
+	my @a = m/(\d+)\s+(.*)/;
 	for ( $a[1] ) {
 	    s/\s+$//;
 	}
@@ -145,10 +157,12 @@ sub read_hoofdverdichtingen {
 my @verdichtingen;
 
 sub read_verdichtingen {
+    my ($off) = @_;
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
+	substr($_,0,$off) = "" if $off;
 	# 21       Handelsvoorraden                             2
-	my @a = unpack("a9a45a*", $_);
+	my @a = m/^(\d+)\s+(.*?)\s+(\d+)\s*$/;
 	for ( $a[1] ) {
 	    s/\s+$//;
 	}
@@ -162,8 +176,10 @@ my @transactions;
 sub read_grootboek {
     use Text::CSV_XS;
     my $csv = new Text::CSV_XS ({binary => 1});
-    open (my $db, "<GRTBK.CSV")
-      || die("Missing: GRTBK.CSV\n");
+    my $db;
+    open ($db, "<GRTBK.CSV") ||
+      open ($db, "<grtbk.csv")
+	|| die("Missing: GRTBK.CSV\n");
     while ( <$db> ) {
 	if ( $csv->parse($_) ) {
 	    my @a = $csv->fields();
@@ -195,22 +211,33 @@ sub read_grootboek {
 }
 
 sub read_btw {
+    my ($off) = @_;
     my $hi;
     my $lo;
     my $btw_acc_hi_i;
     my $btw_acc_hi_v;
     my $btw_acc_lo_i;
     my $btw_acc_lo_v;
-   my @btwtable;
+    my @btwtable;
 
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
+	substr($_, 0, $off) = "" if $off;
+
 	# Nr.   Omschrijving                             Perc.  Type  Ink.reknr. Verk.reknr.
 	# ----------------------------------------------------------------------------------
 	# 1     BTW 17,5% incl.                          17,50  Incl. 1520       1500       
 	# 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 	#          1         2         3         4         5         6         7         8         9
-	my @a = unpack("a6a41a7a6a11a*", $_);
+	#my @a = unpack("a6a41a7a6a11a*", $_);
+	my @a = m/^(\d+)\s+(.+?)\s+(\d\d?[.,]\d\d)\s+((?:In|Ex)cl(?:\.|usief))\s+(?:$|(\d+)\s+(\d+))\s*$/;
+	warn("? $_"), next unless $a[1];
+
+	# 3 - BTW 6% -> code 3
+	if ( $a[1] =~ /^(\d+) - (.*)/ ) {
+	    $a[0] = $1;
+	    $a[1] = $2;
+	}
 	for ( @a[1,2,3] ) {
 	    s/\s+$//;
 	}
@@ -223,14 +250,18 @@ sub read_btw {
 	    $btw .= "0" x (BTWPRECISION-2 - AMTPRECISION);
 	}
 	$btwtable[$a[0]] = [ $a[1], $btw,
-			     $a[3] eq "Incl." ? 't' : 'f' ];
+			     $a[3] =~ /^I/ ? 't' : 'f' ];
 
 	if ( $btw ) {
 	    if ( !$lo || $btw < $lo ) {
 		$lo = $btw;
+		undef $btw_acc_lo_i;
+		undef $btw_acc_lo_v;
 	    }
 	    if ( !$hi || $btw > $hi ) {
 		$hi = $btw;
+		undef $btw_acc_hi_i;
+		undef $btw_acc_hi_v;
 	    }
 	}
 	next unless $btw;
