@@ -36,6 +36,7 @@ CREATE TABLE Standaardrekeningen (
   std_acc_winst    int references Accounts	-- Winstrekening
 );
 
+-- NOTE thay this will fail if any of the accounts are not in acc.sql.
 INSERT INTO Standaardrekeningen
   	 (std_acc_deb, std_acc_crd,
 	  std_acc_btw_vh, std_acc_btw_vl,
@@ -47,6 +48,9 @@ INSERT INTO Standaardrekeningen
           1520, 1530,
           1560,
           500);
+
+-- This OPTIONAL file can be used to correct standard accounts.
+\i std.sql
 
 -- Standaardrekeningen mogen niet meer worden gewijzigd als de
 -- administratie eenmaal is geopend.
