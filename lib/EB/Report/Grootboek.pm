@@ -1,13 +1,19 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.2 2005/07/29 16:48:13 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.3 2005/08/14 09:33:54 jv Exp $ ';
+
+package main;
+
+our $config;
+our $dbh;
+our $app;
 
 package EB::Report::Grootboek;
 
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jul 29 18:45:41 2005
-# Update Count    : 65
+# Last Modified On: Sun Aug 14 11:26:17 2005
+# Update Count    : 70
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -35,19 +41,18 @@ sub perform {
 
     my $detail = $opts->{detail};
 
-    my $rr = $::dbh->do("SELECT adm_begin FROM Metadata");
+    my $rr = $dbh->do("SELECT adm_begin FROM Metadata");
     my $date = $rr->[0];
-    $rr = $::dbh->do("SELECT now()");
+    my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
 
-    print("Grootboek -- Periode $date - " .
-	  substr($rr->[0],0,10), "\n\n");
+    print("Grootboek -- Periode $date - ", substr($now,0,10), "\n\n");
 
-    my $ah = $::dbh->sql_exec("SELECT acc_id,acc_desc,acc_ibalance".
-			      " FROM Accounts".
-			      " WHERE acc_ibalance <> 0".
-			      " OR acc_id in".
-			      "  ( SELECT DISTINCT jnl_acc_id FROM Journal )".
-			      " ORDER BY acc_id");
+    my $ah = $dbh->sql_exec("SELECT acc_id,acc_desc,acc_ibalance".
+			    " FROM Accounts".
+			    " WHERE acc_ibalance <> 0".
+			    " OR acc_id in".
+			    "  ( SELECT DISTINCT jnl_acc_id FROM Journal )".
+			    " ORDER BY acc_id");
 
     my $dgrand = 0;
     my $cgrand = 0;
@@ -82,13 +87,13 @@ sub perform {
 	}
 	printf($fmt, "", " Beginsaldo", "", "", @d, ("") x 3) if $detail > 0;
 
-	my $sth = $::dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_date,jnl_desc,jnl_rel".
-				   " FROM journal, Boekstukken, Dagboeken".
-				   " WHERE jnl_dbk_id = dbk_id".
-				   " AND jnl_bsk_id = bsk_id".
-				   " AND jnl_acc_id = ?".
-				   " ORDER BY jnl_acc_id, jnl_date",
-				   $acc_id);
+	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_date,jnl_desc,jnl_rel".
+				 " FROM journal, Boekstukken, Dagboeken".
+				 " WHERE jnl_dbk_id = dbk_id".
+				 " AND jnl_bsk_id = bsk_id".
+				 " AND jnl_acc_id = ?".
+				 " ORDER BY jnl_acc_id, jnl_date",
+				 $acc_id);
 
 	my $dtot = 0;
 	my $ctot = 0;

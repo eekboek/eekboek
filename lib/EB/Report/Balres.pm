@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.4 2005/08/14 09:15:29 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.5 2005/08/14 09:33:54 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 14 11:14:59 2005
-# Update Count    : 174
+# Last Modified On: Sun Aug 14 11:21:47 2005
+# Update Count    : 175
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -63,11 +63,11 @@ sub perform {
 
     my $rr = $dbh->do("SELECT adm_begin FROM Metadata");
     my $date = $rr->[0];
-    $rr = $dbh->do("SELECT now()");
+    my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
     $rep->addline('H', '',
 		  ($balans ? "Balans" : "Verlies/Winst") .
 		  " -- Periode $date - " .
-		  substr($rr->[0],0,10));
+		  substr($now,0,10));
 
     my $sth;
 
