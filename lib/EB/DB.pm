@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.4 2005/07/25 20:52:26 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.5 2005/08/14 09:13:17 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 25 22:34:34 2005
-# Update Count    : 56
+# Last Modified On: Sat Aug 13 21:13:35 2005
+# Update Count    : 67
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,13 +42,15 @@ sub check_stdacc {
     my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $std_acc_deb);
     $fail++, warn("?Geen grootboekrekening voor debiteuren ($std_acc_deb)\n")
       unless $rr;
-    $fail++, warn("?Verkeerde grootboekrekening voor debiteuren ($std_acc_deb)\n")
+#    $fail++,
+      warn("?Verkeerde grootboekrekening voor debiteuren ($std_acc_deb)\n")
       unless $rr->[0] && $rr->[1];
 
     $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $std_acc_crd);
     $fail++, warn("?Geen grootboekrekening voor crediteuren ($std_acc_crd)\n")
       unless $rr;
-    $fail++, warn("?Verkeerde grootboekrekening voor crediteuren ($std_acc_crd)\n")
+#    $fail++,
+      warn("?Verkeerde grootboekrekening voor crediteuren ($std_acc_crd)\n")
       if $rr->[0] || !$rr->[1];
 
     $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $std_acc_btw_paid);
@@ -169,11 +171,31 @@ sub std_acc {
     $std_acc{$name};
 }
 
-sub connectdb {
+my %accts;
+sub accts {
     my ($self) = @_;
+    return \%accts if %accts;
+    my $sth = $self->sql_exec("SELECT acc_id,acc_desc".
+			      " FROM Accounts".
+			      " ORDER BY acc_id");
+    my $rr;
+    while ( $rr = $sth->fetchrow_arrayref ) {
+	$accts{$rr->[0]} = $rr->[1];
+    }
+    \%accts;
+}
+
+sub dbh{
+    $dbh;
+}
+
+sub connectdb {
+    my ($self, $dbname) = @_;
 
     return $dbh if $dbh;
-    $dbh = DBI::->connect($ENV{EB_DB} || "dbi:Pg:dbname=eekboek")
+    $dbname = "dbi:Pg:dbname=" . $dbname if $dbname;
+
+    $dbh = DBI::->connect($dbname || $ENV{EB_DB} || "dbi:Pg:dbname=eekboek")
       or die("Cannot connect to database: $DBI::errstr\n");
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
@@ -202,6 +224,15 @@ sub sql_prep {
     my ($self, $sql) = @_;
     $dbh ||= $self->connectdb();
     $sth{$sql} ||= $dbh->prepare($sql);
+}
+
+sub close {
+    my ($self) = @_;
+    $dbh->disconnect;
+    undef $dbh;
+    %sth = ();
+    %std_acc = ();
+    %accts = ();
 }
 
 sub sql_exec {
