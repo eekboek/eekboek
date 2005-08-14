@@ -12,6 +12,9 @@ dropdb ${EB_DB_NAME}
 # Creeer een nieuwe database.
 createdb ${EB_DB_NAME} || createdb --template=template0 ${EB_DB_NAME} || createdb ${EB_DB_NAME}
 
+# Add proc lang
+createlang plpgsql ${EB_DB_NAME}
+
 # Vul de database met het schema.
 perl -Mlib=$EB_LIB $EB_LIB/EB/Globals.pm > constants.sql
 psql ${EB_DB_NAME} < $EB_LIB/eekboek.sql
