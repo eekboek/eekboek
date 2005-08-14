@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.5 2005/08/14 09:11:50 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.6 2005/08/14 17:03:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug 13 23:09:05 2005
-# Update Count    : 179
+# Last Modified On: Sun Aug 14 15:18:55 2005
+# Update Count    : 190
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -102,7 +102,7 @@ foreach ( @prim, @sec) {
     my @a = @$_;
     my %a;
     if ( $a[0] == 0 ) {
-	flush($mut) if $mut;
+	flush($mut) if $mut && @$mut > 1;
 	@a{@fieldnames0} = @a;
 	$mut = [ \%a ];
 	next;
@@ -221,9 +221,8 @@ sub fixbtw {
 
     return "" if $b eq "";
 
-    # Het lijkt erop dat FMUTA6.CSV altijd alle bedragen inclusief BTW opneemt.
-    # warn("!!! BTW CODE EXCL --- CHECK !!!\n") if $b == 2 || $b == 4;
-    $b-- if $b == 2 || $b == 4 || $b == 6;
+    # FMUTA6.CSV heeft alle bedragen altijd inclusief BTW.
+    $b = btwmap($b);
 
     my $br = btw_code($r->{reknr});
     return "" if $b == $br;
@@ -294,6 +293,20 @@ sub check_rel {
 	      $r->[0];
 	  }
       };
+}
+
+# Map BTW excl -> incl.
+my @btwmap;
+sub btwmap {
+    my ($code) = @_;
+    unless ( defined $btwmap[$code] ) {
+	$btwmap[$code] = $dbh->do("SELECT b.btw_id".
+				  " FROM BTWTabel a, BTWTabel b".
+				  " WHERE a.btw_perc = b.btw_perc".
+				  " AND (b.btw_incl OR b.btw_perc = 0)".
+				  " AND a.btw_id = ?", $code)->[0];
+    }
+    $btwmap[$code];
 }
 
 ################ Subroutines ################
