@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.7 2005/08/14 09:00:31 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.8 2005/08/14 17:03:08 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug 13 19:17:20 2005
-# Update Count    : 243
+# Last Modified On: Sun Aug 14 14:58:47 2005
+# Update Count    : 244
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -233,9 +233,9 @@ sub read_btw {
 	my @a = m/^(\d+)\s+(.+?)\s+(\d\d?[.,]\d\d)\s+((?:In|Ex)cl(?:\.|usief))\s+(?:$|(\d+)\s+(\d+))\s*$/;
 	warn("? $_"), next unless $a[1];
 
-	# 3 - BTW 6% -> code 3
+	# 3 - BTW 6% -> code 3 -- NOT!
 	if ( $a[1] =~ /^(\d+) - (.*)/ ) {
-	    $a[0] = $1;
+	    #$a[0] = $1;
 	    $a[1] = $2;
 	}
 	for ( @a[1,2,3] ) {
