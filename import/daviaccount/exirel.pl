@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.5 2005/07/21 10:26:55 jv Exp $ ';
+my $RCS_Id = '$Id: exirel.pl,v 1.6 2005/08/14 09:04:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 21 12:25:21 2005
-# Update Count    : 82
+# Last Modified On: Sat Aug 13 19:21:53 2005
+# Update Count    : 84
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -52,7 +52,16 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 use Text::CSV_XS;
 use EB::Globals;
 
-@ARGV = ("DEBITR.CSV", "CREDIT.CSV") unless @ARGV;
+unless ( @ARGV ) {
+    foreach ( "DEBITR.CSV", "CREDIT.CSV" ) {
+	if ( -s $_ ) {
+	    push(@ARGV, $_);
+	}
+	elsif ( -s lc($_) ) {
+	    push(@ARGV, lc($_));
+	}
+    }
+}
 
 # Load field names from __DATA__.
 
