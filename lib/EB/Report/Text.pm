@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Text.pm,v 1.2 2005/07/29 16:13:48 jv Exp $ ';
+my $RCS_Id = '$Id: Text.pm,v 1.3 2005/08/14 09:13:56 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jul 29 14:51:33 2005
-# Update Count    : 116
+# Last Modified On: Mon Aug  8 22:23:03 2005
+# Update Count    : 118
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -67,3 +67,8 @@ sub addline {
     print($t);
     print("\n") if $type =~ /^T(\d+)$/ && $1 <= $self->{detail};
 }
+
+sub finish {
+}
+
+1;
