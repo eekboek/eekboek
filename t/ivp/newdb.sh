@@ -23,7 +23,7 @@ psql ${EB_DB_NAME} < $EB_LIB/eekboek.sql
 perl -Mlib=$EB_LIB -w $EB_LIB/opening.pl \
     --admin="EekBoek Demo Administratie 2004" \
     --periode=2004 \
-    --btw-periode=4 \
+    --btw-periode=1 \
     --check=15854,77 \
     <<EOF
 # Data voor openingsbalans:

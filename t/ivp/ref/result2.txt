@@ -1,4 +1,4 @@
-Verlies/Winst -- Periode 2004-01-01 - 2005-07-29
+Verlies/Winst -- Periode 2004-01-01 - 2004-12-31
 
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 ----------------------------------------------------------------------
