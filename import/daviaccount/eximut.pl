@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.4 2005/07/18 14:33:22 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.5 2005/08/14 09:11:50 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 18 15:57:31 2005
-# Update Count    : 159
+# Last Modified On: Sat Aug 13 23:09:05 2005
+# Update Count    : 179
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -57,7 +57,7 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 use Text::CSV_XS;
 use EB::Finance;
 
-@ARGV = ("FMUTA6.CSV") unless @ARGV;
+@ARGV = (-s "FMUTA6.CSV" ? "FMUTA6.CSV" : "fmuta6.csv") unless @ARGV;
 
 my @fieldnames0;
 my @fieldnames;
@@ -85,6 +85,7 @@ open (my $db, $ARGV[0])
 my @prim;
 my @sec;
 while ( <$db> ) {
+    s/0""/0,""/g;
     $csv->parse($_);
     my @a = $csv->fields();
     if ( $a[1] =~ /^[iv]$/i ) {
@@ -121,6 +122,9 @@ sub flush {
     my $dbktype = $r0->{dagb_type};
 
     if ( $dbktype eq 'I' ) {	# Inkoop
+	foreach my $r ( @$mut ) {
+	    check_rel($r0->{crdnr}, $r->{reknr}, "D");
+	}
 	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}),
 	      ' "' . uc($r0->{crdnr}) . '"');
 	foreach my $r ( @$mut ) {
@@ -132,6 +136,9 @@ sub flush {
 	print("\n");
     }
     elsif ( $dbktype eq 'V' ) {	# Verkoop
+	foreach my $r ( @$mut ) {
+	    check_rel($r0->{debnr}, $r->{reknr}, "C");
+	}
 	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}),
 	      ' "' . uc($r0->{debnr}) . '"');
 	foreach my $r ( @$mut ) {
@@ -155,6 +162,16 @@ sub flush {
 #    }
     elsif ( $dbktype =~ /^[GBKM]$/ ) {	# Bank/Giro/Kas/Memoriaal;
 	return unless @$mut;
+
+	foreach my $r ( @$mut ) {
+	    if ( $r->{crdnr} ) {
+		check_rel($r->{crdnr}, 4000, "C");
+	    }
+	    elsif ( $r->{debnr} ) {
+		check_rel($r->{debnr}, 8000, "C");
+	    }
+	}
+
 	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
 	my $tot = 0;
 	foreach my $r ( @$mut ) {
@@ -260,6 +277,23 @@ sub _lku {
     $debcrd{$acct} = $rr->[0];
     $kstomz{$acct} = $rr->[1];
     $btw_code{$acct} = $rr->[2];
+}
+
+my %rel;
+sub check_rel {
+    my ($code, $acc, $debcrd) = @_;
+    $rel{$code} ||= 
+      do {
+	  my $r = $dbh->do("SELECT rel_acc_id FROM Relaties WHERE rel_code = ?", $code);
+	  unless ( $r && $r->[0] ) {
+	      print("relatie \"$code\" \"Automatisch aangemaakt voor code $code\" ",
+		    $acc, $debcrd, "\n");
+	      $rel{$code} = $acc;
+	  }
+	  else {
+	      $r->[0];
+	  }
+      };
 }
 
 ################ Subroutines ################
