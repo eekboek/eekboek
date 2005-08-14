@@ -1,5 +1,6 @@
 csh <<'EOF'
 source setup.csh
+setenv EB_SQL_NOW 2004-12-31
 echo "=== $EB_DB_NAME === newdb ==="
 sh ./newdb.sh >& newdb.log
 echo "=== $EB_DB_NAME === mutaties ==="
