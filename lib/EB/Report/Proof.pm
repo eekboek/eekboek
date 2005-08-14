@@ -1,13 +1,19 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.4 2005/07/29 16:14:16 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.5 2005/08/14 09:16:56 jv Exp $ ';
+
+package main;
+
+our $config;
+our $dbh;
+our $app;
 
 package EB::Report::Proof;
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jul 29 18:12:24 2005
-# Update Count    : 225
+# Last Modified On: Sun Aug 14 11:16:49 2005
+# Update Count    : 228
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,13 +48,13 @@ sub perform {
     $detail = $opts->{verdicht} ? 2 : -1 unless defined $detail;
 
     my @grand = (0) x 4;	# grand total
-    my $rep = new EB::Report::Text(detail   => $detail,
-				   verdicht => $detail >= 0,
-				   proef    => 1);
+    my $rep = $opts->{reporter} || new EB::Report::Text(detail   => $detail,
+							verdicht => $detail >= 0,
+							proef    => 1);
 
-    my $rr = $::dbh->do("SELECT adm_begin FROM Metadata");
+    my $rr = $dbh->do("SELECT adm_begin FROM Metadata");
     my $date = $rr->[0];
-    $rr = $::dbh->do("SELECT now()");
+    $rr = $dbh->do("SELECT now()");
     $rep->addline('H', '',
 		  "Proef- en Saldibalans" .
 		  " -- Periode $date - " .
@@ -73,7 +79,7 @@ sub perform {
 	    }
 	    # $rep->addline('D2', '', 'Beginsaldo', @tot);
 	}
-	my $sth = $::dbh->sql_exec
+	my $sth = $dbh->sql_exec
 	  ("SELECT jnl_amount,jnl_desc".
 	   " FROM Journal".
 	   " WHERE jnl_acc_id = ?".
@@ -99,7 +105,7 @@ sub perform {
     my $grootboeken = sub {
 	my ($vd, $hvd) = shift;
 	my @tot = (0) x 4;
-	my $sth = $::dbh->sql_exec
+	my $sth = $dbh->sql_exec
 	  ("SELECT acc_id, acc_desc, acc_balance, acc_ibalance".
 	   " FROM Accounts".
 	   " WHERE acc_struct = ?".
@@ -164,19 +170,19 @@ sub perform {
     if ( $detail >= 0 ) {	# Verdicht
 	my @vd;
 	my @hvd;
-	$sth = $::dbh->sql_exec("SELECT vdi_id, vdi_desc".
-				" FROM Verdichtingen".
-				" WHERE vdi_struct IS NULL".
-				" ORDER BY vdi_id");
+	$sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
+			      " FROM Verdichtingen".
+			      " WHERE vdi_struct IS NULL".
+			      " ORDER BY vdi_id");
 	while ( $rr = $sth->fetchrow_arrayref ) {
 	    $hvd[$rr->[0]] = [ @$rr, []];
 	}
 
 	@vd = @hvd;
-	$sth = $::dbh->sql_exec("SELECT vdi_id, vdi_desc, vdi_struct".
-				" FROM Verdichtingen".
-				" WHERE vdi_struct IS NOT NULL".
-				" ORDER BY vdi_id");
+	$sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc, vdi_struct".
+			      " FROM Verdichtingen".
+			      " WHERE vdi_struct IS NOT NULL".
+			      " ORDER BY vdi_id");
 	while ( $rr = $sth->fetchrow_arrayref ) {
 	    push(@{$hvd[$rr->[2]]->[2]}, [@$rr]);
 	    @vd[$rr->[0]] = [@$rr];
@@ -189,7 +195,7 @@ sub perform {
     else {			# Op Grootboek
 
 	my @tot = (0) x 4;
-	my $sth = $::dbh->sql_exec
+	my $sth = $dbh->sql_exec
 	  ("SELECT acc_id, acc_desc, acc_balance, acc_ibalance".
 	   " FROM Accounts".
 	   " WHERE ( acc_ibalance <> 0".
@@ -204,6 +210,7 @@ sub perform {
 	}
 	$rep->addline('T', '', 'TOTAAL', @tot);
     }
+    $rep->finish;
 }
 
 1;

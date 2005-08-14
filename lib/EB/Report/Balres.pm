@@ -1,13 +1,19 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.3 2005/07/29 16:14:03 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.4 2005/08/14 09:15:29 jv Exp $ ';
+
+package main;
+
+our $config;
+our $app;
+our $dbh;
 
 package EB::Report::Balres;
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jul 29 15:21:34 2005
-# Update Count    : 166
+# Last Modified On: Sun Aug 14 11:14:59 2005
+# Update Count    : 174
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -23,8 +29,6 @@ use EB::Finance;
 use EB::Report::Text;
 
 use locale;
-
-my $fmt = "%-6s  %-40.40s  %9s  %9s\n";
 
 ################ Subroutines ################
 
@@ -53,12 +57,13 @@ sub perform {
 
     my $dtot = 0;
     my $ctot = 0;
-    my $rep = new EB::Report::Text(detail   => $detail,
-				   verdicht => $detail >= 0);
+    my $rep = $opts->{reporter}
+      || new EB::Report::Text(detail   => $detail,
+			      verdicht => $detail >= 0);
 
-    my $rr = $::dbh->do("SELECT adm_begin FROM Metadata");
+    my $rr = $dbh->do("SELECT adm_begin FROM Metadata");
     my $date = $rr->[0];
-    $rr = $::dbh->do("SELECT now()");
+    $rr = $dbh->do("SELECT now()");
     $rep->addline('H', '',
 		  ($balans ? "Balans" : "Verlies/Winst") .
 		  " -- Periode $date - " .
@@ -67,10 +72,10 @@ sub perform {
     my $sth;
 
     # Need this until we've got the acc_balance column right...
-    $sth = $::dbh->sql_exec("SELECT jnl_acc_id,acc_balance,acc_ibalance,SUM(jnl_amount)".
-			    " FROM journal,accounts".
-			    " WHERE acc_id = jnl_acc_id".
-			    " GROUP BY jnl_acc_id,acc_balance,acc_ibalance");
+    $sth = $dbh->sql_exec("SELECT jnl_acc_id,acc_balance,acc_ibalance,SUM(jnl_amount)".
+			  " FROM journal,accounts".
+			  " WHERE acc_id = jnl_acc_id".
+			  " GROUP BY jnl_acc_id,acc_balance,acc_ibalance");
 
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($acc_id, $balance,$ibalance, $sum) = @$rr;
@@ -78,17 +83,17 @@ sub perform {
 	next if $balance == $sum;
 	warn("!Grootboekrekening $acc_id, totaal " .
 	     numfmt($balance) . ", moet zijn " . numfmt($sum) . ", aangepast\n");
-	$::dbh->sql_exec("UPDATE Accounts".
-			 " SET acc_balance = ?".
-			 " WHERE acc_id = ?",
-			 $sum, $acc_id)->finish;
+	$dbh->sql_exec("UPDATE Accounts".
+		       " SET acc_balance = ?".
+		       " WHERE acc_id = ?",
+		       $sum, $acc_id)->finish;
     }
-    $::dbh->commit;
+    $dbh->commit;
 
     if ( $detail >= 0 ) {	# Verdicht
 	my @vd;
 	my @hvd;
-	$sth = $::dbh->sql_exec("SELECT vdi_id, vdi_desc".
+	$sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
 			      " FROM Verdichtingen".
 			      " WHERE".($balans ? "" : " NOT")." vdi_balres".
 			      " AND vdi_struct IS NULL".
@@ -98,7 +103,7 @@ sub perform {
 	}
 	$sth->finish;
 	@vd = @hvd;
-	$sth = $::dbh->sql_exec("SELECT vdi_id, vdi_desc, vdi_struct".
+	$sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc, vdi_struct".
 			      " FROM Verdichtingen".
 			      " WHERE".($balans ? "" : " NOT")." vdi_balres".
 			      " AND vdi_struct IS NOT NULL".
@@ -116,7 +121,7 @@ sub perform {
 	    my $cstot = 0;
 	    foreach my $vd ( @{$hvd->[2]} ) {
 		my $did_vd = 0;
-		$sth = $::dbh->sql_exec("SELECT acc_id, acc_desc, acc_balance".
+		$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balance".
 				      " FROM Accounts".
 				      " WHERE".($balans ? "" : " NOT")." acc_balres".
 				      "  AND acc_struct = ?".
@@ -161,7 +166,7 @@ sub perform {
 
     }
     else {			# Op Grootboek
-	$sth = $::dbh->sql_exec("SELECT acc_id, acc_desc, acc_debcrd, acc_balance".
+	$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_debcrd, acc_balance".
 			      " FROM Accounts".
 			      " WHERE".($balans ? "" : " NOT")." acc_balres".
 			      "  AND acc_balance <> 0".
@@ -194,6 +199,7 @@ sub perform {
 	}
     }
     $rep->addline('T', '', 'TOTAAL '.($balans ? "Balans" : "Resultaten"), $dtot, $ctot);
+    $rep->finish;
 }
 
 1;
