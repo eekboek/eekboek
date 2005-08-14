@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.1 2005/08/14 16:11:54 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.2 2005/08/14 17:04:05 jv Exp $ ';
 
 # Skeleton for Getopt::Long.
 
 # Author          : Johan Vromans
-# Created On      : Tue Sep 15 15:59:04 1992
+# Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 14 18:10:49 2005
-# Update Count    : 57
+# Last Modified On: Sun Aug 14 19:01:42 2005
+# Update Count    : 35
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -64,10 +64,6 @@ exit 0;
 sub dump_schema {
     $dbh->connectdb;		# can't wait...
     print("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
-	  "#\n",
-	  "# Vlag 1: D = Debet, C = Credit\n",
-	  "# Vlag 2: K = Kosten, O = Omzet\n",
-	  "# Vlag 3: H = BTW Hoog, L = BTW Laag, G (of leeg) = BTW Geen\n",
 	  "\n");
 
     print("Balansrekeningen\n");
@@ -75,6 +71,17 @@ sub dump_schema {
 
     print("\nResultaatrekeningen\n");
     dump_(0);
+
+    print("\n",
+	  "# Meta data --\n",
+	  "#\n",
+	  "# Vlag 1: D = Debet, C = Credit\n",
+	  "# Vlag 2: K = Kosten, O = Omzet\n",
+	  "# Vlag 3: H = BTW Hoog, L = BTW Laag, G (of leeg) = BTW Geen\n",
+	  "#\n",
+	  "# BTW: H = 1 (Hoog, incl.), L = 3 (Laag, incl.)\n",
+	 );
+
 }
 
 sub dump_ {
@@ -131,9 +138,9 @@ sub load_schema {
     my $chvdi;
     my $cvdi;
     my $fail = 0;
+    my %btwmap;
 
     while ( <> ) {
-	next if /^\#/;
 	next unless /\S/;
 	if ( /^balans/i ) {
 	    $balres = 1;
@@ -143,7 +150,17 @@ sub load_schema {
 	    $balres = 0;
 	    next;
 	}
+
+	if ( /^#/ ) {
+	    if ( /^#\s+btw\s*:\s+h\s*=\s*(\d+).*?,\s+l\s*=\s*(\d+)/i ) {
+		# BTW: H = 1 (Hoog, incl.), L = 3 (Laag, incl.)
+		%btwmap = ( h => $1, l => $2, g => 0 );
+	    }
+	    next;
+	}
+
 	chomp;
+
 	if ( /^\s*(\d)\s+(.+)/ ) {
 	    $fail++, warn("?Men beginne met \"Balansrekeningen\" of \"Resultaatrekeningen\"\n")
 	      unless defined($balres);
@@ -165,16 +182,12 @@ sub load_schema {
 	      unless $flags =~ /^[dc][ko][hlg]?$/i;
 	    my $debcrd = $flags =~ /^d/i;
 	    my $kstomz = $flags =~ /^.k/i;
-	    my $btw = BTWTYPE_GEEN;
-	    $btw = $1 if $flags =~ /^..([hlg])/;
-	    $btw = BTWTYPE_HOOG if lc($btw) eq 'h';
-	    $btw = BTWTYPE_LAAG if lc($btw) eq 'l';
-	    $btw = $dbh->do("SELECT btw_id FROM BTWTabel".
-			    " WHERE btw_tariefgroep = ?".
-			    " AND btw_incl", $btw)->[0];
-	    $acc{$cvdi = $id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz, $btw ];
+	    my $btw = 'g';
+	    $btw = lc($1) if $flags =~ /^..([hlg])/i;
+	    $acc{$id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz, $btw ];
 	    next;
 	}
+	$fail++, warn("?Ongeldige invoer: $_ (regel $.)\n");
     }
     die("?FOUTEN GEVONDEN, VERWERKING AFGEBROKEN\n") if $fail;
 
@@ -214,13 +227,10 @@ sub load_schema {
 		       _tf($g->[2]),
 		       _tf($g->[3]),
 		       _tf($g->[4]),
-		       $g->[5], 0, 0), "\n");
+		       $btwmap{$g->[5]}, 0, 0), "\n");
     }
     print $f ("\\.\n\n");
     close($f);
-
-    close($f)
-
 }
 
 sub _tf {
