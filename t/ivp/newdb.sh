@@ -17,6 +17,7 @@ createlang plpgsql ${EB_DB_NAME}
 
 # Vul de database met het schema.
 perl -Mlib=$EB_LIB $EB_LIB/EB/Globals.pm > constants.sql
+perl -Mlib=$EB_LIB $EB_LIB/schema.pl schema.dat
 psql ${EB_DB_NAME} < $EB_LIB/eekboek.sql
 
 # Open de administratie.
@@ -46,5 +47,6 @@ relatie ACME "Acme Corp." 8000
 
 # De laatste "3" geeft aan dat dit een relatie buiten Europa is.
 # Dit is van belang voor de BTW.
+# (Syntax wijzigt nog wel een keer)
 relatie ORA "O'Reilly & Associates" 8100 3
 EOF
