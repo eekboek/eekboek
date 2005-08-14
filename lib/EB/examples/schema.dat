@@ -1,9 +1,5 @@
 # EekBoek Rekeningschema voor dbsample
-# $Id: schema.dat,v 1.1 2005/08/14 16:17:42 jv Exp $
-#
-# Vlag 1: D = Debet, C = Credit
-# Vlag 2: K = Kosten, O = Omzet
-# Vlag 3: H = BTW Hoog, L = BTW Laag, G (of leeg) = BTW Geen
+# $Id: schema.dat,v 1.2 2005/08/14 17:05:14 jv Exp $
 
 Balansrekeningen
 
@@ -281,3 +277,12 @@ Resultaatrekeningen
      73  Opbrengst overige activa
          9200  CK   Opbrengst effecten
          9210  CK   Mutatie effecten
+
+# Meta data --
+#
+# Vlag 1: D = Debet, C = Credit
+# Vlag 2: K = Kosten, O = Omzet
+# Vlag 3: H = BTW Hoog, L = BTW Laag, G (of leeg) = BTW Geen
+#
+# Dit is nodig omdat we nog geen database hebben.
+# BTW: H = 1 (Hoog, incl.), L = 3 (Laag, incl.)
