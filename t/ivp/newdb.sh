@@ -9,6 +9,10 @@ fi
 # Verwijder enige bestaande database voor deze administratie.
 dropdb ${EB_DB_NAME}
 
+# Creeer de schema files.
+perl -Mlib=$EB_LIB $EB_LIB/EB/Globals.pm > constants.sql
+perl -Mlib=$EB_LIB $EB_LIB/schema.pl schema.dat || exit 
+
 # Creeer een nieuwe database.
 createdb ${EB_DB_NAME} || createdb --template=template0 ${EB_DB_NAME} || createdb ${EB_DB_NAME}
 
@@ -16,8 +20,6 @@ createdb ${EB_DB_NAME} || createdb --template=template0 ${EB_DB_NAME} || created
 createlang plpgsql ${EB_DB_NAME}
 
 # Vul de database met het schema.
-perl -Mlib=$EB_LIB $EB_LIB/EB/Globals.pm > constants.sql
-perl -Mlib=$EB_LIB $EB_LIB/schema.pl schema.dat
 psql ${EB_DB_NAME} < $EB_LIB/eekboek.sql
 
 # Open de administratie.

@@ -1,3 +1,6 @@
+-- EekBoek Database Schema
+-- $Id: eekboek.sql,v 1.11 2005/08/15 19:52:31 jv Exp $
+
 \i constants.sql
 
 CREATE TABLE Verdichtingen (
@@ -32,24 +35,10 @@ CREATE TABLE Standaardrekeningen (
   std_acc_btw_il   int references Accounts,	-- BTW inkoop laag
   std_acc_btw_vh   int references Accounts,	-- BTW verkoop hoog
   std_acc_btw_vl   int references Accounts,	-- BTW verkoop laag
-  std_acc_btw_paid int references Accounts,	-- BTW betaald
+  std_acc_btw_ok   int references Accounts,	-- BTW betaald
   std_acc_winst    int references Accounts	-- Winstrekening
 );
 
--- NOTE thay this will fail if any of the accounts are not in acc.sql.
-INSERT INTO Standaardrekeningen
-  	 (std_acc_deb, std_acc_crd,
-	  std_acc_btw_vh, std_acc_btw_vl,
-	  std_acc_btw_ih, std_acc_btw_il,
-	  std_acc_btw_paid,
-	  std_acc_winst)
-  VALUES (1200, 1600,
-          1500, 1510,
-          1520, 1530,
-          1560,
-          500);
-
--- This OPTIONAL file can be used to correct standard accounts.
 \i std.sql
 
 -- Standaardrekeningen mogen niet meer worden gewijzigd als de
@@ -96,22 +85,8 @@ CREATE TABLE BTWTabel (
 
 \i btw.sql
 
-UPDATE BTWTabel
-SET btw_acc_inkoop =
-     (SELECT std_acc_btw_ih FROM Standaardrekeningen),
-    btw_acc_verkoop =
-     (SELECT std_acc_btw_vh FROM Standaardrekeningen)
-WHERE btw_tariefgroep = 1;
-
-UPDATE BTWTabel
-SET btw_acc_inkoop =
-     (SELECT std_acc_btw_il FROM Standaardrekeningen),
-    btw_acc_verkoop =
-     (SELECT std_acc_btw_vl FROM Standaardrekeningen)
-WHERE btw_tariefgroep = 2;
-
 ALTER TABLE ONLY Accounts
-    add constraint "$2"
+    add constraint "acc_btw_fk_btw_id"
         FOREIGN KEY (acc_btw) REFERENCES BTWTabel(btw_id);
 
 CREATE TABLE Dagboeken (
@@ -123,14 +98,6 @@ CREATE TABLE Dagboeken (
 );
 
 \i dbk.sql
-
-UPDATE Dagboeken
-  SET dbk_acc_id = (SELECT std_acc_crd FROM Standaardrekeningen)
-  WHERE dbk_type = 1;		-- Inkoop
-
-UPDATE Dagboeken
-  SET dbk_acc_id = (SELECT std_acc_deb FROM Standaardrekeningen)
-  WHERE dbk_type = 2;		-- Verkoop
 
 CREATE SEQUENCE bsk_nr_0_seq;
 
@@ -189,7 +156,7 @@ CREATE TABLE Boekstukregels (
 );
 
 ALTER TABLE ONLY Boekstukken
-    add constraint "$2"
+    add constraint "bsk_paid_fk_bsr_id"
         FOREIGN KEY (bsk_paid) REFERENCES Boekstukregels(bsr_id);
 
 CREATE TABLE Journal (

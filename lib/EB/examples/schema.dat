@@ -1,5 +1,53 @@
-# EekBoek Rekeningschema voor dbsample
-# $Id: schema.dat,v 1.3 2005/08/15 17:17:41 jv Exp $
+# $Id: schema.dat,v 1.4 2005/08/15 19:52:31 jv Exp $
+#
+# Dit bestand definiëert alle vaste gegevens van een administratie (of
+# groep administarties): het rekeningschema (balansrekeningen en
+# resultaatrekeningen), de dagboeken en de BTW tarieven.
+# 
+# Algemene syntaxregels: 
+# 
+# * Lege regels en regels die beginnen met een hekje # worden niet
+#   geïnterpreteerd.
+# * Een niet-ingesprongen tekst introduceert een nieuw onderdeel. 
+# * Alle ingesprongen regels zijn gegevens voor dat onderdeel.
+
+# REKENINGSCHEMA
+# 
+# Het rekeningschema is hiërarchisch opgezet volgende de beproefde
+# methode Bakker. De hoofdverdichtingen lopen van 1 t/m 9, de
+# verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
+# balansrekeningen en resultaatrekeningen. 
+# 
+# De omschrijving van de grootboekrekeningen wordt voorafgegaan door een
+# dubbel vlaggetje, twee letters die resp. Debet/Credit en Kosten/Omzet
+# aangeven. De omschrijving wordt indien nodig gevolgd door extra
+# informatie. Voor grootboekrekeningen kan op deze wijze de BTW
+# tariefstelling worden aangegeven die op deze rekening van toepassing
+# is:
+# 
+#   :btw=hoog
+#   :btw=laag
+# 
+# Ook is het mogelijk aan te geven dat een rekening een koppeling
+# (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
+# zijn mogelijk:
+# 
+#   crd		de tegenrekening (Crediteuren) voor inkoopboekingen
+#   deb		de tegenrekening (Debiteuren) voor verkoopboekingen
+#   btw_ih	de rekening voor BTW boekingen voor inkopen, hoog tarief
+#   btw_il	idem, laag tarief
+#   btw_vh	idem, verkopen, hoog tarief
+#   btw_vl	idem. laag tarief
+#   btw_ok	rekening voor de betaalde BTW
+#   winst	rekening waarop de winst wordt geboekt
+# 
+# Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
+#
+# BELANGRIJK: Mutaties die middels de command line shell of de API
+# worden uitgevoerd maken gebruik van de Debet/Credit status en het
+# geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
+# hierin kunnen dus consequenties hebben voor de reeds in scripts
+# vastgelegde boekingen.
 
 Balansrekeningen
 
@@ -278,13 +326,38 @@ Resultaatrekeningen
          9200  CK  Opbrengst effecten
          9210  CK  Mutatie effecten
 
+# DAGBOEKEN
+#
+# EekBoek ondersteunt vijf soorten dagboeken: Kas, Bank, Inkoop,
+# Verkoop en Memoriaal. Er kunnen een in principe onbeperkt aantal
+# dagboeken worden aangemaakt. Voor elk dagboek moet opgegeven worden
+# van welk type het is. Voor rekeningen van het type Kas en Bank moet
+# bovendien een tegenrekening worden opgegeven.
+
 Dagboeken
 
    1  Kas                   :type=kas        :rekening=1000
    4  Postbank              :type=bank       :rekening=1120
-   6  Inkoop                :type=inkoop     :rekening=1600
-   7  Verkoop               :type=verkoop    :rekening=1200
+   6  Inkoop                :type=inkoop
+   7  Verkoop               :type=verkoop
    8  Memoriaal             :type=memoriaal
+
+# BTW TARIEVEN
+#
+# Er zijn drie tariefgroepen: "hoog", "laag" en "geen". De tariefgroep
+# bepaalt het rekeningnummer waarop de betreffende boeking plaatsvindt.
+# Binnen elke tariefgroep zijn meerdere tarieven mogelijk, hoewel dit
+# in de praktijk niet snel zal voorkomen.
+# Voor elk tarief (behalve die van groep "geen") moet het percentage
+# worden opgegeven. Met de aanduiding :exclusief kan worden opgegeven
+# dat boekingen op rekeningen met deze tariefgroep standaard het
+# bedrag exclusief BTW aangeven. 
+# 
+# BELANGRIJK: Mutaties die middels de command line shell of de API
+# worden uitgevoerd maken gebruik van de Debet/Credit status en het
+# geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
+# hierin kunnen dus consequenties hebben voor de reeds in scripts
+# vastgelegde boekingen.
 
 BTW Tarieven
 
