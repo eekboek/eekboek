@@ -29,28 +29,7 @@ perl -Mlib=$EB_LIB -w $EB_LIB/opening.pl \
     --periode=2004 \
     --btw-periode=1 \
     --check=15854,77 \
-    <<EOF
-# Data voor openingsbalans:
-# Grootboekrekening Bedrag
-230  1344.37
-231  1304.81
-240  13378.48
-241  12106.78
-1120 1131.92
-500  2443.18
-EOF
+    < open.dat
 
 # Voeg de relaties toe.
-perl -Mlib=$EB_LIB -w $EB_LIB/ebshell.pl <<EOF
-# Crediteuren: relatie <code> "<omschrijving>" standaardrekening
-relatie XS4ALL "XS4All Internet B.V." 4905
-relatie KPN "KPN" 4900
-
-# Debiteuren: relatie <code> "<omschrijving>" standaardrekening
-relatie ACME "Acme Corp." 8000
-
-# De laatste "3" geeft aan dat dit een relatie buiten Europa is.
-# Dit is van belang voor de BTW.
-# (Syntax wijzigt nog wel een keer)
-relatie ORA "O'Reilly & Associates" 8100 3
-EOF
+perl -Mlib=$EB_LIB -w $EB_LIB/ebshell.pl < relaties.eb
