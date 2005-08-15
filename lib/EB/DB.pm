@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.5 2005/08/14 09:13:17 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.6 2005/08/15 17:16:34 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug 13 21:13:35 2005
-# Update Count    : 67
+# Last Modified On: Mon Aug 15 19:08:24 2005
+# Update Count    : 68
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -35,7 +35,7 @@ sub check_stdacc {
       @{$self->do("SELECT std_acc_deb, std_acc_crd,".
 		  " std_acc_btw_ih, std_acc_btw_il,".
 		  " std_acc_btw_vh, std_acc_btw_vl,".
-		  " std_acc_btw_paid, std_acc_winst".
+		  " std_acc_btw_ok, std_acc_winst".
 		  " FROM Standaardrekeningen")};
     my $fail = 0;
 
@@ -161,7 +161,7 @@ sub std_acc {
     my ($self, $name) = @_;
     unless ( %std_acc ) {
 	$self->connectdb;
-	my @stdkeys = qw(deb crd btw_vh btw_vl btw_ih btw_il btw_paid winst);
+	my @stdkeys = qw(deb crd btw_vh btw_vl btw_ih btw_il btw_ok winst);
 
 	my $rr = $self->do("SELECT".
 			   " " . join(", ", map { "std_acc_$_"} @stdkeys).
