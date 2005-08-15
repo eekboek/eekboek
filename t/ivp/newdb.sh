@@ -23,6 +23,7 @@ createlang plpgsql ${EB_DB_NAME}
 psql ${EB_DB_NAME} < $EB_LIB/eekboek.sql
 
 # Open de administratie.
+# --btw-periode = 1 (jaar) of 4 (kwartaal)
 perl -Mlib=$EB_LIB -w $EB_LIB/opening.pl \
     --admin="EekBoek Demo Administratie 2004" \
     --periode=2004 \
@@ -30,6 +31,7 @@ perl -Mlib=$EB_LIB -w $EB_LIB/opening.pl \
     --check=15854,77 \
     <<EOF
 # Data voor openingsbalans:
+# Grootboekrekening Bedrag
 230  1344.37
 231  1304.81
 240  13378.48
