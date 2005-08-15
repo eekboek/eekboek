@@ -27,13 +27,13 @@ sub add {
     # Koppeling met dagboek op basis van het laagstgenummerde
     # inkoop/verkoop dagboek.
 
-    my $debcrd = "acc_debcrd";
+    my $dbcd = "acc_debcrd";
     if ( $acct =~ /^(\d+)([DC]$)/i) {
 	$acct = $1;
-	$debcrd = uc($2) eq 'D' ? 1 : 0;
+	$dbcd = uc($2) eq 'D' ? 1 : 0;
     }
 
-    my $rr = $::dbh->do("SELECT acc_desc,acc_balres,$debcrd".
+    my $rr = $::dbh->do("SELECT acc_desc,acc_balres,$dbcd".
 			" FROM Accounts".
 			" WHERE acc_id = ?", $acct);
     unless ( $rr ) {
