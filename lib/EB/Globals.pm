@@ -33,6 +33,7 @@ BEGIN {
     $i = 0;
     map { _newconst("BTWTYPE_$_", $i++) }
       qw(GEEN HOOG LAAG);
+    _newconst("BTWTYPES", "[qw(Geen Hoog Laag)]");
     $i = 0;
     map { _newconst("BTWPER_$_", $i++) }
       qw(GEEN JAAR HALFJAAR TRIMESTER KWARTAAL);
@@ -55,7 +56,7 @@ unless ( caller ) {
 
     foreach my $key ( sort(@EXPORT) ) {
 	no strict;
-	next if $key eq "DBKTYPES";
+	next if ref($key->());
 	print STDOUT ("$key\t", $key->(), "\n");
     }
     print STDOUT ("\\.\n");
