@@ -38,37 +38,108 @@ sub new {
 	$self->{ch_deb} = Wx::CheckBox->new($self, -1, "Debiteuren", wxDefaultPosition, wxDefaultSize, );
 	$self->{ch_crd} = Wx::CheckBox->new($self, -1, "Crediteuren", wxDefaultPosition, wxDefaultSize, );
 	$self->{gr_rel} = Wx::Grid->new($self, -1);
-	$self->{b_new} = Wx::Button->new($self, -1, "Nieuw");
-	$self->{b_remove} = Wx::Button->new($self, -1, "Verwijderen");
-	$self->{b_apply} = Wx::Button->new($self, -1, "Toepassen");
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, "Annuleren");
+	$self->{b_new} = Wx::Button->new($self, wxID_NEW, "");
+	$self->{b_remove} = Wx::Button->new($self, wxID_REMOVE, "");
+	$self->{b_apply} = Wx::Button->new($self, wxID_APPLY, "");
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
 
+	Wx::Event::EVT_CHECKBOX($self, $self->{ch_deb}->GetId, \&OnDeb);
+	Wx::Event::EVT_CHECKBOX($self, $self->{ch_crd}->GetId, \&OnCrd);
+	Wx::Event::EVT_BUTTON($self, wxID_NEW, \&OnNew);
+	Wx::Event::EVT_BUTTON($self, wxID_REMOVE, \&OnRemove);
+	Wx::Event::EVT_BUTTON($self, wxID_APPLY, \&OnApply);
+	Wx::Event::EVT_BUTTON($self, wxID_CLOSE, \&OnClose);
+
 # end wxGlade
 
-	use Wx::Event qw(EVT_MENU EVT_CLOSE);
+	$self->fill_grid;
 
-	my $closehandler = sub {
-	    my ($self, $event) = @_;
-	    ($config->relw->{xpos}, $config->relw->{ypos}) = $self->GetPositionXY;
-	    ($config->relw->{xwidth}, $config->relw->{ywidth})= $self->GetSizeWH;
-	};
+	# This is to make editing the a grid cell immediately active.
+	# Thanks to Mattia.
+	my $flag;
 
-	EVT_CLOSE($self,
+	use Wx::Event qw(EVT_IDLE EVT_GRID_SELECT_CELL);
+
+	EVT_IDLE($self,
 		 sub {
-		     my ($self, $event) = @_;
-		     $closehandler->(@_);
-		     $self->Destroy;
+		     return unless $flag;
+		     $self->{gr_rel}->EnableCellEditControl;
+		     $flag = 0;
 		 });
 
-	use Wx::Event qw(EVT_BUTTON);
+	EVT_GRID_SELECT_CELL($self,
+			     sub {
+				 my ($self, $event) = @_;
+				 $flag = 1;
+				 $event->Skip;
+			     });
+	# End trickery.
 
 	return $self;
 
 }
 
+sub fill_grid {
+    my ($self) = @_;
+    my $deb = $self->{ch_deb}->GetValue;
+    my $crd = $self->{ch_crd}->GetValue;
+    my $sel = "";
+    if ( $deb && !$crd ) {
+	$sel = " WHERE rel_debcrd";
+    }
+    elsif ( !$deb && $crd ) {
+	$sel = " WHERE NOT rel_debcrd";
+    }
+
+    my $sth = $dbh->sql_exec("SELECT rel_code, rel_desc, rel_debcrd, rel_btw_status, rel_ledger, rel_acc_id".
+			     " FROM Relaties".
+			     $sel.
+			     " ORDER BY rel_code");
+
+    my $got = $sth->rows;
+    if ( $got ) {
+
+	# Adjust the size of the grid.
+	my $n = $self->{gr_rel}->GetNumberRows;
+	$self->{gr_rel}->AppendRows($got - $n) if $got > $n;
+	$self->{gr_rel}->DeleteRows($got, $n - $got) if $got < $n;
+
+	my $row = 0;
+	while ( my $rr = $sth->fetchrow_arrayref ) {
+	    my ($code, $desc, $debcrd, $btw, $ledger, $acct) = @$rr;
+	    my $col = 0;
+	    $self->{gr_rel}->SetCellValue($row, $col, $code);
+	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_LEFT, wxALIGN_CENTER);
+
+	    $col++;
+	    $self->{gr_rel}->SetCellValue($row, $col, $desc);
+	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_LEFT,  wxALIGN_CENTER);
+
+	    $col++;
+	    $self->{gr_rel}->SetCellValue($row, $col, $debcrd ? "D" : "C");
+	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_CENTER, wxALIGN_CENTER);
+
+	    $col++;
+	    $self->{gr_rel}->SetCellValue($row, $col, $acct);
+	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_RIGHT, wxALIGN_CENTER);
+	    $self->{gr_rel}->SetColFormatNumber($col) unless $row;
+
+	    $col++;
+	    my @tag = qw(Normaal Verlegd Intra Extra);
+	    $self->{gr_rel}->SetCellValue($row, $col, $tag[$btw]);
+	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_LEFT, wxALIGN_CENTER);
+	    $self->{gr_rel}->SetCellEditor($row, $col, Wx::GridCellChoiceEditor->new(\@tag, 0));
+
+	    $row++;
+	}
+	$self->Layout();
+    }
+    $self->{gr_rel}->EnableEditing(1);
+    $self->{gr_rel}->AutoSizeColumns(1);
+}
 
 sub __set_properties {
 	my $self = shift;
@@ -123,6 +194,44 @@ sub __do_layout {
 	$self->Layout();
 
 # end wxGlade
+}
+
+# wxGlade: RelPanel::OnDeb <event_handler>
+sub OnDeb {
+    my ($self, $event) = @_;
+    $self->fill_grid;
+}
+
+# wxGlade: RelPanel::OnCrd <event_handler>
+sub OnCrd {
+    my ($self, $event) = @_;
+    $self->fill_grid;
+}
+
+# wxGlade: RelPanel::OnNew <event_handler>
+sub OnNew {
+    my ($self, $event) = @_;
+    $event->Skip;
+}
+
+# wxGlade: RelPanel::OnRemove <event_handler>
+sub OnRemove {
+    my ($self, $event) = @_;
+    $event->Skip;
+}
+
+# wxGlade: RelPanel::OnApply <event_handler>
+sub OnApply {
+    my ($self, $event) = @_;
+    $event->Skip;
+}
+
+# wxGlade: RelPanel::OnClose <event_handler>
+sub OnClose {
+    my ($self, $event) = @_;
+    ($config->relw->{xpos}, $config->relw->{ypos}) = $self->GetPositionXY;
+    ($config->relw->{xwidth}, $config->relw->{ywidth})= $self->GetSizeWH;
+    $self->Show(0);
 }
 
 # end of class RelPanel

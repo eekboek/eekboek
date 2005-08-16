@@ -23,9 +23,6 @@ use EB::Finance;
 
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
-
-	warn("=> $size->[0] $size->[1]\n");
-
 	$parent = undef              unless defined $parent;
 	$id     = -1                 unless defined $id;
 	$title  = ""                 unless defined $title;
@@ -39,12 +36,6 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{w_acc_frame} = Wx::SplitterWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_BORDER);
-	$self->{maint_pane} = Wx::Panel->new($self->{w_acc_frame}, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{sz_btw_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, "BTW Tarief" );
-	$self->{sz_saldo_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, "Saldo" );
-	$self->{sz_acc_all_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, "Grootboekrekening" );
-	$self->{tree_pane} = Wx::Panel->new($self->{w_acc_frame}, -1, wxDefaultPosition, wxDefaultSize, );
 	
 
 	# Menu Bar
@@ -53,8 +44,38 @@ sub new {
 	$self->SetMenuBar($self->{acc_frame_menubar});
 	my $wxglade_tmp_menu;
 	$wxglade_tmp_menu = Wx::Menu->new();
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Nieuw ...", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Open ...", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Sluiten", "");
+	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Instellingen", "");
+	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_CLOSE, "E&xit\tAlt-x", "");
-	$self->{acc_frame_menubar}->Append($wxglade_tmp_menu, "&File");
+	$self->{acc_frame_menubar}->Append($wxglade_tmp_menu, "&Bestand");
+	$wxglade_tmp_menu = Wx::Menu->new();
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Knip", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Plak", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Kopiëer", "");
+	$self->{acc_frame_menubar}->Append($wxglade_tmp_menu, "&Edit");
+	$wxglade_tmp_menu = Wx::Menu->new();
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Grootboekrekeningen", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Relaties", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "BTW Tarieven", "");
+	$self->{acc_frame_menubar}->Append($wxglade_tmp_menu, "&Onderhoud");
+	$wxglade_tmp_menu = Wx::Menu->new();
+	$self->{acc_frame_menubar}->Append($wxglade_tmp_menu, "&Dagboeken");
+	$wxglade_tmp_menu = Wx::Menu->new();
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Proef- en Saldibalans", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Balans", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Resultaatrekening", "");
+	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Grootboek", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Journaal", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "BTW aangifte", "");
+	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Debiteuren", "");
+	$wxglade_tmp_menu->Append(Wx::NewId(), "Crediteuren", "");
+	$self->{acc_frame_menubar}->Append($wxglade_tmp_menu, "Rapportages");
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_ABOUT, "&Info", "");
 	$self->{acc_frame_menubar}->Append($wxglade_tmp_menu, "&Hulp");
@@ -62,20 +83,7 @@ sub new {
 # Menu Bar end
 
 	$self->{acc_frame_statusbar} = $self->CreateStatusBar(1, 0);
-	$self->{acc_tree} = AccTreeCtrl->new($self->{tree_pane}, -1, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
-	$self->{l_acc_id} = Wx::StaticText->new($self->{maint_pane}, -1, "Nr.", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_acc_desc} = Wx::StaticText->new($self->{maint_pane}, -1, "Omschrijving", wxDefaultPosition, wxDefaultSize, );
-	$self->{t_acc_id} = Wx::TextCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{t_acc_desc} = Wx::TextCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{rb_balres} = Wx::RadioBox->new($self->{maint_pane}, -1, "Indeling", wxDefaultPosition, wxDefaultSize, ["Balans", "Resultaat"], 0, wxRA_SPECIFY_ROWS);
-	$self->{rb_debcrd} = Wx::RadioBox->new($self->{maint_pane}, -1, "Richting", wxDefaultPosition, wxDefaultSize, ["Debet", "Credit"], 0, wxRA_SPECIFY_ROWS);
-	$self->{rb_kstomz} = Wx::RadioBox->new($self->{maint_pane}, -1, "Soort", wxDefaultPosition, wxDefaultSize, ["Kosten", "Omzet"], 0, wxRA_SPECIFY_ROWS);
-	$self->{l_saldo_opening} = Wx::StaticText->new($self->{maint_pane}, -1, "Opening", wxDefaultPosition, wxDefaultSize, );
-	$self->{t_saldo_opening} = Wx::StaticText->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, "Actueel", wxDefaultPosition, wxDefaultSize, );
-	$self->{t_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{b_accept} = Wx::Button->new($self->{maint_pane}, wxID_OK, "Toepassen");
-	$self->{b_cancel} = Wx::Button->new($self->{maint_pane}, wxID_CANCEL, "Annuleren");
+	$self->{eb_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("/home/jv/src/eekboek/GUI/eb.jpg", wxBITMAP_TYPE_ANY),wxDOUBLE_BORDER);
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -158,21 +166,18 @@ sub __set_properties {
 
 # begin wxGlade: MaintAccFrame::__set_properties
 
-	$self->SetTitle("frame");
+	$self->SetTitle("EekBoek");
+	$self->SetBackgroundColour(Wx::Colour->new(255, 255, 255));
 	$self->{acc_frame_statusbar}->SetStatusWidths(-1);
 	
 	my( @acc_frame_statusbar_fields ) = (
-		"acc_frame_statusbar"
+		"© 2005 Squirrel Consultancy"
 	);
 
 	if( @acc_frame_statusbar_fields ) {
 		$self->{acc_frame_statusbar}->SetStatusText($acc_frame_statusbar_fields[$_], $_) 	
 		for 0 .. $#acc_frame_statusbar_fields ;
 	}
-	$self->{rb_balres}->SetSelection(0);
-	$self->{rb_debcrd}->SetSelection(0);
-	$self->{rb_kstomz}->SetSelection(0);
-	$self->{maint_pane}->Enable(0);
 
 # end wxGlade
 }
@@ -182,56 +187,16 @@ sub __do_layout {
 
 # begin wxGlade: MaintAccFrame::__do_layout
 
-	$self->{acc_frame_sizer} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_acc_all}= Wx::StaticBoxSizer->new($self->{sz_acc_all_staticbox}, wxHORIZONTAL);
-	$self->{sz_acc} = Wx::BoxSizer->new(wxVERTICAL);
-	$self->{sz_acccan} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_saldo}= Wx::StaticBoxSizer->new($self->{sz_saldo_staticbox}, wxHORIZONTAL);
-	$self->{gr_saldo} = Wx::FlexGridSizer->new(2, 2, 5, 5);
-	$self->{sz_btw}= Wx::StaticBoxSizer->new($self->{sz_btw_staticbox}, wxHORIZONTAL);
-	$self->{sz_properties} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_id} = Wx::FlexGridSizer->new(2, 2, 5, 5);
-	$self->{sz_tree} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_tree}->Add($self->{acc_tree}, 1, wxEXPAND, 0);
-	$self->{tree_pane}->SetAutoLayout(1);
-	$self->{tree_pane}->SetSizer($self->{sz_tree});
-	$self->{sz_tree}->Fit($self->{tree_pane});
-	$self->{sz_tree}->SetSizeHints($self->{tree_pane});
-	$self->{sz_id}->Add($self->{l_acc_id}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_id}->Add($self->{l_acc_desc}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_id}->Add($self->{t_acc_id}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sz_id}->Add($self->{t_acc_desc}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_id}->AddGrowableCol(1);
-	$self->{sz_acc}->Add($self->{sz_id}, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sz_properties}->Add($self->{rb_balres}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_properties}->Add($self->{rb_debcrd}, 1, wxLEFT|wxRIGHT|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sz_properties}->Add($self->{rb_kstomz}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_acc}->Add($self->{sz_properties}, 0, wxTOP|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sz_acc}->Add($self->{sz_btw}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{gr_saldo}->Add($self->{l_saldo_opening}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{gr_saldo}->Add($self->{t_saldo_opening}, 0, wxLEFT|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{gr_saldo}->Add($self->{l_saldo_act}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{gr_saldo}->Add($self->{t_saldo_act}, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{gr_saldo}->AddGrowableCol(1);
-	$self->{sz_saldo}->Add($self->{gr_saldo}, 1, wxBOTTOM|wxEXPAND, 5);
-	$self->{sz_acc}->Add($self->{sz_saldo}, 0, wxEXPAND, 0);
-	$self->{sz_acc}->Add(0, 0, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_acccan}->Add($self->{b_accept}, 0, wxLEFT|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sz_acccan}->Add(5, 0, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_acccan}->Add($self->{b_cancel}, 0, wxRIGHT|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sz_acc}->Add($self->{sz_acccan}, 0, wxEXPAND, 0);
-	$self->{sz_acc_all}->Add($self->{sz_acc}, 1, wxEXPAND, 0);
-	$self->{maint_pane}->SetAutoLayout(1);
-	$self->{maint_pane}->SetSizer($self->{sz_acc_all});
-	$self->{sz_acc_all}->Fit($self->{maint_pane});
-	$self->{sz_acc_all}->SetSizeHints($self->{maint_pane});
-	$self->{w_acc_frame}->SplitVertically($self->{tree_pane}, $self->{maint_pane}, $config->sash1);
-	$self->{acc_frame_sizer}->Add($self->{w_acc_frame}, 1, wxEXPAND, 0);
+	$self->{sz_main} = Wx::BoxSizer->new(wxHORIZONTAL);
+	$self->{sz_main}->Add(120, 20, 0, wxEXPAND|wxADJUST_MINSIZE, 1);
+	$self->{sz_main}->Add($self->{eb_logo}, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 40);
+	$self->{sz_main}->Add(120, 20, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->SetAutoLayout(1);
-	$self->SetSizer($self->{acc_frame_sizer});
-	$self->{acc_frame_sizer}->Fit($self);
-	$self->{acc_frame_sizer}->SetSizeHints($self);
+	$self->SetSizer($self->{sz_main});
+	$self->{sz_main}->Fit($self);
+	$self->{sz_main}->SetSizeHints($self);
 	$self->Layout();
+	$self->Centre();
 
 # end wxGlade
 
@@ -241,7 +206,6 @@ sub __do_layout {
 
 sub _nf {
     my ($v, $debcrd) = @_;
-warn("_nf(@_)\n");
     numfmtw(abs($v)) . " " .
       (($debcrd ^ ($v < 0)) ? "Credit" : ($v ? "Debet" : ""));
 }
@@ -255,9 +219,9 @@ sub set_acc {
 
     $self->{t_acc_id}->SetValue($id);
     $self->{t_acc_desc}->SetValue($rr->[0]);
-    $self->{rb_balres}->SetSelection($rr->[1]);
-    $self->{rb_kstomz}->SetSelection($rr->[2]);
-    $self->{rb_debcrd}->SetSelection($rr->[3]);
+    $self->{rb_balres}->SetSelection(!$rr->[1]);
+    $self->{rb_kstomz}->SetSelection(!$rr->[2]);
+    $self->{rb_debcrd}->SetSelection(!$rr->[3]);
     $self->{rb_debcrd}->Show(1);
     $self->{sz_properties}->Layout;
     $self->{ch_btw}->SetSelection($rr->[4]);
@@ -284,8 +248,8 @@ sub set_vrd {
 
     $self->{t_acc_id}->SetValue($id);
     $self->{t_acc_desc}->SetValue($rr->[0]);
-    $self->{rb_balres}->SetSelection($rr->[1]);
-    $self->{rb_kstomz}->SetSelection($rr->[2]);
+    $self->{rb_balres}->SetSelection(!$rr->[1]);
+    $self->{rb_kstomz}->SetSelection(!$rr->[2]);
     $self->{rb_debcrd}->Show(0);
     $self->{sz_properties}->Layout;
 

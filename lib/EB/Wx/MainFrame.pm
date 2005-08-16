@@ -23,6 +23,8 @@ use DbkPanelB;
 use DbkPanelM;
 use DbkPanelK;
 
+my %cmds;
+
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
 	$parent = undef              unless defined $parent;
@@ -31,20 +33,6 @@ sub new {
 	$pos    = wxDefaultPosition  unless defined $pos;
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
-
-	use constant MENU_PREFS	     => Wx::NewId();
-	use constant MENU_RESTART    => Wx::NewId();
-	use constant MENU_GRBK	     => Wx::NewId();
-	use constant MENU_REL	     => Wx::NewId();
-	use constant MENU_BTW	     => Wx::NewId();
-	use constant MENU_R_PROOF    => Wx::NewId();
-	use constant MENU_R_BALANS   => Wx::NewId();
-	use constant MENU_R_RESULT   => Wx::NewId();
-	use constant MENU_R_GRBK     => Wx::NewId();
-	use constant MENU_R_JOURNAL  => Wx::NewId();
-	use constant MENU_R_BTW	     => Wx::NewId();
-	use constant MENU_R_DEB	     => Wx::NewId();
-	use constant MENU_R_CRD	     => Wx::NewId();
 
 # begin wxGlade: MainFrame::new
 
@@ -58,6 +46,21 @@ sub new {
 
 	$self->{mainframe_menubar} = Wx::MenuBar->new();
 	$self->SetMenuBar($self->{mainframe_menubar});
+	use constant MENU_PREFS => Wx::NewId();
+	use constant MENU_LOGW => Wx::NewId();
+	use constant MENU_LOGCLEAN => Wx::NewId();
+	use constant MENU_RESTART => Wx::NewId();
+	use constant MENU_GBK => Wx::NewId();
+	use constant MENU_REL => Wx::NewId();
+	use constant MENU_BTW => Wx::NewId();
+	use constant MENU_R_PRF => Wx::NewId();
+	use constant MENU_R_BAL => Wx::NewId();
+	use constant MENU_R_RES => Wx::NewId();
+	use constant MENU_R_GBK => Wx::NewId();
+	use constant MENU_R_JNL => Wx::NewId();
+	use constant MENU_R_BTW => Wx::NewId();
+	use constant MENU_R_DEB => Wx::NewId();
+	use constant MENU_R_CRD => Wx::NewId();
 	my $wxglade_tmp_menu;
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_NEW, "Nieuw ...", "Aanmaken nieuwe administartie");
@@ -66,8 +69,11 @@ sub new {
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(MENU_PREFS, "Instellingen", "Instellingen");
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(MENU_RESTART, "&Restart\tAlt-R", "Herstart (voor testen)");
-	$wxglade_tmp_menu->Append(wxID_CLOSE, "E&xit\tAlt-x", "Beëindig het programma");
+	$wxglade_tmp_menu->Append(MENU_LOGW, "Verberg log venster", "Toon of verberg het log venster");
+	$wxglade_tmp_menu->Append(MENU_LOGCLEAN, "Log venster schoonmaken", "");
+	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(MENU_RESTART, "Opnieuw starten\tAlt-R", "Herstart (voor testen)");
+	$wxglade_tmp_menu->Append(wxID_EXIT, "Beëndigen\tAlt-x", "Beëindig het programma");
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, "&Bestand");
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_CUT, "Knip", "");
@@ -75,19 +81,19 @@ sub new {
 	$wxglade_tmp_menu->Append(wxID_COPY, "Kopiëer", "");
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, "&Edit");
 	$wxglade_tmp_menu = Wx::Menu->new();
-	$wxglade_tmp_menu->Append(MENU_GRBK, "Grootboekrekeningen", "Onderhoud rekeningschema en grootboekrekeningen");
+	$wxglade_tmp_menu->Append(MENU_GBK, "Grootboekrekeningen", "Onderhoud rekeningschema en grootboekrekeningen");
 	$wxglade_tmp_menu->Append(MENU_REL, "Relaties", "Onderhoud debiteuren en crediteuren");
 	$wxglade_tmp_menu->Append(MENU_BTW, "BTW Tarieven", "Onderhoud BTW tariefgroepen");
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, "&Onderhoud");
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, "&Dagboeken");
 	$wxglade_tmp_menu = Wx::Menu->new();
-	$wxglade_tmp_menu->Append(MENU_R_PROOF, "Proef- en Saldibalans", "Opmaken Proef- en Saldibalans");
-	$wxglade_tmp_menu->Append(MENU_R_BALANS, "Balans", "Opmaken Balans");
-	$wxglade_tmp_menu->Append(MENU_R_RESULT, "Resultaatrekening", "Opmaken Resultaatrekening");
+	$wxglade_tmp_menu->Append(MENU_R_PRF, "Proef- en Saldibalans", "Opmaken Proef- en Saldibalans");
+	$wxglade_tmp_menu->Append(MENU_R_BAL, "Balans", "Opmaken Balans");
+	$wxglade_tmp_menu->Append(MENU_R_RES, "Resultaatrekening", "Opmaken Resultaatrekening");
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(MENU_R_GRBK, "Grootboek", "Opmaken Grootboekrapportage");
-	$wxglade_tmp_menu->Append(MENU_R_JOURNAL, "Journaal", "Opmaken Journaal");
+	$wxglade_tmp_menu->Append(MENU_R_GBK, "Grootboek", "Opmaken Grootboekrapportage");
+	$wxglade_tmp_menu->Append(MENU_R_JNL, "Journaal", "Opmaken Journaal");
 	$wxglade_tmp_menu->Append(MENU_R_BTW, "BTW aangifte", "Opmaken BTW aangifte");
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(MENU_R_DEB, "Debiteuren", "Opmaken Debiteurenoverzicht");
@@ -101,108 +107,62 @@ sub new {
 
 	$self->{mainframe_statusbar} = $self->CreateStatusBar(1, 0);
 	$self->{eb_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("/home/jv/src/eekboek/GUI/eb.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxDOUBLE_BORDER);
+	$self->{tx_log} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
 
 	$self->__set_properties();
 	$self->__do_layout();
 
+	Wx::Event::EVT_MENU($self, wxID_NEW, \&OnNew);
+	Wx::Event::EVT_MENU($self, wxID_OPEN, \&OnOpen);
+	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
+	Wx::Event::EVT_MENU($self, MENU_PREFS, \&OnPreferences);
+	Wx::Event::EVT_MENU($self, MENU_LOGW, \&OnLogw);
+	Wx::Event::EVT_MENU($self, MENU_LOGCLEAN, \&OnLogClean);
+	Wx::Event::EVT_MENU($self, MENU_RESTART, \&OnRestart);
+	Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnExit);
+	Wx::Event::EVT_MENU($self, MENU_GBK, \&OnMGbk);
+	Wx::Event::EVT_MENU($self, MENU_REL, \&OnMRel);
+	Wx::Event::EVT_MENU($self, MENU_BTW, \&OnMBtw);
+	Wx::Event::EVT_MENU($self, MENU_R_PRF, \&OnRPrf);
+	Wx::Event::EVT_MENU($self, MENU_R_BAL, \&OnRBal);
+	Wx::Event::EVT_MENU($self, MENU_R_RES, \&OnRRes);
+	Wx::Event::EVT_MENU($self, MENU_R_GBK, \&OnRGbk);
+	Wx::Event::EVT_MENU($self, MENU_R_JNL, \&OnRJnl);
+	Wx::Event::EVT_MENU($self, MENU_R_BTW, \&OnRBtw);
+	Wx::Event::EVT_MENU($self, MENU_R_DEB, \&OnRDeb);
+	Wx::Event::EVT_MENU($self, MENU_R_CRD, \&OnRCrd);
+	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
+
 # end wxGlade
+
+	$self->{OLDLOG} = Wx::Log::SetActiveTarget (Wx::LogTextCtrl->new($self->{tx_log}));
+	Wx::Log::SetTimestamp("%T");
+	Wx::LogMessage("Administratie: " . $config->lastdb);
 
 	$self->dagboekenmenu;
 
-	use Wx::Event qw(EVT_MENU EVT_CLOSE);
+	use Wx::Event qw(EVT_CLOSE);
 
-	my $closehandler = sub {
-	    my ($self, $event) = @_;
-	    my @a = $self->GetPositionXY;
-	    $config->mainw->{xpos} =  $a[0];
-	    $config->mainw->{ypos} =  $a[1];
-	    @a = $self->GetSizeWH;
-	    $config->mainw->{xwidth} = $a[0];
-	    $config->mainw->{ywidth} = $a[1];
+	EVT_CLOSE($self, \&OnExit);
 
-#	    # Explicitly destroy the hidden (but still alive!) dialogs.
-#	    foreach ( qw(search select filedialog dirdialog) ) {
-#		next unless $self->{"d_$_"};
-#		$self->{"d_$_"}->Destroy;
-#	    }
-	};
+	%cmds = ( open	 => wxID_OPEN,
+		  gbk	 => MENU_GBK,
+		  rel	 => MENU_REL,
+		  btw	 => MENU_BTW,
+		  rbal	 => MENU_R_BAL,
+		  rres	 => MENU_R_RES,
+		  rprf	 => MENU_R_PRF,
+		  rgbk	 => MENU_R_GBK,
+		  jnl	 => MENU_R_JNL,
+		  rbtw	 => MENU_R_BTW,
+		  rdeb	 => MENU_R_DEB,
+		  rcrd	 => MENU_R_CRD,
+		  log	 => MENU_LOGW,
+		  about	 => wxID_ABOUT,
+	     );
 
-	EVT_MENU($self, wxID_CLOSE,
-		 sub {
-		     my ($self, $event) = @_;
-		     $closehandler->(@_);
-		     $self->Close(1);
-		 });
-
-
-	EVT_CLOSE($self,
-		 sub {
-		     my ($self, $event) = @_;
-		     $closehandler->(@_);
-		     $self->Destroy;
-		 });
-
-	EVT_MENU($self, MENU_RESTART,
-		 sub {
-		     my ($self, $event) = @_;
-		     $closehandler->(@_);
-		     $::restart++;
-		     $self->Close(1);
-		 });
-
-	EVT_MENU($self, wxID_ABOUT,
-		 sub {
-		     Wx::MessageBox("$::appname -- Squirrel Consultancy\n".
-				    "wxPerl version $Wx::VERSION\n".
-				    "wxWidgets version ".Wx::wxVERSION,
-				    "Info...",
-				    wxOK,
-				    $self);
-		 });
-
-	EVT_MENU($self, MENU_GRBK,
-		 sub {
-		     use AccPanel;
-		     $self->{d_accpanel} ||= AccPanel->new($self, -1,
-							   "Onderhoud Grootboekrekeningen",
-							   [$config->accw->{xpos},$config->accw->{ypos}],
-							   [$config->accw->{xwidth},$config->accw->{ywidth}],
-							  );
-		     $self->{d_accpanel}->SetSize([$config->accw->{xwidth},$config->accw->{ywidth}]);
-#		     $self->{d_accpanel}->ShowModal();
-		     $self->{d_accpanel}->Show(1);
-		 });
-
-	EVT_MENU($self, MENU_REL,
-		 sub {
-		     use RelPanel;
-		     $self->{d_relpanel} ||= RelPanel->new($self, -1,
-							   "Onderhoud Relaties",
-							   [$config->relw->{xpos},$config->relw->{ypos}],
-							   [$config->relw->{xwidth},$config->relw->{ywidth}],
-							  );
-		     $self->{d_relpanel}->SetSize([$config->relw->{xwidth},$config->relw->{ywidth}]);
-#		     $self->{d_relpanel}->ShowModal();
-		     $self->{d_relpanel}->Show(1);
-		 });
-
-	EVT_MENU($self, MENU_BTW,
-		 sub {
-		     use BtwPanel;
-		     $self->{d_btwpanel} ||= BtwPanel->new($self, -1,
-							   "Onderhoud BTW tarievem",
-							   [$config->btww->{xpos},$config->btww->{ypos}],
-							   [$config->btww->{xwidth},$config->btww->{ywidth}],
-							  );
-		     $self->{d_btwpanel}->SetSize([$config->btww->{xwidth},$config->btww->{ywidth}]);
-#		     $self->{d_btwpanel}->ShowModal();
-		     $self->{d_btwpanel}->Show(1);
-		 });
-
-	return $self;
-
+	$self;
 }
-
 
 sub __set_properties {
 	my $self = shift;
@@ -230,10 +190,13 @@ sub __do_layout {
 
 # begin wxGlade: MainFrame::__do_layout
 
-	$self->{sz_main} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_main}->Add(120, 20, 0, wxEXPAND|wxADJUST_MINSIZE, 1);
-	$self->{sz_main}->Add($self->{eb_logo}, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 40);
-	$self->{sz_main}->Add(120, 20, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sz_main} = Wx::BoxSizer->new(wxVERTICAL);
+	$self->{sizer_4} = Wx::BoxSizer->new(wxHORIZONTAL);
+	$self->{sizer_4}->Add(150, 20, 1, wxADJUST_MINSIZE, 0);
+	$self->{sizer_4}->Add($self->{eb_logo}, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 40);
+	$self->{sizer_4}->Add(150, 20, 1, wxADJUST_MINSIZE, 0);
+	$self->{sz_main}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
+	$self->{sz_main}->Add($self->{tx_log}, 1, wxALL|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_main});
 	$self->{sz_main}->Fit($self);
@@ -241,6 +204,33 @@ sub __do_layout {
 	$self->Layout();
 
 # end wxGlade
+}
+
+sub closehandler {
+    my ($self) = @_;
+    @{$config->mainw}{qw(xpos ypos xwidth ywidth)} = ($self->GetPositionXY, $self->GetSizeWH);
+
+    # Explicitly destroy the hidden (but still alive!) dialogs.
+    foreach ( qw(opendialog) ) {
+	next unless $self->{"d_$_"};
+	$self->{"d_$_"}->Destroy;
+    }
+}
+
+sub command {
+    my ($self, $cmd) = @_;
+    use Wx qw(wxEVT_COMMAND_MENU_SELECTED);
+
+    foreach ( split(":", $cmd) ) {
+	if ( exists($cmds{$_}) ) {
+	    Wx::PostEvent($self,
+			  Wx::CommandEvent->new(wxEVT_COMMAND_MENU_SELECTED, $cmds{$_}));
+	}
+	else {
+	    Wx::LogMessage("Unknown command: $_");
+	}
+    }
+
 }
 
 sub dagboekenmenu {
@@ -276,6 +266,251 @@ sub dagboekenmenu {
       ($ix, $tmp,
        $self->{mainframe_menubar}->GetLabelTop($ix));
     $tmp->Destroy if $tmp;
+}
+
+sub DESTROY {
+    my $self = shift;
+    Wx::Log::SetActiveTarget($self->{OLDLOG})->Destroy;
+}
+
+# wxGlade: MainFrame::OnNew <event_handler>
+sub OnNew {
+    my ($self, $event) = @_;
+    $event->Skip;
+}
+
+# wxGlade: MainFrame::OnOpen <event_handler>
+sub OnOpen {
+    my ($self, $event) = @_;
+    use DbOpenDialog;
+    $self->{d_opendialog} ||= DbOpenDialog->new($self, -1,
+						"Openen database",
+						[$config->openw->{xpos},$config->openw->{ypos}],
+						[$config->openw->{xwidth},$config->openw->{ywidth}],
+					       );
+    $self->{d_opendialog}->SetSize([$config->openw->{xwidth},$config->openw->{ywidth}]);
+    $self->{d_opendialog}->refresh;
+    return unless $self->{d_opendialog}->ShowModal;
+
+    # Refresh existing reports.
+    foreach my $rep ( qw(prf bal res jnl gbk deb crd btw) ) {
+	next unless $self->{"d_r${rep}panel"};
+	$self->{"d_r${rep}panel"}->refresh;
+    }
+    # Close other windows.
+    foreach my $win ( qw(acc rel btw) ) {
+	next unless $self->{"d_${win}panel"};
+	$self->{"d_${win}panel"}->Destroy;
+	undef $self->{"d_${win}panel"};
+    }
+
+}
+
+# wxGlade: MainFrame::OnClose <event_handler>
+sub OnClose {
+    my ($self, $event) = @_;
+    $event->Skip;
+}
+
+# wxGlade: MainFrame::OnPreferences <event_handler>
+sub OnPreferences {
+	my ($self, $event) = @_;
+	$event->Skip;
+}
+
+# wxGlade: MainFrame::OnLogw <event_handler>
+sub OnLogw {
+    my ($self, $event) = @_;
+    if ( $self->{tx_log}->IsShown ) {
+	$self->{tx_log}->Show(0);
+	$self->{mainframe_menubar}->SetLabel(MENU_LOGW, "Toon log venster");
+    }
+    else {
+	$self->{tx_log}->Show(1);
+	$self->{mainframe_menubar}->SetLabel(MENU_LOGW, "Verberg log venster");
+    }
+    $self->Layout;
+}
+
+# wxGlade: MainFrame::OnLogClean <event_handler>
+sub OnLogClean {
+    my ($self, $event) = @_;
+    $self->{tx_log}->Clear;
+}
+
+# wxGlade: MainFrame::OnRestart <event_handler>
+sub OnRestart {
+    my ($self, $event) = @_;
+    $self->closehandler(@_);
+    $::restart++;
+    $self->Close(1);
+}
+
+# wxGlade: MainFrame::OnExit <event_handler>
+sub OnExit {
+    my ($self, $event) = @_;
+    $self->closehandler(@_);
+    $self->Destroy;
+}
+
+# wxGlade: MainFrame::OnMGbk <event_handler>
+sub OnMGbk {
+    my ($self, $event) = @_;
+    use AccPanel;
+    $self->{d_accpanel} ||= AccPanel->new($self, -1,
+					  "Onderhoud Grootboekrekeningen",
+					  [$config->accw->{xpos},$config->accw->{ypos}],
+					  [$config->accw->{xwidth},$config->accw->{ywidth}],
+					 );
+    $self->{d_accpanel}->Move([$config->accw->{xpos},$config->accw->{ypos}]);
+    $self->{d_accpanel}->SetSize([$config->accw->{xwidth},$config->accw->{ywidth}]);
+    $self->{d_accpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnMRel <event_handler>
+sub OnMRel {
+    my ($self, $event) = @_;
+    use RelPanel;
+    $self->{d_relpanel} ||= RelPanel->new($self, -1,
+					  "Onderhoud Relaties",
+					  [$config->relw->{xpos},$config->relw->{ypos}],
+					  [$config->relw->{xwidth},$config->relw->{ywidth}],
+					 );
+    $self->{d_relpanel}->SetSize([$config->relw->{xwidth},$config->relw->{ywidth}]);
+    $self->{d_relpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnMBtw <event_handler>
+sub OnMBtw {
+    my ($self, $event) = @_;
+    use BtwPanel;
+    $self->{d_btwpanel} ||= BtwPanel->new($self, -1,
+					  "Onderhoud BTW instellingen",
+					  [$config->btww->{xpos},$config->btww->{ypos}],
+					  [$config->btww->{xwidth},$config->btww->{ywidth}],
+					 );
+    $self->{d_btwpanel}->SetSize([$config->btww->{xwidth},$config->btww->{ywidth}]);
+    $self->{d_btwpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnRPrf <event_handler>
+sub OnRPrf {
+    my ($self, $event) = @_;
+    use RepProof;
+    $self->{d_rprfpanel} ||= RepBalRes->new($self, -1,
+					    "Resultaat",
+					    [$config->rprfw->{xpos},$config->rprfw->{ypos}],
+					    [$config->rprfw->{xwidth},$config->rprfw->{ywidth}],
+					   );
+    $self->{d_rprfpanel}->SetSize([$config->rprfw->{xwidth},$config->rprfw->{ywidth}]);
+    $self->{d_rprfpanel}->init("prf");
+    $self->{d_rprfpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnRBal <event_handler>
+sub OnRBal {
+    my ($self, $event) = @_;
+    use RepBalRes;
+    $self->{d_rbalpanel} ||= RepBalRes->new($self, -1,
+					    "Balans",
+					    [$config->rbalw->{xpos},$config->rbalw->{ypos}],
+					    [$config->rbalw->{xwidth},$config->rbalw->{ywidth}],
+					   );
+    $self->{d_rbalpanel}->SetSize([$config->rbalw->{xwidth},$config->rbalw->{ywidth}]);
+    $self->{d_rbalpanel}->init("bal");
+    $self->{d_rbalpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnRRes <event_handler>
+sub OnRRes {
+    my ($self, $event) = @_;
+    use RepBalRes;
+    $self->{d_rrespanel} ||= RepBalRes->new($self, -1,
+					    "Resultaat",
+					    [$config->rresw->{xpos},$config->rresw->{ypos}],
+					    [$config->rresw->{xwidth},$config->rresw->{ywidth}],
+					   );
+    $self->{d_rrespanel}->SetSize([$config->rresw->{xwidth},$config->rresw->{ywidth}]);
+    $self->{d_rrespanel}->init("res");
+    $self->{d_rrespanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnRGbk <event_handler>
+sub OnRGbk {
+    my ($self, $event) = @_;
+    use RepGrootboek;
+    $self->{d_rgbkpanel} ||= RepGrootboek->new($self, -1,
+					       "Grootboek",
+					       [$config->rgbkw->{xpos},$config->rgbkw->{ypos}],
+					       [$config->rgbkw->{xwidth},$config->rgbkw->{ywidth}],
+					      );
+    $self->{d_rgbkpanel}->SetSize([$config->rgbkw->{xwidth},$config->rgbkw->{ywidth}]);
+    $self->{d_rgbkpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnRJnl <event_handler>
+sub OnRJnl {
+    my ($self, $event) = @_;
+    use RepJournaal;
+    $self->{d_rjnlpanel} ||= RepJournaal->new($self, -1,
+					      "Journaal",
+					      [$config->rjnlw->{xpos},$config->rjnlw->{ypos}],
+					      [$config->rjnlw->{xwidth},$config->rjnlw->{ywidth}],
+					     );
+    $self->{d_rjnlpanel}->SetSize([$config->rjnlw->{xwidth},$config->rjnlw->{ywidth}]);
+    $self->{d_rjnlpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnRBtw <event_handler>
+sub OnRBtw {
+    my ($self, $event) = @_;
+    use RepBtw;
+    $self->{d_rbtwpanel} ||= RepBtw->new($self, -1,
+					 "BTW aangifte",
+					 [$config->rbtww->{xpos},$config->rbtww->{ypos}],
+					 [$config->rbtww->{xwidth},$config->rbtww->{ywidth}],
+					);
+    $self->{d_rbtwpanel}->SetSize([$config->rbtww->{xwidth},$config->rbtww->{ywidth}]);
+    $self->{d_rbtwpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnRDeb <event_handler>
+sub OnRDeb {
+    my ($self, $event) = @_;
+    use RepDebCrd;
+    $self->{d_rdebpanel} ||= RepDebCrd->new($self, -1,
+					    "Debiteuren",
+					    [$config->rdebw->{xpos},$config->rdebw->{ypos}],
+					    [$config->rdebw->{xwidth},$config->rdebw->{ywidth}],
+					   );
+    $self->{d_rdebpanel}->SetSize([$config->rdebw->{xwidth},$config->rdebw->{ywidth}]);
+    $self->{d_rdebpanel}->init("deb");
+    $self->{d_rdebpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnRCrd <event_handler>
+sub OnRCrd {
+    my ($self, $event) = @_;
+    use RepDebCrd;
+    $self->{d_rcrdpanel} ||= RepDebCrd->new($self, -1,
+					    "Crediteuren",
+					    [$config->rcrdw->{xpos},$config->rcrdw->{ypos}],
+					    [$config->rcrdw->{xwidth},$config->rcrdw->{ywidth}],
+					   );
+    $self->{d_rcrdpanel}->SetSize([$config->rcrdw->{xwidth},$config->rcrdw->{ywidth}]);
+    $self->{d_rcrdpanel}->init("crd");
+    $self->{d_rcrdpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnAbout <event_handler>
+sub OnAbout {
+    my ($self, $event) = @_;
+    Wx::MessageBox("$::appname -- Squirrel Consultancy\n".
+		   "wxPerl version $Wx::VERSION\n".
+		   "wxWidgets version ".Wx::wxVERSION,
+		   "Info...",
+		   wxOK,
+		   $self);
 }
 
 # end of class MainFrame

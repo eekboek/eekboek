@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: ebgui,v 1.1 2005/08/02 12:25:48 jv Exp $ ';
+my $RCS_Id = '$Id: ebgui,v 1.2 2005/08/16 21:21:11 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Aug  1 22:34:31 2005
-# Update Count    : 28
+# Last Modified On: Thu Aug 11 18:12:19 2005
+# Update Count    : 51
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -29,14 +29,13 @@ $my_version .= '*' if length('$Locker:  $ ') > 12;
 use Getopt::Long 2.13;
 
 # Command line options.
-my $s_album;		# searching for album
-my $s_artist;		# searching for artist
+my $dataset;
 our $trace = 1;
 our $verbose = 1;
+my $precmd;
 
 # Development options (not shown with -help).
 my $debug = 0;			# debugging
-#my $trace = 0;			# trace (show process)
 my $test = 0;			# test mode.
 
 # Save options array (for restart).
@@ -105,6 +104,8 @@ sub OnInit {
     ::set_status("Administratie: $ENV{EB_DB_NAME}")
       if $ENV{EB_DB_NAME};
 
+    $frame->command($precmd) if $precmd;
+
     return 1;
 }
 
@@ -125,6 +126,7 @@ sub set_status {
 sub exit {
     store_state();
     if ( $restart ) {		# for development
+	warn("=== restarting ===\n");
 	exec($^X, $0, @opts);
     }
 }
@@ -150,17 +152,57 @@ sub init_state {
 
     # MainFrame.
     $config->define("mainw",    { ARGCOUNT => ARGCOUNT_HASH });
+    $config->mainw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Open...
+    $config->define("openw",    { ARGCOUNT => ARGCOUNT_HASH });
+    $config->openw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
     # Maint -- AccPanel
     $config->define("accw",     { ARGCOUNT => ARGCOUNT_HASH });
     $config->define("accsash",  { DEFAULT => 400, ARGCOUNT => ARGCOUNT_ONE });
     $config->define("accexp",   { ARGCOUNT => ARGCOUNT_HASH });
+    $config->accw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
     # Maint -- RelPanel
     $config->define("relw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->relw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
     # Maint -- BtwPanel
     $config->define("btww",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->btww->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Report -- RepPrf
+    $config->define("rprfw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->rprfw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Report -- RepBalRes
+    $config->define("rbalw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->rbalw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Report -- RepBalRes
+    $config->define("rresw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->rresw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Report -- RepGbk
+    $config->define("rgbkw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->rgbkw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Report -- RepJnl
+    $config->define("rjnlw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->rjnlw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Report -- RepBtw
+    $config->define("rbtww",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->rbtww->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Report -- RepDebCrd
+    $config->define("rdebw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->rdebw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Report -- RepDebCrd
+    $config->define("rcrdw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->rcrdw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
     # Load config (actually, state) file.
     my $f = $ENV{HOME} . "/.$appclass/$my_name";
@@ -208,8 +250,8 @@ sub app_options {
     return unless @ARGV > 0;
 
     if ( !GetOptions(
-		     'album=s'	=> \$s_album,
-		     'artist=s'	=> \$s_artist,
+		     'dataset|db=s' => \$dataset,
+		     'open=s'	=> \$precmd,
 		     'ident'	=> \$ident,
 		     'verbose'	=> \$verbose,
 		     'trace!'	=> \$trace,
@@ -248,14 +290,21 @@ unless(caller){
     use EB::Globals;
     use EB::DB;
 
+    use POSIX qw(locale_h);
+    setlocale(LC_ALL, "nl_NL");
+
     init_state();
 
-    if ( $config->lastdb ) {
-	$ENV{EB_DB_NAME} = $config->lastdb;
-	$ENV{EB_DB} = "dbi:Pg:dbname=".$config->lastdb;
+    $dataset ||= $config->lastdb || $ENV{EB_DB_NAME};
+    if ( $dataset ) {
+	$ENV{EB_DB_NAME} = $dataset;
+	$ENV{EB_DB} = "dbi:Pg:dbname=".$dataset;
     }
-
+    else {
+	die("?Geen dataset. Specificeer een database met --dataset of zet de environment variabele EB_DB_NAME\n");
+    }
     $::dbh = EB::DB->new(trace => $ENV{EB_SQL_TRACE});
+    $config->set(lastdb => $dataset);
 
     my $acc = MainApp->new();
     $acc->MainLoop();
