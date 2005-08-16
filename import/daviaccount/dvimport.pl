@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.8 2005/08/14 17:03:08 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.9 2005/08/16 20:18:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 14 14:58:47 2005
-# Update Count    : 244
+# Last Modified On: Tue Aug 16 22:09:35 2005
+# Update Count    : 245
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -370,6 +370,15 @@ sub write_rekeningschema {
 		       0), "\n");
     }
     print $f ("\\.\n\n");
+    close($f);
+
+    open($f, ">std.sql") or die("Cannot create std.sql: $!\n");
+
+    print $f ("-- Standaardrekeningen\n",
+	      "INSERT INTO Standaardrekeningen\n",
+	      " (std_acc_crd, std_acc_winst, std_acc_btw_il, std_acc_deb,".
+	      " std_acc_btw_vh, std_acc_btw_ok, std_acc_btw_vl, std_acc_btw_ih)\n",
+	      "VALUES (1600, 500, 1530, 1200, 1500, 1560, 1510, 1520);\n");
     close($f);
 
     open($f, ">open.dat") or die("Cannot create open.dat: $!\n");
