@@ -34,3 +34,9 @@ ebshell -c grootboek --detail=0 | diff -c - grootboek0.txt
 ebshell -c grootboek --detail=1 | diff -c - grootboek1.txt
 ebshell -c grootboek --detail=2 | diff -c - grootboek2.txt
 ebshell -c btwaangifte j | diff -c - btw.txt
+
+if test -x /usr/local/bin/postgresql_autodoc
+then
+    echo "=== $EB_DB_NAME === autodoc ==="
+    /usr/local/bin/postgresql_autodoc -d $EB_DB_NAME -t html
+fi
