@@ -1,13 +1,19 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.10 2005/07/30 15:08:30 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.11 2005/08/17 21:16:37 jv Exp $ ';
+
+package main;
+
+our $dbh;
+our $app;
+our $config;
 
 package EB::Booking::BKM;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul 30 15:29:17 2005
-# Update Count    : 157
+# Last Modified On: Wed Aug 17 22:02:37 2005
+# Update Count    : 160
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -51,17 +57,17 @@ sub perform {
 
     my $nr = 1;
     my $bsk_id;
-    my $gacct = $::dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_acc_id));
+    my $gacct = $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_acc_id));
 
     print("Huidig saldo: ",
-	  numfmt($::dbh->lookup($gacct, qw(Accounts acc_id acc_balance))), "\n")
+	  numfmt($dbh->lookup($gacct, qw(Accounts acc_id acc_balance))), "\n")
       if $gacct;
 
-    $bsk_id = $opts->{boekstuk} || $::dbh->get_sequence("bsk_nr_${dagboek}_seq");
-    $::dbh->sql_insert("Boekstukken",
+    $bsk_id = $opts->{boekstuk} || $dbh->get_sequence("bsk_nr_${dagboek}_seq");
+    $dbh->sql_insert("Boekstukken",
 		     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_paid)],
 		     $bsk_id, $gdesc, $dagboek, $date, undef);
-    $bsk_id = $::dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
+    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
     my $tot = 0;
     my $did = 0;
     my $fail = 0;
@@ -79,9 +85,9 @@ sub perform {
 		$acct = $1;
 		$dc = lc($2) eq 'd' ? 1 : 0;
 	    }
-	    my $rr = $::dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
-				" FROM Accounts".
-				" WHERE acc_id = ?", $acct);
+	    my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
+			      " FROM Accounts".
+			      " WHERE acc_id = ?", $acct);
 	    unless ( $rr ) {
 		warn("?Onbekend rekeningnummer: $acct\n");
 		$fail++;
@@ -91,18 +97,16 @@ sub perform {
 
 	    if ( $balres && $dagboek_type != DBKTYPE_MEMORIAAL ) {
 		warn("!Rekening $acct ($adesc) is een balansrekening\n");
-		#$::dbh->rollback;
+		#$dbh->rollback;
 		#return;
 	    }
 
 	    ($amt, $btw_id) = amount($amt, $btw_id);
 
-	    my $btw_acc;
-	    ($btw_acc) = @{$::dbh->do("SELECT btg_acc_".
-				      ($debcrd ? "inkoop" : "verkoop").
-				      " FROM BTWTabel, BTWTariefgroepen".
-				      " WHERE btw_tariefgroep = btg_id AND btw_id = ?",
-				      $btw_id)};
+	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+	    my $btw_acc = $debcrd ?
+	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
+		$dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
 
 	    my $btw = 0;
 	    my $bsr_amount = $amt;
@@ -115,22 +119,22 @@ sub perform {
 	    }
 	    $orig_amount = -$orig_amount unless $debcrd;
 
-	    $::dbh->sql_insert("Boekstukregels",
-			       [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
-				   bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
-			       $nr++, $date, $bsk_id, $desc, $orig_amount,
-			       $btw_id, $btw_acc, 0, $acct, undef);
+	    $dbh->sql_insert("Boekstukregels",
+			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
+				 bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
+			     $nr++, $date, $bsk_id, $desc, $orig_amount,
+			     $btw_id, $btw_acc, 0, $acct, undef);
 
 	    $amt = -$amt, $btw = -$btw if $debcrd;
 	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
-	    $::dbh->upd_account($acct, -$amt);
+	    $dbh->upd_account($acct, -$amt);
 	    $tot += $amt;
 
 	    if ( $btw ) {
 		my $btw_acct =
-		  $::dbh->lookup($acct, qw(Accounts acc_id acc_debcrd)) ? $btw_ink : $btw_verk;
+		  $dbh->lookup($acct, qw(Accounts acc_id acc_debcrd)) ? $btw_ink : $btw_verk;
 		warn("update $btw_acct with ".numfmt(-$btw)."\n") if $trace_updates;
-		$::dbh->upd_account($btw_acct, -$btw);
+		$dbh->upd_account($btw_acct, -$btw);
 		$tot += $btw;
 	    }
 
@@ -145,7 +149,7 @@ sub perform {
 
 	    $amt = amount($amt);
 
-	    my $rr = $::dbh->do("SELECT rel_acc_id FROM Relaties" .
+	    my $rr = $dbh->do("SELECT rel_acc_id FROM Relaties" .
 			      " WHERE rel_code = ?" .
 			      "  AND " . ($debcrd ? "" : "NOT ") . "rel_debcrd",
 			      $rel);
@@ -169,7 +173,7 @@ sub perform {
 	    my @sql_args = ( $amt ? $amt : (),
 			   $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP,
 			   $rel );
-	    $rr = $::dbh->do($sql, @sql_args);
+	    $rr = $dbh->do($sql, @sql_args);
 	    unless ( defined($rr) ) {
 		warn("?Geen bijbehorende open post gevonden\n");
 		warn("SQL: $sql\n");
@@ -179,24 +183,24 @@ sub perform {
 	    }
 	    my ($bskid, $dbk_id, $bsk_desc, $bsk_amount) = @$rr;
 
-	    my $acct = $::dbh->std_acc($debcrd ? "deb" : "crd");
+	    my $acct = $dbh->std_acc($debcrd ? "deb" : "crd");
 	    $amt = $bsk_amount;
 
-	    $::dbh->sql_insert("Boekstukregels",
-			       [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
-				   bsr_btw_id bsr_type bsr_acc_id bsr_rel_code)],
-			       $nr++, $date, $bsk_id, "*".$bsk_desc,
-#			       $debcrd ? -$amt : $amt,
-			       -$amt,
-			       0, $type eq "deb" ? 1 : 2, $acct, $rel);
-	    my $id = $::dbh->get_sequence("boekstukregels_bsr_id_seq", "noincr");
-	    $::dbh->sql_exec("UPDATE Boekstukken".
-			     " SET bsk_paid = ?".
-			     " WHERE bsk_id = ?",
-			     $id, $bskid);
+	    $dbh->sql_insert("Boekstukregels",
+			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
+				 bsr_btw_id bsr_type bsr_acc_id bsr_rel_code)],
+			     $nr++, $date, $bsk_id, "*".$bsk_desc,
+#			     $debcrd ? -$amt : $amt,
+			     -$amt,
+			     0, $type eq "deb" ? 1 : 2, $acct, $rel);
+	    my $id = $dbh->get_sequence("boekstukregels_bsr_id_seq", "noincr");
+	    $dbh->sql_exec("UPDATE Boekstukken".
+			   " SET bsk_paid = ?".
+			   " WHERE bsk_id = ?",
+			   $id, $bskid);
 
 	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
-	    $::dbh->upd_account($acct, -$amt);
+	    $dbh->upd_account($acct, -$amt);
 	    $tot += $amt;
 	}
 	else {
@@ -209,8 +213,8 @@ sub perform {
 
     if ( $gacct ) {
 	warn("update $gacct with ".numfmt($tot)."\n") if $trace_updates;
-	$::dbh->upd_account($gacct, $tot);
-	my $new = $::dbh->lookup($gacct, qw(Accounts acc_id acc_balance));
+	$dbh->upd_account($gacct, $tot);
+	my $new = $dbh->lookup($gacct, qw(Accounts acc_id acc_balance));
 	print("Nieuw saldo: ", numfmt($new), "\n");
 	if ( $opts->{saldo} ) {
 	    my $exp = amount($opts->{saldo});
@@ -224,16 +228,16 @@ sub perform {
 	warn("?Boekstuk is niet in balans (verschil is ".numfmt($tot).")\n");
 	$fail++;
     }
-    $::dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
-		     $tot, $bsk_id)->finish;
+    $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
+		   $tot, $bsk_id)->finish;
 
-    $::dbh->store_journal(EB::Finance::journalise($bsk_id));
+    $dbh->store_journal(EB::Finance::journalise($bsk_id));
 
     if ( $fail ) {
-	$::dbh->rollback;
+	$dbh->rollback;
 	return undef;
     }
-    $::dbh->commit;
+    $dbh->commit;
 
     EB::Journal::Text->new->journal({select => $bsk_id, detail => 1}) if $opts->{journal};
 

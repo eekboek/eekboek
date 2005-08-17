@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.9 2005/08/16 20:18:19 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.10 2005/08/17 21:16:37 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 16 22:09:35 2005
-# Update Count    : 245
+# Last Modified On: Wed Aug 17 21:51:25 2005
+# Update Count    : 246
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -292,13 +292,6 @@ sub read_btw {
     }
 
     open(my $f, ">btw.sql") or die("Cannot create btw.sql: $!\n");
-
-    print $f ("-- BTW Tariefgroepen\n\n",
-	      "COPY BTWTariefgroepen (btg_id, btg_desc, btg_acc_verkoop, btg_acc_inkoop) FROM stdin;\n",
-	      "@{[BTWTYPE_GEEN]}\tBTW Geen\t\\N\t\\N\n",
-	      "@{[BTWTYPE_HOOG]}\tBTW Hoog\t$btw_acc_hi_v\t$btw_acc_hi_i\n",
-	      "@{[BTWTYPE_LAAG]}\tBTW Laag\t$btw_acc_lo_v\t$btw_acc_lo_i\n",
-	      "\\.\n\n");
 
     print $f ("-- BTW Tabel\n\n",
 	      "COPY BTWTabel (btw_id, btw_desc, btw_perc, btw_incl, btw_tariefgroep) FROM stdin;\n");

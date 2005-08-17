@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.6 2005/08/15 17:16:34 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.7 2005/08/17 21:16:37 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Aug 15 19:08:24 2005
-# Update Count    : 68
+# Last Modified On: Wed Aug 17 21:49:51 2005
+# Update Count    : 87
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -30,85 +30,56 @@ my $trace = 0;
 sub check_stdacc {
     my ($self) = @_;
 
-    my ($std_acc_deb, $std_acc_crd, $std_acc_btw_ih, $std_acc_btw_il,
-	$std_acc_btw_vh, $std_acc_btw_vl, $std_acc_btw_paid, $std_acc_winst) =
-      @{$self->do("SELECT std_acc_deb, std_acc_crd,".
-		  " std_acc_btw_ih, std_acc_btw_il,".
-		  " std_acc_btw_vh, std_acc_btw_vl,".
-		  " std_acc_btw_ok, std_acc_winst".
-		  " FROM Standaardrekeningen")};
     my $fail = 0;
 
-    my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $std_acc_deb);
-    $fail++, warn("?Geen grootboekrekening voor debiteuren ($std_acc_deb)\n")
-      unless $rr;
-#    $fail++,
-      warn("?Verkeerde grootboekrekening voor debiteuren ($std_acc_deb)\n")
-      unless $rr->[0] && $rr->[1];
+    for ( $self->std_acc("deb") ) {
+	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
+	$fail++, warn("?Geen grootboekrekening voor debiteuren ($_)\n")
+	  unless $rr;
+	# $fail++,
+	warn("?Verkeerde grootboekrekening voor debiteuren ($_)\n")
+	  unless $rr->[0] && $rr->[1];
+    }
 
-    $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $std_acc_crd);
-    $fail++, warn("?Geen grootboekrekening voor crediteuren ($std_acc_crd)\n")
-      unless $rr;
-#    $fail++,
-      warn("?Verkeerde grootboekrekening voor crediteuren ($std_acc_crd)\n")
-      if $rr->[0] || !$rr->[1];
+    for ( $self->std_acc("crd") ) {
+	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
+	$fail++, warn("?Geen grootboekrekening voor crediteuren ($_)\n")
+	  unless $rr;
+	# $fail++,
+	warn("?Verkeerde grootboekrekening voor crediteuren ($_)\n")
+	  if $rr->[0] || !$rr->[1];
+    }
 
-    $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $std_acc_btw_paid);
-    $fail++, warn("?Geen grootboekrekening voor BTW betaald ($std_acc_btw_paid)\n")
-      unless $rr;
-    $fail++, warn("?Verkeerde grootboekrekening voor BTW betaald ($std_acc_btw_paid)\n")
-      unless $rr->[0];
+    for ( $self->std_acc("btw_ok") ) {
+	my $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $_);
+	$fail++, warn("?Geen grootboekrekening voor BTW betaald ($_)\n")
+	  unless $rr;
+	$fail++, warn("?Verkeerde grootboekrekening voor BTW betaald ($_)\n")
+	  unless $rr->[0];
+    }
 
-    $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $std_acc_winst);
-    $fail++, warn("?Geen grootboekrekening voor overboeking winst ($std_acc_winst)\n")
-      unless $rr;
-    $fail++, warn("?Verkeerde grootboekrekening voor overboeking winst ($std_acc_winst)\n")
-      unless $rr->[0];
+    for ( $self->std_acc("winst") ) {
+	my $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $_);
+	$fail++, warn("?Geen grootboekrekening voor overboeking winst ($_)\n")
+	  unless $rr;
+	$fail++, warn("?Verkeerde grootboekrekening voor overboeking winst ($_)\n")
+	  unless $rr->[0];
+    }
 
     my $sth = $self->sql_exec("SELECT acc_id, acc_desc, dbk_id, dbk_type, dbk_desc FROM Dagboeken, Accounts".
 			      " WHERE dbk_acc_id = acc_id");
-    while ( $rr = $sth->fetchrow_arrayref ) {
+    while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($acc_id, $acc_desc, $dbk_id, $dbk_type, $dbk_desc) = @$rr;
-	if ( $dbk_type == DBKTYPE_INKOOP && $acc_id != $std_acc_crd ) {
+	if ( $dbk_type == DBKTYPE_INKOOP && $acc_id != $self->std_acc("crd") ) {
 	    $fail++;
 	    warn("?Verkeerde grootboekrekening $acc_id ($acc_desc) voor dagboek $dbk_id ($dbk_desc)\n")
 	}
-	elsif ( $dbk_type == DBKTYPE_VERKOOP && $acc_id != $std_acc_deb ) {
+	elsif ( $dbk_type == DBKTYPE_VERKOOP && $acc_id != $self->std_acc("deb") ) {
 	    $fail++;
 	    warn("?Verkeerde grootboekrekening $acc_id ($acc_desc) voor dagboek $dbk_id ($dbk_desc)\n")
 	}
     }
 
-    $sth = $self->sql_exec("SELECT btw_id, btw_desc, btg_id, btg_desc, btg_acc_inkoop, btg_acc_verkoop".
-			   " FROM BTWTabel, BTWTariefgroepen".
-			   " WHERE btw_tariefgroep = btg_id");
-    while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($btw_id, $btw_desc, $btg_id, $btg_desc, $btg_acc_inkoop, $btg_acc_verkoop) = @$rr;
-	if ( $btg_id == BTWTYPE_GEEN && $btg_acc_inkoop ) {
-	    $fail++;
-	    warn("?BTW tariefgroep $btg_id ($btg_desc) mag geen grootboekrekening voor inkoop hebben\n");
-	}
-	if ( $btg_id == BTWTYPE_GEEN && $btg_acc_verkoop ) {
-	    $fail++;
-	    warn("?BTW tariefgroep $btg_id ($btg_desc) mag geen grootboekrekening voor verkoop hebben\n");
-	}
-	if ( $btg_id == BTWTYPE_HOOG && $btg_acc_inkoop != $std_acc_btw_ih ) {
-	    $fail++;
-	    warn("?Verkeerde grootboekrekening voor inkoop ($btg_acc_inkoop) voor BTW tariefgroep $btg_id ($btg_desc) -- moet zijn $std_acc_btw_ih\n");
-	}
-	if ( $btg_id == BTWTYPE_HOOG && $btg_acc_verkoop != $std_acc_btw_vh ) {
-	    $fail++;
-	    warn("?Verkeerde grootboekrekening voor verkoop ($btg_acc_verkoop) voor BTW tariefgroep $btg_id ($btg_desc) -- moet zijn $std_acc_btw_vh\n");
-	}
-	if ( $btg_id == BTWTYPE_LAAG && $btg_acc_inkoop != $std_acc_btw_il ) {
-	    $fail++;
-	    warn("?Verkeerde grootboekrekening voor inkoop ($btg_acc_inkoop) voor BTW tariefgroep $btg_id ($btg_desc) -- moet zijn $std_acc_btw_il\n");
-	}
-	if ( $btg_id == BTWTYPE_LAAG && $btg_acc_verkoop != $std_acc_btw_vl ) {
-	    $fail++;
-	    warn("?Verkeerde grootboekrekening voor verkoop ($btg_acc_verkoop) voor BTW tariefgroep $btg_id ($btg_desc) -- moet zijn $std_acc_btw_vl\n");
-	}
-    }
     die("?CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT\n") if $fail;
 }
 
@@ -157,18 +128,27 @@ sub _init {
 }
 
 my %std_acc;
+my @std_acc;
 sub std_acc {
     my ($self, $name) = @_;
-    unless ( %std_acc ) {
-	$self->connectdb;
-	my @stdkeys = qw(deb crd btw_vh btw_vl btw_ih btw_il btw_ok winst);
+    $self->std_accs unless %std_acc;
+    $std_acc{lc($name)} || die("?Niet-bestaande standaardrekening: \"$name\"\n");
+}
 
-	my $rr = $self->do("SELECT".
-			   " " . join(", ", map { "std_acc_$_"} @stdkeys).
-			   " FROM Standaardrekeningen");
-	@std_acc{@stdkeys} = @$rr;
+sub std_accs {
+    my ($self) = @_;
+    unless ( @std_acc ) {
+	$self->connectdb;
+	my $sth = $self->sql_exec("SELECT * FROM Standaardrekeningen");
+	my $rr = $sth->fetchrow_hashref;
+	$sth->finish;
+	while ( my($k,$v) = each(%$rr) ) {
+	    $k =~ s/^std_acc_//;
+	    $std_acc{lc($k)} = $v;
+	}
+	@std_acc = sort(keys(%std_acc));
     }
-    $std_acc{$name};
+    \@std_acc;
 }
 
 my %accts;
@@ -193,7 +173,11 @@ sub connectdb {
     my ($self, $dbname) = @_;
 
     return $dbh if $dbh;
-    $dbname = "dbi:Pg:dbname=" . $dbname if $dbname;
+
+    if ( $dbname ) {
+	#$dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
+	$dbname = "dbi:Pg:dbname=" . $dbname;
+    }
 
     $dbh = DBI::->connect($dbname || $ENV{EB_DB} || "dbi:Pg:dbname=eekboek")
       or die("Cannot connect to database: $DBI::errstr\n");
@@ -304,11 +288,22 @@ sub do {
     $rr;
 }
 
+sub errstr {
+    $dbh->errstr;
+}
+
 sub rollback {
     my ($self) = @_;
 
     return unless $dbh;
     $dbh->rollback
+}
+
+sub begin_work {
+    my ($self) = @_;
+
+    return unless $dbh;
+    $dbh->begin_work;
 }
 
 sub commit {

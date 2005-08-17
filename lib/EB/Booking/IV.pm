@@ -1,13 +1,19 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.10 2005/07/30 15:08:30 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.11 2005/08/17 21:16:36 jv Exp $ ';
+
+package main;
+
+our $dbh;
+our $spp;
+our $config;
 
 package EB::Booking::IV;
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul 30 15:09:33 2005
-# Update Count    : 84
+# Last Modified On: Wed Aug 17 22:03:38 2005
+# Update Count    : 86
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -51,22 +57,22 @@ sub perform {
     if ( $dagboek_type == DBKTYPE_INKOOP
 	 || $dagboek_type == DBKTYPE_VERKOOP ) {
 	$debcode = shift(@$args);
-	$rr = $::dbh->do("SELECT rel_acc_id, rel_btw_status FROM Relaties" .
-			 " WHERE rel_code = ?" .
-			 "  AND " . ($dagboek_type == DBKTYPE_INKOOP ? "NOT " : "") . "rel_debcrd" .
-			 "  AND rel_ledger = ?",
-			 $debcode, $dagboek);
+	$rr = $dbh->do("SELECT rel_acc_id, rel_btw_status FROM Relaties" .
+		       " WHERE rel_code = ?" .
+		       "  AND " . ($dagboek_type == DBKTYPE_INKOOP ? "NOT " : "") . "rel_debcrd" .
+		       "  AND rel_ledger = ?",
+		       $debcode, $dagboek);
 	unless ( defined($rr) ) {
 	    warn("?Onbekende ".
 		 ($dagboek_type == DBKTYPE_INKOOP ? "crediteur" : "debiteur").
 		 ": $debcode\n");
-	    $::dbh->rollback;
+	    $dbh->rollback;
 	    return;
 	}
     }
     else {
 	warn("?Ongeldige operatie (IV) voor dagboek type $dagboek_type\n");
-	$::dbh->rollback;
+	$dbh->rollback;
 	return;
     }
 
@@ -88,29 +94,29 @@ sub perform {
 	    $acct = $1;
 	    $dc = lc($2) eq 'd' ? 1 : 0;
 	}
-	my $rr = $::dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
-			    " FROM Accounts".
-			    " WHERE acc_id = ?", $acct);
+	my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
+			  " FROM Accounts".
+			  " WHERE acc_id = ?", $acct);
 	unless ( $rr ) {
 	    warn("?Onbekende grootboekrekening: $acct\n");
-	    $::dbh->rollback;
+	    $dbh->rollback;
 	    return;
 	}
 	my ($adesc, $balres, $debcrd, $btw_id) = @$rr;
 
 	if ( $balres ) {
 	    warn("!Rekening $acct ($adesc) is een balansrekening\n");
-	    #$::dbh->rollback;
+	    #$dbh->rollback;
 	    #return;
 	}
 
 	if ( $nr == 1 ) {
-	    $bsk_id = $opts->{boekstuk} || $::dbh->get_sequence("bsk_nr_${dagboek}_seq");
-	    $::dbh->sql_insert("Boekstukken",
+	    $bsk_id = $opts->{boekstuk} || $dbh->get_sequence("bsk_nr_${dagboek}_seq");
+	    $dbh->sql_insert("Boekstukken",
 			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_paid)],
 			     $bsk_id, $desc, $dagboek, $date, undef);
 	    $gdesc = $desc;
-	    $bsk_id = $::dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
+	    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
 	}
 
 	# btw_id    btw_acc
@@ -127,19 +133,18 @@ sub perform {
 	my $btw_acc;
 	# Geen BTW voor non-EU.
 	if ( $btw_id && ($sbtw == BTW_NORMAAL || $sbtw == BTW_INTRA) ) {
-	    ($btw_acc) = @{$::dbh->do("SELECT ".
-				      ($dagboek_type == DBKTYPE_INKOOP ? "btg_acc_inkoop" : "btg_acc_verkoop").
-				      " FROM BTWTabel, BTWTariefgroepen".
-				      " WHERE btw_tariefgroep = btg_id AND btw_id = ?",
-				      $btw_id)};
+	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+	    $btw_acc = $dagboek_type == DBKTYPE_INKOOP ?
+	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
+	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
 	    die("D/C mismatch, accounts $acct <> $btw_acc")
-	      unless $::dbh->lookup($acct,
+	      unless $dbh->lookup($acct,
 				    qw(Accounts acc_id acc_debcrd))
-		^ $::dbh->lookup($btw_acc,
+		^ $dbh->lookup($btw_acc,
 				    qw(Accounts acc_id acc_debcrd));
 	}
 
-	$::dbh->sql_insert("Boekstukregels",
+	$dbh->sql_insert("Boekstukregels",
 			 [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 			     bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
 			 $nr++, $date, $bsk_id, $desc, $amt,
@@ -154,14 +159,14 @@ sub perform {
 	my (undef, undef, undef, $nr, $ac, $amt) = @$r;
 	next unless $nr;
 	warn("update $ac with ".numfmt($amt)."\n") if $trace_updates;
-	$::dbh->upd_account($ac, $amt);
+	$dbh->upd_account($ac, $amt);
     }
-    $::dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
-		     $ret->[$#{$ret}]->[5], $bsk_id)->finish;
+    $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
+		   $ret->[$#{$ret}]->[5], $bsk_id)->finish;
 
-    $::dbh->store_journal($ret);
+    $dbh->store_journal($ret);
 
-    $::dbh->commit;
+    $dbh->commit;
 
     EB::Journal::Text->new->journal({select => $bsk_id, detail=>1}) if $opts->{journal};
 

@@ -1,5 +1,11 @@
 #!/usr/bin/perl -w
 
+package main;
+
+our $dbh;
+our $config;
+our $app;
+
 package EB::Finance;
 
 use EB::Globals;
@@ -117,10 +123,19 @@ sub norm_btw {
     if ( @_ == 2 ) {
 	($bsr_amt, $bsr_btw_id) = @_;
 	if ( $bsr_btw_id ) {
-	    my $rr = $::dbh->do("SELECT btw_perc, btw_incl, btg_acc_inkoop, btg_acc_verkoop".
-				" FROM BTWTabel, BTWTariefgroepen".
-				" WHERE btw_tariefgroep = btg_id AND btw_id = ?", $bsr_btw_id);
-	    ($btw_perc, $btw_incl, $btw_acc_inkoop, $btw_acc_verkoop) = @$rr;
+	    my $rr = $dbh->do("SELECT btw_perc, btw_incl, btw_tariefgroep".
+			      " FROM BTWTabel".
+			      " WHERE btw_id = ?", $bsr_btw_id);
+	    my $group;
+	    ($btw_perc, $btw_incl, $group) = @$rr;
+	    if ( $group == BTWTYPE_HOOG ) {
+		$btw_acc_inkoop = $dbh->std_acc("btw_ih");
+		$btw_acc_verkoop = $dbh->std_acc("btw_vh");
+	    }
+	    else {
+		$btw_acc_inkoop = $dbh->std_acc("btw_il");
+		$btw_acc_verkoop = $dbh->std_acc("btw_vl");
+	    }
 	}
     }
     else {
