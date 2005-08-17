@@ -25,6 +25,9 @@ use AccInput;
 use NumericCtrl;
 # end wxGlade
 
+my $bm_edit_remove;
+my $bm_edit_trash;
+
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
 	$parent = undef              unless defined $parent;
@@ -33,6 +36,9 @@ sub new {
 	$pos    = wxDefaultPosition  unless defined $pos;
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
+
+	$bm_edit_trash  ||= Wx::Bitmap->new("edittrash.png", wxBITMAP_TYPE_ANY);
+	$bm_edit_remove ||= Wx::Bitmap->new("edit_remove.png", wxBITMAP_TYPE_ANY);
 
 # begin wxGlade: BtwPanel::new
 
@@ -45,39 +51,39 @@ sub new {
 	$self->{btwpanel} = Wx::ScrolledWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 	$self->{bl_code} = Wx::StaticText->new($self->{btwpanel}, -1, "Code", wxDefaultPosition, wxDefaultSize, );
 	$self->{bl_desc} = Wx::StaticText->new($self->{btwpanel}, -1, "Omschrijving", wxDefaultPosition, wxDefaultSize, );
+	$self->{bl_perc} = Wx::StaticText->new($self->{btwpanel}, -1, "Perc", wxDefaultPosition, wxDefaultSize, );
 	$self->{bl_group} = Wx::StaticText->new($self->{btwpanel}, -1, "Groep", wxDefaultPosition, wxDefaultSize, );
 	$self->{bl_incl} = Wx::StaticText->new($self->{btwpanel}, -1, "In/Excl", wxDefaultPosition, wxDefaultSize, );
-	$self->{bw_new} = Wx::Button->new($self, wxID_NEW, "New");
-	$self->{bw_remove} = Wx::Button->new($self, wxID_REMOVE, "Remove");
+	$self->{bl_del} = Wx::StaticText->new($self->{btwpanel}, -1, "Verw", wxDefaultPosition, wxDefaultSize, );
 	$self->{bw_apply} = Wx::Button->new($self, wxID_APPLY, "Apply");
+	$self->{bw_new} = Wx::Button->new($self, wxID_NEW, "New");
 	$self->{bw_reset} = Wx::Button->new($self, wxID_UNDO, "Undo");
 	$self->{static_line_1} = Wx::StaticLine->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btg_hi} = Wx::StaticText->new($self, -1, "BTW Inkoop Hoog", wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btg_hi} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btg_hv} = Wx::StaticText->new($self, -1, "BTW Verkoop Hoog", wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btg_hv} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btg_li} = Wx::StaticText->new($self, -1, "BTW Inkoop Laag", wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btg_li} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btg_lv} = Wx::StaticText->new($self, -1, "BTW Verkoop Laag", wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btg_lv} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btg_ih} = Wx::StaticText->new($self, -1, "BTW Inkoop Hoog", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_btg_ih} = AccInput->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btg_vh} = Wx::StaticText->new($self, -1, "BTW Verkoop Hoog", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_btg_vh} = AccInput->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btg_il} = Wx::StaticText->new($self, -1, "BTW Inkoop Laag", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_btg_il} = AccInput->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btg_vl} = Wx::StaticText->new($self, -1, "BTW Verkoop Laag", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_btg_vl} = AccInput->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_btw_ok} = Wx::StaticText->new($self, -1, "BTW Betaald", wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_ok} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_locked} = Wx::TextCtrl->new($self, -1, "De administratie is in gebruik. De koppelingen kunnen niet meer worden gewijzigd.", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
+	$self->{tx_btw_ok} = AccInput->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{bg_apply} = Wx::Button->new($self, wxID_APPLY, "Apply");
 	$self->{bg_reset} = Wx::Button->new($self, wxID_UNDO, "Undo");
+	$self->{l_inuse} = Wx::StaticText->new($self, -1, "Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd.", wxDefaultPosition, wxDefaultSize, );
 	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "Close");
 
 	$self->__set_properties();
 	$self->__do_layout();
 
-	Wx::Event::EVT_BUTTON($self, wxID_NEW, \&OnTNew);
-	Wx::Event::EVT_BUTTON($self, wxID_REMOVE, \&OnTRemove);
-	Wx::Event::EVT_BUTTON($self, wxID_APPLY, \&OnTApply);
-	Wx::Event::EVT_BUTTON($self, wxID_UNDO, \&OnTReset);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btg_hi}->GetId, \&OnGChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btg_hv}->GetId, \&OnGChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btg_li}->GetId, \&OnGChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btg_lv}->GetId, \&OnGChanged);
+	Wx::Event::EVT_BUTTON($self, wxID_APPLY, \&OnWApply);
+	Wx::Event::EVT_BUTTON($self, wxID_NEW, \&OnWNew);
+	Wx::Event::EVT_BUTTON($self, wxID_UNDO, \&OnWReset);
+	Wx::Event::EVT_TEXT($self, $self->{tx_btg_ih}->GetId, \&OnGChanged);
+	Wx::Event::EVT_TEXT($self, $self->{tx_btg_vh}->GetId, \&OnGChanged);
+	Wx::Event::EVT_TEXT($self, $self->{tx_btg_il}->GetId, \&OnGChanged);
+	Wx::Event::EVT_TEXT($self, $self->{tx_btg_vl}->GetId, \&OnGChanged);
 	Wx::Event::EVT_TEXT($self, $self->{tx_btw_ok}->GetId, \&OnGChanged);
 	Wx::Event::EVT_BUTTON($self, wxID_APPLY, \&OnGApply);
 	Wx::Event::EVT_BUTTON($self, wxID_UNDO, \&OnGReset);
@@ -118,36 +124,60 @@ sub OnIdle {
 sub grefresh {
     my ($self) = @_;
     local($self->{busy}) = 1;
-    my ($ih, $il, $vh, $vl, $ok) = @{$self}{qw(_btg_hi _btg_li _btg_hv _btg_lv _btw_ok)};
+    my ($ih, $il, $vh, $vl, $ok) = @{$self}{qw(_btg_ih _btg_il _btg_vh _btg_vl _btw_ok)};
     my $accts = $dbh->accts;
-    $self->{tx_btg_hi}->SetValue($ih . "   " . $accts->{$ih});
-    $self->{tx_btg_li}->SetValue($il . "   " . $accts->{$il});
-    $self->{tx_btg_hv}->SetValue($vh . "   " . $accts->{$vh});
-    $self->{tx_btg_lv}->SetValue($vl . "   " . $accts->{$vl});
+    $self->{tx_btg_ih}->SetValue($ih . "   " . $accts->{$ih});
+    $self->{tx_btg_il}->SetValue($il . "   " . $accts->{$il});
+    $self->{tx_btg_vh}->SetValue($vh . "   " . $accts->{$vh});
+    $self->{tx_btg_vl}->SetValue($vl . "   " . $accts->{$vl});
     $self->{tx_btw_ok}->SetValue($ok . "   " . $accts->{$ok});
 }
 
 sub gchanged {
-    my $self = shift;
+    my ($self) = @_;
     return 0 if $self->{busy};
-    return 1 if (split(' ', $self->{tx_btg_hi}->GetValue))[0] != $self->{_btg_hi};
-    return 1 if (split(' ', $self->{tx_btg_li}->GetValue))[0] != $self->{_btg_li};
-    return 1 if (split(' ', $self->{tx_btg_hv}->GetValue))[0] != $self->{_btg_hv};
-    return 1 if (split(' ', $self->{tx_btg_lv}->GetValue))[0] != $self->{_btg_lv};
+    return 1 if (split(' ', $self->{tx_btg_ih}->GetValue))[0] != $self->{_btg_ih};
+    return 1 if (split(' ', $self->{tx_btg_il}->GetValue))[0] != $self->{_btg_il};
+    return 1 if (split(' ', $self->{tx_btg_vh}->GetValue))[0] != $self->{_btg_vh};
+    return 1 if (split(' ', $self->{tx_btg_vl}->GetValue))[0] != $self->{_btg_vl};
     return 1 if (split(' ', $self->{tx_btw_ok}->GetValue))[0] != $self->{_btw_ok};
     return 0;
 }
 
 sub wrefresh {
-    my $self = shift;
+    my ($self) = @_;
     local($self->{busy}) = 1;
+
+    foreach ( @{$self->{_btw}}) {
+	my ($id, $desc, $perc, $groep, $incl) = @$_;
+	$self->{"tx_btw_xs_${id}"} = $desc eq "\0";
+	$self->{"tx_btw_xx_${id}"}->SetBitmapLabel($bm_edit_trash);
+	$self->{"tx_btw_id_${id}"}->SetValue($id);
+	$self->{"tx_btw_dc_${id}"}->SetValue($desc);
+	$self->{"tx_btw_pc_${id}"}->SetValue($perc);
+	$self->{"tx_btw_tg_${id}"}->SetSelection($groep);
+	$self->{"tx_btw_in_${id}"}->SetSelection(1-$incl);
+    }
+
+    goto &OnWApply;
 }
 
 sub wchanged {
-    my $self = shift;
+    my ($self) = @_;
     return 0 if $self->{busy};
+
+    my $ch = 0;
+    foreach ( @{$self->{_btw}} ) {
+	my ($id, $desc, $perc, $groep, $incl) = @$_;
+	$ch++, last if $self->{"tx_btw_xs_${id}"};
+	$ch++, last if $self->{"tx_btw_id_${id}"}->GetValue != $id;
+	$ch++, last if $self->{"tx_btw_dc_${id}"}->GetValue ne $desc;
+	$ch++, last if $self->{"tx_btw_pc_${id}"}->GetValue ne $perc;
+	$ch++, last if $self->{"tx_btw_tg_${id}"}->GetSelection != $groep;
+	$ch++, last if $self->{"tx_btw_in_${id}"}->GetSelection == $incl;
+    }
     # ...
-    return 0;
+    return $ch;
 }
 
 sub __set_properties {
@@ -157,9 +187,7 @@ sub __set_properties {
 
 	$self->SetTitle("BTW Tarieven");
 	$self->{btwpanel}->SetScrollRate(10, 10);
-	$self->{bw_remove}->Enable(0);
-	$self->{tx_locked}->Enable(0);
-	$self->{tx_locked}->Show(0);
+	$self->{l_inuse}->Show(0);
 	$self->{b_cancel}->SetFocus();
 	$self->{b_cancel}->SetDefault();
 
@@ -167,7 +195,7 @@ sub __set_properties {
 
 	$self->{mew} = "btww";
 
-	@{$self}{qw(_btg_hi _btg_hv _btg_li _btg_lv _btw_ok)} =
+	@{$self}{qw(_btg_ih _btg_vh _btg_il _btg_vl _btw_ok)} =
 	  @{$dbh->do("SELECT std_acc_btw_ih, std_acc_btw_vh,".
 		      " std_acc_btw_il, std_acc_btw_vl, std_acc_btw_ok".
 		      " FROM Standaardrekeningen")};
@@ -175,31 +203,23 @@ sub __set_properties {
 	$self->{busy} = 0;
 
 	$self->{_open} = $dbh->do("SELECT adm_opened FROM Metadata")->[0];
-
-	if ( $self->{_open} ) {
-	    for ( qw(btg_hi btg_li btg_hv btg_lv btw_ok) ) {
-		$self->{"l_$_"}->Enable(0);
-		$self->{"tx_$_"}->Enable(0);
-	    }
-	}
-	else {
-	    for ( qw(btg_hi btg_li btg_hv btg_lv btw_ok) ) {
-		$self->{"tx_$_"}->Destroy;
-		$self->{"tx_$_"} = AccInput->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
-	    }
-	}
+	$self->{l_inuse}->Show(1) if $self->{_open};
 
 	$self->{_btw} = [];
-	my $sth = $dbh->sql_exec("SELECT btw_id, btw_desc, btw_tariefgroep, btw_incl".
+	my $sth = $dbh->sql_exec("SELECT btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
 				 " FROM BTWTabel".
 				 " ORDER BY btw_id");
 	while ( my $rr = $sth->fetchrow_arrayref ) {
 	    push(@{$self->{_btw}}, [@$rr]);
-	    my ($id, $desc, $tg, $incl) = @$rr;
-	    $self->{"tx_btw_id_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	    my ($id, $desc, $perc, $tg, $incl) = @$rr;
+	    $self->{"tx_btw_id_$id"} = NumericCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	    $self->{"tx_btw_dc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	    $self->{"tx_btw_pc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	    $self->{"tx_btw_tg_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, BTWTYPES);
 	    $self->{"tx_btw_in_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, [qw(Incl Excl)]);
+	    $self->{"tx_btw_xx_$id"} = Wx::BitmapButton->new($self->{btwpanel}, -1, $bm_edit_trash);
+	    $self->{"tx_btw_xs_$id"} = 0;
+
 	}
 	$sth->finish;
 }
@@ -219,11 +239,13 @@ sub __do_layout {
 	$self->{sz_btw}= Wx::StaticBoxSizer->new($self->{sz_btw_staticbox}, wxVERTICAL);
 	$self->{sz_btw_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_btws} = Wx::BoxSizer->new(wxVERTICAL);
-	$self->{sz_g_btw} = Wx::FlexGridSizer->new(1, 4, 0, 0);
+	$self->{sz_g_btw} = Wx::FlexGridSizer->new(1, 6, 0, 0);
 	$self->{sz_g_btw}->Add($self->{bl_code}, 0, wxLEFT|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{sz_g_btw}->Add($self->{bl_desc}, 1, wxLEFT|wxEXPAND|wxADJUST_MINSIZE, 5);
+	$self->{sz_g_btw}->Add($self->{bl_perc}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{sz_g_btw}->Add($self->{bl_group}, 0, wxLEFT|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{sz_g_btw}->Add($self->{bl_incl}, 0, wxLEFT|wxEXPAND|wxADJUST_MINSIZE, 5);
+	$self->{sz_g_btw}->Add($self->{bl_del}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{sz_g_btw}->AddGrowableCol(1);
 	$self->{sz_btws}->Add($self->{sz_g_btw}, 0, wxALL|wxEXPAND, 5);
 	$self->{btwpanel}->SetAutoLayout(1);
@@ -231,35 +253,34 @@ sub __do_layout {
 	$self->{sz_btws}->Fit($self->{btwpanel});
 	$self->{sz_btws}->SetSizeHints($self->{btwpanel});
 	$self->{sz_btw}->Add($self->{btwpanel}, 1, wxEXPAND, 0);
-	$self->{sz_btw_buttons}->Add($self->{bw_new}, 0, wxRIGHT|wxADJUST_MINSIZE, 5);
-	$self->{sz_btw_buttons}->Add($self->{bw_remove}, 0, wxRIGHT|wxADJUST_MINSIZE, 5);
 	$self->{sz_btw_buttons}->Add($self->{bw_apply}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sz_btw_buttons}->Add(20, 20, 1, wxADJUST_MINSIZE, 0);
+	$self->{sz_btw_buttons}->Add($self->{bw_new}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
+	$self->{sz_btw_buttons}->Add(5, 1, 1, wxADJUST_MINSIZE, 0);
 	$self->{sz_btw_buttons}->Add($self->{bw_reset}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_btw}->Add($self->{sz_btw_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->{sz_btwmain}->Add($self->{sz_btw}, 2, wxEXPAND, 0);
 	$self->{sz_btwmain}->Add($self->{static_line_1}, 0, wxTOP|wxBOTTOM|wxEXPAND, 5);
-	$self->{sz_g_btgh}->Add($self->{l_btg_hi}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_btgh}->Add($self->{tx_btg_hi}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_btgh}->Add($self->{l_btg_hv}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_btgh}->Add($self->{tx_btg_hv}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_btgh}->Add($self->{l_btg_li}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_btgh}->Add($self->{tx_btg_li}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_btgh}->Add($self->{l_btg_lv}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_btgh}->Add($self->{tx_btg_lv}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_btgh}->Add($self->{l_btg_ih}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_btgh}->Add($self->{tx_btg_ih}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_btgh}->Add($self->{l_btg_vh}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_btgh}->Add($self->{tx_btg_vh}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_btgh}->Add($self->{l_btg_il}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_btgh}->Add($self->{tx_btg_il}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_btgh}->Add($self->{l_btg_vl}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_btgh}->Add($self->{tx_btg_vl}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sz_g_btgh}->Add($self->{l_btw_ok}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sz_g_btgh}->Add($self->{tx_btw_ok}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sz_g_btgh}->AddGrowableCol(1);
 	$self->{sz_btgh}->Add($self->{sz_g_btgh}, 0, wxALL|wxEXPAND, 5);
 	$self->{sz_btg}->Add($self->{sz_btgh}, 1, wxEXPAND, 0);
-	$self->{sz_btg}->Add($self->{tx_locked}, 0, wxALL|wxEXPAND|wxADJUST_MINSIZE|wxFIXED_MINSIZE, 5);
 	$self->{sz_btg_buttons}->Add($self->{bg_apply}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_btg_buttons}->Add(20, 20, 1, wxADJUST_MINSIZE, 0);
 	$self->{sz_btg_buttons}->Add($self->{bg_reset}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_btg}->Add($self->{sz_btg_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->{sz_btwmain}->Add($self->{sz_btg}, 0, wxEXPAND, 0);
 	$self->{sz_btwmain}->Add(20, 5, 0, wxEXPAND, 0);
-	$self->{sz_buttons}->Add(20, 20, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sz_buttons}->Add($self->{l_inuse}, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
+	$self->{sz_buttons}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxEXPAND|wxADJUST_MINSIZE|wxFIXED_MINSIZE, 5);
 	$self->{sz_btwmain}->Add($self->{sz_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->{sz_btwpanel}->Add($self->{sz_btwmain}, 1, wxALL|wxEXPAND, 5);
@@ -271,117 +292,231 @@ sub __do_layout {
 
 # end wxGlade
 
-	if ( $self->{_open} ) {
-	    $self->{sz_btg}->Show($self->{tx_locked}, 1);
-	    $self->{sz_btg}->Show($self->{sz_btg_buttons}, 0);
-#	    $self->{sz_btg}->Layout;
-	}
-	else {
-	    $self->{sz_btg}->Show($self->{tx_locked}, 0);
-	    $self->{sz_btg}->Show($self->{sz_btg_buttons}, 1);
-#	    $self->{sz_btg}->Layout;
-	}
-
-	my $btw = $self->{_btw};
-	foreach ( @$btw ) {
-	    my ($id, $desc, $groep, $incl) = @$_;
+	foreach ( @{$self->{_btw}} ) {
+	    my ($id, $desc, $perc, $groep, $incl) = @$_;
 	    $self->{"sz_btw_$id"} = Wx::BoxSizer->new(wxHORIZONTAL);
 	    $self->{"tx_btw_id_$id"}->SetValue($id);
 	    $self->{"tx_btw_dc_$id"}->SetValue($desc);
+	    $self->{"tx_btw_pc_$id"}->SetValue($perc);
 	    $self->{"tx_btw_tg_$id"}->SetSelection($groep);
 	    #$self->{"tx_btw_in_$id"}->SetValue($incl);
 	    $self->{"tx_btw_in_$id"}->SetSelection(1 - ($incl||0));
-	    $self->{"tx_btw_in_$id"}->Enable(0) if $groep == BTWTYPE_GEEN;
 
 	    $self->{"sz_g_btw"}->Add($self->{"tx_btw_id_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	    $self->{"sz_g_btw"}->Add($self->{"tx_btw_dc_$id"}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+	    $self->{"sz_g_btw"}->Add($self->{"tx_btw_pc_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	    $self->{"sz_g_btw"}->Add($self->{"tx_btw_tg_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	    $self->{"sz_g_btw"}->Add($self->{"tx_btw_in_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	    $self->{"sz_g_btw"}->Add($self->{"tx_btw_xx_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+
+	    if ( $id == 0 ||
+		$self->{_open} && $dbh->do("SELECT COUNT(*) FROM Boekstukregels WHERE bsr_btw_id = ?", $id)->[0] ) {
+		$self->{"tx_btw_${_}_$id"}->Enable(0) for qw(id pc tg in xx);
+	    }
 
 	    Wx::Event::EVT_TEXT($self, $self->{"tx_btw_id_$id"}->GetId, sub { $_[0]->OnGIdChanged($_[1], $id) });
 	    Wx::Event::EVT_TEXT($self, $self->{"tx_btw_dc_$id"}->GetId, sub { $_[0]->OnGDcChanged($_[1], $id) });
+	    Wx::Event::EVT_TEXT($self, $self->{"tx_btw_pc_$id"}->GetId, sub { $_[0]->OnGPcChanged($_[1], $id) });
 	    Wx::Event::EVT_CHOICE($self, $self->{"tx_btw_tg_$id"}->GetId, sub { $_[0]->OnGTgChanged($_[1], $id) });
 	    Wx::Event::EVT_CHOICE($self, $self->{"tx_btw_in_$id"}->GetId, sub { $_[0]->OnGInChanged($_[1], $id) });
+	    Wx::Event::EVT_BUTTON($self, $self->{"tx_btw_xx_$id"}->GetId, sub { $_[0]->OnGRemove($_[1], $id) });
 	}
 
+	if ( $self->{_open} ) {
+	    for ( qw(btw_il btw_ih btw_vl btw_vh btw_ok) ) {
+		my $inuse = $dbh->do("SELECT COUNT(*) FROM Journal WHERE jnl_acc_id = ?",
+				     $dbh->std_acc($_))->[0];
+		if ( $inuse ) {
+		    my $k = $_;
+		    $k =~ s/btw/btg/ unless $k eq "btw_ok";
+		    $self->{"tx_$k"}->Enable(0);
+		    $self->{"l_$k"}->Enable(0);
+		}
+	    }
+	}
 	$self->Layout();
 
 }
 
 sub OnGIdChanged {
     my ($self, $event, $id) = @_;
-    warn("Id change for $id\n");
-    if ( $dbh->do("SELECT COUNT(*) FROM Boekstukregels WHERE bsr_btw_id = ?", $id) ) {
-    }
+    goto &OnGRemove if $self->{"tx_btw_xs_$id"};
+    $self->{_check_changed}++;
 }
 
 sub OnGInChanged {
     my ($self, $event, $id) = @_;
-    warn("In/Ex change for $id\n");
+    $self->flip_button($id) if $self->{"tx_btw_xs_$id"};
+    $self->{_check_changed}++;
 }
 
 sub OnGTgChanged {
     my ($self, $event, $id) = @_;
-    warn("Group change for $id\n");
+    $self->flip_button($id) if $self->{"tx_btw_xs_$id"};
+    $self->{_check_changed}++;
 }
 
 sub OnGDcChanged {
     my ($self, $event, $id) = @_;
-    warn("Desc change for $id\n");
+    $self->flip_button($id) if $self->{"tx_btw_xs_$id"};
+    $self->{_check_changed}++;
 }
 
-# wxGlade: BtwPanel::OnTNew <event_handler>
-sub OnTNew {
-    my ($self, $event) = @_;
-    $event->Skip;
+sub OnGPcChanged {
+    my ($self, $event, $id) = @_;
+    $self->flip_button($id) if $self->{"tx_btw_xs_$id"};
+    $self->{_check_changed}++;
 }
 
-# wxGlade: BtwPanel::OnTRemove <event_handler>
-sub OnTRemove {
-    my ($self, $event) = @_;
-    $event->Skip;
+sub OnGRemove {
+    my ($self, $event, $id) = @_;
+    $self->flip_button($id);
 }
 
-# wxGlade: BtwPanel::OnTApply <event_handler>
-sub OnTApply {
-    my ($self, $event) = @_;
-    $event->Skip;
+sub flip_button {
+    my ($self, $id, $state) = @_;
+    $state = !$self->{"tx_btw_xs_$id"} unless defined $state;
+    $self->{_check_changed}++ unless $self->{"tx_btw_xs_$id"} == $state;
+    $self->{"tx_btw_xs_$id"} = $state;
+    $self->{"tx_btw_xx_${id}"}->SetBitmapLabel($state ? $bm_edit_remove : $bm_edit_trash);
 }
 
-# wxGlade: BtwPanel::OnTReset <event_handler>
-sub OnTReset {
+# wxGlade: BtwPanel::OnWNew <event_handler>
+sub OnWNew {
     my ($self, $event) = @_;
+    my ($id, $desc, $perc, $group, $in) = (0, "\0", 0, 0, 1);
+    foreach ( @{$self->{_btw}} ) {
+	$id = $_->[0] if $_->[0] > $id;
+    }
+    $id++;
+    push(@{$self->{_btw}}, [$id, $desc, $group, $in]);
+    $self->{"tx_btw_id_$id"} = Numeric->new($self->{btwpanel}, -1, $id, wxDefaultPosition, wxDefaultSize, );
+    $self->{"tx_btw_dc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, $desc, wxDefaultPosition, wxDefaultSize, );
+    $self->{"tx_btw_pc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, $perc, wxDefaultPosition, wxDefaultSize, );
+    $self->{"tx_btw_tg_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, BTWTYPES);
+    $self->{"tx_btw_tg_$id"}->SetSelection($group);
+    $self->{"tx_btw_in_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, [qw(Incl Excl)]);
+    $self->{"tx_btw_in_$id"}->SetSelection(1-$in);
+    $self->{"tx_btw_xx_$id"} = Wx::BitmapButton->new($self->{btwpanel}, -1, $bm_edit_remove);
+    $self->{"tx_btw_xs_$id"} = 1;
+
+    $self->{sz_g_btw}->Add($self->{"tx_btw_id_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sz_g_btw}->Add($self->{"tx_btw_dc_$id"}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sz_g_btw}->Add($self->{"tx_btw_pc_$id"}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sz_g_btw}->Add($self->{"tx_btw_tg_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sz_g_btw}->Add($self->{"tx_btw_in_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sz_g_btw}->Add($self->{"tx_btw_xx_$id"}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->Layout;
+
+    Wx::Event::EVT_TEXT($self, $self->{"tx_btw_id_$id"}->GetId, sub { $_[0]->OnGIdChanged($_[1], $id) });
+    Wx::Event::EVT_TEXT($self, $self->{"tx_btw_dc_$id"}->GetId, sub { $_[0]->OnGDcChanged($_[1], $id) });
+    Wx::Event::EVT_TEXT($self, $self->{"tx_btw_pc_$id"}->GetId, sub { $_[0]->OnGPcChanged($_[1], $id) });
+    Wx::Event::EVT_CHOICE($self, $self->{"tx_btw_tg_$id"}->GetId, sub { $_[0]->OnGTgChanged($_[1], $id) });
+    Wx::Event::EVT_CHOICE($self, $self->{"tx_btw_in_$id"}->GetId, sub { $_[0]->OnGInChanged($_[1], $id) });
+    Wx::Event::EVT_BUTTON($self, $self->{"tx_btw_xx_$id"}->GetId, sub { $_[0]->OnGRemove($_[1], $id) });
+    $self->{_check_changed}++;
+}
+
+# wxGlade: BtwPanel::OnWApply <event_handler>
+sub OnWApply {
+    my ($self, $event) = @_;
+    eval { $self->on_wapply };
+    if ( $@ ) {
+	$dbh->rollback;
+	Wx::MessageBox("Dat ging niet helemaal lekker.\n".$@,
+		       "Oeps",
+		       wxOK|wxICON_ERROR);
+    }
+    else {
+	$dbh->commit;
+    }
+    $self->{_check_changed}++;
+}
+
+# wxGlade: BtwPanel::OnWApply <event_handler>
+sub on_wapply {
+    my ($self, $event) = @_;
+    my $i = 0;
+    my @btw = @{$self->{_btw}};
+    foreach my $r ( @btw ) {
+	my ($id, $desc, $perc, $group, $in) = @$r;
+	my $t;
+	my $newid = $id;
+	if ( ($t = $self->{"tx_btw_id_$id"}->GetValue) != $id ) {
+	    $newid = $t;
+	}
+	if ( ($t = $self->{"tx_btw_pc_$id"}->GetValue) != $id ) {
+	    $perc = $t;
+	}
+	if ( ($t = $self->{"tx_btw_tg_$id"}->GetSelection) != $group ) {
+	    $group = $t;
+	}
+	if ( ($t = $self->{"tx_btw_in_$id"}->GetSelection) == $in ) {
+	    $t = 1 - $t;
+	    $in = $t;
+	}
+	if ( ($t = $self->{"tx_btw_dc_$id"}->GetValue) ne $desc ) {
+	    if ( $desc eq "\0" ) {
+		$dbh->sql_exec("INSERT INTO BTWTabel".
+			       " (btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl)".
+			       " VALUES(?,?,?,?,?)", $newid, $t, $perc, $group, $in)->finish;
+	    }
+	    $desc = $t;
+	}
+	if ( $self->{"tx_btw_xs_$id"}
+	     || ($desc eq "\0" && $self->{"tx_btw_dc_$id"}->GetValue eq "") ) {
+	    $dbh->sql_exec("DELETE FROM BTWTabel WHERE btw_id = ?", $id)->finish unless $desc eq "\0";;
+	    for ( 1..6 ) {
+		my $item = $self->{sz_g_btw}->GetItem(6*($i+1));
+		$self->{sz_g_btw}->Remove(6*($i+1));
+		$item->GetWindow->Destroy;
+	    }
+	    $self->Layout;
+	    splice(@{$self->{_btw}}, $i, 1);
+	    $i--;
+	    next;
+	}
+	if ( $newid != $id ) {
+	    $dbh->sql_exec("UPDATE BTWTabel SET btw_id = ? WHERE btw_id = ?", $newid, $id)->finish
+	      unless $desc eq "\0";
+	    for ( qw(id dc pc tg in xx xs) ) {
+		$self->{"tx_btw_${_}_$newid"} = $self->{"tx_btw_${_}_$id"};
+		delete($self->{"tx_btw_${_}_$id"});
+	    }
+	    $id = $newid;
+	}
+	@{$r}[0..4] = ($id, $desc, $perc, $group, $in);
+	$i++;
+    }
+}
+
+# wxGlade: BtwPanel::OnWReset <event_handler>
+sub OnWReset {
+    my ($self, $event) = @_;
+
     $self->wrefresh;
+    $self->{_check_changed}++;
 }
 
 # wxGlade: BtwPanel::OnGApply <event_handler>
 sub OnGApply {
     my ($self, $event) = @_;
+
+    goto &OnWApply if $event->GetEventObject == $self->{bw_apply};
+
     my @set;
     my $t;
-    if ( ($t = (split(' ', $self->{tx_btg_hi}->GetValue))[0]) != $self->{_btg_hi} ) {
+    if ( ($t = (split(' ', $self->{tx_btg_ih}->GetValue))[0]) != $self->{_btg_ih} ) {
 	push(@set, "std_acc_btw_ih = $t");
-	$dbh->sql_exec("UPDATE BTWTariefgroepen".
-		       " SET btg_acc_inkoop = ?".
-		       " WHERE btg_id = ?", $t, BTWTYPE_HOOG)->finish;
     }
-    if ( ($t = (split(' ', $self->{tx_btg_li}->GetValue))[0]) != $self->{_btg_li} ) {
+    if ( ($t = (split(' ', $self->{tx_btg_il}->GetValue))[0]) != $self->{_btg_il} ) {
 	push(@set, "std_acc_btw_il = $t");
-	$dbh->sql_exec("UPDATE BTWTariefgroepen".
-		       " SET btg_acc_inkoop = ?".
-		       " WHERE btg_id = ?", $t, BTWTYPE_LAAG)->finish;
     }
-    if ( ($t = (split(' ', $self->{tx_btg_hv}->GetValue))[0]) != $self->{_btg_hv} ) {
+    if ( ($t = (split(' ', $self->{tx_btg_vh}->GetValue))[0]) != $self->{_btg_vh} ) {
 	push(@set, "std_acc_btw_vh = $t");
-	$dbh->sql_exec("UPDATE BTWTariefgroepen".
-		       " SET btg_acc_verkoop = ?".
-		       " WHERE btg_id = ?", $t, BTWTYPE_HOOG)->finish;
     }
-    if ( ($t = (split(' ', $self->{tx_btg_lv}->GetValue))[0]) != $self->{_btg_lv} ) {
+    if ( ($t = (split(' ', $self->{tx_btg_vl}->GetValue))[0]) != $self->{_btg_vl} ) {
 	push(@set, "std_acc_btw_vl = $t");
-	$dbh->sql_exec("UPDATE BTWTariefgroepen".
-		       " SET btg_acc_verkoop = ?".
-		       " WHERE btg_id = ?", $t, BTWTYPE_LAAG)->finish;
     }
     if ( ($t = (split(' ', $self->{tx_btw_ok}->GetValue))[0]) != $self->{_btw_ok} ) {
 	push(@set, "std_acc_btw_ok = $t");
@@ -391,7 +526,7 @@ sub OnGApply {
 	$dbh->sql_exec("UPDATE Standaardrekeningen SET ".
 		       join(", ", @set))->finish;
 	$dbh->commit;
-	$self->{"_$_"} = (split(' ',$self->{"tx_$_"}->GetValue))[0] for qw(btg_hi btg_li btg_hv btg_lv btw_ok);
+	$self->{"_$_"} = (split(' ',$self->{"tx_$_"}->GetValue))[0] for qw(btg_ih btg_il btg_vh btg_vl btw_ok);
 	$self->{_check_changed} = 1;
     }
 }
@@ -399,6 +534,9 @@ sub OnGApply {
 # wxGlade: BtwPanel::OnGReset <event_handler>
 sub OnGReset {
     my ($self, $event) = @_;
+
+    goto &OnWReset if $event->GetEventObject == $self->{bw_reset};
+
     $self->grefresh;
 }
 
@@ -411,7 +549,7 @@ sub OnClose {
 			       "Annuleren",
 			       wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
 	return unless $r == wxYES;
-	$self->OnGReset;
+	$self->OnGReset($event);
     }
     # Remember position and size.
     @{$config->get($self->{mew})}{qw(xpos ypos xwidth ywidth)} = ($self->GetPositionXY, $self->GetSizeWH);
