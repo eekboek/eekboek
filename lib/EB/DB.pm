@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.7 2005/08/17 21:16:37 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.8 2005/08/18 14:41:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Aug 17 21:49:51 2005
-# Update Count    : 87
+# Last Modified On: Thu Aug 18 15:32:41 2005
+# Update Count    : 90
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -131,6 +131,10 @@ my %std_acc;
 my @std_acc;
 sub std_acc {
     my ($self, $name) = @_;
+    if ( $name eq "" ) {
+	%std_acc = ();
+	@std_acc = ();
+    }
     $self->std_accs unless %std_acc;
     $std_acc{lc($name)} || die("?Niet-bestaande standaardrekening: \"$name\"\n");
 }
@@ -153,10 +157,12 @@ sub std_accs {
 
 my %accts;
 sub accts {
-    my ($self) = @_;
+    my ($self, $sel) = @_;
+    $sel = " WHERE $sel" if $sel;
     return \%accts if %accts;
     my $sth = $self->sql_exec("SELECT acc_id,acc_desc".
 			      " FROM Accounts".
+			      $sel.
 			      " ORDER BY acc_id");
     my $rr;
     while ( $rr = $sth->fetchrow_arrayref ) {
