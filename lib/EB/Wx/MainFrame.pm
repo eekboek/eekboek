@@ -53,6 +53,7 @@ sub new {
 	use constant MENU_GBK => Wx::NewId();
 	use constant MENU_REL => Wx::NewId();
 	use constant MENU_BTW => Wx::NewId();
+	use constant MENU_STD => Wx::NewId();
 	use constant MENU_R_PRF => Wx::NewId();
 	use constant MENU_R_BAL => Wx::NewId();
 	use constant MENU_R_RES => Wx::NewId();
@@ -83,7 +84,8 @@ sub new {
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(MENU_GBK, "Grootboekrekeningen", "Onderhoud rekeningschema en grootboekrekeningen");
 	$wxglade_tmp_menu->Append(MENU_REL, "Relaties", "Onderhoud debiteuren en crediteuren");
-	$wxglade_tmp_menu->Append(MENU_BTW, "BTW Tarieven", "Onderhoud BTW tariefgroepen");
+	$wxglade_tmp_menu->Append(MENU_BTW, "BTW Tarieven", "Onderhoud BTW tarieven");
+	$wxglade_tmp_menu->Append(MENU_STD, "Koppelingen", "Onderhoud Standaardrekeningen (koppelingen)");
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, "&Onderhoud");
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, "&Dagboeken");
@@ -123,6 +125,7 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_GBK, \&OnMGbk);
 	Wx::Event::EVT_MENU($self, MENU_REL, \&OnMRel);
 	Wx::Event::EVT_MENU($self, MENU_BTW, \&OnMBtw);
+	Wx::Event::EVT_MENU($self, MENU_STD, \&OnMStdAcc);
 	Wx::Event::EVT_MENU($self, MENU_R_PRF, \&OnRPrf);
 	Wx::Event::EVT_MENU($self, MENU_R_BAL, \&OnRBal);
 	Wx::Event::EVT_MENU($self, MENU_R_RES, \&OnRRes);
@@ -149,6 +152,7 @@ sub new {
 		  gbk	 => MENU_GBK,
 		  rel	 => MENU_REL,
 		  btw	 => MENU_BTW,
+		  std	 => MENU_STD,
 		  rbal	 => MENU_R_BAL,
 		  rres	 => MENU_R_RES,
 		  rprf	 => MENU_R_PRF,
@@ -391,6 +395,19 @@ sub OnMBtw {
 					 );
     $self->{d_btwpanel}->SetSize([$config->btww->{xwidth},$config->btww->{ywidth}]);
     $self->{d_btwpanel}->Show(1);
+}
+
+# wxGlade: MainFrame::OnMStdAcc <event_handler>
+sub OnMStdAcc {
+    my ($self, $event) = @_;
+    use StdAccPanel;
+    $self->{d_stdpanel} ||= StdAccPanel->new($self, -1,
+					     "Onderhoud Koppelingen",
+					     [$config->stdw->{xpos},$config->stdw->{ypos}],
+					     [$config->stdw->{xwidth},$config->stdw->{ywidth}],
+					    );
+    $self->{d_stdpanel}->SetSize([$config->stdw->{xwidth},$config->stdw->{ywidth}]);
+    $self->{d_stdpanel}->Show(1);
 }
 
 # wxGlade: MainFrame::OnRPrf <event_handler>

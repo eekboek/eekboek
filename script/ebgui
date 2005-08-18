@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: ebgui,v 1.2 2005/08/16 21:21:11 jv Exp $ ';
+my $RCS_Id = '$Id: ebgui,v 1.3 2005/08/18 14:43:02 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Aug 11 18:12:19 2005
-# Update Count    : 51
+# Last Modified On: Thu Aug 18 16:11:11 2005
+# Update Count    : 53
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -172,6 +172,10 @@ sub init_state {
     $config->define("btww",     { ARGCOUNT => ARGCOUNT_HASH });
     $config->btww->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
+    # Maint -- StdAccPanel
+    $config->define("stdw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->stdw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
     # Report -- RepPrf
     $config->define("rprfw",     { ARGCOUNT => ARGCOUNT_HASH });
     $config->rprfw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
@@ -307,5 +311,6 @@ unless(caller){
     $config->set(lastdb => $dataset);
 
     my $acc = MainApp->new();
+    $dbh->dbh->{HandleError} = sub { Wx::LogMessage(shift); return 0 };
     $acc->MainLoop();
 }
