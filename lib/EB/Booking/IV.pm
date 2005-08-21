@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.11 2005/08/17 21:16:36 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.12 2005/08/21 14:21:21 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Aug 17 22:03:38 2005
-# Update Count    : 86
+# Last Modified On: Sun Aug 21 16:17:43 2005
+# Update Count    : 88
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -111,7 +111,13 @@ sub perform {
 	}
 
 	if ( $nr == 1 ) {
-	    $bsk_id = $opts->{boekstuk} || $dbh->get_sequence("bsk_nr_${dagboek}_seq");
+	    if ( $bsk_id = $opts->{boekstuk} ) {
+		$dbh->set_sequence("bsk_nr_${dagboek}_seq", $bsk_id);
+	    }
+	    else {
+		$bsk_id = $dbh->get_sequence("bsk_nr_${dagboek}_seq");
+	    }
+
 	    $dbh->sql_insert("Boekstukken",
 			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_paid)],
 			     $bsk_id, $desc, $dagboek, $date, undef);
