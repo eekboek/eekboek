@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.8 2005/08/18 14:41:55 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.9 2005/08/21 14:21:38 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Aug 18 15:32:41 2005
-# Update Count    : 90
+# Last Modified On: Sat Aug 20 18:32:37 2005
+# Update Count    : 91
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -134,6 +134,7 @@ sub std_acc {
     if ( $name eq "" ) {
 	%std_acc = ();
 	@std_acc = ();
+	return;
     }
     $self->std_accs unless %std_acc;
     $std_acc{lc($name)} || die("?Niet-bestaande standaardrekening: \"$name\"\n");
