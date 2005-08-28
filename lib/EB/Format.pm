@@ -64,7 +64,7 @@ sub amount {
 
 sub numfmt {
     my $v = shift;
-    if ( $v == int($v) ) {
+    if ( $v == int($v) && $v >= 0 ) {
 	$v = ("0" x (AMTPRECISION - length($v) + 1)) . $v if length($v) <= AMTPRECISION;
 	substr($v, length($v) - AMTPRECISION, 0) = $decimalpt;
     }
@@ -77,7 +77,7 @@ sub numfmt {
 
 sub numfmtw {
     my $v = shift;
-    if ( $v == int($v) ) {
+    if ( $v == int($v) && $v >= 0  ) {
 	$v = ("0" x (AMTPRECISION - length($v) + 1)) . $v if length($v) <= AMTPRECISION;
 	$v = (" " x (AMTWIDTH - length($v))) . $v if length($v) < AMTWIDTH;
 	substr($v, length($v) - AMTPRECISION, 0) = $decimalpt;
@@ -91,7 +91,7 @@ sub numfmtw {
 
 sub numfmtv {
     my $v = shift;
-    if ( $v == int($v) ) {
+    if ( $v == int($v) && $v >= 0  ) {
 	$v = ("0" x (AMTPRECISION - length($v) + 1)) . $v if length($v) <= AMTPRECISION;
 	$v = (" " x ($_[0] - length($v))) . $v if length($v) < $_[0];
 	substr($v, length($v) - AMTPRECISION, 0) = $decimalpt;
