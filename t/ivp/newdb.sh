@@ -13,11 +13,11 @@ dropdb ${EB_DB_NAME}
 perl -Mlib=$EB_LIB $EB_LIB/EB/Globals.pm > constants.sql
 perl -Mlib=$EB_LIB $EB_LIB/schema.pl schema.dat || exit 
 
-# Creeer een nieuwe database.
-createdb ${EB_DB_NAME} || createdb --template=template0 ${EB_DB_NAME} || createdb ${EB_DB_NAME}
-
-# Add proc lang
-createlang plpgsql ${EB_DB_NAME}
+# Creeer een nieuwe database. The || are for fallback if a template is
+# temporary in use.
+createdb -E latin1 ${EB_DB_NAME} ||
+ createdb --template=template0 -E latin1 ${EB_DB_NAME} ||
+  createdb -E latin1 ${EB_DB_NAME}
 
 # Vul de database met het schema.
 psql ${EB_DB_NAME} < $EB_LIB/eekboek.sql
