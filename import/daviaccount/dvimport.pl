@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.10 2005/08/17 21:16:37 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.11 2005/08/29 20:41:44 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Aug 17 21:51:25 2005
-# Update Count    : 246
+# Last Modified On: Mon Aug 29 22:40:54 2005
+# Update Count    : 268
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -172,6 +172,11 @@ sub read_verdichtingen {
 
 my %grootboek;
 my @transactions;
+my $op_deb;
+my $op_crd;
+INIT {
+    $op_deb = $op_crd = 0;
+}
 
 sub read_grootboek {
     use Text::CSV_XS;
@@ -187,9 +192,18 @@ sub read_grootboek {
 	      [ @a[1,3,4,5,6,7,12] ]; # desc B/W D/C N/.. struct btw N/J(omzet)?
 	    my $balance = $a[17] - $a[16];
 	    if ( $balance ) {
-		push(@transactions,
-		     [0+$a[0],
-		      $a[4] eq 'C' ? $balance : -$balance]);
+		$balance = -$balance if $a[4] eq 'D';
+		push(@transactions, [0+$a[0], $balance]);
+		if ( $balance < 0 ) {
+		    $a[4] = ($a[4] eq 'D') ? 'C' : 'D';
+		    $balance = -$balance;
+		}
+		if ( $a[4] eq 'C' ) {
+		    $op_crd += $balance;
+		}
+		else {
+		    $op_deb += $balance;
+		}
 	    }
 	    $balance = $a[19] - $a[18];
 	    if ( $balance ) {
@@ -374,14 +388,19 @@ sub write_rekeningschema {
 	      "VALUES (1600, 500, 1530, 1200, 1500, 1560, 1510, 1520);\n");
     close($f);
 
-    open($f, ">open.dat") or die("Cannot create open.dat: $!\n");
+    die("Openingsbalans is niet in balans: $op_deb <> $op_crd\n")
+      unless sprintf("%.2f", $op_deb) == sprintf("%.2f", $op_crd);
+
+    open($f, ">opening.eb") or die("Cannot create opening.eb: $!\n");
 
     print $f ("# Data voor openingsbalans:\n\n");
+    printf $f ("adm_balanstotaal %10.2f\n", $op_deb);
     foreach ( @transactions ) {
-	print $f ("@$_\n");
+	printf $f ("adm_balans %5d %10.2f\n", @$_);
     }
+    print $f ("\n");
 
-    close($f)
+    close($f);
 
 }
 
