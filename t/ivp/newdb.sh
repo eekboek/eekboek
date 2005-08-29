@@ -11,7 +11,7 @@ dropdb ${EB_DB_NAME}
 
 # Creeer de schema files.
 perl -Mlib=$EB_LIB $EB_LIB/EB/Globals.pm > constants.sql
-perl -Mlib=$EB_LIB $EB_LIB/schema.pl schema.dat || exit 
+perl -Mlib=$EB_LIB -MEB::Tools::Schema -e load -- schema.dat || exit 
 
 # Creeer een nieuwe database. The || are for fallback if a template is
 # temporary in use.
@@ -22,14 +22,10 @@ createdb -E latin1 ${EB_DB_NAME} ||
 # Vul de database met het schema.
 psql ${EB_DB_NAME} < $EB_LIB/eekboek.sql
 
+pg_dump -c $EB_DB_NAME > reset.sql
+
 # Open de administratie.
-# --btw-periode = 1 (jaar) of 4 (kwartaal)
-perl -Mlib=$EB_LIB -w $EB_LIB/opening.pl \
-    --admin="EekBoek Demo Administratie 2004" \
-    --periode=2004 \
-    --btw-periode=1 \
-    --check=15854,77 \
-    < open.dat
+perl -Mlib=$EB_LIB -w $EB_LIB/ebshell.pl --echo < opening.eb
 
 # Voeg de relaties toe.
-perl -Mlib=$EB_LIB -w $EB_LIB/ebshell.pl < relaties.eb
+perl -Mlib=$EB_LIB -w $EB_LIB/ebshell.pl --echo < relaties.eb
