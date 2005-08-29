@@ -1,8 +1,10 @@
-package Shell::Base;
+package EB::Shell::Base;
+
+# Sorry, I had to modify a few things -- jv
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.1 2005/07/14 12:54:08 jv Exp $
+# $Id: Base.pm,v 1.2 2005/08/29 10:12:56 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -19,11 +21,11 @@ use Carp qw(carp croak);
 use Env qw($PAGER $SHELL $COLUMNS);
 use IO::File;
 use File::Basename qw(basename);
-use Term::Size qw(chars);
+#use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$VERSION      = 0.05;   # $Date: 2005/07/14 12:54:08 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/;
+$VERSION      = 0.05;   # $Date: 2005/08/29 10:12:56 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -103,10 +105,17 @@ sub import {
 # ----------------------------------------------------------------------
 sub new {
     my $class = shift;
-    $class = ref($class) || $class;
+    $class = ref($class) || $class; # make it work with derived classes - jv
     my $args  = UNIVERSAL::isa($_[0], 'HASH') ? shift : { @_ };
 
-    my @size = chars();
+    # We don't really need this - jv
+    my @size = (80, 24);
+    eval {
+	require Term::Size;
+	@size = Term::Size::chars();
+    };
+    # End change - jv
+
     my $self  = bless {
         ARGS        => $args,
         COMPLETIONS => undef,           # tab completion
@@ -393,11 +402,13 @@ sub run {
 
         $output = $self->postcmd($output);
 
+	# Suppress the newline if there's nothing to print - jv
 	if ( defined $output ) {
 	    $output =~ s/\n*$//;
 	    chomp $output;
 	    $self->print("$output\n");
 	}
+	# End change - jv
 
         # In case precmd or postcmd modified the prompt,
         # we recollect it before displaying it.
@@ -1780,7 +1791,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.1 $.
+This documentation describes C<Shell::Base>, $Revision: 1.2 $.
 
 =head1 COPYRIGHT
 

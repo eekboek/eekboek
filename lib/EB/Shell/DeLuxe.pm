@@ -1,20 +1,20 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.2 2005/07/24 15:32:38 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.3 2005/08/29 10:12:14 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 24 16:49:15 2005
-# Update Count    : 160
+# Last Modified On: Mon Aug 29 12:12:03 2005
+# Update Count    : 164
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
-package Shell::DeLuxe;
+package EB::Shell::DeLuxe;
 
 use strict;
-use base qw(Shell::Base);
+use base qw(EB::Shell::Base);
 
 sub new {
     my $class = shift;

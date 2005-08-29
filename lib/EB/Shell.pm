@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.10 2005/07/29 16:49:11 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.11 2005/08/29 10:12:34 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jul 29 18:44:08 2005
-# Update Count    : 240
+# Last Modified On: Mon Aug 29 12:12:31 2005
+# Update Count    : 242
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -16,7 +16,7 @@ package EB::Shell;
 use strict;
 use locale;
 
-use base qw(Shell::DeLuxe);
+use base qw(EB::Shell::DeLuxe);
 
 sub new {
     my $class = shift;
