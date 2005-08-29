@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.2 2005/08/29 10:12:56 jv Exp $
+# $Id: Base.pm,v 1.3 2005/08/29 20:43:33 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -24,8 +24,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$VERSION      = 0.05;   # $Date: 2005/08/29 10:12:56 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
+$VERSION      = 0.05;   # $Date: 2005/08/29 20:43:33 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -390,10 +390,11 @@ sub run {
                 $output = $self->$meth(@args);
             };
             if ($@) {
-                $output = sprintf "%s: Bad command or filename", $self->progname;
+# jv                $output = sprintf "%s: Bad command or filename", $self->progname;
                 my $err = $@;
                 chomp $err;
-                warn "$output ($err)\n";
+# jv                warn "$output ($err)\n";
+                warn "$err\n";
                 eval {
                     $output = $self->default($cmd, @args);
                 };
@@ -406,7 +407,7 @@ sub run {
 	if ( defined $output ) {
 	    $output =~ s/\n*$//;
 	    chomp $output;
-	    $self->print("$output\n");
+	    $self->print("$output\n") if $output;
 	}
 	# End change - jv
 
@@ -807,7 +808,7 @@ sub help {
             push @ret, 
                 "Help is available for the following topics:",
                 "===========================================",
-                map({ "  * $_" } @helps),
+                map({ "  * $_" } sort @helps),
                 "===========================================";
         }
         else {
@@ -1791,7 +1792,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.2 $.
+This documentation describes C<Shell::Base>, $Revision: 1.3 $.
 
 =head1 COPYRIGHT
 
