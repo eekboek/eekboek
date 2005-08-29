@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.9 2005/08/21 14:21:38 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.10 2005/08/29 20:42:22 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug 20 18:32:37 2005
-# Update Count    : 91
+# Last Modified On: Mon Aug 29 16:59:14 2005
+# Update Count    : 96
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -174,6 +174,12 @@ sub accts {
 
 sub dbh{
     $dbh;
+}
+
+sub adm_busy {
+    my ($self) = @_;
+    $self->connectdb;
+    $self->do("SELECT COUNT(*) FROM Journal")->[0];
 }
 
 sub connectdb {
