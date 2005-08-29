@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.5 2005/08/14 09:33:54 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.6 2005/08/29 20:42:56 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 14 11:21:47 2005
-# Update Count    : 175
+# Last Modified On: Mon Aug 29 18:04:21 2005
+# Update Count    : 176
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,6 +42,12 @@ sub balans {
     $self->perform($opts);
 }
 
+sub openingsbalans {
+    my ($self, $opts) = @_;
+    $opts->{balans} = -1;
+    $self->perform($opts);
+}
+
 sub result {
     my ($self, $opts) = @_;
     $opts->{balans} = 0;
@@ -64,10 +70,18 @@ sub perform {
     my $rr = $dbh->do("SELECT adm_begin FROM Metadata");
     my $date = $rr->[0];
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
-    $rep->addline('H', '',
-		  ($balans ? "Balans" : "Verlies/Winst") .
-		  " -- Periode $date - " .
-		  substr($now,0,10));
+    if ( $balans < 0 ) {
+	$rep->addline('H', '',
+		      "Openingsbalans" .
+		      " -- Periode ". substr($date, 0, 4) . " d.d. " .
+		      substr($now,0,10));
+    }
+    else {
+	$rep->addline('H', '',
+		      ($balans ? "Balans" : "Verlies/Winst") .
+		      " -- Periode $date - " .
+		      substr($now,0,10));
+    }
 
     my $sth;
 
