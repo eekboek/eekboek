@@ -1,13 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.6 2005/08/30 08:49:03 jv Exp $ ';
-
-# Skeleton for Getopt::Long.
+my $RCS_Id = '$Id: Schema.pm,v 1.7 2005/08/30 08:50:24 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 30 10:49:01 2005
-# Update Count    : 175
+# Last Modified On: Tue Aug 30 10:49:11 2005
+# Update Count    : 176
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
