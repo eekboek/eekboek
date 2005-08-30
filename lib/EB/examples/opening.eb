@@ -1,0 +1,26 @@
+# Administratiegegevens.
+
+adm_naam "EekBoek Demo Administratie 2004"
+adm_btwperiode jaar
+adm_begindatum 2004
+
+# Data voor openingsbalans:
+
+adm_balanstotaal 15854,77
+
+# Grootboekrekening Bedrag
+
+adm_balans  230  1344.37
+adm_balans  231  1304.81
+adm_balans  240 13378.48
+adm_balans  241 12106.78
+adm_balans 1120  1131.92
+adm_balans  500  2443.18
+
+# Openstaande posten als volgt:
+# (indien nodig) relatie KESTER "Repro van Kesteren" 4950
+# adm_relatie 2003-12-31 "Printwerk" crd "KESTER" 48.79
+
+# Open de administratie.
+
+adm_open
