@@ -1,10 +1,20 @@
-# $Id: Opening.pm,v 1.5 2005/08/30 08:38:02 jv Exp $
+# $Id: Opening.pm,v 1.6 2005/08/30 08:50:19 jv Exp $
+
+# Author          : Johan Vromans
+# Created On      : Tue Aug 30 09:49:11 2005
+# Last Modified By: Johan Vromans
+# Last Modified On: Tue Aug 30 10:50:16 2005
+# Update Count    : 21
+# Status          : Unknown, Use with caution!
 
 package main;
 
 our $dbh;
+our $app;
+our $config;
 
 package EB::Tools::Opening;
+
 use strict;
 use EB::Globals;
 use EB::Finance;
