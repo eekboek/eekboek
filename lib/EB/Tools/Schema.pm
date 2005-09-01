@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.8 2005/09/01 15:17:20 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.9 2005/09/01 15:20:07 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  1 17:16:25 2005
-# Update Count    : 304
+# Last Modified On: Thu Sep  1 17:19:39 2005
+# Update Count    : 305
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -30,6 +30,13 @@ use strict;
 
 my $sql = 0;			# load schema into SQL files
 my $trace = $ENV{EB_SQL_TRACE} || 0;
+
+# Package name.
+my $my_package = 'EekBoek';
+# Program name and version.
+my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
+# Tack '*' if it is not checked in into RCS.
+$my_version .= '*' if length('$Locker:  $ ') > 12;
 
 ################ The Process ################
 
