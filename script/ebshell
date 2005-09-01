@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.2 2005/07/29 10:42:36 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.3 2005/09/01 15:21:00 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jul 29 12:42:06 2005
-# Update Count    : 154
+# Last Modified On: Thu Sep  1 14:27:16 2005
+# Update Count    : 163
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -34,6 +34,7 @@ my $interactive = -t;
 my $command;
 my $echo;
 my $dataset;
+my $schema;			# initialise w/ schema
 my $confirm = 0;
 my $journal = 0;
 my $verbose = 0;		# verbose processing
@@ -71,6 +72,15 @@ unless ( $ENV{EB_DB_NAME} ) {
     die("?Geen database opgegeven. Gebruik de environment variabele EB_DB_NAME om een database te selecteren, of geef een database naam mee op de command line met \"--data=...\".\n");
 }
 
+use EB::DB;
+our $dbh = EB::DB->new(trace => $trace);
+
+if ( $schema ) {
+    require EB::Tools::Schema;
+    $dbh->connectdb(undef, 1);
+    EB::Tools::Schema->create($schema);
+}
+
 my $shell = EB::Shell->new
   ({ HISTFILE	  => $userdir."/history",
      command	  => $command,
@@ -88,8 +98,6 @@ $shell->run;
 
 ################ Subroutines ################
 
-################ Subroutines ################
-
 sub app_options {
     my $help = 0;		# handled locally
     my $ident = 0;		# handled locally
@@ -103,6 +111,7 @@ sub app_options {
 			 $command = 1;
 			 die("!FINISH\n");
 		     },
+		     'schema=s' => \$schema,
 		     'echo!'	=> \$echo,
 		     'ident'	=> \$ident,
 		     'journal'	=> \$journal,
@@ -128,13 +137,13 @@ sub app_usage {
     print STDERR <<EndOfUsage;
 Usage: $0 [options] [file ...]
 
-    -command            voer de rest van de opdrachtregel uit als command
-    -echo               echo ingelezen opdrachten
-    -journal            print journaalregels na elke opdracht
-    -data=DB            specificeer database
-    -help		this message
-    -ident		show identification
-    -verbose		verbose information
+    --command  -c       voer de rest van de opdrachtregel uit als command
+    --echo  -e          toon ingelezen opdrachten
+    --journal           print journaalregels na elke opdracht
+    --data=DB           specificeer database
+    --help		this message
+    --ident		show identification
+    --verbose		verbose information
 EndOfUsage
     exit $exit if defined $exit && $exit != 0;
 }
