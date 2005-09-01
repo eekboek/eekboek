@@ -1,7 +1,11 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.12 2005/08/17 21:17:15 jv Exp $
+-- $Id: eekboek.sql,v 1.13 2005/09/01 15:23:38 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
+CREATE TABLE Constants (
+    name	text not null primary key,
+    value	int
+);
 
 \i constants.sql
 
@@ -50,7 +54,7 @@ CREATE TABLE BTWTabel (
     btw_desc        text not null,
     btw_perc        int not null,      -- perc * BTWSCALE
     btw_tariefgroep smallint not null, -- 0 (Geen) 1 (Hoog) 2 (Laag)
-    btw_incl        boolean,    -- inclusief / exclusief
+    btw_incl        boolean,           -- inclusief / exclusief
     CONSTRAINT "btw_tariefgroep"
 	CHECK (btw_tariefgroep >= 0 AND btw_tariefgroep <= 2)
 );
@@ -83,10 +87,10 @@ CREATE SEQUENCE bsk_nr_0_seq;
 CREATE TABLE Relaties (
     rel_code      char(10) not null primary key,
     rel_desc 	  text not null,
-    rel_debcrd    boolean,	-- t: debiteur f: crediteur
-    rel_btw_status smallint default 0, -- BTW_NORMAAL, BTW_VERLEGD, BTW_INTRA, BTW_EXTRA.
+    rel_debcrd    boolean,		     -- t: debiteur f: crediteur
+    rel_btw_status smallint default 0, 	     -- BTW_NORMAAL, BTW_VERLEGD, BTW_INTRA, BTW_EXTRA.
     rel_ledger    int references Dagboeken,  -- verkoop/inkoopdagboek
-    rel_acc_id    int references Accounts,	   -- standaard grootboekrekening
+    rel_acc_id    int references Accounts,   -- standaard grootboekrekening
     CONSTRAINT "rel_btw_status"
 	CHECK (rel_btw_status >= 0 AND rel_btw_status <= 3)
 );
