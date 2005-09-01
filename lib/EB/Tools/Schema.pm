@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.11 2005/09/01 19:45:49 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.12 2005/09/01 21:12:45 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  1 21:34:40 2005
-# Update Count    : 307
+# Last Modified On: Thu Sep  1 23:10:40 2005
+# Update Count    : 317
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -46,6 +46,14 @@ use EB::DB;
 
 ################ Subroutines ################
 
+sub findlib {
+    my ($file) = @_;
+    foreach ( @INC ) {
+	return "$_/EB/$file" if -e "$_/EB/$file";
+    }
+    undef;
+}
+
 ################ Schema Loading ################
 
 my $schema;
@@ -55,14 +63,14 @@ sub create {
     shift;			# singleton class method
     my ($name) = @_;
     my $file;
-    foreach my $dir ( ".", "schemas", $ENV{EB_LIB}."/EB/schemas" ) {
-	foreach my $ext ( "", ".dat" ) {
+    foreach my $dir ( ".", "schema" ) {
+	foreach my $ext ( ".dat" ) {
 	    next unless -s "$dir/$name$ext";
 	    $file = "$dir/$name$ext";
 	    last;
 	}
     }
-
+    $file = findlib("schema/$name.dat") unless $file;
     die("?Onbekend schema: $name\n") unless $file;
     open($fh, "<$file") or die("?Error accessing schema data: $!\n");
     $schema = $name;
@@ -303,7 +311,7 @@ sub create_schema {
 }
 
 sub sql_eekboek {
-    my $f = $ENV{EB_LIB} . "/EB/schemas/eekboek.sql";
+    my $f = findlib("schema/eekboek.sql");
     open (my $fh, '<', $f)
       or die("Installation error -- no master schema\n");
 
