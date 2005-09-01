@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.10 2005/09/01 15:41:42 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.11 2005/09/01 19:45:49 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  1 17:40:00 2005
-# Update Count    : 306
+# Last Modified On: Thu Sep  1 21:34:40 2005
+# Update Count    : 307
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -303,7 +303,7 @@ sub create_schema {
 }
 
 sub sql_eekboek {
-    my $f = $ENV{EB_LIB} . "/schemas/eekboek.sql";
+    my $f = $ENV{EB_LIB} . "/EB/schemas/eekboek.sql";
     open (my $fh, '<', $f)
       or die("Installation error -- no master schema\n");
 
