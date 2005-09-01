@@ -1,50 +1,35 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.7 2005/08/30 08:50:24 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.8 2005/09/01 15:17:20 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 30 10:49:11 2005
-# Update Count    : 176
+# Last Modified On: Thu Sep  1 17:16:25 2005
+# Update Count    : 304
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
+package main;
+
+our $config;
+our $app;
+our $dbh;
+
+package EB::Tools::Schema;
+
+# To be used by the EB::Shell.
+#
+# Stand-alone use:
+#
+#   perl EB/Tools/Schema.pm                           -- dumps current schema
+#   perl -MEB::Tools::Schema -e 'dump_schema()'       -- same
+#   perl -MEB::Tools::Schema -e 'dump_sql("sample")'  -- loads a schema into sql files
+
 use strict;
 
-our $dbh;
-our $app;
-our $config;
-
-# Package name.
-my $my_package = 'EekBoek';
-# Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
-# Tack '*' if it is not checked in into RCS.
-$my_version .= '*' if length('$Locker:  $ ') > 12;
-
-################ Command line parameters ################
-
-use Getopt::Long 2.13;
-
-# Command line options.
-my $dump = 0;			# dump, what else?
-my $verbose = 0;		# verbose processing
-
-# Development options (not shown with -help).
-my $debug = 0;			# debugging
-my $trace = 0;			# trace (show process)
-my $test = 0;			# test mode.
-
-# Process command line options.
-app_options();
-
-# Post-processing.
-$trace |= ($debug || $test);
-
-################ Presets ################
-
-my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
+my $sql = 0;			# load schema into SQL files
+my $trace = $ENV{EB_SQL_TRACE} || 0;
 
 ################ The Process ################
 
@@ -52,125 +37,32 @@ use EB::Globals;
 use EB::Finance;
 use EB::DB;
 
-$dbh = EB::DB->new(trace => $trace);
-
-$dump ? dump_schema() : load_schema();
-
-exit 0;
-
 ################ Subroutines ################
 
-my %kopp;
-
-sub dump_schema {
-    $dbh->connectdb;		# can't wait...
-    print("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n");
-
-    my $sth = $dbh->sql_exec("SELECT * FROM Standaardrekeningen");
-    my $rr = $sth->fetchrow_hashref;
-    $sth->finish;
-    while ( my($k,$v) = each(%$rr) ) {
-	$k =~ s/^std_acc_//;
-	$kopp{$v} = $k;
-    }
-
-    dump_acc(1);		# Balansrekeningen
-    dump_acc(0);		# Resultaatrekeningen
-    dump_dbk();			# Dagboeken
-    dump_btw();			# BTW tarieven
-}
-
-sub dump_acc {
-    my ($balres) = @_;
-
-    print("\n", $balres ? "Balans" : "Resultaat", "rekeningen\n");
-
-    my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
-			     " FROM Verdichtingen".
-			     " WHERE ".($balres?"":"NOT ")."vdi_balres".
-			     " AND vdi_struct IS NULL".
-			     " ORDER BY vdi_id");
-    while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($id, $desc) = @$rr;
-	printf("\n  %d  %s\n", $id, $desc);
-	print("# HOOFDVERDICHTING MOET TUSSEN 1 EN 9 (INCL.) LIGGEN\n")
-	  if $id > 9;
-	my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
-				 " FROM Verdichtingen".
-				 " WHERE vdi_struct = ?".
-				 " ORDER BY vdi_id", $id);
-	while ( my $rr = $sth->fetchrow_arrayref ) {
-	    my ($id, $desc) = @$rr;
-	    printf("     %-2d  %s\n", $id, $desc);
-	    print("# VERDICHTING MOET TUSSEN 10 EN 99 (INCL.) LIGGEN\n")
-	      if $id < 10 || $id > 99;
-	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz, btw_tariefgroep".
-				     " FROM Accounts, BTWTabel ".
-				     " WHERE acc_struct = ?".
-				     " AND btw_id = acc_btw".
-				     " ORDER BY acc_id", $id);
-	    while ( my $rr = $sth->fetchrow_arrayref ) {
-		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_kstomz, $btw) = @$rr;
-		my $flags = "";
-		$flags .= $acc_debcrd ? "D" : "C";
-		$flags .= $acc_kstomz ? "K" : "O";
-		my $extra = "";
-		$extra .= " :btw=hoog" if $btw == BTWTYPE_HOOG;
-		$extra .= " :btw=laag" if $btw == BTWTYPE_LAAG;
-		$extra .= " :koppeling=".$kopp{$id} if exists($kopp{$id});
-		$desc =~ s/^\s+//;
-		$desc =~ s/\s+$//;
-		my $t = sprintf("         %-4d  %-2s  %-40.40s  %s",
-				$id, $flags, $desc,
-				$extra);
-		$t =~ s/\s+$//;
-		print($t, "\n");
-		print("# $id ZOU EEN BALANSREKENING MOETEN ZIJN\n")
-		  if $acc_balres && !$balres;
-		print("# $id ZOU EEN RESULTAATREKENING MOETEN ZIJN\n")
-		  if !$acc_balres && $balres;
-	    }
-	}
-    }
-}
-
-sub dump_btw {
-    print("\nBTW Tarieven\n\n");
-    my $sth = $dbh->sql_exec("SELECT btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
-			     " FROM BTWTabel".
-			     " ORDER BY btw_id");
-    while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($id, $desc, $perc, $btg, $incl) = @$rr;
-	my $extra = "";
-	$extra .= " :tariefgroep=" . lc(BTWTYPES->[$btg]);
-	if ( $btg != BTWTYPE_GEEN ) {
-	    $extra .= " :perc=".btwfmt($perc);
-	    $extra .= " :" . qw(exclusief inclusief)[$incl] unless $incl;
-	}
-	my $t = sprintf(" %3d  %-20s  %s",
-			$id, $desc, $extra);
-	$t =~ s/\s+$//;
-	print($t, "\n");
-    }
-}
-
-sub dump_dbk {
-    print("\nDagboeken\n\n");
-    my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_desc, dbk_type, dbk_acc_id".
-			     " FROM Dagboeken".
-			     " ORDER BY dbk_id");
-    while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($id, $desc, $type, $acc_id) = @$rr;
-	$acc_id = 0 if $type == DBKTYPE_INKOOP || $type == DBKTYPE_VERKOOP;
-	my $t = sprintf(" %3d  %-20s  :type=%-10s %s",
-			$id, $desc, lc(DBKTYPES->[$type]),
-			($acc_id ? ":rekening=$acc_id" : ""));
-	$t =~ s/\s+$//;
-	print($t, "\n");
-    }
-}
-
 ################ Schema Loading ################
+
+my $schema;
+my $fh;
+
+sub create {
+    shift;			# singleton class method
+    my ($name) = @_;
+    my $file;
+    foreach my $dir ( ".", $ENV{EB_LIB}."/schemas" ) {
+	foreach my $ext ( "", ".dat" ) {
+	    next unless -s "$dir/$name$ext";
+	    $file = "$dir/$name$ext";
+	    last;
+	}
+    }
+
+    die("?Onbekend schema: $name\n") unless $file;
+    open($fh, "<$file") or die("?Error accessing schema data: $!\n");
+    $schema = $name;
+    $dbh = EB::DB->new(trace => $trace) unless $sql;
+    load_schema();
+    "Schema $name geïnitialiseerd";
+}
 
 my @hvdi;			# hoofdverdichtingen
 my @vdi;			# verdichtingen
@@ -344,8 +236,8 @@ sub load_schema {
     my $scanner;		# current scanner
 
     %std = map { $_ => 0 } qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih);
-
-    while ( <> ) {
+    $fh ||= *ARGV;
+    while ( <$fh> ) {
 	next if /^\s*#/;
 	next unless /\S/;
 
@@ -390,105 +282,105 @@ sub load_schema {
     }
     die("?FOUTEN GEVONDEN, VERWERKING AFGEBROKEN\n") if $fail;
 
-    gen_vrd();
-    gen_gbk();
-    gen_dbk();
-    gen_btw();
-    gen_std();
+    if ( $sql ) {
+	gen_schema();
+    }
+    else {
+	create_schema();
+    }
 }
 
-sub gen_vrd {
-    warn('%'."Aanmaken vrd.sql...\n");
-    open(my $f, ">vrd.sql") or die("Cannot create vrd.sql: $!\n");
+sub create_schema {
+    sql(sql_eekboek());
+    $dbh->commit;
+}
 
-    print $f ("-- Hoofdverdichtingen\n\n",
-	      "COPY Verdichtingen (vdi_id, vdi_desc, vdi_balres, vdi_kstomz, vdi_struct)".
-	      " FROM stdin;\n");
+sub sql_eekboek {
+    my $f = $ENV{EB_LIB} . "/schemas/eekboek.sql";
+    open (my $fh, '<', $f)
+      or die("Installation error -- no master schema\n");
+
+    local $/;
+    $sql = <$fh>;
+    close($fh);
+    $sql;
+}
+
+sub sql_constants {
+    my $out = "COPY Constants (name, value) FROM stdin;\n";
+
+    foreach my $key ( sort(@EB::Globals::EXPORT) ) {
+	no strict;
+	next if ref($key->());
+	$out .= "$key\t" . $key->() . "\n";
+    }
+    $out . "\\.\n";
+}
+
+sub sql_vrd {
+    my $out = <<ESQL;
+-- Hoofdverdichtingen
+COPY Verdichtingen (vdi_id, vdi_desc, vdi_balres, vdi_kstomz, vdi_struct) FROM stdin;
+ESQL
+
     for ( my $i = 0; $i < @hvdi; $i++ ) {
 	next unless exists $hvdi[$i];
 	my $v = $hvdi[$i];
-	print $f (join("\t", $i, $v->[0], _tf($v->[1]), "\\N", "\\N"), "\n");
+	$out .= join("\t", $i, $v->[0], _tf($v->[1]), "\\N", "\\N") . "\n";
     }
-    print $f ("\\.\n\n");
+    $out .= "\\.\n";
 
-    print $f ("-- Verdichtingen\n\n",
-	      "COPY Verdichtingen (vdi_id, vdi_desc, vdi_balres, vdi_kstomz, vdi_struct) FROM stdin;\n");
+    $out .= <<ESQL;
+
+-- Verdichtingen
+COPY Verdichtingen (vdi_id, vdi_desc, vdi_balres, vdi_kstomz, vdi_struct) FROM stdin;
+ESQL
+
     for ( my $i = 0; $i < @vdi; $i++ ) {
 	next unless exists $vdi[$i];
 	my $v = $vdi[$i];
-	print $f (join("\t", $i, $v->[0], _tf($v->[1]), "\\N", $v->[2]), "\n");
+	$out .= join("\t", $i, $v->[0], _tf($v->[1]), "\\N", $v->[2]) . "\n";
     }
-    print $f ("\\.\n\n");
-    close($f);
+    $out . "\\.\n";
 }
 
-sub gen_gbk {
-    warn('%'."Aanmaken acc.sql...\n");
-    open(my $f, ">acc.sql") or die("Cannot create acc.sql: $!\n");
-
-    print $f ("-- Grootboekrekeningen\n\n",
-	      "COPY Accounts (acc_id, acc_desc, acc_struct, acc_balres, acc_debcrd,".
-	      " acc_kstomz, acc_btw, acc_ibalance, acc_balance) FROM stdin;\n");
+sub sql_acc {
+    my $out = <<ESQL;
+-- Grootboekrekeningen
+COPY Accounts
+     (acc_id, acc_desc, acc_struct, acc_balres, acc_debcrd,
+      acc_kstomz, acc_btw, acc_ibalance, acc_balance)
+     FROM stdin;
+ESQL
 
     for my $i ( sort { $a <=> $b } keys(%acc) ) {
 	my $g = $acc{$i};
-	print $f (join("\t", $i, $g->[0], $g->[1],
-		       _tf($g->[2]),
-		       _tf($g->[3]),
-		       _tf($g->[4]),
-		       $btwmap{$g->[5]},
-		       0, 0), "\n");
+	$out .= join("\t", $i, $g->[0], $g->[1],
+		     _tf($g->[2]),
+		     _tf($g->[3]),
+		     _tf($g->[4]),
+		     $btwmap{$g->[5]},
+		     0, 0) . "\n";
     }
-    print $f ("\\.\n\n");
-    close($f);
+    $out . "\\.\n";
 }
 
-sub gen_std {
-    warn('%'."Aanmaken std.sql...\n");
-    open(my $f, ">std.sql") or die("Cannot create std.sql: $!\n");
+sub sql_std {
+    my $out = <<ESQL;
+-- Standaardrekeningen
+INSERT INTO Standaardrekeningen
+ESQL
+    $out .= "  (" . join(", ", map { "std_acc_$_" } keys(%std)) . ")\n";
+    $out .= "  VALUES (" . join(", ", values(%std)) . ");\n";
 
-    print $f ("-- Standaardrekeningen\n",
-	      "INSERT INTO Standaardrekeningen\n".
-	      " (" . join(", ", map { "std_acc_$_" } keys(%std)) . ")\n".
-	      " VALUES (" . join(", ", values(%std)), ");\n");
-    close($f);
+    $out;
 }
 
-sub gen_dbk {
-    warn('%'."Aanmaken dbk.sql...\n");
-    open(my $f, ">dbk.sql") or die("Cannot create dbk.sql: $!\n");
-
-    print $f ("-- Dagboeken\n\n",
-	      "COPY Dagboeken (dbk_id, dbk_desc, dbk_type, dbk_acc_id)".
-	      " FROM stdin;\n");
-
-    foreach ( @dbk ) {
-	next unless defined;
-	$_->[3] = $std{deb} if $_->[2] == DBKTYPE_VERKOOP;
-	$_->[3] = $std{crd} if $_->[2] == DBKTYPE_INKOOP;
-	print $f (join("\t",
-		       map { defined($_) ? $_ : "\\N" } @$_),
-		  "\n");
-    }
-    print $f ("\\.\n\n");
-
-    print $f ("-- Sequences for Boekstuknummers, one for each Dagboek\n\n");
-
-    foreach ( @dbk ) {
-	next unless defined;
-	print $f ("CREATE SEQUENCE bsk_nr_$_->[0]_seq;\n");
-    }
-
-    close($f);
-}
-
-sub gen_btw {
-    warn('%'."Aanmaken btw.sql...\n");
-    open(my $f, ">btw.sql") or die("Cannot create btw.sql: $!\n");
-
-    print $f ("-- BTW Tarieven\n\n",
-	      "COPY BTWTabel (btw_id, btw_desc, btw_tariefgroep, btw_perc, btw_incl)".
-	      " FROM stdin;\n");
+sub sql_btw {
+    my $out = <<ESQL;
+-- BTW Tarieven
+COPY BTWTabel (btw_id, btw_desc, btw_tariefgroep, btw_perc, btw_incl) FROM stdin;
+ESQL
 
     foreach ( @btw ) {
 	next unless defined;
@@ -499,53 +391,229 @@ sub gen_btw {
 	else {
 	    $_->[4] = _tf($_->[4]);
 	}
-	print $f (join("\t", @$_), "\n");
+	$out .= join("\t", @$_) . "\n";
     }
-    print $f ("\\.\n\n");
-    close($f);
+    $out . "\\.\n";
+}
+
+sub sql_dbk {
+    my $out = <<ESQL;
+-- Dagboeken
+COPY Dagboeken (dbk_id, dbk_desc, dbk_type, dbk_acc_id) FROM stdin;
+ESQL
+
+    foreach ( @dbk ) {
+	next unless defined;
+	$_->[3] = $std{deb} if $_->[2] == DBKTYPE_VERKOOP;
+	$_->[3] = $std{crd} if $_->[2] == DBKTYPE_INKOOP;
+	$out .= join("\t",
+		     map { defined($_) ? $_ : "\\N" } @$_).
+		       "\n";
+    }
+    $out .= "\\.\n";
+
+    $out .= "\n-- Sequences for Boekstuknummers, one for each Dagboek\n";
+    foreach ( @dbk ) {
+	next unless defined;
+	$out .= "CREATE SEQUENCE bsk_nr_$_->[0]_seq;\n";
+    }
+    $out;
+}
+
+sub gen_schema {
+    foreach ( qw(eekboek vrd acc dbk btw std) ) {
+	warn('%'."Aanmaken $_.sql...\n");
+	open(my $f, ">$_.sql") or die("Cannot create $_.sql: $!\n");
+	my $cmd = "sql_$_";
+	no strict 'refs';
+	print $f $cmd->();
+	close($f);
+    }
 }
 
 sub _tf {
     qw(f t)[shift];
 }
 
+# Basic SQL processor. Not very advanced, but does the job.
+# Currently only for PostgreSQL, but easily extensible for other databases as well.
+# Note that COPY status will not work across different \i providers.
+# COPY status need to be terminated on the same level it was started.
+
+sub sql {
+    my ($cmd, $copy) = (@_, 0);
+    my $sql = "";
+
+    foreach my $line ( split(/\n/, $cmd) ) {
+
+	# Detect \i provider (include).
+	if ( $line =~ /^\\i\s+(.*).sql/ ) {
+	    my $call = "sql_$1";
+	    no strict 'refs';
+	    sql($call->(), $copy);
+	    next;
+	}
+
+	# Handle COPY status.
+	if ( $copy ) {
+	    if ( $line eq "\\." ) {
+		$dbh->dbh->pg_endcopy;
+		$copy = 0;
+	    }
+	    else {
+		$dbh->dbh->pg_putline($line."\n");
+	    }
+	    next;
+	}
+
+	# Ordinary lines.
+	# Strip comments.
+	$line =~ s/--.*$//m;
+	# Ignore empty lines.
+	next unless $line =~ /\S/;
+	# Trim whitespace.
+	$line =~ s/\s+/ /g;
+	$line =~ s/^\s+//;
+	$line =~ s/\s+$//;
+	# Append to command string.
+	$sql .= $line . " ";
+	# Execute if trailing ;
+	if ( $line =~ /(.+);$/ ) {
+	    warn("+ $sql\n");
+	    $dbh->dbh->do($sql);
+	    # Check for COPY/
+	    $copy = $sql =~ /^copy\s/i;
+	    $sql = "";
+	}
+    }
+
+    die("?Incomplete final SQL command: $sql\n") if $sql;
+}
+
+################ Stand-alone use (dump schema) ################
+
+unless ( caller ) {
+    ::dump_schema();
+}
+
 ################ Subroutines ################
 
-sub app_options {
-    my $help = 0;		# handled locally
-    my $ident = 0;		# handled locally
+sub ::dump_sql {
+    my ($schema) = @_;
+    $sql = 1;
+    create(undef, $schema);
+}
 
-    # Process options, if any.
-    # Make sure defaults are set before returning!
-    return unless @ARGV > 0;
+my %kopp;
 
-    if ( !GetOptions(
-		     'dump'	=> \$dump,
-		     'ident'	=> \$ident,
-		     'verbose'	=> \$verbose,
-		     'trace'	=> \$trace,
-		     'help|?'	=> \$help,
-		     'debug'	=> \$debug,
-		    ) or $help )
-    {
-	app_usage(2);
+sub ::dump_schema {
+    $dbh = EB::DB->new(trace => $trace);
+    $dbh->connectdb;		# can't wait...
+
+    print("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n");
+
+    my $sth = $dbh->sql_exec("SELECT * FROM Standaardrekeningen");
+    my $rr = $sth->fetchrow_hashref;
+    $sth->finish;
+    while ( my($k,$v) = each(%$rr) ) {
+	$k =~ s/^std_acc_//;
+	$kopp{$v} = $k;
     }
-    app_ident() if $ident;
+
+    dump_acc(1);		# Balansrekeningen
+    dump_acc(0);		# Resultaatrekeningen
+    dump_dbk();			# Dagboeken
+    dump_btw();			# BTW tarieven
 }
 
-sub app_ident {
-    print STDERR ("This is $my_package [$my_name $my_version]\n");
+sub dump_acc {
+    my ($balres) = @_;
+
+    print("\n", $balres ? "Balans" : "Resultaat", "rekeningen\n");
+
+    my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
+			     " FROM Verdichtingen".
+			     " WHERE ".($balres?"":"NOT ")."vdi_balres".
+			     " AND vdi_struct IS NULL".
+			     " ORDER BY vdi_id");
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	my ($id, $desc) = @$rr;
+	printf("\n  %d  %s\n", $id, $desc);
+	print("# HOOFDVERDICHTING MOET TUSSEN 1 EN 9 (INCL.) LIGGEN\n")
+	  if $id > 9;
+	my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
+				 " FROM Verdichtingen".
+				 " WHERE vdi_struct = ?".
+				 " ORDER BY vdi_id", $id);
+	while ( my $rr = $sth->fetchrow_arrayref ) {
+	    my ($id, $desc) = @$rr;
+	    printf("     %-2d  %s\n", $id, $desc);
+	    print("# VERDICHTING MOET TUSSEN 10 EN 99 (INCL.) LIGGEN\n")
+	      if $id < 10 || $id > 99;
+	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz, btw_tariefgroep".
+				     " FROM Accounts, BTWTabel ".
+				     " WHERE acc_struct = ?".
+				     " AND btw_id = acc_btw".
+				     " ORDER BY acc_id", $id);
+	    while ( my $rr = $sth->fetchrow_arrayref ) {
+		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_kstomz, $btw) = @$rr;
+		my $flags = "";
+		$flags .= $acc_debcrd ? "D" : "C";
+		$flags .= $acc_kstomz ? "K" : "O";
+		my $extra = "";
+		$extra .= " :btw=hoog" if $btw == BTWTYPE_HOOG;
+		$extra .= " :btw=laag" if $btw == BTWTYPE_LAAG;
+		$extra .= " :koppeling=".$kopp{$id} if exists($kopp{$id});
+		$desc =~ s/^\s+//;
+		$desc =~ s/\s+$//;
+		my $t = sprintf("         %-4d  %-2s  %-40.40s  %s",
+				$id, $flags, $desc,
+				$extra);
+		$t =~ s/\s+$//;
+		print($t, "\n");
+		print("# $id ZOU EEN BALANSREKENING MOETEN ZIJN\n")
+		  if $acc_balres && !$balres;
+		print("# $id ZOU EEN RESULTAATREKENING MOETEN ZIJN\n")
+		  if !$acc_balres && $balres;
+	    }
+	}
+    }
 }
 
-sub app_usage {
-    my ($exit) = @_;
-    app_ident();
-    print STDERR <<EndOfUsage;
-Usage: $0 [options] [file ...]
-    -dump		dump
-    -help		this message
-    -ident		show identification
-    -verbose		verbose information
-EndOfUsage
-    exit $exit if defined $exit && $exit != 0;
+sub dump_btw {
+    print("\nBTW Tarieven\n\n");
+    my $sth = $dbh->sql_exec("SELECT btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
+			     " FROM BTWTabel".
+			     " ORDER BY btw_id");
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	my ($id, $desc, $perc, $btg, $incl) = @$rr;
+	my $extra = "";
+	$extra .= " :tariefgroep=" . lc(BTWTYPES->[$btg]);
+	if ( $btg != BTWTYPE_GEEN ) {
+	    $extra .= " :perc=".btwfmt($perc);
+	    $extra .= " :" . qw(exclusief inclusief)[$incl] unless $incl;
+	}
+	my $t = sprintf(" %3d  %-20s  %s",
+			$id, $desc, $extra);
+	$t =~ s/\s+$//;
+	print($t, "\n");
+    }
 }
+
+sub dump_dbk {
+    print("\nDagboeken\n\n");
+    my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_desc, dbk_type, dbk_acc_id".
+			     " FROM Dagboeken".
+			     " ORDER BY dbk_id");
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	my ($id, $desc, $type, $acc_id) = @$rr;
+	$acc_id = 0 if $type == DBKTYPE_INKOOP || $type == DBKTYPE_VERKOOP;
+	my $t = sprintf(" %3d  %-20s  :type=%-10s %s",
+			$id, $desc, lc(DBKTYPES->[$type]),
+			($acc_id ? ":rekening=$acc_id" : ""));
+	$t =~ s/\s+$//;
+	print($t, "\n");
+    }
+}
+
+1;
