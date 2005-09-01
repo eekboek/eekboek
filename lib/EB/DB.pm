@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.10 2005/08/29 20:42:22 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.11 2005/09/01 15:17:45 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Aug 29 16:59:14 2005
-# Update Count    : 96
+# Last Modified On: Thu Sep  1 14:25:59 2005
+# Update Count    : 97
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -183,7 +183,7 @@ sub adm_busy {
 }
 
 sub connectdb {
-    my ($self, $dbname) = @_;
+    my ($self, $dbname, $nocheck) = @_;
 
     return $dbh if $dbh;
 
@@ -196,7 +196,7 @@ sub connectdb {
       or die("Cannot connect to database: $DBI::errstr\n");
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
-    $self->check_stdacc;
+    $self->check_stdacc unless $nocheck;
     $dbh;
 }
 
