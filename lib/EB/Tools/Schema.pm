@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.9 2005/09/01 15:20:07 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.10 2005/09/01 15:41:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  1 17:19:39 2005
-# Update Count    : 305
+# Last Modified On: Thu Sep  1 17:40:00 2005
+# Update Count    : 306
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -55,7 +55,7 @@ sub create {
     shift;			# singleton class method
     my ($name) = @_;
     my $file;
-    foreach my $dir ( ".", $ENV{EB_LIB}."/schemas" ) {
+    foreach my $dir ( ".", "schemas", $ENV{EB_LIB}."/EB/schemas" ) {
 	foreach my $ext ( "", ".dat" ) {
 	    next unless -s "$dir/$name$ext";
 	    $file = "$dir/$name$ext";
