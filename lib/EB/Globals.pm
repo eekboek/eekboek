@@ -46,10 +46,6 @@ BEGIN {
 
 unless ( caller ) {
     print STDOUT ("-- Constants\n\n",
-		  "CREATE TABLE Constants (\n",
-		  "    name\ttext not null primary key,\n",
-		  "    value\tint\n",
-		  ");\n\n",
 		  "COMMENT ON TABLE Constants IS\n",
 		  "  'This is generated from ", __PACKAGE__, ". DO NOT CHANGE.';\n\n",
 		  "COPY Constants (name, value) FROM stdin;\n");
