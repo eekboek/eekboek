@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.13 2005/08/30 08:38:02 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.14 2005/09/01 15:20:29 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 30 10:36:04 2005
-# Update Count    : 302
+# Last Modified On: Thu Sep  1 14:23:46 2005
+# Update Count    : 312
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -26,9 +26,6 @@ sub new {
     my $class = shift;
     $class = ref($class) || $class;
     my $opts = UNIVERSAL::isa($_[0], 'HASH') ? shift : { @_ };
-
-    use EB::DB;
-    $dbh ||= EB::DB->new(trace => $opts->{trace});
 
     _plug_cmds();
 
