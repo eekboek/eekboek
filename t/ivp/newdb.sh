@@ -6,6 +6,8 @@ then
     exit 1
 fi
 
+: ${EBSHELL:=ebshell}
+
 # Verwijder enige bestaande database voor deze administratie.
 dropdb ${EB_DB_NAME}
 
@@ -16,10 +18,10 @@ createdb -E latin1 ${EB_DB_NAME} ||
   createdb -E latin1 ${EB_DB_NAME}
 
 # Vul de database met het schema, en open.
-perl -Mlib=$EB_LIB -w $EB_LIB/ebshell.pl --schema=sample < opening.eb
+$EBSHELL --schema=sample < opening.eb
 
 # Voeg de relaties toe.
-perl -Mlib=$EB_LIB -w $EB_LIB/ebshell.pl --echo < relaties.eb
+$EBSHELL --echo < relaties.eb
 
 # Aanmaken restore set.
 pg_dump -c $EB_DB_NAME > reset.sql
