@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.11 2005/09/01 15:17:45 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.12 2005/09/02 16:17:54 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  1 14:25:59 2005
-# Update Count    : 97
+# Last Modified On: Fri Sep  2 17:53:23 2005
+# Update Count    : 130
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -27,10 +27,31 @@ my $trace = 0;
 
 ################ high level ################
 
-sub check_stdacc {
+sub check_db {
     my ($self) = @_;
 
     my $fail = 0;
+
+    my %tables = map { lc, 1 } $dbh->tables;
+
+    foreach my $table ( qw(constants standaardrekeningen verdichtingen accounts
+			   relaties accounts boekstukken boekstukregels
+			   btwtabel journal metadata) ) {
+	next if $tables{$table} || $tables{"public.$table"};
+	$fail++;
+	 warn("?Tabel $table ontbreekt in database " . $dbh->{Name} . "\n");
+    }
+    warn(join(" ", sort keys %tables)."\n") if $fail;
+    die("?Ongeldige EekBoek database: " . $dbh->{Name} . "." .
+	" Wellicht is de database nog niet geïnitialiseerd?\n") if $fail;
+
+    my ($maj, $min, $rev)
+      = @{$self->do("SELECT adm_scm_majversion, adm_scm_minversion, adm_scm_revision".
+		    " FROM Metadata")};
+    die("?Ongeldige EekBoek database versie: " . $dbh->{Name} . "\n")
+      unless $maj == SCM_MAJVERSION &&
+	$min == SCM_MINVERSION &&
+	  $rev == SCM_REVISION;
 
     for ( $self->std_acc("deb") ) {
 	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
@@ -187,16 +208,15 @@ sub connectdb {
 
     return $dbh if $dbh;
 
-    if ( $dbname ) {
-	#$dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
-	$dbname = "dbi:Pg:dbname=" . $dbname;
-    }
+    $dbname ||= $ENV{EB_DB_NAME};
+    $dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
+    $dbname = "dbi:Pg:dbname=" . $dbname;
 
-    $dbh = DBI::->connect($dbname || $ENV{EB_DB} || "dbi:Pg:dbname=eekboek")
+    $dbh = DBI::->connect($dbname)
       or die("Cannot connect to database: $DBI::errstr\n");
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
-    $self->check_stdacc unless $nocheck;
+    $self->check_db unless $nocheck;
     $dbh;
 }
 
