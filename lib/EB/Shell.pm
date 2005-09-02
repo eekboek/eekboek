@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.14 2005/09/01 15:20:29 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.15 2005/09/02 11:49:20 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  1 14:23:46 2005
-# Update Count    : 312
+# Last Modified On: Fri Sep  2 11:05:20 2005
+# Update Count    : 317
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -407,6 +407,37 @@ Aangifteperiode kan zijn:
   j            het gehele jaar
   h1 h2        1e/2e helft van het jaar (ook: s1, ...)
   k1 k2 k3 k4  1e/2e/3e/4e kwartaal (ook: q1, ...)
+EOS
+}
+
+sub do_dump_schema {
+    my ($self, @args) = @_;
+
+    my $opts = { sql => 0,
+	       };
+
+    parse_args(\@args,
+	       [ 'sql!',
+	       ], $opts)
+      or goto &help_dumpschema;
+
+    require EB::Tools::Schema;
+
+    if ( $opts->{sql} ) {
+	EB::Tools::Schema->dump_sql(@args);
+    }
+    else {
+	EB::Tools::Schema->dump_schema;
+    }
+    "";
+}
+
+sub help_dump_schema {
+    <<EOS;
+Reproduceert het schema van de huidige database en schrijft deze naar
+standaard uitvoer.
+
+  dump_schema
 EOS
 }
 
