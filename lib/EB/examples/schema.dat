@@ -1,37 +1,37 @@
-# $Id: schema.dat,v 1.4 2005/08/15 19:52:31 jv Exp $
+# $Id: schema.dat,v 1.5 2005/09/02 11:48:46 jv Exp $
 #
 # Dit bestand definiëert alle vaste gegevens van een administratie (of
 # groep administarties): het rekeningschema (balansrekeningen en
 # resultaatrekeningen), de dagboeken en de BTW tarieven.
-# 
-# Algemene syntaxregels: 
-# 
+#
+# Algemene syntaxregels:
+#
 # * Lege regels en regels die beginnen met een hekje # worden niet
 #   geïnterpreteerd.
-# * Een niet-ingesprongen tekst introduceert een nieuw onderdeel. 
+# * Een niet-ingesprongen tekst introduceert een nieuw onderdeel.
 # * Alle ingesprongen regels zijn gegevens voor dat onderdeel.
 
 # REKENINGSCHEMA
-# 
+#
 # Het rekeningschema is hiërarchisch opgezet volgende de beproefde
 # methode Bakker. De hoofdverdichtingen lopen van 1 t/m 9, de
 # verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
-# balansrekeningen en resultaatrekeningen. 
-# 
+# balansrekeningen en resultaatrekeningen.
+#
 # De omschrijving van de grootboekrekeningen wordt voorafgegaan door een
 # dubbel vlaggetje, twee letters die resp. Debet/Credit en Kosten/Omzet
 # aangeven. De omschrijving wordt indien nodig gevolgd door extra
 # informatie. Voor grootboekrekeningen kan op deze wijze de BTW
 # tariefstelling worden aangegeven die op deze rekening van toepassing
 # is:
-# 
+#
 #   :btw=hoog
 #   :btw=laag
-# 
+#
 # Ook is het mogelijk aan te geven dat een rekening een koppeling
 # (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
 # zijn mogelijk:
-# 
+#
 #   crd		de tegenrekening (Crediteuren) voor inkoopboekingen
 #   deb		de tegenrekening (Debiteuren) voor verkoopboekingen
 #   btw_ih	de rekening voor BTW boekingen voor inkopen, hoog tarief
@@ -40,7 +40,7 @@
 #   btw_vl	idem. laag tarief
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
-# 
+#
 # Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
 #
 # BELANGRIJK: Mutaties die middels de command line shell of de API
@@ -351,8 +351,8 @@ Dagboeken
 # Voor elk tarief (behalve die van groep "geen") moet het percentage
 # worden opgegeven. Met de aanduiding :exclusief kan worden opgegeven
 # dat boekingen op rekeningen met deze tariefgroep standaard het
-# bedrag exclusief BTW aangeven. 
-# 
+# bedrag exclusief BTW aangeven.
+#
 # BELANGRIJK: Mutaties die middels de command line shell of de API
 # worden uitgevoerd maken gebruik van de Debet/Credit status en het
 # geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
