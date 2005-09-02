@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.12 2005/09/01 21:12:45 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.13 2005/09/02 11:48:14 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  1 23:10:40 2005
-# Update Count    : 317
+# Last Modified On: Fri Sep  2 13:46:43 2005
+# Update Count    : 350
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,17 +18,9 @@ our $dbh;
 
 package EB::Tools::Schema;
 
-# To be used by the EB::Shell.
-#
-# Stand-alone use:
-#
-#   perl EB/Tools/Schema.pm                           -- dumps current schema
-#   perl -MEB::Tools::Schema -e 'dump_schema()'       -- same
-#   perl -MEB::Tools::Schema -e 'dump_sql("sample")'  -- loads a schema into sql files
-
 use strict;
 
-my $sql = 0;			# load schema into SQL files
+our $sql = 0;			# load schema into SQL files
 my $trace = $ENV{EB_SQL_TRACE} || 0;
 
 # Package name.
@@ -451,9 +443,10 @@ sub _tf {
 }
 
 # Basic SQL processor. Not very advanced, but does the job.
-# Currently only for PostgreSQL, but easily extensible for other databases as well.
 # Note that COPY status will not work across different \i providers.
 # COPY status need to be terminated on the same level it was started.
+
+my $postgres; BEGIN { $postgres = 1 };
 
 sub sql {
     my ($cmd, $copy) = (@_, 0);
@@ -472,11 +465,22 @@ sub sql {
 	# Handle COPY status.
 	if ( $copy ) {
 	    if ( $line eq "\\." ) {
-		$dbh->dbh->pg_endcopy;
+		# End COPY.
+		$dbh->dbh->pg_endcopy if $postgres;
 		$copy = 0;
 	    }
-	    else {
+	    elsif ( $postgres ) {
+		# Use PostgreSQL fast load.
 		$dbh->dbh->pg_putline($line."\n");
+	    }
+	    else {
+		# Use portable INSERT.
+		$dbh->sql_exec($copy,
+			       map { $_ eq 't' ? 1 :
+				       $_ eq 'f' ? 0 :
+					 $_ eq '\\N' ? undef :
+					   $_
+				       } split(/\t/, $line))->finish;
 	    }
 	    next;
 	}
@@ -492,12 +496,28 @@ sub sql {
 	$line =~ s/\s+$//;
 	# Append to command string.
 	$sql .= $line . " ";
+
 	# Execute if trailing ;
 	if ( $line =~ /(.+);$/ ) {
-	    warn("+ $sql\n");
-	    $dbh->dbh->do($sql);
+
 	    # Check for COPY/
-	    $copy = $sql =~ /^copy\s/i;
+	    if ( $sql =~ /^copy\s(\S+)\s+(\([^\051]+\))/i ) {
+		if ( $postgres ) {
+		    # Use PostgreSQL fast load.
+		    $copy = 1;
+		}
+		else {
+		    # Prepare SQL statement.
+		    $copy = "INSERT INTO $1 $2 VALUES (" .
+		      join(",", map { "?" } split(/,/, $2)) . ")";
+		    $sql = "";
+		    next;
+		}
+	    }
+
+	    # Execute.
+	    warn("+ $sql\n") if $trace;
+	    $dbh->dbh->do($sql);
 	    $sql = "";
 	}
     }
@@ -505,27 +525,41 @@ sub sql {
     die("?Incomplete final SQL command: $sql\n") if $sql;
 }
 
-################ Stand-alone use (dump schema) ################
-
-unless ( caller ) {
-    ::dump_schema();
-}
-
 ################ Subroutines ################
 
-sub ::dump_sql {
-    my ($schema) = @_;
-    $sql = 1;
+sub dump_sql {
+    my ($self, $schema) = @_;
+    local($sql) = 1;
     create(undef, $schema);
 }
 
 my %kopp;
 
-sub ::dump_schema {
+sub dump_schema {
+    my ($self) = @_;
+
     $dbh = EB::DB->new(trace => $trace);
     $dbh->connectdb;		# can't wait...
 
-    print("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n");
+    print("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
+	  "# Aangemaakt door ", __PACKAGE__, " $my_version");
+    my @t = localtime(time);
+    printf("op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
+
+    print <<EOD;
+
+# Dit bestand definiëert alle vaste gegevens van een administratie (of
+# groep administarties): het rekeningschema (balansrekeningen en
+# resultaatrekeningen), de dagboeken en de BTW tarieven.
+#
+# Algemene syntaxregels:
+#
+# * Lege regels en regels die beginnen met een hekje # worden niet
+#   geïnterpreteerd.
+# * Een niet-ingesprongen tekst introduceert een nieuw onderdeel.
+# * Alle ingesprongen regels zijn gegevens voor dat onderdeel.
+
+EOD
 
     my $sth = $dbh->sql_exec("SELECT * FROM Standaardrekeningen");
     my $rr = $sth->fetchrow_hashref;
@@ -535,9 +569,82 @@ sub ::dump_schema {
 	$kopp{$v} = $k;
     }
 
+print <<EOD;
+# REKENINGSCHEMA
+# 
+# Het rekeningschema is hiërarchisch opgezet volgende de beproefde
+# methode Bakker. De hoofdverdichtingen lopen van 1 t/m 9, de
+# verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
+# balansrekeningen en resultaatrekeningen. 
+# 
+# De omschrijving van de grootboekrekeningen wordt voorafgegaan door een
+# dubbel vlaggetje, twee letters die resp. Debet/Credit en Kosten/Omzet
+# aangeven. De omschrijving wordt indien nodig gevolgd door extra
+# informatie. Voor grootboekrekeningen kan op deze wijze de BTW
+# tariefstelling worden aangegeven die op deze rekening van toepassing
+# is:
+# 
+#   :btw=hoog
+#   :btw=laag
+# 
+# Ook is het mogelijk aan te geven dat een rekening een koppeling
+# (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
+# zijn mogelijk:
+# 
+#   crd		de tegenrekening (Crediteuren) voor inkoopboekingen
+#   deb		de tegenrekening (Debiteuren) voor verkoopboekingen
+#   btw_ih	de rekening voor BTW boekingen voor inkopen, hoog tarief
+#   btw_il	idem, laag tarief
+#   btw_vh	idem, verkopen, hoog tarief
+#   btw_vl	idem. laag tarief
+#   btw_ok	rekening voor de betaalde BTW
+#   winst	rekening waarop de winst wordt geboekt
+# 
+# Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
+#
+# BELANGRIJK: Mutaties die middels de command line shell of de API
+# worden uitgevoerd maken gebruik van de Debet/Credit status en het
+# geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
+# hierin kunnen dus consequenties hebben voor de reeds in scripts
+# vastgelegde boekingen.
+EOD
+
     dump_acc(1);		# Balansrekeningen
     dump_acc(0);		# Resultaatrekeningen
+
+print <<EOD;
+
+# DAGBOEKEN
+#
+# EekBoek ondersteunt vijf soorten dagboeken: Kas, Bank, Inkoop,
+# Verkoop en Memoriaal. Er kunnen een in principe onbeperkt aantal
+# dagboeken worden aangemaakt. Voor elk dagboek moet opgegeven worden
+# van welk type het is. Voor rekeningen van het type Kas en Bank moet
+# bovendien een tegenrekening worden opgegeven.
+EOD
+
     dump_dbk();			# Dagboeken
+
+print <<EOD;
+
+# BTW TARIEVEN
+#
+# Er zijn drie tariefgroepen: "hoog", "laag" en "geen". De tariefgroep
+# bepaalt het rekeningnummer waarop de betreffende boeking plaatsvindt.
+# Binnen elke tariefgroep zijn meerdere tarieven mogelijk, hoewel dit
+# in de praktijk niet snel zal voorkomen.
+# Voor elk tarief (behalve die van groep "geen") moet het percentage
+# worden opgegeven. Met de aanduiding :exclusief kan worden opgegeven
+# dat boekingen op rekeningen met deze tariefgroep standaard het
+# bedrag exclusief BTW aangeven. 
+# 
+# BELANGRIJK: Mutaties die middels de command line shell of de API
+# worden uitgevoerd maken gebruik van de Debet/Credit status en het
+# geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
+# hierin kunnen dus consequenties hebben voor de reeds in scripts
+# vastgelegde boekingen.
+EOD
+
     dump_btw();			# BTW tarieven
 }
 
