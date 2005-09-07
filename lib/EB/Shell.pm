@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.15 2005/09/02 11:49:20 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.16 2005/09/07 13:52:40 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep  2 11:05:20 2005
-# Update Count    : 317
+# Last Modified On: Wed Sep  7 14:54:27 2005
+# Update Count    : 319
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -181,6 +181,7 @@ sub _add {
     my $opts = { dagboek      => $dagboek,
 		 dagboek_type => $dagboek_type,
 		 journal      => $self->{journal},
+		 totaal	      => undef,
 		 verbose      => $self->{verbose},
 	       };
 
@@ -188,6 +189,7 @@ sub _add {
     parse_args($args,
 	       [ 'boekstuk|nr=s',
 		 'journal!',
+		 'totaal=s',
 		 'verbose!',
 		 'confirm!',
 		 ( $dagboek_type == DBKTYPE_BANK
@@ -196,7 +198,7 @@ sub _add {
 	       ], $opts);
 
     $bsk = $action->perform($args, $opts);
-    $bsk ? "Boekstuk: $bsk" : "";
+    $bsk ? $bsk =~ /^\d+/ ? "Boekstuk: $bsk" : $bsk	: "";
 }
 
 sub do_journaal {
