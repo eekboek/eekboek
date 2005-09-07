@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.13 2005/08/21 14:29:13 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.14 2005/09/07 13:53:04 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 21 16:25:31 2005
-# Update Count    : 162
+# Last Modified On: Wed Sep  7 15:44:41 2005
+# Update Count    : 164
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,10 +42,26 @@ sub perform {
 
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
+    my $totaal = $opts->{totaal};
+    if ( defined($totaal) ) {
+	$totaal = amount($totaal);
+	return "?Ongeldig totaal: $totaal" unless defined $totaal;
+	#$totaal = -$totaal if $dagboek_type == DBKTYPE_INKOOP;
+    }
 
     my $date;
     if ( $args->[0] =~ /^\d+-\d+-\d+$/ ) {
 	$date = shift(@$args);
+    }
+    elsif ( $args->[0] =~ /^(\d+)-(\d+)-(\d{4})$/ ) {
+	$date = "$3-$2-$1";
+	shift(@$args);
+    }
+    elsif ( $args->[0] =~ /^(\d+)-(\d+)$/ ) {
+	my @tm = localtime(time);
+	$date = sprintf("%04d-%02d-%02d",
+			1900 + $tm[5], $2, $1);
+	shift(@$args);
     }
     else {
 	my @tm = localtime(time);
@@ -228,6 +244,12 @@ sub perform {
 		$fail++;
 	    }
 	}
+	if ( defined($totaal) and $tot != $totaal ) {
+	    $fail++;
+	    return "?Opdracht niet uitgevoerd. Boekstuk totaal is " .
+	      numfmt($tot) .
+		" in plaats van " . numfmt($totaal) . ".";
+	}
     }
     elsif ( $tot ) {
 	warn("?Boekstuk is niet in balans (verschil is ".numfmt($tot).")\n");
@@ -238,13 +260,13 @@ sub perform {
 
     $dbh->store_journal(EB::Finance::journalise($bsk_id));
 
+    EB::Journal::Text->new->journal({select => $bsk_id, detail => 1}) if $opts->{journal};
+
     if ( $fail ) {
 	$dbh->rollback;
 	return undef;
     }
     $dbh->commit;
-
-    EB::Journal::Text->new->journal({select => $bsk_id, detail => 1}) if $opts->{journal};
 
     $bsk_id;
 }

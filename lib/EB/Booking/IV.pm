@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.12 2005/08/21 14:21:21 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.13 2005/09/07 13:53:04 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 21 16:17:43 2005
-# Update Count    : 88
+# Last Modified On: Wed Sep  7 15:39:08 2005
+# Update Count    : 95
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -41,10 +41,26 @@ sub perform {
 
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
+    my $totaal = $opts->{totaal};
+    if ( defined($totaal) ) {
+	$totaal = amount($totaal);
+	return "?Ongeldig totaal: $totaal" unless defined $totaal;
+	#$totaal = -$totaal if $dagboek_type == DBKTYPE_INKOOP;
+    }
 
     my $date;
-    if ( $args->[0] =~ /^\d+-\d+-\d+$/ ) {
+    if ( $args->[0] =~ /^\d{4}-\d+-\d+$/ ) {
 	$date = shift(@$args);
+    }
+    elsif ( $args->[0] =~ /^(\d+)-(\d+)-(\d{4})$/ ) {
+	$date = "$3-$2-$1";
+	shift(@$args);
+    }
+    elsif ( $args->[0] =~ /^(\d+)-(\d+)$/ ) {
+	my @tm = localtime(time);
+	$date = sprintf("%04d-%02d-%02d",
+			1900 + $tm[5], $2, $1);
+	shift(@$args);
     }
     else {
 	my @tm = localtime(time);
@@ -167,14 +183,23 @@ sub perform {
 	warn("update $ac with ".numfmt($amt)."\n") if $trace_updates;
 	$dbh->upd_account($ac, $amt);
     }
+    my $tot = $ret->[$#{$ret}]->[5];
     $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
-		   $ret->[$#{$ret}]->[5], $bsk_id)->finish;
+		   $tot, $bsk_id)->finish;
 
     $dbh->store_journal($ret);
 
-    $dbh->commit;
-
     EB::Journal::Text->new->journal({select => $bsk_id, detail=>1}) if $opts->{journal};
+
+    $tot = -$tot if $dagboek_type == DBKTYPE_INKOOP;
+    if ( defined($totaal) and $tot != $totaal ) {
+	$dbh->rollback;
+	return "?Opdracht niet uitgevoerd. Boekstuk totaal is " . numfmt($tot) .
+	  " in plaats van " . numfmt($totaal) . ".";
+    }
+    else {
+	$dbh->commit;
+    }
 
     $bsk_id;
 }
