@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.13 2005/09/07 13:53:04 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.14 2005/09/07 17:21:24 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep  7 15:39:08 2005
-# Update Count    : 95
+# Last Modified On: Wed Sep  7 19:19:14 2005
+# Update Count    : 97
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -57,9 +57,7 @@ sub perform {
 	shift(@$args);
     }
     elsif ( $args->[0] =~ /^(\d+)-(\d+)$/ ) {
-	my @tm = localtime(time);
-	$date = sprintf("%04d-%02d-%02d",
-			1900 + $tm[5], $2, $1);
+	$date = substr($dbh->adm("begin"), 0, 4) . "-$2-$1";
 	shift(@$args);
     }
     else {
