@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.2 2005/07/30 15:08:30 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.3 2005/09/14 15:41:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul 30 17:03:56 2005
-# Update Count    : 188
+# Last Modified On: Wed Sep 14 16:28:30 2005
+# Update Count    : 235
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -15,19 +15,11 @@ package EB::BTWAangifte;
 use strict;
 
 use EB::Globals;
+use EB::Finance;
+
 use POSIX qw(floor ceil);
 
-my @periodetabel =
-  ( [],
-    [ "", [ "01-01", "12-31" ] ],
-    [ "helft",
-      [ "01-01", "06-30" ], [ "07-01", "12-31" ] ],
-    [ "trimester",
-      [ "01-01", "04-30" ], [ "05-01", "08-31" ], [ "09-01", "12-31" ] ],
-    [ "kwartaal",
-      [ "01-01", "03-31" ], [ "04-01", "06-30" ],
-      [ "07-01", "09-30" ], [ "10-01", "12-31" ] ],
-  );
+my @periodetabel;
 
 sub new {
     my $class = shift;
@@ -41,6 +33,24 @@ sub new {
     unless ( $self->{adm_begin} ) {
 	die("?Administratie is nog niet geopend\n");
     }
+
+    unless ( @periodetabel ) {
+	@periodetabel = ( [] ) x 13;
+	$periodetabel[1] = [ "", [ "01-01", "12-31" ] ];
+	$periodetabel[4] = [ "kwartaal",
+			     [ "01-01", "03-31" ], [ "04-01", "06-30" ],
+			     [ "07-01", "09-30" ], [ "10-01", "12-31" ] ];
+
+	my @m;
+	for ( 1 .. 12 ) {
+	    push(@m, [ sprintf("%02d-01", $_),
+		       sprintf("%02d-%02d", $_, ($_ & 1 xor $_ & 8) ? 31 : 30) ]);
+	}
+	$m[1][1] = substr($self->{adm_begin}, 0, 4) % 4 ? "02-28" : "02-29";
+	$periodetabel[12] = [ "maand", @m ];
+    }
+
+
     $self;
 }
 
@@ -50,9 +60,13 @@ sub periodetabel {
 
 sub perform {
     my ($self, $opts) = @_;
+    $self->collect($opts);
 
-    die("?EB::BTWAangifte kan alleen worden gebruikt via een afgeleide class, b.v. EB::Aangifte::Text\n");
+    #use EB::BTWAangifte::Html;
+    #$self->{reporter} ||= EB::BTWAangifte::Html->new($opts);
+    $self->{reporter} = $opts->{reporter} || EB::BTWAangifte::Text->new($opts);
 
+    $self->report($opts);
 }
 
 sub parse_periode {
@@ -61,7 +75,7 @@ sub parse_periode {
 
     my $pp = sub {
 	my ($per, $n) = @_;
-	warn("!Periode \"$v\" komt niet overeen met administratie BTW periode \"$self->{adm_btw_periode}\"\n")
+	warn("!Periode $per (\"$v\") komt niet overeen met administratie BTW periode \"$self->{adm_btw_periode}\"\n")
 	  unless $self->{adm_btw_periode} == $per;
 	$self->{adm_btw_periode} = $per;
 	my $tbl = $periodetabel[$self->{adm_btw_periode}];
@@ -74,21 +88,20 @@ sub parse_periode {
 	$pp->(1, 1);
 	$self->{periode} = $year;
     }
-    elsif ( $v =~ /^[sh](\d)$/i && $1 >= 1 && $1 <= 2) {
-	$pp->(2, $1);
-    }
-    elsif ( $v =~ /^[t](\d)$/i  && $1 >= 1 && $1 <= 3) {
-	$pp->(3, $1);
-    }
     elsif ( $v =~ /^[kq](\d)$/i && $1 >= 1 && $1 <= 4) {
 	$pp->(4, $1);
+    }
+    elsif ( $v =~ /^(\d)$/i  && $1 >= 1 && $1 <= 12) {
+	$pp->(12, $1);
+	$self->{periode} = qw(Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December)[$1-1] .
+	  " " . $year;
     }
     else {
 	die("?Ongeldige waarde \"$v\" voor periode\n");
     }
 }
 
-sub _perform {
+sub collect {
     my ($self, $opts) = @_;
 
     $self->{periode} = $opts->{periode};
@@ -125,7 +138,15 @@ sub _perform {
        " FROM Boekstukregels, Relaties".
        " WHERE bsr_rel_code = rel_code".
        ($self->{periode} ? " AND bsr_date >= ? AND bsr_date <= ?" : "").
-       " AND bsr_type = 0",
+       " AND bsr_type = 0".
+#       " UNION ".
+#       "SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,NOT acc_debcrd,0".
+#       " FROM Boekstukregels, Accounts, Boekstukken".
+#       " WHERE bsr_bsk_id = bsk_id".
+#       " AND bsr_rel_code IS NULL".
+#       " AND bsr_acc_id = acc_id".
+#       " AND bsr_type = 0 and bsk_dbk_id = 3 AND bsr_btw_id <> 0",
+       "",
        $self->{periode} ? ( $self->{p_start}, $self->{p_end} ) : ());
 
     my $v;
@@ -282,12 +303,11 @@ sub _perform {
 
     # 5b. Voorbelasting
     my ($vb) = @{$::dbh->do("SELECT SUM(jnl_amount)".
-			  " FROM Journal".
-			  " WHERE ( jnl_acc_id = 1530 OR jnl_acc_id = 1520 )".
-			  ($self->{periode} ? " AND jnl_date >= ? AND jnl_date <= ?" : ""),
-			  $self->{periode} ? ( $self->{p_start}, $self->{p_end} ) : ())};
+			    " FROM Journal".
+			    " WHERE ( jnl_acc_id = 1530 OR jnl_acc_id = 1520 )".
+			    ($self->{periode} ? " AND jnl_date >= ? AND jnl_date <= ?" : ""),
+			    $self->{periode} ? ( $self->{p_start}, $self->{p_end} ) : ())};
     my $btw_delta = $vb - $crd_btw;
-
 
     $vb = roundup($vb);
     $data{vb} = $vb;
@@ -300,6 +320,77 @@ sub _perform {
     $data{btw_delta} = $btw_delta if $btw_delta;
 
     $self->{data} = \%data;
+}
+
+sub report {
+    my ($self, $opts) = @_;
+
+    my $data = $self->{data};
+    my $rep = $self->{reporter};
+
+    $rep->start("BTW Aangifte $self->{periode} -- $self->{adm_name}");
+
+    # Binnenland
+    $rep->addline('H1', "Binnenland");
+
+    # 1. Door mij verrichte leveringen/diensten
+    $rep->addline('H2', "1.", "Door mij verrichte leveringen/diensten");
+
+    # 1a. Belast met hoog tarief
+    $rep->addline('', "1a", "Belast met hoog tarief", $data->{deb_h}, $data->{deb_btw_h});
+
+    # 1b. Belast met laag tarief
+    $rep->addline('', "1b", "Belast met laag tarief", $data->{deb_l}, $data->{deb_btw_l});
+
+    # 1c. Belast met ander, niet-nul tarief
+    $rep->addline('', "1c", "Belast met ander tarief", $data->{deb_x}, $data->{deb_btw_x});
+
+    # 1d. Belast met 0%/verlegd
+    $rep->addline('', "1c", "Belast met 0% / verlegd", $data->{deb_0}, undef);
+
+    # Buitenland
+    $rep->addline('H1', "Buitenland");
+
+    # 3. Door mij verrichte leveringen
+    $rep->addline('H2', "3.", "Door mij verrichte leveringen");
+
+    # 3a. Buiten de EU
+    $rep->addline('', "3a", "Buiten de EU", $data->{extra_deb}, undef);
+
+    # 3b. Binnen de EU
+    $rep->addline('', "3a", "Binnen de EU", $data->{intra_deb}, undef);
+
+    # 4. Aan mij verrichte leveringen
+    $rep->addline('H2', "4.", "Aan mij verrichte leveringen");
+
+    # 4a. Van buiten de EU
+    $rep->addline('', "4a", "Van buiten de EU", $data->{extra_crd}, 0);
+
+    # 4b. Verwervingen van goederen uit de EU.
+    $rep->addline('', "4b", "Verwervingen van goederen uit de EU", $data->{intra_crd}, 0);
+
+    # 5 Berekening totaal
+    $rep->addline('H2', "5.", "Berekening totaal");
+
+    # 5a. Subtotaal
+    $rep->addline('', "5a", "Subtotaal", undef, $data->{sub0});
+
+    # 5b. Voorbelasting
+    $rep->addline('', "5b", "Voorbelasting", undef, $data->{vb});
+
+    # 5c Subtotaal
+    $rep->addline('', "5c", "Subtotaal", undef, $data->{sub1});
+
+    $rep->addline('X', "xx", "Onbekend", undef, numfmt($data->{onbekend})) if $data->{onbekend};
+
+    if ( $data->{btw_delta} ) {
+	$rep->finish("Er is een verschil van ".numfmt($data->{btw_delta}).
+	  " tussen de berekende en werkelijk ingehouden BTW.".
+	    " Voor de aangifte is de werkelijk ingehouden BTW gebruikt.");
+    }
+    else {
+	$rep->finish;
+    }
 }
 
 ################ Subroutines ################
@@ -330,12 +421,46 @@ sub roundup {
     $vb;
 }
 
-sub outline {
-    my ($tag0, $tag1, $sub, $amt) = @_;
+package EB::BTWAangifte::Text;
+
+use strict;
+
+sub new {
+    my ($class) = @_;
+    $class = ref($class) || $class;
+    bless {} => $class;
+}
+
+sub addline {
+    my ($self, $ctl, $tag0, $tag1, $sub, $amt) = @_;
+    $ctl = '' if $ctl && $ctl eq 'X';
+    if ( $ctl ) {
+	if ( $ctl eq 'H1' ) {
+	    print("\n", $tag0, "\n");
+	}
+	elsif ( $ctl eq 'H2' ) {
+	    print("\n", $tag0, " ", $tag1, "\n\n");
+	}
+	else {
+	    die("?Unsupported mode '$ctl' in " . __PACKAGE__ . "::addline\n");
+	}
+	return;
+    }
+
     printf("%-5s%-40s%10s%10s\n",
 	   $tag0, $tag1,
 	   defined($sub) ? $sub : "",
 	   defined($amt) ? $amt : "");
+}
+
+sub start {
+    my ($self, $text) = @_;
+    print($text, "\n");
+}
+
+sub finish {
+    my ($self, $notice) = @_;
+    warn("!$notice\n") if $notice;
 }
 
 1;
