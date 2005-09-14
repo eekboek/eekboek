@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.12 2005/09/02 16:17:54 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.13 2005/09/14 15:40:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep  2 17:53:23 2005
-# Update Count    : 130
+# Last Modified On: Wed Sep  7 21:25:03 2005
+# Update Count    : 132
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -148,6 +148,28 @@ sub _init {
     my ($self) = @_;
 }
 
+my %adm;
+sub adm {
+    my ($self, $name) = @_;
+    if ( $name eq "" ) {
+	%adm = ();
+	return;
+    }
+    unless ( %adm ) {
+	$self->connectdb;
+	my $sth = $self->sql_exec("SELECT * FROM Metadata");
+	my $rr = $sth->fetchrow_hashref;
+	$sth->finish;
+	while ( my($k,$v) = each(%$rr) ) {
+	    $k =~ s/^adm_//;
+	    $adm{lc($k)} = $v;
+	}
+    }
+    $adm{lc($name)} || die("?Niet-bestaande administratie-eigenschap: \"$name\"\n");
+}
+
+
+
 my %std_acc;
 my @std_acc;
 sub std_acc {
@@ -180,7 +202,7 @@ sub std_accs {
 my %accts;
 sub accts {
     my ($self, $sel) = @_;
-    $sel = " WHERE $sel" if $sel;
+    $sel = $sel ? " WHERE $sel" : "";
     return \%accts if %accts;
     my $sth = $self->sql_exec("SELECT acc_id,acc_desc".
 			      " FROM Accounts".
@@ -248,8 +270,8 @@ sub close {
     $dbh->disconnect;
     undef $dbh;
     %sth = ();
-    %std_acc = ();
-    %accts = ();
+    $self->std_acc("");
+    $self->adm("");
 }
 
 sub sql_exec {
