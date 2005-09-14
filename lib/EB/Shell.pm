@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.16 2005/09/07 13:52:40 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.17 2005/09/14 15:42:05 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep  7 14:54:27 2005
-# Update Count    : 319
+# Last Modified On: Wed Sep 14 12:06:19 2005
+# Update Count    : 320
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -393,8 +393,8 @@ sub postcmd { shift; $dbh->rollback; shift }
 
 sub do_btwaangifte {
     my $self = shift;
-    use EB::BTWAangifte::Text;
-    EB::BTWAangifte::Text->new->perform({periode => shift});
+    use EB::BTWAangifte;
+    EB::BTWAangifte->new->perform({periode => shift});
     undef;
 }
 
