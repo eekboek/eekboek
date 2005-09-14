@@ -1,0 +1,6 @@
+Datum        Id  Nr    Dag/Grootboek                     Rek      Debet     Credit  Boekstuk/regel                  Relatie
+2004-12-07   48  24    Postbank                                                     Girotel, ADSL                   
+2004-12-07               Crediteuren                    1600      22,80               *ADSL                         XS4ALL    
+2004-12-07               Bankkosten                     4980       2,70               Girotel                       
+2004-12-07               Postbank                       1120                 25,50    Girotel, ADSL                 
+                       Totaal Boekstuk 48                         25,50      25,50                                  
