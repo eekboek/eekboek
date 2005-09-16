@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.3 2005/09/14 15:41:42 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.4 2005/09/16 16:26:07 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 14 16:28:30 2005
-# Update Count    : 235
+# Last Modified On: Thu Sep 15 09:22:21 2005
+# Update Count    : 236
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -370,6 +370,7 @@ sub report {
     $rep->addline('', "4b", "Verwervingen van goederen uit de EU", $data->{intra_crd}, 0);
 
     # 5 Berekening totaal
+    $rep->addline('H1', "Berekening");
     $rep->addline('H2', "5.", "Berekening totaal");
 
     # 5a. Subtotaal
