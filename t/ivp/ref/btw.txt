@@ -21,7 +21,9 @@ Buitenland
 4a   Van buiten de EU                                 0         0
 4b   Verwervingen van goederen uit de EU              0         0
 
-5 Berekening totaal
+Berekening
+
+5. Berekening totaal
 
 5a   Subtotaal                                               1463
 5b   Voorbelasting                                            145
