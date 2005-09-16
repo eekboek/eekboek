@@ -34,24 +34,24 @@ sub new {
 
 	$self = $self->SUPER::new( $parent, $id, $pos, $size, $style, $name );
 	$self->{main_panel} = Wx::ScrolledWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL|wxCLIP_CHILDREN);
-	$self->{l_deb} = Wx::StaticText->new($self->{main_panel}, -1, "Debiteuren", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_deb} = Wx::StaticText->new($self->{main_panel}, -1, _T("Debiteuren"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_deb} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_crd} = Wx::StaticText->new($self->{main_panel}, -1, "Crediteuren", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_crd} = Wx::StaticText->new($self->{main_panel}, -1, _T("Crediteuren"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_crd} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_winst} = Wx::StaticText->new($self->{main_panel}, -1, "Winst", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_winst} = Wx::StaticText->new($self->{main_panel}, -1, _T("Winst"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_winst} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_ih} = Wx::StaticText->new($self->{main_panel}, -1, "BTW Inkoop Hoog", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btw_ih} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Inkoop Hoog"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_btw_ih} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_vh} = Wx::StaticText->new($self->{main_panel}, -1, "BTW Verkoop Hoog", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btw_vh} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Verkoop Hoog"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_btw_vh} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_il} = Wx::StaticText->new($self->{main_panel}, -1, "BTW Inkoop Laag", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btw_il} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Inkoop Laag"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_btw_il} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_vl} = Wx::StaticText->new($self->{main_panel}, -1, "BTW Verkoop Laag", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btw_vl} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Verkoop Laag"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_btw_vl} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_ok} = Wx::StaticText->new($self->{main_panel}, -1, "BTW Betaald", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btw_ok} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Betaald"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_btw_ok} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{b_apply} = Wx::Button->new($self, wxID_APPLY, "Apply");
-	$self->{b_reset} = Wx::Button->new($self, wxID_UNDO, "Undo");
+	$self->{b_apply} = Wx::Button->new($self, wxID_APPLY, _T("Apply"));
+	$self->{b_reset} = Wx::Button->new($self, wxID_UNDO, _T("Undo"));
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -135,6 +135,12 @@ sub __do_layout {
 # end wxGlade
 }
 
+sub hide_buttons {
+    my ($self, $hide) = (@_, 1);
+    $self->{sz_std}->Show($self->{sz_std_buttons}, !$hide);
+    $self->Layout;
+}
+
 sub OnIdle {
     my ($self) = @_;
     return unless $self->{_check_changed};
@@ -147,11 +153,10 @@ sub OnIdle {
 sub refresh {
     my ($self) = @_;
     local($self->{busy}) = 1;
-    my $accts = $dbh->accts;
     $self->{anyinuse} = 0;
     foreach my $acc ( @{$dbh->std_accs} ) {
 	my $t = $dbh->std_acc($acc);
-	$self->{"tx_$acc"}->SetValue($t . "   " . $accts->{$t});
+	$self->{"tx_$acc"}->SetValue($t);
 	my $inuse = $dbh->do("SELECT COUNT(*) FROM Journal WHERE jnl_acc_id = ?",
 			     $dbh->std_acc($acc))->[0];
 	if ( $inuse ) {

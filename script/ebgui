@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: ebgui,v 1.3 2005/08/18 14:43:02 jv Exp $ ';
+my $RCS_Id = '$Id: ebgui,v 1.4 2005/09/16 20:31:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Aug 18 16:11:11 2005
-# Update Count    : 53
+# Last Modified On: Fri Sep 16 22:24:23 2005
+# Update Count    : 91
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -52,6 +52,8 @@ $trace |= ($debug || $test);
 my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 
 ################ The Process ################
+
+use EB;
 
 our $config;
 
@@ -158,6 +160,14 @@ sub init_state {
     $config->define("openw",    { ARGCOUNT => ARGCOUNT_HASH });
     $config->openw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
+    # New...
+    $config->define("neww",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->neww->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # ListDialog.
+    $config->define("lsdw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->lsdw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
     # Maint -- AccPanel
     $config->define("accw",     { ARGCOUNT => ARGCOUNT_HASH });
     $config->define("accsash",  { DEFAULT => 400, ARGCOUNT => ARGCOUNT_ONE });
@@ -172,7 +182,7 @@ sub init_state {
     $config->define("btww",     { ARGCOUNT => ARGCOUNT_HASH });
     $config->btww->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
-    # Maint -- StdAccPanel
+    # Maint -- MStdAccPanel
     $config->define("stdw",     { ARGCOUNT => ARGCOUNT_HASH });
     $config->stdw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
@@ -207,6 +217,14 @@ sub init_state {
     # Report -- RepDebCrd
     $config->define("rcrdw",     { ARGCOUNT => ARGCOUNT_HASH });
     $config->rcrdw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Bookings -- IV
+    $config->define("ivw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->ivw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
+
+    # Bookings -- BKM
+    $config->define("bkmw",     { ARGCOUNT => ARGCOUNT_HASH });
+    $config->bkmw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
 
     # Load config (actually, state) file.
     my $f = $ENV{HOME} . "/.$appclass/$my_name";
@@ -287,15 +305,18 @@ EndOfUsage
 ################ ################
 
 unless(caller){
-#	my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-#	$local->AddCatalog("acc"); # replace with the appropriate catalog name
 
-
-    use EB::Globals;
-    use EB::DB;
-
+    # This is for my temporary convenience. I always forget to set up
+    # the right environment variable...
     use POSIX qw(locale_h);
     setlocale(LC_ALL, "nl_NL");
+
+#    use Wx::Locale;
+#    my $local = Wx::Locale->new("English");
+#    $local->AddCatalog("wxstd");
+#    $local->Init();
+
+    use EB::DB;
 
     init_state();
 
@@ -305,7 +326,7 @@ unless(caller){
 	$ENV{EB_DB} = "dbi:Pg:dbname=".$dataset;
     }
     else {
-	die("?Geen dataset. Specificeer een database met --dataset of zet de environment variabele EB_DB_NAME\n");
+	die(_T("?Geen dataset. Specificeer een database met --dataset of zet de environment variabele EB_DB_NAME\n"));
     }
     $::dbh = EB::DB->new(trace => $ENV{EB_SQL_TRACE});
     $config->set(lastdb => $dataset);

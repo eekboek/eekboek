@@ -42,7 +42,7 @@ sub __set_properties {
 
 # begin wxGlade: RepGrootboek::__set_properties
 
-	$self->SetTitle("Grootboek");
+	$self->SetTitle(_T("Grootboek"));
 
 # end wxGlade
 }

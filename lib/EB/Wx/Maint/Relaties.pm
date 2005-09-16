@@ -15,7 +15,10 @@ use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
 
+use EB::Globals;
+
 # begin wxGlade: ::dependencies
+use GridPanel;
 # end wxGlade
 
 sub new {
@@ -33,50 +36,29 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{sz_relpanel_staticbox} = Wx::StaticBox->new($self, -1, "Relaties" );
-	$self->{l_sel} = Wx::StaticText->new($self, -1, "Selecteer:", wxDefaultPosition, wxDefaultSize, );
-	$self->{ch_deb} = Wx::CheckBox->new($self, -1, "Debiteuren", wxDefaultPosition, wxDefaultSize, );
-	$self->{ch_crd} = Wx::CheckBox->new($self, -1, "Crediteuren", wxDefaultPosition, wxDefaultSize, );
-	$self->{gr_rel} = Wx::Grid->new($self, -1);
-	$self->{b_new} = Wx::Button->new($self, wxID_NEW, "");
-	$self->{b_remove} = Wx::Button->new($self, wxID_REMOVE, "");
-	$self->{b_apply} = Wx::Button->new($self, wxID_APPLY, "");
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "");
+	$self->{sz_relpanel_staticbox} = Wx::StaticBox->new($self, -1, _T("Relaties") );
+	$self->{l_sel} = Wx::StaticText->new($self, -1, _T("Selecteer:"), wxDefaultPosition, wxDefaultSize, );
+	$self->{ch_deb} = Wx::CheckBox->new($self, -1, _T("Debiteuren"), wxDefaultPosition, wxDefaultSize, );
+	$self->{ch_crd} = Wx::CheckBox->new($self, -1, _T("Crediteuren"), wxDefaultPosition, wxDefaultSize, );
+	$self->{panel} = Wx::Panel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{l_inuse} = Wx::StaticText->new($self, -1, _T("Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd."), wxDefaultPosition, wxDefaultSize, );
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, _T("Close"));
 
 	$self->__set_properties();
 	$self->__do_layout();
 
 	Wx::Event::EVT_CHECKBOX($self, $self->{ch_deb}->GetId, \&OnDeb);
 	Wx::Event::EVT_CHECKBOX($self, $self->{ch_crd}->GetId, \&OnCrd);
-	Wx::Event::EVT_BUTTON($self, wxID_NEW, \&OnNew);
-	Wx::Event::EVT_BUTTON($self, wxID_REMOVE, \&OnRemove);
-	Wx::Event::EVT_BUTTON($self, wxID_APPLY, \&OnApply);
 	Wx::Event::EVT_BUTTON($self, wxID_CLOSE, \&OnClose);
 
 # end wxGlade
 
+	Wx::Event::EVT_CLOSE($self, \&OnClose);
+	$self->{l_inuse}->Show(0);
+
 	$self->fill_grid;
 
-	# This is to make editing the a grid cell immediately active.
-	# Thanks to Mattia.
-	my $flag;
-
-	use Wx::Event qw(EVT_IDLE EVT_GRID_SELECT_CELL);
-
-	EVT_IDLE($self,
-		 sub {
-		     return unless $flag;
-		     $self->{gr_rel}->EnableCellEditControl;
-		     $flag = 0;
-		 });
-
-	EVT_GRID_SELECT_CELL($self,
-			     sub {
-				 my ($self, $event) = @_;
-				 $flag = 1;
-				 $event->Skip;
-			     });
-	# End trickery.
+	$self->{panel}->registerapplycb(sub { $self->OnApply(@_) });
 
 	return $self;
 
@@ -84,61 +66,72 @@ sub new {
 
 sub fill_grid {
     my ($self) = @_;
+
     my $deb = $self->{ch_deb}->GetValue;
     my $crd = $self->{ch_crd}->GetValue;
-    my $sel = "";
+    my $asel = "";
+    my $dsel = "";
+    my $dbks;
+    my @dbkmap;
+    my $sth;
     if ( $deb && !$crd ) {
-	$sel = " WHERE rel_debcrd";
+	$asel = " WHERE rel_debcrd";
+	#$dsel = " WHERE dbk_type = " . DBKTYPE_VERKOOP;
     }
     elsif ( !$deb && $crd ) {
-	$sel = " WHERE NOT rel_debcrd";
+	$asel = " WHERE NOT rel_debcrd";
+	#$dsel = " WHERE dbk_type = " . DBKTYPE_INKOOP;
+    }
+    else {
+	#$dsel = " WHERE dbk_type = " . DBKTYPE_INKOOP .
+	#  " OR dbk_type = " . DBKTYPE_VERKOOP;
     }
 
-    my $sth = $dbh->sql_exec("SELECT rel_code, rel_desc, rel_debcrd, rel_btw_status, rel_ledger, rel_acc_id".
-			     " FROM Relaties".
-			     $sel.
-			     " ORDER BY rel_code");
+    $sth = $dbh->sql_exec("SELECT dbk_desc, dbk_id FROM Dagboeken".
+			 $dsel);
+    foreach ( @{$sth->fetchall_arrayref} ) {
+	push(@$dbks, $_->[0]);
+	push(@dbkmap, $_->[1]);
+    }
+    my %dbkmap;
+    my $i = 0;
+    foreach ( @dbkmap ) {
+	$dbkmap{0+$_} = $i++;
+    }
+    $sth = $dbh->sql_exec("SELECT rel_code, rel_desc, rel_debcrd, rel_btw_status, rel_ledger, rel_acc_id".
+			  " FROM Relaties".
+			  $asel.
+			  " ORDER BY rel_code");
 
-    my $got = $sth->rows;
-    if ( $got ) {
+    use GridPanel::TextCtrl;
+    use GridPanel::AccInput;
+    use GridPanel::Choice;
+    use GridPanel::DCButton;
+    use GridPanel::RemoveButton;
 
-	# Adjust the size of the grid.
-	my $n = $self->{gr_rel}->GetNumberRows;
-	$self->{gr_rel}->AppendRows($got - $n) if $got > $n;
-	$self->{gr_rel}->DeleteRows($got, $n - $got) if $got < $n;
+    $self->{panel}->create
+      ([ Code         => GridPanel::TextCtrl::,
+	 Omschrijving => GridPanel::TextCtrl::,
+	 "D/C"        => GridPanel::DCButton::,
+	 GrBkRek      => GridPanel::AccInput::,
+	 Dagboek      => [ GridPanel::Choice::, $dbks ],
+	 BTW          => [ GridPanel::Choice::,
+			   [ qw(Normaal Verlegd Intra Extra) ] ],
+	 ""           => GridPanel::RemoveButton::,
+       ], 0, 0 );
+    $self->{panel}->addgrowablecol(1);
+    $self->{panel}->addgrowablecol(3);
 
-	my $row = 0;
-	while ( my $rr = $sth->fetchrow_arrayref ) {
-	    my ($code, $desc, $debcrd, $btw, $ledger, $acct) = @$rr;
-	    my $col = 0;
-	    $self->{gr_rel}->SetCellValue($row, $col, $code);
-	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_LEFT, wxALIGN_CENTER);
+    my $p = $self->{panel};
 
-	    $col++;
-	    $self->{gr_rel}->SetCellValue($row, $col, $desc);
-	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_LEFT,  wxALIGN_CENTER);
-
-	    $col++;
-	    $self->{gr_rel}->SetCellValue($row, $col, $debcrd ? "D" : "C");
-	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_CENTER, wxALIGN_CENTER);
-
-	    $col++;
-	    $self->{gr_rel}->SetCellValue($row, $col, $acct);
-	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_RIGHT, wxALIGN_CENTER);
-	    $self->{gr_rel}->SetColFormatNumber($col) unless $row;
-
-	    $col++;
-	    my @tag = qw(Normaal Verlegd Intra Extra);
-	    $self->{gr_rel}->SetCellValue($row, $col, $tag[$btw]);
-	    $self->{gr_rel}->SetCellAlignment($row, $col, wxALIGN_LEFT, wxALIGN_CENTER);
-	    $self->{gr_rel}->SetCellEditor($row, $col, Wx::GridCellChoiceEditor->new(\@tag, 0));
-
-	    $row++;
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	my ($code, $desc, $debcrd, $btw, $ledger, $acct) = @$rr;
+	$p->append($code, $desc, $debcrd, $acct, $dbkmap{0+$ledger}, $btw, 0, $code);
+	if ( $dbh->do("SELECT COUNT(*) FROM Boekstukregels WHERE bsr_rel_code = ?", $code)->[0] ) {
+	    $p->enable(    0,     1,       0,     1,                  1,    1, 0);
+	    $self->{l_inuse}->Show(1);
 	}
-	$self->Layout();
     }
-    $self->{gr_rel}->EnableEditing(1);
-    $self->{gr_rel}->AutoSizeColumns(1);
 }
 
 sub __set_properties {
@@ -146,19 +139,9 @@ sub __set_properties {
 
 # begin wxGlade: RelPanel::__set_properties
 
-	$self->SetTitle("Onderhoud Relaties");
+	$self->SetTitle(_T("Onderhoud Relaties"));
 	$self->{ch_deb}->SetValue(1);
 	$self->{ch_crd}->SetValue(1);
-	$self->{gr_rel}->CreateGrid(5, 5);
-	$self->{gr_rel}->SetRowLabelSize(0);
-	$self->{gr_rel}->SetColLabelSize(22);
-	$self->{gr_rel}->SetSelectionMode(wxGridSelectRows);
-	$self->{gr_rel}->SetColLabelValue(0, "Code");
-	$self->{gr_rel}->SetColLabelValue(1, "Omschrijving");
-	$self->{gr_rel}->SetColSize(1, 150);
-	$self->{gr_rel}->SetColLabelValue(2, "D/C");
-	$self->{gr_rel}->SetColLabelValue(3, "GrBkRek");
-	$self->{gr_rel}->SetColLabelValue(4, "BTW");
 	$self->{b_cancel}->SetFocus();
 	$self->{b_cancel}->SetDefault();
 
@@ -168,29 +151,34 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
+	# Due to a small inconvenience in wxGlade 0.3 we have to
+	# replace the vanilla panel with out custom panel.
+	$self->{panel}->Destroy;
+	$self->{panel} = new GridPanel($self, -1, wxDefaultPosition, wxDefaultSize, 0,);
+
 # begin wxGlade: RelPanel::__do_layout
 
+	$self->{sz_outer} = Wx::BoxSizer->new(wxVERTICAL);
+	$self->{sz_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_relpanel}= Wx::StaticBoxSizer->new($self->{sz_relpanel_staticbox}, wxHORIZONTAL);
 	$self->{sz_rel} = Wx::BoxSizer->new(wxVERTICAL);
-	$self->{sz_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_debcrd} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_debcrd}->Add($self->{l_sel}, 0, wxRIGHT|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_debcrd}->Add($self->{ch_deb}, 0, wxRIGHT|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_debcrd}->Add($self->{ch_crd}, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sz_debcrd}->Add(1, 1, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_rel}->Add($self->{sz_debcrd}, 0, wxLEFT|wxRIGHT|wxEXPAND, 5);
-	$self->{sz_rel}->Add($self->{gr_rel}, 1, wxALL|wxEXPAND, 5);
-	$self->{sz_buttons}->Add($self->{b_new}, 0, wxLEFT|wxTOP|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sz_buttons}->Add($self->{b_remove}, 0, wxLEFT|wxTOP|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sz_buttons}->Add($self->{b_apply}, 0, wxLEFT|wxTOP|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
+	$self->{sz_rel}->Add($self->{panel}, 1, wxALL|wxEXPAND, 5);
+	$self->{sz_relpanel}->Add($self->{sz_rel}, 1, wxEXPAND, 0);
+	$self->{sz_outer}->Add($self->{sz_relpanel}, 1, wxALL|wxEXPAND, 5);
+	$self->{sz_buttons}->Add($self->{l_inuse}, 0, wxLEFT|wxBOTTOM|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_buttons}->Add(20, 20, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxALL|wxEXPAND|wxADJUST_MINSIZE|wxFIXED_MINSIZE, 5);
-	$self->{sz_rel}->Add($self->{sz_buttons}, 0, wxEXPAND, 0);
-	$self->{sz_relpanel}->Add($self->{sz_rel}, 1, wxEXPAND, 0);
+	$self->{sz_outer}->Add($self->{sz_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->SetAutoLayout(1);
-	$self->SetSizer($self->{sz_relpanel});
-	$self->{sz_relpanel}->Fit($self);
-	$self->{sz_relpanel}->SetSizeHints($self);
+	$self->SetSizer($self->{sz_outer});
+	$self->{sz_outer}->Fit($self);
+	$self->{sz_outer}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
@@ -199,39 +187,50 @@ sub __do_layout {
 # wxGlade: RelPanel::OnDeb <event_handler>
 sub OnDeb {
     my ($self, $event) = @_;
+
+    # If only Deb is selected, and Deb gets deselected, the only
+    # logical action is to implicitly select Crd.
+
+    unless ( $self->{ch_deb}->GetValue || $self->{ch_crd}->GetValue ) {
+	$self->{ch_crd}->SetValue(1);
+    }
     $self->fill_grid;
 }
 
 # wxGlade: RelPanel::OnCrd <event_handler>
 sub OnCrd {
     my ($self, $event) = @_;
+
+    # See comment at OnDeb.
+
+    unless ( $self->{ch_deb}->GetValue || $self->{ch_crd}->GetValue ) {
+	$self->{ch_deb}->SetValue(1);
+    }
     $self->fill_grid;
-}
-
-# wxGlade: RelPanel::OnNew <event_handler>
-sub OnNew {
-    my ($self, $event) = @_;
-    $event->Skip;
-}
-
-# wxGlade: RelPanel::OnRemove <event_handler>
-sub OnRemove {
-    my ($self, $event) = @_;
-    $event->Skip;
-}
-
-# wxGlade: RelPanel::OnApply <event_handler>
-sub OnApply {
-    my ($self, $event) = @_;
-    $event->Skip;
 }
 
 # wxGlade: RelPanel::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
+
+    if ( $self->{panel}->changed ) {
+	my $r = Wx::MessageBox("Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
+			       "Venster toch sluiten?",
+			       "Annuleren",
+			       wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
+	return unless $r == wxYES;
+    }
+
     ($config->relw->{xpos}, $config->relw->{ypos}) = $self->GetPositionXY;
     ($config->relw->{xwidth}, $config->relw->{ywidth})= $self->GetSizeWH;
     $self->Show(0);
+}
+
+# wxGlade: RelPanel::OnApply <pseudo event_handler>
+sub OnApply {
+    my ($self, $data) = @_;
+    use Data::Dumper;
+    warn(Dumper($data));
 }
 
 # end of class RelPanel

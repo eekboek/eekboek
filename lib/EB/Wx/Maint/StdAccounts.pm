@@ -34,10 +34,10 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{stdacc_title_staticbox} = Wx::StaticBox->new($self, -1, "Koppelingen" );
+	$self->{stdacc_title_staticbox} = Wx::StaticBox->new($self, -1, _T("Koppelingen") );
 	$self->{p_stdacc} = StdAccPanel->new($self, -1);
-	$self->{l_inuse} = Wx::StaticText->new($self, -1, "Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd.", wxDefaultPosition, wxDefaultSize, );
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "Close");
+	$self->{l_inuse} = Wx::StaticText->new($self, -1, _T("Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd."), wxDefaultPosition, wxDefaultSize, );
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, _T("Close"));
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -55,10 +55,9 @@ sub __set_properties {
 
 # begin wxGlade: MStdAccPanel::__set_properties
 
-	$self->SetTitle("Koppelingen");
+	$self->SetTitle(_T("Koppelingen"));
 	$self->{b_cancel}->SetFocus();
 	$self->{b_cancel}->SetDefault();
-	$self->{l_inuse}->Show($self->{p_stdacc}->anyinuse);
 
 # end wxGlade
 }

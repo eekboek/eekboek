@@ -42,7 +42,7 @@ sub __set_properties {
 
 # begin wxGlade: RepDebCrd::__set_properties
 
-	$self->SetTitle("Debiteuren/Crediteuren");
+	$self->SetTitle(_T("Debiteuren/Crediteuren"));
 
 # end wxGlade
 }
@@ -55,6 +55,9 @@ sub __do_layout {
 	$self->Layout();
 
 # end wxGlade
+}
+
+sub init {
 }
 
 # end of class RepDebCrd

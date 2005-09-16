@@ -207,7 +207,7 @@ sub __do_layout {
 sub _nf {
     my ($v, $debcrd) = @_;
     numfmtw(abs($v)) . " " .
-      (($debcrd ^ ($v < 0)) ? "Credit" : ($v ? "Debet" : ""));
+      (($debcrd xor ($v < 0)) ? "Credit" : ($v ? "Debet" : ""));
 }
 
 sub set_acc {

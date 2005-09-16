@@ -329,8 +329,8 @@ sub ctxmenu {
 				# Use the IDLE loop to fix the contents.
 				$ctl->{fix} = [ $item, $self->[0] . "   " . $t ];
 
-				if ( $app->{TOP}->{d_accpanel}->curr_id == $self->[0] ) {
-				    $app->{TOP}->{d_accpanel}->set_desc($t);
+				if ( $app->{TOP}->{d_maccpanel}->curr_id == $self->[0] ) {
+				    $app->{TOP}->{d_maccpanel}->set_desc($t);
 				}
 			    });
 
@@ -353,7 +353,7 @@ sub ctxmenu {
     EVT_MENU($ctl, CTXMENU_NEW,
 	     sub {
 		 # my ($self, $event) = @_;
-		 my $p = $app->{TOP}->{d_accpanel};
+		 my $p = $app->{TOP}->{d_maccpanel};
 		 $p->newentry($self->[0]);
 	     });
 
@@ -411,7 +411,7 @@ sub activate {
     my ($self, $ctrl, $event) = @_;
     my $item = UNIVERSAL::isa($event, 'Wx::TreeItemId') ? $event : $event->GetItem;
     my $data = $ctrl->GetPlData($item);
-    $app->{TOP}->{d_accpanel}->set_item($data->[0], $data->[2], $ctrl, $item);
+    $app->{TOP}->{d_maccpanel}->set_item($data->[0], $data->[2], $ctrl, $item);
 }
 
 package BalansHandler;

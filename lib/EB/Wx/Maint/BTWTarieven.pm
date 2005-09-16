@@ -46,19 +46,19 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{sz_btw_staticbox} = Wx::StaticBox->new($self, -1, "BTW Tariefcodes" );
+	$self->{sz_btw_staticbox} = Wx::StaticBox->new($self, -1, _T("BTW Tariefcodes") );
 	$self->{btwpanel} = Wx::ScrolledWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-	$self->{bl_code} = Wx::StaticText->new($self->{btwpanel}, -1, "Code", wxDefaultPosition, wxDefaultSize, );
-	$self->{bl_desc} = Wx::StaticText->new($self->{btwpanel}, -1, "Omschrijving", wxDefaultPosition, wxDefaultSize, );
-	$self->{bl_perc} = Wx::StaticText->new($self->{btwpanel}, -1, "Perc", wxDefaultPosition, wxDefaultSize, );
-	$self->{bl_group} = Wx::StaticText->new($self->{btwpanel}, -1, "Groep", wxDefaultPosition, wxDefaultSize, );
-	$self->{bl_incl} = Wx::StaticText->new($self->{btwpanel}, -1, "In/Excl", wxDefaultPosition, wxDefaultSize, );
-	$self->{bl_del} = Wx::StaticText->new($self->{btwpanel}, -1, "Verw", wxDefaultPosition, wxDefaultSize, );
-	$self->{bw_apply} = Wx::Button->new($self, wxID_APPLY, "Apply");
-	$self->{bw_new} = Wx::Button->new($self, wxID_NEW, "New");
-	$self->{bw_reset} = Wx::Button->new($self, wxID_UNDO, "Undo");
-	$self->{l_inuse} = Wx::StaticText->new($self, -1, "Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd.", wxDefaultPosition, wxDefaultSize, );
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "Close");
+	$self->{bl_code} = Wx::StaticText->new($self->{btwpanel}, -1, _T("Code"), wxDefaultPosition, wxDefaultSize, );
+	$self->{bl_desc} = Wx::StaticText->new($self->{btwpanel}, -1, _T("Omschrijving"), wxDefaultPosition, wxDefaultSize, );
+	$self->{bl_perc} = Wx::StaticText->new($self->{btwpanel}, -1, _T("Perc"), wxDefaultPosition, wxDefaultSize, );
+	$self->{bl_group} = Wx::StaticText->new($self->{btwpanel}, -1, _T("Groep"), wxDefaultPosition, wxDefaultSize, );
+	$self->{bl_incl} = Wx::StaticText->new($self->{btwpanel}, -1, _T("In/Excl"), wxDefaultPosition, wxDefaultSize, );
+	$self->{bl_del} = Wx::StaticText->new($self->{btwpanel}, -1, _T("Verw"), wxDefaultPosition, wxDefaultSize, );
+	$self->{bw_apply} = Wx::Button->new($self, wxID_APPLY, _T("Apply"));
+	$self->{bw_new} = Wx::Button->new($self, wxID_NEW, _T("New"));
+	$self->{bw_reset} = Wx::Button->new($self, wxID_UNDO, _T("Undo"));
+	$self->{l_inuse} = Wx::StaticText->new($self, -1, _T("Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd."), wxDefaultPosition, wxDefaultSize, );
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, _T("Close"));
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -131,7 +131,7 @@ sub __set_properties {
 
 # begin wxGlade: BtwPanel::__set_properties
 
-	$self->SetTitle("BTW Tarieven");
+	$self->SetTitle(_T("BTW Tarieven"));
 	$self->{btwpanel}->SetScrollRate(10, 10);
 	$self->{b_cancel}->SetFocus();
 	$self->{b_cancel}->SetDefault();
@@ -149,6 +149,7 @@ sub __set_properties {
 				 " FROM BTWTabel".
 				 " ORDER BY btw_id");
 	while ( my $rr = $sth->fetchrow_arrayref ) {
+	    $rr->[-1] ||= 0;
 	    push(@{$self->{_btw}}, [@$rr]);
 	    my ($id, $desc, $perc, $tg, $incl) = @$rr;
 	    $self->{"tx_btw_id_$id"} = NumericCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );

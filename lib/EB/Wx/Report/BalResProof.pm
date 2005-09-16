@@ -36,7 +36,7 @@ sub new {
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{b_refresh} = Wx::Button->new($self, wxID_REFRESH, "");
 	$self->{b_props} = Wx::Button->new($self, wxID_PREFERENCES, "");
-	$self->{l_detail} = Wx::StaticText->new($self, -1, "Detail:", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_detail} = Wx::StaticText->new($self, -1, _T("Detail:"), wxDefaultPosition, wxDefaultSize, );
 	$self->{bd_less} = Wx::BitmapButton->new($self, -1, Wx::Bitmap->new("edit_remove.png", wxBITMAP_TYPE_ANY));
 	$self->{bd_more} = Wx::BitmapButton->new($self, -1, Wx::Bitmap->new("edit_add.png", wxBITMAP_TYPE_ANY));
 	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, "");
@@ -69,7 +69,7 @@ sub init {
 
 sub refresh {
     my ($self) = @_;
-    require Report;
+    require EB::Report::Balres::Grid;
     my $gr = $self->{gr_report};
     $gr->SetRowLabelSize(0);
     $gr->SetColLabelSize(22);
@@ -81,8 +81,8 @@ sub refresh {
 	$gr->CreateGrid(0, 6);
 	require EB::Report::Proof;
 	EB::Report::Proof->new->perform
-	    ({ reporter => Report->new( grid => $gr, saldi => 1,
-					detail => $self->{detail} ),
+	    ({ reporter => EB::Report::Balres::Grid->new( grid => $gr, saldi => 1,
+							  detail => $self->{detail} ),
 	       detail => $self->{detail} });
     }
     else {
@@ -90,8 +90,8 @@ sub refresh {
 	require EB::Report::Balres;
 	my $fun = $self->{mew} eq "rbalw" ? "balans" : "result";
 	EB::Report::Balres->new->$fun
-	    ({ reporter => Report->new( grid => $gr,
-					detail => $self->{detail} ),
+	    ({ reporter => EB::Report::Balres::Grid->new( grid => $gr,
+							  detail => $self->{detail} ),
 	       detail => $self->{detail} });
     }
 }
@@ -101,14 +101,14 @@ sub __set_properties {
 
 # begin wxGlade: RepBalRes::__set_properties
 
-	$self->SetTitle("Balans/Resultaat");
-	$self->{b_refresh}->SetToolTipString("Bijwerken naar laatste gegevens");
-	$self->{b_props}->SetToolTipString("Instellingsgegevens");
-	$self->{bd_less}->SetToolTipString("Minder uitgebreid");
+	$self->SetTitle(_T("Balans/Resultaat"));
+	$self->{b_refresh}->SetToolTipString(_T("Bijwerken naar laatste gegevens"));
+	$self->{b_props}->SetToolTipString(_T("Instellingsgegevens"));
+	$self->{bd_less}->SetToolTipString(_T("Minder uitgebreid"));
 	$self->{bd_less}->SetSize($self->{bd_less}->GetBestSize());
-	$self->{bd_more}->SetToolTipString("Meer uitgebreid");
+	$self->{bd_more}->SetToolTipString(_T("Meer uitgebreid"));
 	$self->{bd_more}->SetSize($self->{bd_more}->GetBestSize());
-	$self->{b_close}->SetToolTipString("Venster sluiten");
+	$self->{b_close}->SetToolTipString(_T("Venster sluiten"));
 
 # end wxGlade
 }

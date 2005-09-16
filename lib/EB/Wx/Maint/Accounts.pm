@@ -40,21 +40,21 @@ sub new {
 	$self->{w_acc_frame} = Wx::SplitterWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_BORDER);
 	$self->{maint_pane_outer} = Wx::Panel->new($self->{w_acc_frame}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{maint_pane} = Wx::Panel->new($self->{maint_pane_outer}, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{sz_btw_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, "BTW Tarief" );
-	$self->{sz_saldo_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, "Saldo" );
-	$self->{sz_acc_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, "Grootboekrekening" );
+	$self->{sz_btw_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, _T("BTW Tarief") );
+	$self->{sz_saldo_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, _T("Saldo") );
+	$self->{sz_acc_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, _T("Grootboekrekening") );
 	$self->{tree_pane} = Wx::Panel->new($self->{w_acc_frame}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{acc_tree} = AccTreeCtrl->new($self->{tree_pane}, -1, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
-	$self->{l_acc_id} = Wx::StaticText->new($self->{maint_pane}, -1, "Nr.", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_acc_desc} = Wx::StaticText->new($self->{maint_pane}, -1, "Omschrijving", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_acc_id} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Nr."), wxDefaultPosition, wxDefaultSize, );
+	$self->{l_acc_desc} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Omschrijving"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_acc_id} = NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{t_acc_desc} = Wx::TextCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{rb_balres} = Wx::RadioBox->new($self->{maint_pane}, -1, "Indeling", wxDefaultPosition, wxDefaultSize, ["Balans", "Resultaat"], 0, wxRA_SPECIFY_ROWS);
-	$self->{rb_debcrd} = Wx::RadioBox->new($self->{maint_pane}, -1, "Richting", wxDefaultPosition, wxDefaultSize, ["Debet", "Credit"], 0, wxRA_SPECIFY_ROWS);
-	$self->{rb_kstomz} = Wx::RadioBox->new($self->{maint_pane}, -1, "Soort", wxDefaultPosition, wxDefaultSize, ["Kosten", "Omzet"], 0, wxRA_SPECIFY_ROWS);
-	$self->{l_saldo_opening} = Wx::StaticText->new($self->{maint_pane}, -1, "Opening", wxDefaultPosition, wxDefaultSize, );
+	$self->{rb_balres} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Indeling"), wxDefaultPosition, wxDefaultSize, [_T("Balans"), _T("Resultaat")], 0, wxRA_SPECIFY_ROWS);
+	$self->{rb_debcrd} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Richting"), wxDefaultPosition, wxDefaultSize, [_T("Debet"), _T("Credit")], 0, wxRA_SPECIFY_ROWS);
+	$self->{rb_kstomz} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Soort"), wxDefaultPosition, wxDefaultSize, [_T("Kosten"), _T("Omzet")], 0, wxRA_SPECIFY_ROWS);
+	$self->{l_saldo_opening} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Opening"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_saldo_opening} = Wx::StaticText->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, "Actueel", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Actueel"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{b_accept} = Wx::Button->new($self->{maint_pane_outer}, wxID_APPLY, "");
 	$self->{b_reset} = Wx::Button->new($self->{maint_pane_outer}, wxID_UNDO, "");
@@ -194,7 +194,7 @@ sub __do_layout {
 sub _nf {
     my ($v, $debcrd) = @_;
     numfmtw(abs($v)) . " " .
-      (($debcrd ^ ($v < 0)) ? "Credit" : ($v ? "Debet" : ""));
+      (($debcrd xor ($v < 0)) ? "Credit" : ($v ? "Debet" : ""));
 }
 
 sub set_item {
@@ -330,7 +330,7 @@ sub set_desc {
 
 sub changed {
     my ($self) = @_;
-    $self->{struct} or return 1;
+    $self->{struct} and return 1;
     $self->{_id} or return 0;
     $self->{t_acc_id}->GetValue or return 1;
     $self->{t_acc_id}->GetValue != $self->{_id} and return 1;

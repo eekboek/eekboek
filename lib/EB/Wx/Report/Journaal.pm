@@ -42,7 +42,7 @@ sub __set_properties {
 
 # begin wxGlade: RepJournaal::__set_properties
 
-	$self->SetTitle("Journaal");
+	$self->SetTitle(_T("Journaal"));
 
 # end wxGlade
 }
