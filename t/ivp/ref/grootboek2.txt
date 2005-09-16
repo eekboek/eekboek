@@ -61,8 +61,8 @@ Grootboek -- Periode 2004-01-01 - 2004-12-31
  1200  Debiteuren                                                                                        
         Beginsaldo                                            0,00       0,00                            
          Perl Cursus 1e bet.             19  2004-02-18    3570,00       0,00  Verkoop     1             
-         *Perl Cursus 1e bet.            31  2004-03-18       0,00    3570,00  Postbank    7     ACME      
          Perl Cursus 2e bet.             20  2004-03-18    3570,00       0,00  Verkoop     2             
+         *Perl Cursus 1e bet.            31  2004-03-18       0,00    3570,00  Postbank    7     ACME      
          *Perl Cursus 2e bet.            34  2004-04-12       0,00    3570,00  Postbank    10    ACME      
          Perl Cursus rest                21  2004-04-18     595,00       0,00  Verkoop     3             
          Consultancy                     22  2004-05-14     714,00       0,00  Verkoop     4             
@@ -70,8 +70,8 @@ Grootboek -- Periode 2004-01-01 - 2004-12-31
          *Consultancy                    37  2004-06-08       0,00     714,00  Postbank    13    ACME      
          Consultancy                     23  2004-07-16     714,00       0,00  Verkoop     5             
          *Consultancy                    41  2004-08-10       0,00     714,00  Postbank    17    ACME      
-         *Produktie boek                 42  2004-08-19       0,00    1000,00  Postbank    18    ORA       
          Produktie boek                  24  2004-08-19    1000,00       0,00  Verkoop     6             
+         *Produktie boek                 42  2004-08-19       0,00    1000,00  Postbank    18    ORA       
         Totaal mutaties                                       0,00                                       
  1200  Totaal Debiteuren                                      0,00                                       
 
