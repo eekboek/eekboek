@@ -13,6 +13,8 @@ sub _newconst($$) {
     push(@EXPORT, $_[0]);
 }
 
+sub N__($) { $_[0] }
+
 BEGIN {
     _newconst("SCM_MAJVERSION", 1);
     _newconst("SCM_MINVERSION", 0);
@@ -29,11 +31,11 @@ BEGIN {
     map { _newconst("DBKTYPE_$_", $i++) }
       qw(INKOOP VERKOOP BANK KAS MEMORIAAL);
     _newconst("DBKTYPES",
-	      "[qw(-- Inkoop Verkoop Bank Kas Memoriaal)]");
+	      "[qw(".N__("-- Inkoop Verkoop Bank Kas Memoriaal").")]");
     $i = 0;
     map { _newconst("BTWTYPE_$_", $i++) }
       qw(GEEN HOOG LAAG);
-    _newconst("BTWTYPES", "[qw(Geen Hoog Laag)]");
+    _newconst("BTWTYPES", "[qw(".N__("Geen Hoog Laag").")]");
     $i = 0;
     map { _newconst("BTWPER_$_", $i++) }
       qw(GEEN JAAR HALFJAAR TRIMESTER KWARTAAL);

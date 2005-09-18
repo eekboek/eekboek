@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.13 2005/09/02 11:48:14 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.14 2005/09/18 21:07:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep  2 13:46:43 2005
-# Update Count    : 350
+# Last Modified On: Sun Sep 18 22:54:41 2005
+# Update Count    : 361
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -32,7 +32,7 @@ $my_version .= '*' if length('$Locker:  $ ') > 12;
 
 ################ The Process ################
 
-use EB::Globals;
+use EB;
 use EB::Finance;
 use EB::DB;
 
@@ -63,12 +63,12 @@ sub create {
 	}
     }
     $file = findlib("schema/$name.dat") unless $file;
-    die("?Onbekend schema: $name\n") unless $file;
-    open($fh, "<$file") or die("?Error accessing schema data: $!\n");
+    die("?".__x("Onbekend schema: {schema}", schema => $name)."\n") unless $file;
+    open($fh, "<$file") or die("?".__x("Toegangsfout schema data: {err}", err => $!)."\n");
     $schema = $name;
     $dbh = EB::DB->new(trace => $trace) unless $sql;
     load_schema();
-    "Schema $name geïnitialiseerd";
+    __x("Schema {schema} geïnitialiseerd", schema => $name);
 }
 
 my @hvdi;			# hoofdverdichtingen
@@ -89,7 +89,7 @@ sub scan_dagboeken {
     return 0 unless /^\s+(\d+)\s+(.*)/;
 
     my ($id, $desc) = ($1, $2);
-    error("Dubbel: dagboek $id\n") if defined($dbk[$id]);
+    error(__x("Dubbel: dagboek {dbk}", dbk => $id)."\n") if defined($dbk[$id]);
 
     my $type;
     my $rek = 0;
@@ -104,20 +104,22 @@ sub scan_dagboeken {
 		$type = $i;
 		last;
 	    }
-	    error("Dagboek $id: onbekend type \"$1\"\n") unless defined($type);
+	    error(__x("Dagboek {id} onbekend type \"{type}\"",
+		      id => $id, type => $1)."\n") unless defined($type);
 	}
 	elsif ( $extra =~ m/^rek(?:ening)?=(\d+)$/i ) {
 	    $rek = $1;
 	}
 	else {
-	    error("Dagboek $id: onbekende info \"$extra\"\n");
+	    error(__x("Dagboek {id}: onbekende info \"{info}\"",
+		      id => $id, info => $extra)."\n");
 	}
     }
 
-    error("Dagboek $id: het :type ontbreekt\n") unless defined($type);
-    error("Dagboek $id: het :rekening nummer ontbreekt\n")
+    error(__x("Dagboek {id}: het :type ontbreekt", id => $id)."\n") unless defined($type);
+    error(__x("Dagboek {id}: het :rekening nummer ontbreekt", id => $id)."\n")
       if ( $type == DBKTYPE_KAS || $type == DBKTYPE_BANK ) and !$type;
-    error("Dagboek $id: rekeningnummer enkel toegestaan voor Kas en Bankboeken $type\n")
+    error(__x("Dagboek {id}: rekeningnummer enkel toegestaan voor Kas en Bankboeken", id => $id)."\n")
       if $rek && !($type == DBKTYPE_KAS || $type == DBKTYPE_BANK);
 
     $dbk[$id] = [ $id, $desc, $type, $rek||undef ];
@@ -127,7 +129,7 @@ sub scan_btw {
     return 0 unless /^\s+(\d+)\s+(.*)/;
 
     my ($id, $desc) = ($1, $2);
-    error("Dubbel: BTW tarief $id\n") if defined($btw[$id]);
+    error(__x("Dubbel: BTW tarief {id}", id => $id)."\n") if defined($btw[$id]);
 
     my $perc;
     my $groep = 0;
@@ -161,11 +163,13 @@ sub scan_btw {
 	    $incl = 0;
 	}
 	else {
-	    error("BTW tarief $id: onbekende info \"$extra\"\n");
+	    error(__x("BTW tarief {id}: onbekende info \"{info}\"",
+		      id => $id, info => $extra)."\n");
 	}
     }
 
-    error("BTW tarief $id: geen percentage en de tariefgroep is niet \"geen\"\n")
+    error(__x("BTW tarief {id}: geen percentage en de tariefgroep is niet \"{none}\"",
+	      id => $id, none => _T("geen"))."\n")
       unless defined($perc) || $groep == BTWTYPE_GEEN;
 
     $btw[$id] = [ $id, $desc, $groep, $perc, $incl ];
@@ -187,19 +191,20 @@ sub scan_btw {
 sub scan_balres {
     my ($balres) = shift;
     if ( /^\s*(\d)\s+(.+)/ ) {
-	error("Dubbel: hoofdverdichting $1\n") if exists($hvdi[$1]);
+	error(__x("Dubbel: hoofdverdichting {vrd}", vrd => $1)."\n") if exists($hvdi[$1]);
 	$hvdi[$chvdi = $1] = [ $2, $balres ];
     }
     elsif ( /^\s*(\d\d)\s+(.+)/ ) {
-	error("Dubbel: verdichting $1\n") if exists($vdi[$1]);
-	error("Verdichting $1 heeft geen hoofdverdichting\n") unless defined($chvdi);
+	error(__x("Dubbel: verdichting {vrd}", vrd => $1)."\n") if exists($vdi[$1]);
+	error(__x("Verdichting {vrd} heeft geen hoofdverdichting", vrd => $1)."\n") unless defined($chvdi);
 	$vdi[$cvdi = $1] = [ $2, $balres, $chvdi ];
     }
     elsif ( /^\s*(\d\d\d+)\s+(\S+)\s+(.+)/ ) {
 	my ($id, $flags, $desc) = ($1, $2, $3);
-	error("Dubbel: rekening $1\n") if exists($acc{$id});
-	error("Rekening $id heeft geen verdichting\n") unless defined($cvdi);
-	error("Rekening $id: onherkenbare vlaggetjes $flags\n")
+	error(__x("Dubbel: rekening {acct}", acct => $1)."\n") if exists($acc{$id});
+	error(__x("Rekening {id} heeft geen verdichting", id => $id)."\n") unless defined($cvdi);
+	error(__x("Rekening {id}: onherkenbare vlaggetjes {flags}",
+		  id => $id, flags => $flags)."\n")
 	  unless $flags =~ /^[dc][ko]$/i;
 	my $debcrd = $flags =~ /^d/i;
 	my $kstomz = $flags =~ /^.k/i;
@@ -213,9 +218,11 @@ sub scan_balres {
 		$btw = lc(substr($1,0,1));
 	    }
 	    elsif ( $extra =~ m/koppeling=(\S+)/i ) {
-		error("Rekening $id: onbekende koppeling \"$1\"\n")
+		error(__x("Rekening {id}: onbekende koppeling \"{std}\"",
+			  id => $id, std => $1)."\n")
 		  unless exists($std{$1});
-		error("Rekening $id: extra koppeling voor \"$1\"\n")
+		error(__x("Rekening {id}: extra koppeling voor \"{std}\"",
+			  id => $id, std => $1)."\n")
 		  if $std{$1};
 		$std{$1} = $id;
 	    }
@@ -267,27 +274,27 @@ sub load_schema {
 	if ( $scanner ) {
 	    chomp;
 	    $scanner->() or
-	      error("Ongeldige invoer: $_ (regel $.)\n");
+	      error(__x("Ongeldige invoer: {line} (regel {lno})",
+			line => $_, lno => $.)."\n");
 	    next;
 	}
 
-	error("?Men beginne met \"Balansrekeningen\", \"Resultaatrekeningen\",".
-	      " \"Dagboeken\" of \"BTW Tarieven\"\n");
+	error("?"._T("Men beginne met \"Balansrekeningen\", \"Resultaatrekeningen\",".
+		     " \"Dagboeken\" of \"BTW Tarieven\"")."\n");
     }
 
     while ( my($k,$v) = each(%std) ) {
 	next if $v;
-	error("Geen koppeling gevonden voor \"$k\"\n");
+	error(__x("Geen koppeling gevonden voor \"{std}\"", std => $k)."\n");
     }
 
     my %mapbtw = ( g => "Geen", h => "Hoog", "l" => "Laag" );
     foreach ( keys(%mapbtw) ) {
 	next if defined($btwmap{$_});
-	error("Geen BTW tarief gevonden met tariefgroep ",
-	      $mapbtw{$_}, 
-	      ", inclusief\n");
+	error(__x("Geen BTW tarief gevonden met tariefgroep {gr}, inclusief",
+		  gr => $mapbtw{$_})."\n");
     }
-    die("?FOUTEN GEVONDEN, VERWERKING AFGEBROKEN\n") if $fail;
+    die("?"._T("FOUTEN GEVONDEN, VERWERKING AFGEBROKEN")."\n") if $fail;
 
     if ( $sql ) {
 	gen_schema();
@@ -305,7 +312,7 @@ sub create_schema {
 sub sql_eekboek {
     my $f = findlib("schema/eekboek.sql");
     open (my $fh, '<', $f)
-      or die("Installation error -- no master schema\n");
+      or die("?"._T("Installatiefout -- geen schema")."\n");
 
     local $/;
     $sql = <$fh>;
@@ -522,7 +529,7 @@ sub sql {
 	}
     }
 
-    die("?Incomplete final SQL command: $sql\n") if $sql;
+    die("?".__x("Incompleet SQL commando: {sql}", sql => $sql)."\n") if $sql;
 }
 
 ################ Subroutines ################
@@ -661,7 +668,7 @@ sub dump_acc {
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($id, $desc) = @$rr;
 	printf("\n  %d  %s\n", $id, $desc);
-	print("# HOOFDVERDICHTING MOET TUSSEN 1 EN 9 (INCL.) LIGGEN\n")
+	print("# "._T("HOOFDVERDICHTING MOET TUSSEN 1 EN 9 (INCL.) LIGGEN")."\n")
 	  if $id > 9;
 	my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
 				 " FROM Verdichtingen".
@@ -670,7 +677,7 @@ sub dump_acc {
 	while ( my $rr = $sth->fetchrow_arrayref ) {
 	    my ($id, $desc) = @$rr;
 	    printf("     %-2d  %s\n", $id, $desc);
-	    print("# VERDICHTING MOET TUSSEN 10 EN 99 (INCL.) LIGGEN\n")
+	    print("# "._T("VERDICHTING MOET TUSSEN 10 EN 99 (INCL.) LIGGEN")."\n")
 	      if $id < 10 || $id > 99;
 	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz, btw_tariefgroep".
 				     " FROM Accounts, BTWTabel ".
@@ -693,9 +700,9 @@ sub dump_acc {
 				$extra);
 		$t =~ s/\s+$//;
 		print($t, "\n");
-		print("# $id ZOU EEN BALANSREKENING MOETEN ZIJN\n")
+		print("# ".__x("{id} ZOU EEN BALANSREKENING MOETEN ZIJN", id => $id)."\n")
 		  if $acc_balres && !$balres;
-		print("# $id ZOU EEN RESULTAATREKENING MOETEN ZIJN\n")
+		print("# ".__x("{id} ZOU EEN RESULTAATREKENING MOETEN ZIJN", id => $id)."\n")
 		  if !$acc_balres && $balres;
 	    }
 	}

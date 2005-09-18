@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.3 2005/09/01 15:21:00 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.4 2005/09/18 21:10:50 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  1 14:27:16 2005
-# Update Count    : 163
+# Last Modified On: Sun Sep 18 16:26:10 2005
+# Update Count    : 171
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -56,6 +56,7 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 
 ################ The Process ################
 
+use EB;
 use base qw(EB::Shell);
 
 my $app = $my_package;
@@ -69,7 +70,11 @@ if ( $dataset ) {
 }
 
 unless ( $ENV{EB_DB_NAME} ) {
-    die("?Geen database opgegeven. Gebruik de environment variabele EB_DB_NAME om een database te selecteren, of geef een database naam mee op de command line met \"--data=...\".\n");
+    die("?"._T("Geen dataset opgegeven.".
+	       " Gebruik de environment variabele EB_DB_NAME om".
+	       " een database te selecteren, of geef een database".
+	       " naam mee op de command line met \"--dataset=...\".").
+	"\n");
 }
 
 use EB::DB;
@@ -116,7 +121,7 @@ sub app_options {
 		     'ident'	=> \$ident,
 		     'journal'	=> \$journal,
 		     'verbose'	=> \$verbose,
-		     'data=s'	=> \$dataset,
+		     'dataset=s' => \$dataset,
 		     'trace'	=> \$trace,
 		     'help|?'	=> \$help,
 		     'debug'	=> \$debug,
@@ -128,22 +133,25 @@ sub app_options {
 }
 
 sub app_ident {
-    print STDERR ("This is $my_package [$my_name $my_version]\n");
+    print STDERR (__x("Dit is {pkg} [{name} {version}]",
+		      pkg     => $my_package,
+		      name    => $my_name,
+		      version => $my_version) . "\n");
 }
 
 sub app_usage {
     my ($exit) = @_;
     app_ident();
-    print STDERR <<EndOfUsage;
-Usage: $0 [options] [file ...]
+    print STDERR __x(<<EndOfUsage, prog => $0);
+Gebruik: {prog} [options] [file ...]
 
     --command  -c       voer de rest van de opdrachtregel uit als command
     --echo  -e          toon ingelezen opdrachten
-    --journal           print journaalregels na elke opdracht
-    --data=DB           specificeer database
-    --help		this message
-    --ident		show identification
-    --verbose		verbose information
+    --journal           toon de journaalregels na elke opdracht
+    --dataset=DB        specificeer database
+    --help		deze hulpboodschap
+    --ident		toon identificatie
+    --verbose		geef meer uitgebreide information
 EndOfUsage
     exit $exit if defined $exit && $exit != 0;
 }

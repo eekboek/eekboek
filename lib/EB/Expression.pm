@@ -29,6 +29,8 @@ use strict;
 ## package Math::Expression;
 package EB::Expression;
 
+use EB;
+
 =begin stripped
 
 use Exporter;

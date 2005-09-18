@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.6 2005/08/29 20:42:56 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.7 2005/09/18 21:07:57 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Aug 29 18:04:21 2005
-# Update Count    : 176
+# Last Modified On: Sun Sep 18 21:48:32 2005
+# Update Count    : 182
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -23,7 +23,7 @@ use warnings;
 
 ################ The Process ################
 
-use EB::Globals;
+use EB;
 use EB::DB;
 use EB::Finance;
 use EB::Report::Text;
@@ -72,15 +72,18 @@ sub perform {
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
     if ( $balans < 0 ) {
 	$rep->addline('H', '',
-		      "Openingsbalans" .
-		      " -- Periode ". substr($date, 0, 4) . " d.d. " .
-		      substr($now,0,10));
+		      _T("Openingsbalans") .
+		      " -- " .
+		      __x("Periode {per} d.d. {date}",
+			  per => substr($date, 0, 4),
+			  date => substr($now,0,10)));
     }
     else {
 	$rep->addline('H', '',
-		      ($balans ? "Balans" : "Verlies/Winst") .
-		      " -- Periode $date - " .
-		      substr($now,0,10));
+		      ($balans ? _T("Balans") : _T("Verlies/Winst")) .
+		      " -- " .
+		      __x("Periode {from} - {to}",
+		      from => $date, to => substr($now,0,10)));
     }
 
     my $sth;
@@ -95,8 +98,8 @@ sub perform {
 	my ($acc_id, $balance,$ibalance, $sum) = @$rr;
 	$sum += $ibalance;
 	next if $balance == $sum;
-	warn("!Grootboekrekening $acc_id, totaal " .
-	     numfmt($balance) . ", moet zijn " . numfmt($sum) . ", aangepast\n");
+	warn("!".__x("Grootboekrekening {acct}, totaal {actual}, moet zijn {exp}, aangepast",
+		     acct => $acc_id, actual => numfmt($balance), exp => numfmt($sum)) . "\n");
 	$dbh->sql_exec("UPDATE Accounts".
 		       " SET acc_balance = ?".
 		       " WHERE acc_id = ?",
@@ -163,14 +166,16 @@ sub perform {
 		}
 		$sth->finish;
 		if ( $detail >= 1 && ($csstot || $dsstot) ) {
-		    $rep->addline('T2', $vd->[0], ($detail > 1 ? "Totaal " : "").$vd->[1],
+		    $rep->addline('T2', $vd->[0],
+				  ($detail > 1 ? __x("Totaal {vrd}", vrd => $vd->[1]) : $vd->[1]),
 				  $dsstot >= $csstot ? ($dsstot-$csstot, undef) : (undef, $csstot-$dsstot));
 		}
 		$cstot += $csstot-$dsstot if $csstot>$dsstot;
 		$dstot += $dsstot-$csstot if $dsstot>$csstot;
 	    }
 	    if ( $detail >= 0  && ($cstot || $dstot) ) {
-		$rep->addline('T1', $hvd->[0], ($detail > 0 ? "Totaal " : "").$hvd->[1],
+		$rep->addline('T1', $hvd->[0],
+			      ($detail > 0 ? __x("Totaal {vrd}", vrd => $hvd->[1]) : $hvd->[1]),
 			      $dstot >= $cstot ? ($dstot-$cstot, undef) : (undef, $cstot-$dstot));
 
 	    }
@@ -201,7 +206,8 @@ sub perform {
 	$sth->finish;
     }
 
-    my ($w, $v) = $balans ? qw(Winst Verlies) : qw(Verlies Winst);
+    my ($w, $v) = (_T("Winst"), _T("Verlies"));
+    ($w, $v) = ($v, $w) unless $balans;
     if ( $dtot != $ctot ) {
 	if ( $dtot >= $ctot ) {
 	    $rep->addline('V', '', "<< $w >>", undef, $dtot - $ctot || "00");
@@ -212,7 +218,8 @@ sub perform {
 	    $dtot = $ctot;
 	}
     }
-    $rep->addline('T', '', 'TOTAAL '.($balans ? "Balans" : "Resultaten"), $dtot, $ctot);
+    $rep->addline('T', '', __x("TOTAAL {rep}", rep => $balans ? _T("Balans") : _T("Resultaten")),
+		  $dtot, $ctot);
     $rep->finish;
 }
 

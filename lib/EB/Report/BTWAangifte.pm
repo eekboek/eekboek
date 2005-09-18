@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.4 2005/09/16 16:26:07 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.5 2005/09/18 21:07:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 15 09:22:21 2005
-# Update Count    : 236
+# Last Modified On: Sun Sep 18 17:01:31 2005
+# Update Count    : 272
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -14,7 +14,7 @@ package EB::BTWAangifte;
 
 use strict;
 
-use EB::Globals;
+use EB;
 use EB::Finance;
 
 use POSIX qw(floor ceil);
@@ -31,25 +31,23 @@ sub new {
     $self->{adm_btw_periode} ||= 4;
 
     unless ( $self->{adm_begin} ) {
-	die("?Administratie is nog niet geopend\n");
+	die("?"._T("De administratie is nog niet geopend")."\n");
     }
 
     unless ( @periodetabel ) {
 	@periodetabel = ( [] ) x 13;
-	$periodetabel[1] = [ "", [ "01-01", "12-31" ] ];
-	$periodetabel[4] = [ "kwartaal",
-			     [ "01-01", "03-31" ], [ "04-01", "06-30" ],
-			     [ "07-01", "09-30" ], [ "10-01", "12-31" ] ];
-
 	my @m;
 	for ( 1 .. 12 ) {
 	    push(@m, [ sprintf("%02d-01", $_),
 		       sprintf("%02d-%02d", $_, ($_ & 1 xor $_ & 8) ? 31 : 30) ]);
 	}
 	$m[1][1] = substr($self->{adm_begin}, 0, 4) % 4 ? "02-28" : "02-29";
-	$periodetabel[12] = [ "maand", @m ];
+	$periodetabel[12] = [ _T("per maand"), @m ];
+	$periodetabel[1]  = [ _T("per jaar"), [$m[0][0], $m[11][1] ]];
+	$periodetabel[4]  = [ _T("per kwartaal"),
+			      [$m[0][0], $m[2][1]], [$m[3][0], $m[5][1] ],
+			      [$m[6][0], $m[8][1]], [$m[9][0], $m[11][1]]];
     }
-
 
     $self;
 }
@@ -75,7 +73,12 @@ sub parse_periode {
 
     my $pp = sub {
 	my ($per, $n) = @_;
-	warn("!Periode $per (\"$v\") komt niet overeen met administratie BTW periode \"$self->{adm_btw_periode}\"\n")
+	warn("!".
+	     __x("Aangifte {per} komt niet overeen met de BTW instelling".
+		 " van de administratie ({admper})",
+		 per => $periodetabel[$per][0],
+		 admper => $periodetabel[$self->{adm_btw_periode}][0],
+		)."\n")
 	  unless $self->{adm_btw_periode} == $per;
 	$self->{adm_btw_periode} = $per;
 	my $tbl = $periodetabel[$self->{adm_btw_periode}];
@@ -84,20 +87,25 @@ sub parse_periode {
 	$self->{periode} = $n . "e " . $tbl->[0] . " " . $year;
     };
 
-    if ( $v =~ /^j(aar)?$/i ) {
+    my $yrpat = _T("j(aar)?");
+    if ( $v =~ /^$yrpat$/i ) {
 	$pp->(1, 1);
-	$self->{periode} = $year;
+	$self->{periode} = __x("{year}", year => $year);
     }
     elsif ( $v =~ /^[kq](\d)$/i && $1 >= 1 && $1 <= 4) {
 	$pp->(4, $1);
+	$self->{periode} = (_T("1e kwartaal"), _T("2e kwartaal"),
+			    _T("3e kwartaal"), _T("4e kwartaal"))[$1-1];
     }
     elsif ( $v =~ /^(\d)$/i  && $1 >= 1 && $1 <= 12) {
 	$pp->(12, $1);
-	$self->{periode} = qw(Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December)[$1-1] .
-	  " " . $year;
+	$self->{periode} = __x("{month} {year}",
+			       month => $EB::month_names[$1-1],
+			       year => $year);
     }
     else {
-	die("?Ongeldige waarde \"$v\" voor periode\n");
+	die("?".__x("Ongeldige waarde voor BTW periode: \"{per}\"",
+		    per => $v) . "\n");
     }
 }
 
@@ -385,9 +393,10 @@ sub report {
     $rep->addline('X', "xx", "Onbekend", undef, numfmt($data->{onbekend})) if $data->{onbekend};
 
     if ( $data->{btw_delta} ) {
-	$rep->finish("Er is een verschil van ".numfmt($data->{btw_delta}).
-	  " tussen de berekende en werkelijk ingehouden BTW.".
-	    " Voor de aangifte is de werkelijk ingehouden BTW gebruikt.");
+	$rep->finish(__x("Er is een verschil van {amount}".
+			 " tussen de berekende en werkelijk ingehouden BTW.".
+			 " Voor de aangifte is de werkelijk ingehouden BTW gebruikt.",
+			 amount => numfmt($data->{btw_delta})));
     }
     else {
 	$rep->finish;
@@ -443,7 +452,9 @@ sub addline {
 	    print("\n", $tag0, " ", $tag1, "\n\n");
 	}
 	else {
-	    die("?Unsupported mode '$ctl' in " . __PACKAGE__ . "::addline\n");
+	    die("?".__x("Ongeldige mode '{ctl}' in {pkg}::addline",
+			ctl => $ctl,
+			pkg => __PACKAGE__ ) . "\n");
 	}
 	return;
     }

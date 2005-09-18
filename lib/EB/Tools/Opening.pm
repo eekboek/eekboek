@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.6 2005/08/30 08:50:19 jv Exp $
+# $Id: Opening.pm,v 1.7 2005/09/18 21:07:57 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 30 10:50:16 2005
-# Update Count    : 21
+# Last Modified On: Sun Sep 18 23:06:58 2005
+# Update Count    : 37
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,7 +16,7 @@ our $config;
 package EB::Tools::Opening;
 
 use strict;
-use EB::Globals;
+use EB;
 use EB::Finance;
 use EB::DB;
 
@@ -45,19 +45,20 @@ sub set_naam {
 sub set_btwperiode {
     return shellhelp() unless @_ == 2;
     my ($self, $per) = @_;
-    return "Ongeldige BTW periode: $per\n"
-      unless $per =~ /^(jaar|kwartaal|maand)$/i;
+    my $pat = join("|", _T("jaar"), _T("maand"), _T("kwartaal"));
+    return __x("Ongeldige BTW periode: {per}", per => $per)."\n"
+      unless $per =~ /^$pat|jaar|maand}kwartaal$/i;
     $self->check_open(0);
-    $self->{o}->{btwperiode} = 1 if lc($per) eq "jaar";
-    $self->{o}->{btwperiode} = 4 if lc($per) eq "kwartaal";
-    $self->{o}->{btwperiode} = 12 if lc($per) eq "maand";
+    $self->{o}->{btwperiode} = 1 if lc($per) eq _T("jaar") || lc($per) eq "jaar";
+    $self->{o}->{btwperiode} = 4 if lc($per) eq _T("kwartaal") || lc($per) eq "kwartaal";
+    $self->{o}->{btwperiode} = 12 if lc($per) eq _T("maand") || lc($per) eq "maand";
     ""
 }
 
 sub set_begindatum {
     return shellhelp() unless @_ == 2;
     my ($self, $jaar) = @_;
-    return "Ongeldige jaar-aanduiding: $jaar\n" unless $jaar =~ /^\d+$/
+    return __x("Ongeldige jaar-aanduiding: {year}", year => $jaar)."\n" unless $jaar =~ /^\d+$/
       && $jaar >= 1990 && $jaar < 2099;	# TODO
     $self->check_open(0);
     $self->{o}->{begindatum} = $jaar;
@@ -67,7 +68,7 @@ sub set_begindatum {
 sub set_balanstotaal {
     return shellhelp() unless @_ == 2;
     my ($self, $amt) = @_;
-    return "Ongeldig bedrag: $amt\n" unless defined($amt = amount($amt));
+    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($amt = amount($amt));
     $self->check_open(0);
     $self->{o}->{balanstotaal} = $amt;
     "";
@@ -79,10 +80,10 @@ sub set_balans {
     my $rr = $dbh->do("SELECT acc_balres, acc_debcrd".
 		      " FROM Accounts".
 		      " WHERE acc_id = ?", $acct);
-    return "Onbekende grootboekrekening: $acct\n"
+    return __x("Onbekende grootboekrekening: {acct}", acct => $acct)."\n"
       unless defined($rr);
     my $balres = $rr->[0];
-    return "Grootboekrekening $acct is geen balansrekening\n"
+    return __x("Grootboekrekening {acct} is geen balansrekening", acct => $acct)."\n"
       unless $balres;
     my $debcrd;
     if ( $amt =~ /^(.*)([DC])/ ) {
@@ -92,7 +93,7 @@ sub set_balans {
     else {
 	$debcrd = $rr->[1];
     }
-    return "Ongeldig bedrag: $amt\n" unless defined($amt = amount($amt));
+    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($amt = amount($amt));
     $self->check_open(0);
     push(@{$self->{o}->{balans}}, [$acct, $debcrd ? $amt : -$amt]);
     "";
@@ -101,21 +102,21 @@ sub set_balans {
 sub set_relatie {
     return shellhelp() unless @_ == 6;
     my ($self, $date, $desc, $type, $code, $amt) = @_;
-    return "Ongeldige datum: $date\n"
+    return __x("Ongeldige datum: {date}", date => $date)."\n"
       unless $date =~ /^(\d\d\d\d)-(\d\d?)-(\d\d?)$/
 	&& $1 >= 1990 && $1 < 2099
 	  && $2 >= 1 && $2 <= 12
 	    && $3 >= 1 && $3 <= 31; # TODO
-    return "Datum $date valt niet vóór het boekjaar\n"
+    return __x("Datum {date} valt niet vóór het boekjaar", date => $date)."\n"
       if $self->{o}->{begindatum} && $self->{o}->{begindatum} <= $1;
-    return "Relatietype moet \"deb\" of \"crd\" zijn\n"
+    return _T("Relatietype moet \"deb\" of \"crd\" zijn")."\n"
       unless $type =~ /^crd|deb$/;
     $type = $type eq "deb";
     my $debcrd = $dbh->lookup($code, qw(Relaties rel_code rel_debcrd));
-    return "Onbekende relatie: $code\n" unless defined $debcrd;
-    return "Ongeldige relatie: $code\n"
+    return __x("Onbekende relatie: {rel}", rel => $code)."\n" unless defined $debcrd;
+    return __x("Ongeldige relatie: {rel}", rel => $code)."\n"
       if $type  ^ $debcrd;
-    return "Ongeldig bedrag: $amt\n" unless defined($amt = amount($amt));
+    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($amt = amount($amt));
     $self->check_open(0);
     push(@{$self->{o}->{relatie}}, [$date, $desc, $type, $code, $amt]);
     "";
@@ -129,15 +130,15 @@ sub open {
 
     my $o = $self->{o};
     my $fail = 0;
-    $fail++, warn("De naam van de administratie is nog niet opgegeven\n")
+    $fail++, warn(_T("De naam van de administratie is nog niet opgegeven")."\n")
       unless $o->{naam};
-    $fail++, warn("De begindatum is nog niet opgegeven\n")
+    $fail++, warn(_T("De begindatum is nog niet opgegeven")."\n")
       unless $o->{begindatum};
-    $fail++, warn("De BTW periode is nog niet opgegeven\n")
+    $fail++, warn(_T("De BTW periode is nog niet opgegeven")."\n")
       unless $o->{btwperiode};
     if ( ($o->{balans} || $o->{relatie}) && !defined($o->{balanstotaal}) ) {
 	$fail++;
-	warn("Het totaalbedrag van de openingsbalans is nog niet opgegeven\n");
+	warn(_T("Het totaalbedrag van de openingsbalans is nog niet opgegeven")."\n");
     }
     if ( $o->{balanstotaal} ) {
 	my $adeb = $dbh->std_acc("deb");
@@ -146,7 +147,7 @@ sub open {
 	my $rcrd;
 	if ( !$o->{balans} ) {
 	    $fail++;
-	    warn("De openingsbalans is nog niet opgegeven\n");
+	    warn(_T("De openingsbalans is nog niet opgegeven")."\n");
 	}
 	else {
 	    my $debet = $o->{balanstotaal};
@@ -162,17 +163,17 @@ sub open {
 		$rdeb = $amt if $acct == $adeb;
 		$rcrd = $amt if $acct == $acrd;
 	    }
-	    $fail++, warn("De openingsbalans is niet in balans!\n".
-			  "Totaal = " . numfmt($o->{balanstotaal}) .
-			  ", residu debet = " . numfmt($debet) .
-			  ", residu credit = " . numfmt(-$credit) .
-			  "\n")
+	    $fail++, warn(_T("De openingsbalans is niet in balans!")."\n".
+			  __x("Totaal = {total}, residu debet = {rdeb}, residu credit = {rcrd}",
+			      total => numfmt($o->{balanstotaal}),
+			      rdeb => numfmt($debet),
+			      rcrd => numfmt(-$credit))."\n")
 	      if $debet || $credit;
-	    $fail++, warn("De openstaande debiteuren zijn nog niet opgegeven\n")
+	    $fail++, warn(_T("De openstaande debiteuren zijn nog niet opgegeven")."\n")
 	      if defined($rdeb) && !$o->{relatie};
-	    $fail++, warn("De openstaande crediteuren zijn nog niet opgegeven\n")
+	    $fail++, warn(_T("De openstaande crediteuren zijn nog niet opgegeven")."\n")
 	      if defined($rcrd) && !$o->{relatie};
-	    $fail++, warn("Er zijn openstaande posten opgegeven, maar geen corresponderende balansposten\n")
+	    $fail++, warn(_T("Er zijn openstaande posten opgegeven, maar geen corresponderende balansposten")."\n")
 	      if $o->{relatie} && !(defined($rdeb) || defined($rcrd));
 
 	    foreach my $r ( @{$o->{relatie}} ) {
@@ -184,17 +185,25 @@ sub open {
 		    $rcrd += $amt;
 		}
 	    }
-	    $fail++, warn("Er is ".numfmt(abs($rdeb))." te ".
-			  ($rdeb >= 0 ? "weinig" : "veel"). " aan openstaande".
-			  " debiteuren opgegeven\n")
+	    $fail++, warn(($rdeb >= 0 ?
+			   __x("Er is {amt} te weinig aan openstaande {dc} opgegeven",
+			       amt => numfmt($rdeb),
+			       dc => lc(_T("Debiteuren"))) :
+			   __x("Er is {amt} te veel aan openstaande {dc} opgegeven",
+			       amt => numfmt(-$rdeb),
+			       dc => lc(_T("Debiteuren"))))."\n")
 	      if $rdeb;
-	    $fail++, warn("Er is ".numfmt(abs($rcrd))." te ".
-			  ($rcrd >= 0 ? "weinig" : "veel"). " aan openstaande".
-			  " crediteuren opgegeven\n")
+	    $fail++, warn(($rcrd >= 0 ?
+			   __x("Er is {amt} te weinig aan openstaande {dc} opgegeven",
+			       amt => numfmt($rcrd),
+			       dc => lc(_T("Crediteuren"))) :
+			   __x("Er is {amt} te veel aan openstaande {dc} opgegeven",
+			       amt => numfmt(-$rcrd),
+			       dc => lc(_T("Crediteuren"))))."\n")
 	      if $rcrd;
 	}
     }
-    return "DE OPENING IS NIET UITGEVOERD!\n" if $fail;
+    return _T("DE OPENING IS NIET UITGEVOERD!")."\n" if $fail;
 
     my @tm = localtime(time);
     my $open = sprintf("%04d-%02d-%02d", 1900 + $tm[5], 1 + $tm[4], $tm[3]);
@@ -303,10 +312,10 @@ sub check_open {
     my ($self, $open) = @_;
     $open = 1 unless defined($open);
     if ( $open && !$dbh->adm_busy ) {
-	die("Administratie is nog niet geopend\n");
+	die("?"._T("De administratie is nog niet geopend")."\n");
     }
     elsif ( !$open && $dbh->adm_busy ) {
-	die("Administratie is reeds in gebruik\n");
+	die("?"._T("De administratie is reeds in gebruik")."\n");
     }
     1;
 }

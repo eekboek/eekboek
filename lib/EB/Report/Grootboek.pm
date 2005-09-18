@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.4 2005/09/16 16:26:53 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.5 2005/09/18 21:07:57 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 16 18:20:00 2005
-# Update Count    : 71
+# Last Modified On: Sun Sep 18 21:37:05 2005
+# Update Count    : 75
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -23,7 +23,7 @@ use warnings;
 
 ################ The Process ################
 
-use EB::Globals;
+use EB;
 use EB::DB;
 use EB::Finance;
 use EB::Report::Text;
@@ -45,7 +45,9 @@ sub perform {
     my $date = $rr->[0];
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
 
-    print("Grootboek -- Periode $date - ", substr($now,0,10), "\n\n");
+    print(_T("Grootboek"), " -- ",
+	  __x("Periode {from} - {to}",
+	      from => $date, to => substr($now,0,10)), "\n\n");
 
     my $ah = $dbh->sql_exec("SELECT acc_id,acc_desc,acc_ibalance".
 			    " FROM Accounts".
@@ -66,7 +68,10 @@ sub perform {
     while ( my $ar = $ah->fetchrow_arrayref ) {
 	my ($acc_id, $acc_desc, $acc_ibalance) = @$ar;
 	unless ( $line ) {
-	    $line = sprintf($fmt, qw(GrBk Grootboek/Boekstuk Id Datum Debet Credit Dagboek Nr Relatie));
+	    $line = sprintf($fmt,
+			    _T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"),
+			    _T("Datum"), _T("Debet"), _T("Credit"),
+			    _T("Dagboek"), _T("Nr"), _T("Relatie")));
 	    print($line);
 	    $line =~ s/./-/g;
 	    print($line);
@@ -85,7 +90,7 @@ sub perform {
 		$d[1] = numfmt(-$acc_ibalance);
 	    }
 	}
-	printf($fmt, "", " Beginsaldo", "", "", @d, ("") x 3) if $detail > 0;
+	printf($fmt, "", " "._T("Beginsaldo"), "", "", @d, ("") x 3) if $detail > 0;
 
 	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_date,jnl_desc,jnl_rel".
 				 " FROM journal, Boekstukken, Dagboeken".
@@ -111,7 +116,7 @@ sub perform {
 		   $dbk_desc, $bsk_nr, $rel||"") if $detail > 1;
 	}
 
-	printf($fmt, "", " Totaal mutaties", "", "",
+	printf($fmt, "", " "._T("Totaal mutaties"), "", "",
 	       $ctot > $dtot ? ("", numfmt($ctot-$dtot)) : (numfmt($dtot-$ctot), ""),
 	       ("") x 3) if $detail && ($dtot || $ctot || $acc_ibalance);
 
@@ -122,7 +127,7 @@ sub perform {
 	    $mcgrand += $ctot - $dtot;
 	}
 
-	printf($fmt, $acc_id, "Totaal $acc_desc", "", "",
+	printf($fmt, $acc_id, __x("Totaal {adesc}", adesc => $acc_desc), "", "",
 	       $ctot > $dtot + $acc_ibalance ? ("", numfmt($ctot-$dtot-$acc_ibalance)) : (numfmt($dtot+$acc_ibalance-$ctot),""),
 	       ("") x 3);
 	if ( $ctot > $dtot + $acc_ibalance ) {
@@ -134,11 +139,11 @@ sub perform {
     }
 
     print("\n");
-    printf($fmt, "", "Totaal Mutaties", "", "",
+    printf($fmt, "", _("Totaal mutaties"), "", "",
 	       numfmt($mdgrand), numfmt($mcgrand),
 	       ("") x 3);
     print($line);
-    printf($fmt, "", "Totaal", "", "",
+    printf($fmt, "", _T("Totaal"), "", "",
 	       numfmt($dgrand), numfmt($cgrand),
 	       ("") x 3);
 }

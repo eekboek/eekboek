@@ -1,10 +1,10 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.1 2005/09/14 15:42:19 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.2 2005/09/18 21:07:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 14 15:26:26 2005
-# Update Count    : 2
+# Last Modified On: Sun Sep 18 18:41:55 2005
+# Update Count    : 3
 # Status          : Unknown, Use with caution!
 
 package EB::BTWAangifte::Html;
@@ -37,7 +37,9 @@ sub addline {
 	    $tag0 = "\240";
 	}
 	else {
-	    die("?Unsupported mode '$ctl' in " . __PACKAGE__ . "::addline\n");
+	    die("?".__x("Ongeldige mode '{ctl}' in {pkg}::addline",
+			ctl => $ctl,
+			pkg => __PACKAGE__ ) . "\n");
 	}
     }
 

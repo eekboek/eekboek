@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.6 2005/08/14 09:33:54 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.7 2005/09/18 21:07:57 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 14 11:22:18 2005
-# Update Count    : 229
+# Last Modified On: Sun Sep 18 21:45:08 2005
+# Update Count    : 233
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -23,7 +23,7 @@ use warnings;
 
 ################ The Process ################
 
-use EB::Globals;
+use EB;
 use EB::DB;
 use EB::Finance;
 use EB::Report::Text;
@@ -56,9 +56,10 @@ sub perform {
     my $date = $rr->[0];
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
     $rep->addline('H', '',
-		  "Proef- en Saldibalans" .
-		  " -- Periode $date - " .
-		  substr($now,0,10));
+		  _T("Proef- en Saldibalans") .
+		  " -- " .
+		  __x("Periode {from} - {to}",
+		      from => $date, to => substr($now,0,10)));
 
     my $sth;
 
@@ -77,7 +78,7 @@ sub perform {
 	    else {
 		$tot[0] = $acc_ibalance;
 	    }
-	    # $rep->addline('D2', '', 'Beginsaldo', @tot);
+	    # $rep->addline('D2', '', _T("Beginsaldo"), @tot);
 	}
 	my $sth = $dbh->sql_exec
 	  ("SELECT jnl_amount,jnl_desc".
@@ -142,7 +143,7 @@ sub perform {
 	    $tot[$_] += $t[$_] foreach 0..$#tot;
 	    next unless $detail > 0;
 	    $rep->addline('H1', @$hvd_hdr), undef $hvd_hdr if $hvd_hdr;
-	    $rep->addline('T2', $vd->[0], "Totaal ".$vd->[1], @t);
+	    $rep->addline('T2', $vd->[0], __x("Totaal {vrd}", vrd => $vd->[1]), @t);
 	}
 	if ( $tot[0] >= $tot[1] ) {
 	    $tot[2] = $tot[0] - $tot[1]; $tot[3] = 0;
@@ -161,7 +162,7 @@ sub perform {
 	    my @t = $verdichtingen->($hvd);
 	    next if "@t" eq "0 0 0 0";
 	    $rep->addline('H1', @$hvd_hdr), undef $hvd_hdr if $detail && $hvd_hdr;
-	    $rep->addline('T1', $hvd->[0], "Totaal ".$hvd->[1], @t);
+	    $rep->addline('T1', $hvd->[0], __x("Totaal {vrd}", vrd => $hvd->[1]), @t);
 	    $tot[$_] += $t[$_] foreach 0..$#tot;
 	}
 	@tot;
@@ -189,7 +190,7 @@ sub perform {
 	}
 
 	my @tot = $hoofdverdichtingen->(@hvd);
-	$rep->addline('T', '', 'TOTAAL', @tot);
+	$rep->addline('T', '', _T("TOTAAL"), @tot);
     }
 
     else {			# Op Grootboek
@@ -208,7 +209,7 @@ sub perform {
 	    $tot[$_] += $t[$_] foreach 0..$#tot;
 	    $rep->addline('D', $acc_id, $acc_desc, @t);
 	}
-	$rep->addline('T', '', 'TOTAAL', @tot);
+	$rep->addline('T', '', _T("TOTAAL"), @tot);
     }
     $rep->finish;
 }

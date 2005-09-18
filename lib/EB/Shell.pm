@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.17 2005/09/14 15:42:05 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.18 2005/09/18 21:07:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 14 12:06:19 2005
-# Update Count    : 320
+# Last Modified On: Sun Sep 18 17:27:43 2005
+# Update Count    : 326
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,7 +42,7 @@ sub default {
 
 ################ Subroutines ################
 
-use EB::Globals;
+use EB;
 use EB::DB;
 use EB::Finance;
 use EB::Tools::Opening;
@@ -110,12 +110,10 @@ EOS
 sub _state {
     my ($cur, $state) = @_;
     return !$cur unless defined($state);
-    if ( $state =~ /^aan|1$/i ) {
-	return 1;
-    }
-    if ( $state =~ /^uit|0$/i ) {
-	return 0;
-    }
+    my $on = _T("aan");
+    my $off = _T("uit");
+    return 1 if $state =~ /^$on|1$/i;
+    return 0 if $state =~ /^$off|0$/i;
     return !$cur;
 }
 
@@ -126,19 +124,19 @@ sub do_trace {
     if ( $dbh ) {
 	$dbh->trace($self->{trace});
     }
-    "SQL Trace: " . ($self->{trace} ? "AAN" : "UIT");
+    __x("SQL Trace: {state}", state => uc($self->{trace} ? _T("aan") : _T("uit")));
 }
 
 sub do_journal {
     my ($self, $state) = @_;
     $self->{journal} = _state($self->{journal}, $state);
-    "Journal: " . ($self->{journal} ? "AAN" : "UIT");
+    __x("Journal: {state}", state => uc($self->{journal} ? _T("aan") : _T("uit")));
 }
 
 sub do_confirm {
     my ($self, $state) = @_;
     $self->{confirm} = _state($self->{confirm}, $state);
-    "Bevestiging: " . ($self->{confirm} ? "AAN" : "UIT");
+    __x("Bevestiging: {state}", state => uc($self->{confirm} ? _T("aan") : _T("uit")));
 }
 
 sub parseline {
@@ -175,7 +173,8 @@ sub _add {
 	$action = EB::Booking::BKM->new;
     }
     else {
-      die("Onbekend of verkeerd dagboek: $dagboek [$dagboek_type]\n");
+      die("?".__x("Onbekend of verkeerd dagboek: {dbk} [{type}]",
+		  dbk => $dagboek, type => $dagboek_type)."\n");
     }
 
     my $opts = { dagboek      => $dagboek,
@@ -198,7 +197,7 @@ sub _add {
 	       ], $opts);
 
     $bsk = $action->perform($args, $opts);
-    $bsk ? $bsk =~ /^\d+/ ? "Boekstuk: $bsk" : $bsk	: "";
+    $bsk ? $bsk =~ /^\d+/ ? __x("Boekstuk: {bsk}", bsk => $bsk) : $bsk	: "";
 }
 
 sub do_journaal {
@@ -247,7 +246,7 @@ sub do_balans {
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
-    warn("?Te veel argumenten voor deze opdracht\n"), return if @args;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
     EB::Report::Balres->new->balans($opts);
     undef;
 }
@@ -275,7 +274,7 @@ sub do_result {
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
-    warn("?Te veel argumenten voor deze opdracht\n"), return if @args;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
     EB::Report::Balres->new->result($opts);
     undef;
 }
@@ -304,7 +303,7 @@ sub do_proefensaldibalans {
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
-    warn("?Te veel argumenten voor deze opdracht\n"), return if @args;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
     EB::Report::Proof->new->proefensaldibalans($opts);
     undef;
 }
@@ -353,10 +352,10 @@ sub do_dagboeken {
 			       " FROM Dagboeken".
 			       " ORDER BY dbk_id");
     my $fmt = "%2s  %-16s %-12s %5s\n";
-    my $text = sprintf($fmt, "Nr", "Naam", "Type", "Rekening");
+    my $text = sprintf($fmt, _T("Nr"), _T("Naam"), _T("Type"), _T("Rekening"));
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($dbk_id, $dbk_desc, $dbk_type, $dbk_acct) = @$rr;
-	$dbk_acct ||= "n.v.t.";
+	$dbk_acct ||= _T("n.v.t.");
 	$text .= sprintf($fmt, $dbk_id, $dbk_desc, DBKTYPES->[$dbk_type], $dbk_acct);
     }
     $text;
@@ -382,7 +381,7 @@ Aanmaken nieuwe relatie.
 EOS
 }
 
-sub do_database { "Database: " . $ENV{EB_DB_NAME} }
+sub do_database { __x("Database: {db}", db => $ENV{EB_DB_NAME}) }
 sub intro {
     my $self = $_[0];
     goto &do_database if $self->{interactive};
@@ -407,8 +406,8 @@ Print de BTW aangifte.
 Aangifteperiode kan zijn:
 
   j            het gehele jaar
-  h1 h2        1e/2e helft van het jaar (ook: s1, ...)
   k1 k2 k3 k4  1e/2e/3e/4e kwartaal (ook: q1, ...)
+  1 2 3 .. 12  maand
 EOS
 }
 
@@ -457,10 +456,10 @@ sub check_open {
     my ($self, $open) = @_;
     $open = 1 unless defined($open);
     if ( $open && !$dbh->adm_busy ) {
-	die("Administratie is nog niet geopend\n");
+	die("?"._T("De administratie is nog niet geopend")."\n");
     }
     elsif ( !$open && $dbh->adm_busy ) {
-	die("Administratie is reeds in gebruik\n");
+	die("?"._T("De administratie is reeds in gebruik")."\n");
     }
     1;
 }

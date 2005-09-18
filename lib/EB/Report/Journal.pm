@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.6 2005/07/29 16:48:55 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.7 2005/09/18 21:07:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jul 29 13:07:07 2005
-# Update Count    : 135
+# Last Modified On: Sun Sep 18 21:31:04 2005
+# Update Count    : 141
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,7 +42,7 @@ sub journal {
 				" WHERE dbk_desc ILIKE ?",
 				$1);
 	    unless ( $rr ) {
-		warn("?Onbekend dagboek: $1\n");
+		warn("?".__x("Onbekend dagboek: {dbk}", dbk => $1)."\n");
 		return;
 	    }
 	    $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
@@ -54,7 +54,7 @@ sub journal {
 				    " AND jnl_dbk_id = dbk_id".
 				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
 				    $2, $rr->[1]);
-	    $pfx ||= "Boekstuk $rr->[0]:$2";
+	    $pfx ||= __x("Boekstuk {nr}", nr => "$rr->[0]:$2");
 	}
 	elsif ( $nr =~ /^([[:alpha:]].+)$/ ) {
 	    my $rr = $::dbh->do("SELECT dbk_desc, dbk_id".
@@ -62,7 +62,7 @@ sub journal {
 				" WHERE dbk_desc ILIKE ?",
 				$1);
 	    unless ( $rr ) {
-		warn("?Onbekend dagboek: $1\n");
+		warn("?".__x("Onbekend dagboek: {dbk}", dbk => $1)."\n");
 		return;
 	    }
 	    $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
@@ -73,7 +73,7 @@ sub journal {
 				    " AND jnl_dbk_id = dbk_id".
 				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
 				    $rr->[1]);
-	    $pfx ||= "Dagboek $rr->[0]";
+	    $pfx ||= __x("Dagboek {nr}", nr => $rr->[0]);
 	}
 	else {
 	    $sth = $::dbh->sql_exec("SELECT jnl_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
@@ -83,7 +83,7 @@ sub journal {
 				    " AND jnl_bsk_id = bsk_id".
 				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
 				    $nr);
-	    $pfx ||= "Boekstuk $nr";
+	    $pfx ||= __x("Boekstuk {nr}", nr => $nr);
 	}
     }
     else {
@@ -103,7 +103,9 @@ sub journal {
 
 	if ( $jnl_bsr_seq == 0 ) {
 	    printf($repfmt,
-		   qw(Datum Id Nr Dag/Grootboek Rek Debet Credit Boekstuk/regel Relatie)) unless $nl;
+		   _T("Datum"), _T("Id"), _T("Nr"), _T("Dag/Grootboek"),
+		   _T("Rek"), _T("Debet"), _T("Credit"), _T("Boekstuk/regel"),
+		   _T("Relatie")) unless $nl;
 	    $nl++, next unless $detail;
 	    print("\n") if $nl++;
 	    $self->_repline($jnl_date, $jnl_bsk_id, $bsk_nr, _dbk_desc($jnl_dbk_id), '',
@@ -117,7 +119,7 @@ sub journal {
 	$self->_repline($jnl_date, '', '', "  "._acc_desc($jnl_acc_id),
 			$jnl_acc_id, numdebcrd($jnl_amount), "  ".$jnl_desc, $jnl_rel);
     }
-    $self->_repline('', '', '', "Totaal $pfx", '', $totd, $totc);
+    $self->_repline('', '', '', __x("Totaal {pfx}", pfx => $pfx), '', $totd, $totc);
 }
 
 sub _repline {

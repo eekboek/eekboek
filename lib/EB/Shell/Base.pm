@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.3 2005/08/29 20:43:33 jv Exp $
+# $Id: Base.pm,v 1.4 2005/09/18 21:07:57 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -24,8 +24,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$VERSION      = 0.05;   # $Date: 2005/08/29 20:43:33 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
+$VERSION      = 0.05;   # $Date: 2005/09/18 21:07:57 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -564,7 +564,7 @@ sub do_version {
 }
 
 sub help_version {
-    return "Display the version."
+    return _T("Toon versie.");
 }
 
 # ----------------------------------------------------------------------
@@ -798,23 +798,21 @@ sub help {
         }
         else {
             push @ret,
-                "Sorry, no help available for `$topic'.";
+	      __x("Sorry, geen hulp voor {topic}.", topic => $topic);
         }
     }
 
     else {
         my @helps = $self->helps;
         if (@helps) {
-            push @ret, 
-                "Help is available for the following topics:",
-                "===========================================",
-                map({ "  * $_" } sort @helps),
-                "===========================================";
+	    my $t = _T("Hulp is beschikbaar voor de volgende onderwerpen");
+            push @ret, $t;
+	    $t = "=" x length($t);
+	    push(@ret, $t, map({ "  * $_" } sort @helps), $t);
         }
         else {
             my $me = $self->progname;
-            push @ret, "No help available for $me.",
-                    "Please complain to the author!";
+            push @ret, __x("Geen hulp beschikbaar voor {topic}.", topic => $me);
         }
     }
 
@@ -1792,7 +1790,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.3 $.
+This documentation describes C<Shell::Base>, $Revision: 1.4 $.
 
 =head1 COPYRIGHT
 

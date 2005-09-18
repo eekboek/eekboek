@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.15 2005/09/07 17:21:19 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.16 2005/09/18 21:07:57 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep  7 19:19:17 2005
-# Update Count    : 166
+# Last Modified On: Sun Sep 18 17:51:56 2005
+# Update Count    : 174
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -25,7 +25,7 @@ use warnings;
 # Dagboek type 4: Kas
 # Dagboek type 5: Memoriaal
 
-use EB::Globals;
+use EB;
 use EB::DB;
 use EB::Finance;
 use EB::Journal::Text;
@@ -45,7 +45,7 @@ sub perform {
     my $totaal = $opts->{totaal};
     if ( defined($totaal) ) {
 	$totaal = amount($totaal);
-	return "?Ongeldig totaal: $totaal" unless defined $totaal;
+	return "?".__x("Ongeldig totaal: {total}", total => $totaal) unless defined $totaal;
 	#$totaal = -$totaal if $dagboek_type == DBKTYPE_INKOOP;
     }
 
@@ -73,8 +73,8 @@ sub perform {
     my $bsk_id;
     my $gacct = $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_acc_id));
 
-    print("Huidig saldo: ",
-	  numfmt($dbh->lookup($gacct, qw(Accounts acc_id acc_balance))), "\n")
+    print(__x("Huidig saldo: {bal}",
+	      bal => numfmt($dbh->lookup($gacct, qw(Accounts acc_id acc_balance)))), "\n")
       if $gacct;
 
     if ( $bsk_id = $opts->{boekstuk} ) {
@@ -96,7 +96,7 @@ sub perform {
 
 	if ( $type eq "std" ) {
 	    my ($desc, $amt, $acct) = splice(@$args, 0, 3);
-	    warn(" boekstuk: std $desc $amt $acct\n")
+	    warn(" "._T("boekstuk").": std $desc $amt $acct\n")
 	      if $did++ || @$args || $opts->{verbose};
 
 	    my $dc = "acc_debcrd";
@@ -108,14 +108,16 @@ sub perform {
 			      " FROM Accounts".
 			      " WHERE acc_id = ?", $acct);
 	    unless ( $rr ) {
-		warn("?Onbekend rekeningnummer: $acct\n");
+		warn("?".__x("Onbekende grootboekrekening: {acct}",
+			     acct => $acct)."\n");
 		$fail++;
 		next;
 	    }
 	    my ($adesc, $balres, $debcrd, $btw_id) = @$rr;
 
 	    if ( $balres && $dagboek_type != DBKTYPE_MEMORIAAL ) {
-		warn("!Rekening $acct ($adesc) is een balansrekening\n");
+		warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
+			     acct => $acct, desc => $adesc)."\n");
 		#$dbh->rollback;
 		#return;
 	    }
@@ -163,7 +165,7 @@ sub perform {
 	    my $debcrd = $type eq "deb" ? 1 : 0;
 
 	    my ($rel, $amt) = splice(@$args, 0, 2);
-	    warn(" boekstuk: $type $rel $amt\n")
+	    warn(" "._T("boekstuk").": $type $rel $amt\n")
 	      if $did++ || @$args || $opts->{verbose};
 
 	    $amt = amount($amt);
@@ -173,9 +175,9 @@ sub perform {
 			      "  AND " . ($debcrd ? "" : "NOT ") . "rel_debcrd",
 			      $rel);
 	    unless ( defined($rr) ) {
-		warn("?Onbekende ".
-		     ($type eq "deb" ? "debiteur" : "crediteur").
-		     ": $rel\n");
+		warn("?".__x("Onbekende {what}: {who}",
+			     what => lc($type eq "deb" ? _T("Debiteur") : _T("Crediteur")).
+			     who => $rel)."\n");
 		$fail++;
 		next;
 	    }
@@ -194,7 +196,7 @@ sub perform {
 			   $rel );
 	    $rr = $dbh->do($sql, @sql_args);
 	    unless ( defined($rr) ) {
-		warn("?Geen bijbehorende open post gevonden\n");
+		warn("?"._T("Geen bijbehorende open post gevonden")."\n");
 		warn("SQL: $sql\n");
 		warn("args: @sql_args\n");
 		$fail++;
@@ -223,7 +225,7 @@ sub perform {
 	    $tot += $amt;
 	}
 	else {
-	    warn("?Onbekend transactietype: $type\n");
+	    warn("?".__x("Onbekend transactietype: {type}", type => $type)."\n");
 	    $fail++;
 	    next;
 	}
@@ -234,23 +236,25 @@ sub perform {
 	warn("update $gacct with ".numfmt($tot)."\n") if $trace_updates;
 	$dbh->upd_account($gacct, $tot);
 	my $new = $dbh->lookup($gacct, qw(Accounts acc_id acc_balance));
-	print("Nieuw saldo: ", numfmt($new), "\n");
+	print(__x("Nieuw saldo: {bal}", bal => numfmt($new)), "\n");
 	if ( $opts->{saldo} ) {
 	    my $exp = amount($opts->{saldo});
 	    unless ( $exp == $new ) {
-		warn("?Saldo ",numfmt($new)." klopt niet met de vereiste waarde ".numfmt($exp)."\n");
+		warn("?".__x("Saldo {new} klopt niet met de vereiste waarde {act}",
+			     new => numfmt($new), act => numfmt($exp))."\n");
 		$fail++;
 	    }
 	}
 	if ( defined($totaal) and $tot != $totaal ) {
 	    $fail++;
-	    return "?Opdracht niet uitgevoerd. Boekstuk totaal is " .
-	      numfmt($tot) .
-		" in plaats van " . numfmt($totaal) . ".";
+	    return "?"._T("Opdracht niet uitgevoerd.")." ".
+	      __x(" Boekstuk totaal is {act} in plaats van {exp}",
+		  act => numfmt($tot), exp => numfmt($totaal)) . ".";
 	}
     }
     elsif ( $tot ) {
-	warn("?Boekstuk is niet in balans (verschil is ".numfmt($tot).")\n");
+	warn("?".__x("Boekstuk is niet in balans (verschil is {diff})",
+		     diff => numfmt($tot)).")\n");
 	$fail++;
     }
     $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",

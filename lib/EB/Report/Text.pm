@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Text.pm,v 1.3 2005/08/14 09:13:56 jv Exp $ ';
+my $RCS_Id = '$Id: Text.pm,v 1.4 2005/09/18 21:07:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Aug  8 22:23:03 2005
-# Update Count    : 118
+# Last Modified On: Sun Sep 18 21:40:34 2005
+# Update Count    : 121
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -15,7 +15,7 @@ package EB::Report::Text;
 use strict;
 use warnings;
 
-use EB::Globals;
+use EB;
 use EB::Finance;
 
 my $fmt = "%-6s  %-40.40s  %9s  %9s  %9s  %9s\n";
@@ -25,10 +25,10 @@ sub new {
     my $self = { @_ };
 
     $self->{hdr} =
-      sprintf($fmt, "RekNr",
-	      $self->{verdicht} ? "Verdichting/Grootboekrekening" : "Grootboekrekening",
-	      "Debet", "Credit",
-	      $self->{proef} ? ("Saldo Db", "Saldo Cr") : ('', '')
+      sprintf($fmt, _T("RekNr"),
+	      $self->{verdicht} ? _T("Verdichting/Grootboekrekening") : _T("Grootboekrekening"),
+	      _T("Debet"), _T("Credit"),
+	      $self->{proef} ? (_T("Saldo Db"), _T("Saldo Cr")) : ('', '')
 	     );
     $self->{hdr} =~ s/ +$//;
     ($self->{line} = $self->{hdr}) =~ tr/\n/-/c;

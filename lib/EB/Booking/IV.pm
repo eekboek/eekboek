@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.14 2005/09/07 17:21:24 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.15 2005/09/18 21:07:57 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep  7 19:19:14 2005
-# Update Count    : 97
+# Last Modified On: Sun Sep 18 18:00:36 2005
+# Update Count    : 101
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,7 +24,7 @@ use warnings;
 # Dagboek type 1: Inkoop
 # Dagboek type 2: Verkoop
 
-use EB::Globals;
+use EB;
 use EB::DB;
 use EB::Finance;
 use EB::Journal::Text;
@@ -44,7 +44,7 @@ sub perform {
     my $totaal = $opts->{totaal};
     if ( defined($totaal) ) {
 	$totaal = amount($totaal);
-	return "?Ongeldig totaal: $totaal" unless defined $totaal;
+	return "?".__x("Ongeldig totaal: {total}", total => $totaal) unless defined $totaal;
 	#$totaal = -$totaal if $dagboek_type == DBKTYPE_INKOOP;
     }
 
@@ -77,15 +77,16 @@ sub perform {
 		       "  AND rel_ledger = ?",
 		       $debcode, $dagboek);
 	unless ( defined($rr) ) {
-	    warn("?Onbekende ".
-		 ($dagboek_type == DBKTYPE_INKOOP ? "crediteur" : "debiteur").
-		 ": $debcode\n");
+	    warn("?".__x("Onbekende {what}: {who}",
+			 what => lc($dagboek_type == DBKTYPE_VERKOOP ? _T("Debiteur") : _T("Crediteur")).
+			 who => $debcode)."\n");
 	    $dbh->rollback;
 	    return;
 	}
     }
     else {
-	warn("?Ongeldige operatie (IV) voor dagboek type $dagboek_type\n");
+	warn("?".__x("Ongeldige operatie (IV) voor dagboek type {type}",
+		     type => $dagboek_type)."\n");
 	$dbh->rollback;
 	return;
     }
@@ -100,7 +101,7 @@ sub perform {
     while ( @$args ) {
 	my ($desc, $amt, $acct) = splice(@$args, 0, 3);
 	$acct ||= $rr->[0];
-	warn(" boekstuk: $desc $amt $acct\n")
+	warn(" "._T("boekstuk").": $desc $amt $acct\n")
 	  if $did++ || @$args || $opts->{verbose};
 
 	my $dc = "acc_debcrd";
@@ -112,14 +113,16 @@ sub perform {
 			  " FROM Accounts".
 			  " WHERE acc_id = ?", $acct);
 	unless ( $rr ) {
-	    warn("?Onbekende grootboekrekening: $acct\n");
+	    warn("?".__x("Onbekende grootboekrekening: {acct}",
+			 acct => $acct)."\n");
 	    $dbh->rollback;
 	    return;
 	}
 	my ($adesc, $balres, $debcrd, $btw_id) = @$rr;
 
 	if ( $balres ) {
-	    warn("!Rekening $acct ($adesc) is een balansrekening\n");
+	    warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
+			 acct => $acct, desc => $adesc)."\n");
 	    #$dbh->rollback;
 	    #return;
 	}
@@ -157,11 +160,11 @@ sub perform {
 	    $btw_acc = $dagboek_type == DBKTYPE_INKOOP ?
 	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
 	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
-	    die("D/C mismatch, accounts $acct <> $btw_acc")
-	      unless $dbh->lookup($acct,
-				    qw(Accounts acc_id acc_debcrd))
-		^ $dbh->lookup($btw_acc,
-				    qw(Accounts acc_id acc_debcrd));
+	    die("?D/C mismatch, accounts $acct <> $btw_acc")
+	      if $dbh->lookup($acct,
+				  qw(Accounts acc_id acc_debcrd))
+		xor $dbh->lookup($btw_acc,
+				 qw(Accounts acc_id acc_debcrd));
 	}
 
 	$dbh->sql_insert("Boekstukregels",
@@ -192,8 +195,9 @@ sub perform {
     $tot = -$tot if $dagboek_type == DBKTYPE_INKOOP;
     if ( defined($totaal) and $tot != $totaal ) {
 	$dbh->rollback;
-	return "?Opdracht niet uitgevoerd. Boekstuk totaal is " . numfmt($tot) .
-	  " in plaats van " . numfmt($totaal) . ".";
+	return "?"._T("Opdracht niet uitgevoerd.")." ".
+	  __x(" Boekstuk totaal is {act} in plaats van {exp}",
+	      act => numfmt($tot), exp => numfmt($totaal)) . ".";
     }
     else {
 	$dbh->commit;

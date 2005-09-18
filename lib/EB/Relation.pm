@@ -2,7 +2,7 @@
 
 package EB::Relation;
 
-use EB::Globals;
+use EB;
 
 use strict;
 
@@ -37,13 +37,14 @@ sub add {
 			" FROM Accounts".
 			" WHERE acc_id = ?", $acct);
     unless ( $rr ) {
-	warn("?Onbekende grootboekrekening: $acct\n");
+	warn("?".__x("Onbekende grootboekrekening: {acct}", acct => $acct). "\n");
 	return;
     }
 
     my ($adesc, $balres, $debcrd) = @$rr;
     if ( $balres ) {
-	warn("?Grootboekrekening $acct ($adesc) is een balansrekening\n");
+	warn("?".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
+		     acct => $acct, desc => $adesc)."\n");
 	return;
     }
 
@@ -61,7 +62,7 @@ sub add {
 		       $code, $desc, $debcrd, $bstate || 0, $rr->[0], $acct);
 
     $::dbh->commit;
-    ($debcrd ? "Debiteur" : "Crediteur") . " " . $code .
+    ($debcrd ? _T("Debiteur") : _T("Crediteur")) . " " . $code .
       " -> $acct ($adesc)";
 }
 

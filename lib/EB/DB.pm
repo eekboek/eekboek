@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.13 2005/09/14 15:40:57 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.14 2005/09/18 21:07:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep  7 21:25:03 2005
-# Update Count    : 132
+# Last Modified On: Sun Sep 18 21:30:18 2005
+# Update Count    : 137
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -14,7 +14,7 @@ package EB::DB;
 
 use strict;
 
-use EB::Globals;
+use EB;
 use DBI;
 
 my $postgres = 1;		# PostgreSQL
@@ -39,51 +39,62 @@ sub check_db {
 			   btwtabel journal metadata) ) {
 	next if $tables{$table} || $tables{"public.$table"};
 	$fail++;
-	 warn("?Tabel $table ontbreekt in database " . $dbh->{Name} . "\n");
+	 warn("?".__x("Tabel {table} ontbreekt in database {db}",
+		      table => $table, db => $dbh->{Name}) . "\n");
     }
     warn(join(" ", sort keys %tables)."\n") if $fail;
-    die("?Ongeldige EekBoek database: " . $dbh->{Name} . "." .
-	" Wellicht is de database nog niet geïnitialiseerd?\n") if $fail;
+    die("?".__x("Ongeldige EekBoek database: {db}.",
+		db => $dbh->{Name}) . " " .
+	_T("Wellicht is de database nog niet geïnitialiseerd?")."\n") if $fail;
 
     my ($maj, $min, $rev)
       = @{$self->do("SELECT adm_scm_majversion, adm_scm_minversion, adm_scm_revision".
 		    " FROM Metadata")};
-    die("?Ongeldige EekBoek database versie: " . $dbh->{Name} . "\n")
+    die("?".__x("Ongeldige EekBoek database versie: {db}.",
+		ver => $dbh->{Name}) . "\n")
       unless $maj == SCM_MAJVERSION &&
 	$min == SCM_MINVERSION &&
 	  $rev == SCM_REVISION;
 
     for ( $self->std_acc("deb") ) {
 	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
-	$fail++, warn("?Geen grootboekrekening voor debiteuren ($_)\n")
+	$fail++, warn("?".__x("Geen grootboekrekening voor {dc} ({acct})",
+			      dc => _T("Debiteuren"), acct => $_)."\n")
 	  unless $rr;
 	# $fail++,
-	warn("?Verkeerde grootboekrekening voor debiteuren ($_)\n")
+	warn("?".__x("Foutieve grootboekrekening voor {dc} ({acct})",
+		     dc => _T("Debiteuren"), acct => $_)."\n")
 	  unless $rr->[0] && $rr->[1];
     }
 
     for ( $self->std_acc("crd") ) {
 	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
-	$fail++, warn("?Geen grootboekrekening voor crediteuren ($_)\n")
+	$fail++, warn("?".__x("Geen grootboekrekening voor {dc} ({acct})",
+			      dc => _T("Crediteuren"), acct => $_)."\n")
 	  unless $rr;
 	# $fail++,
-	warn("?Verkeerde grootboekrekening voor crediteuren ($_)\n")
+	warn("?".__x("Foutieve grootboekrekening voor {dc} ({acct})",
+		     dc => _T("Crediteuren"), acct => $_)."\n")
 	  if $rr->[0] || !$rr->[1];
     }
 
     for ( $self->std_acc("btw_ok") ) {
 	my $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $_);
-	$fail++, warn("?Geen grootboekrekening voor BTW betaald ($_)\n")
+	$fail++, warn("?".__x("Geen grootboekrekening voor {dc} ({acct})",
+			      dc => _T("BTW betaald"), acct => $_)."\n")
 	  unless $rr;
-	$fail++, warn("?Verkeerde grootboekrekening voor BTW betaald ($_)\n")
+	warn("?".__x("Foutieve grootboekrekening voor {dc} ({acct})",
+		     dc => _T("BTW betaald"), acct => $_)."\n")
 	  unless $rr->[0];
     }
 
     for ( $self->std_acc("winst") ) {
 	my $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $_);
-	$fail++, warn("?Geen grootboekrekening voor overboeking winst ($_)\n")
+	$fail++, warn("?".__x("Geen grootboekrekening voor {dc} ({acct})",
+			      dc => _T("overboeking winst"), acct => $_)."\n")
 	  unless $rr;
-	$fail++, warn("?Verkeerde grootboekrekening voor overboeking winst ($_)\n")
+	warn("?".__x("Foutieve grootboekrekening voor {dc} ({acct})",
+		     dc => _T("overboeking winst"), acct => $_)."\n")
 	  unless $rr->[0];
     }
 
@@ -93,15 +104,17 @@ sub check_db {
 	my ($acc_id, $acc_desc, $dbk_id, $dbk_type, $dbk_desc) = @$rr;
 	if ( $dbk_type == DBKTYPE_INKOOP && $acc_id != $self->std_acc("crd") ) {
 	    $fail++;
-	    warn("?Verkeerde grootboekrekening $acc_id ($acc_desc) voor dagboek $dbk_id ($dbk_desc)\n")
+	    warn("?".__x("Verkeerde grootboekrekening {acct} ({adesc}) voor dagboek {dbk} ({ddesc})",
+			 acct => $acc_id, adesc => $acc_desc, dbk => $dbk_id, ddesc => $dbk_desc)."\n")
 	}
 	elsif ( $dbk_type == DBKTYPE_VERKOOP && $acc_id != $self->std_acc("deb") ) {
 	    $fail++;
-	    warn("?Verkeerde grootboekrekening $acc_id ($acc_desc) voor dagboek $dbk_id ($dbk_desc)\n")
+	    warn("?".__x("Verkeerde grootboekrekening {acct} ({adesc}) voor dagboek {dbk} ({ddesc})",
+			 acct => $acc_id, adesc => $acc_desc, dbk => $dbk_id, ddesc => $dbk_desc)."\n")
 	}
     }
 
-    die("?CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT\n") if $fail;
+    die("?"._T("CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT")."\n") if $fail;
 }
 
 sub upd_account {
@@ -165,7 +178,8 @@ sub adm {
 	    $adm{lc($k)} = $v;
 	}
     }
-    $adm{lc($name)} || die("?Niet-bestaande administratie-eigenschap: \"$name\"\n");
+    $adm{lc($name)} || die("?".__x("Niet-bestaande administratie-eigenschap: {adm}",
+				   adm => $name)."\n");
 }
 
 
@@ -180,7 +194,8 @@ sub std_acc {
 	return;
     }
     $self->std_accs unless %std_acc;
-    $std_acc{lc($name)} || die("?Niet-bestaande standaardrekening: \"$name\"\n");
+    $std_acc{lc($name)} || die("?".__x("Niet-bestaande standaardrekening: {std}",
+				       std => $name)."\n");
 }
 
 sub std_accs {
@@ -235,7 +250,8 @@ sub connectdb {
     $dbname = "dbi:Pg:dbname=" . $dbname;
 
     $dbh = DBI::->connect($dbname)
-      or die("Cannot connect to database: $DBI::errstr\n");
+      or die("?".__x("Database verbindingsprobleem: {err}",
+		     err => $DBI::errstr)."\n");
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
     $self->check_db unless $nocheck;

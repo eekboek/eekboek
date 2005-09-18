@@ -8,7 +8,7 @@ our $app;
 
 package EB::Finance;
 
-use EB::Globals;
+use EB;
 use EB::Expression;
 
 use strict;
