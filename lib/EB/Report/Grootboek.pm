@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.5 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.6 2005/09/18 21:19:29 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 21:37:05 2005
-# Update Count    : 75
+# Last Modified On: Sun Sep 18 23:16:29 2005
+# Update Count    : 77
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -71,7 +71,7 @@ sub perform {
 	    $line = sprintf($fmt,
 			    _T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"),
 			    _T("Datum"), _T("Debet"), _T("Credit"),
-			    _T("Dagboek"), _T("Nr"), _T("Relatie")));
+			    _T("Dagboek"), _T("Nr"), _T("Relatie"));
 	    print($line);
 	    $line =~ s/./-/g;
 	    print($line);
@@ -139,7 +139,7 @@ sub perform {
     }
 
     print("\n");
-    printf($fmt, "", _("Totaal mutaties"), "", "",
+    printf($fmt, "", _T("Totaal mutaties"), "", "",
 	       numfmt($mdgrand), numfmt($mcgrand),
 	       ("") x 3);
     print($line);

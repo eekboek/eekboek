@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.7 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.8 2005/09/18 21:19:29 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 21:31:04 2005
-# Update Count    : 141
+# Last Modified On: Sun Sep 18 23:15:13 2005
+# Update Count    : 142
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -15,7 +15,7 @@ package EB::Journal::Text;
 use strict;
 use warnings;
 
-use EB::Globals;
+use EB;
 use EB::Finance;
 use EB::DB;
 
