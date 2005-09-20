@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.1 2005/09/18 21:20:12 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.2 2005/09/20 19:31:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 16 22:18:53 2005
-# Update Count    : 10
+# Last Modified On: Tue Sep 20 21:28:07 2005
+# Update Count    : 11
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -12,8 +12,6 @@ use Config;
 use File::Spec;
 
 our $data;
-
-$data->{version} = "0.06";
 
 $data->{author} = 'Johan Vromans (jvromans@squirrel.nl)';
 $data->{abstract} = 'Elementary Bookkeeping (for the Dutch/European market)';
