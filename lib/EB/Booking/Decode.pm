@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.1 2005/09/20 16:11:25 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.2 2005/09/20 17:07:39 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 17:56:00 2005
-# Update Count    : 41
+# Last Modified On: Tue Sep 20 19:07:34 2005
+# Update Count    : 42
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -52,7 +52,7 @@ sub decode {
 		      " WHERE bsk_id = ?", $bsk);
 
     unless ( $rr ) {
-	warn("?".__x("Onbekend boekstuk: {bsk}", bsk => $bsk)>"\n");
+	warn("?".__x("Onbekend boekstuk: {bsk}", bsk => $bsk)."\n");
 	return;
     }
 
