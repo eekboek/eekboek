@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Delete.pm,v 1.1 2005/09/20 16:11:25 jv Exp $ ';
+my $RCS_Id = '$Id: Delete.pm,v 1.2 2005/09/20 17:22:15 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Delete;
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 17:53:00 2005
-# Update Count    : 36
+# Last Modified On: Tue Sep 20 19:19:01 2005
+# Update Count    : 37
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -29,8 +29,7 @@ sub new {
 }
 
 sub perform {
-    my ($self, $args, $opts) = @_;
-    my $id = shift(@$args);
+    my ($self, $id, $opts) = @_;
 
     my $sth;
     my $rr;

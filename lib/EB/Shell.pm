@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.19 2005/09/20 16:11:11 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.20 2005/09/20 17:22:27 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 17:49:36 2005
-# Update Count    : 349
+# Last Modified On: Tue Sep 20 19:18:20 2005
+# Update Count    : 351
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -457,10 +457,16 @@ sub do_verwijder {
     @args = ($bsk) if $bsk && !@args;
     return _T("Gaarne een boekstuk") unless @args == 1;
     my $cmd;
+    my $id = shift(@args);
     if ( $self->{interactive} ) {
-	$cmd = EB::Booking::Decode->decode($bsk, { trail => 1, bsknr => 1, single => 1 });
+	($id, my $dbs, my $err) = $dbh->bskid($id);
+	unless ( defined($id) ) {
+	    warn("?".$err."\n");
+	    return;
+	}
+	$cmd = EB::Booking::Decode->decode($id, { trail => 1, bsknr => 1, single => 1 });
     }
-    my $res = EB::Booking::Delete->new->perform($bsk, $opts);
+    my $res = EB::Booking::Delete->new->perform($id, $opts);
     if ( $res !~ /^[?!]/ ) {	# no error
 	$self->term->addhistory($cmd);
     }
