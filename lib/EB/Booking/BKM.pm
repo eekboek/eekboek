@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.16 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.17 2005/09/20 17:04:37 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 17:51:56 2005
-# Update Count    : 174
+# Last Modified On: Tue Sep 20 19:04:24 2005
+# Update Count    : 175
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -117,7 +117,7 @@ sub perform {
 
 	    if ( $balres && $dagboek_type != DBKTYPE_MEMORIAAL ) {
 		warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
-			     acct => $acct, desc => $adesc)."\n");
+			     acct => $acct, desc => $adesc)."\n") if 0;
 		#$dbh->rollback;
 		#return;
 	    }
