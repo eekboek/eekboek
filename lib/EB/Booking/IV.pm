@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.16 2005/09/20 16:11:45 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.17 2005/09/20 17:04:41 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Sep 19 21:41:24 2005
-# Update Count    : 102
+# Last Modified On: Tue Sep 20 19:04:09 2005
+# Update Count    : 103
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -122,7 +122,7 @@ sub perform {
 
 	if ( $balres ) {
 	    warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
-			 acct => $acct, desc => $adesc)."\n");
+			 acct => $acct, desc => $adesc)."\n") if 0;
 	    #$dbh->rollback;
 	    #return;
 	}
