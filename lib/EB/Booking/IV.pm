@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.15 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.16 2005/09/20 16:11:45 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 18:00:36 2005
-# Update Count    : 101
+# Last Modified On: Mon Sep 19 21:41:24 2005
+# Update Count    : 102
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -78,7 +78,7 @@ sub perform {
 		       $debcode, $dagboek);
 	unless ( defined($rr) ) {
 	    warn("?".__x("Onbekende {what}: {who}",
-			 what => lc($dagboek_type == DBKTYPE_VERKOOP ? _T("Debiteur") : _T("Crediteur")).
+			 what => lc($dagboek_type == DBKTYPE_VERKOOP ? _T("Debiteur") : _T("Crediteur")),
 			 who => $debcode)."\n");
 	    $dbh->rollback;
 	    return;
