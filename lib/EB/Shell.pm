@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.18 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.19 2005/09/20 16:11:11 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 17:27:43 2005
-# Update Count    : 326
+# Last Modified On: Tue Sep 20 17:49:36 2005
+# Update Count    : 349
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -439,6 +439,88 @@ Reproduceert het schema van de huidige database en schrijft deze naar
 standaard uitvoer.
 
   dump_schema
+EOS
+}
+
+sub do_verwijder {
+    my ($self, @args) = @_;
+    my $b = $bsk;
+    my $opts = { verbose      => $self->{verbose},
+	       };
+
+    parse_args(\@args,
+	       [ 'verbose!',
+		 'trace!',
+	       ], $opts);
+
+    use EB::Booking::Delete;
+    @args = ($bsk) if $bsk && !@args;
+    return _T("Gaarne een boekstuk") unless @args == 1;
+    my $cmd;
+    if ( $self->{interactive} ) {
+	$cmd = EB::Booking::Decode->decode($bsk, { trail => 1, bsknr => 1, single => 1 });
+    }
+    my $res = EB::Booking::Delete->new->perform($bsk, $opts);
+    if ( $res !~ /^[?!]/ ) {	# no error
+	$self->term->addhistory($cmd);
+    }
+    $res;
+}
+
+sub help_verwijder {
+    <<EOS;
+Verwijdert een boekstuk. Het boekstuk mag niet in gebruik zijn.
+
+  verwijder <boekstuk>
+EOS
+}
+
+sub do_toon {
+    my ($self, @args) = @_;
+    my $b = $bsk;
+    my $opts = { bverbose => !$self->{verbose},
+		 bsknr    => 1,
+	       };
+
+    parse_args(\@args,
+	       [ 'btw!',
+		 'bsknr!',
+		 'debcrd!',
+		 'verbose!',
+		 'trace!',
+	       ], $opts);
+
+    $opts->{trail} = !$opts->{verbose};
+
+    use EB::Booking::Decode;
+    @args = ($bsk) if $bsk && !@args;
+    return _T("Gaarne een boekstuk") unless @args == 1;
+    my ($id, $dbs, $err) = $dbh->bskid(shift(@args));
+    unless ( defined($id) ) {
+	warn("?".$err."\n");
+	return;
+    }
+    my $res = EB::Booking::Decode->decode($id, $opts);
+    if ( $res !~ /^[?!]/ && $opts->{trail} ) {	# no error
+	my $t = $res;
+	$t =~ s/\s+\\\s+/ /g;
+	$self->term->addhistory($t);
+    }
+    $res;
+}
+
+sub help_toon {
+    <<EOS;
+Toon een boekstuk in tekst- of commando-vorm.
+
+  toon [opties] <boekstuk>
+
+Opties:
+
+  --verbose      toon in uitgebreide vorm
+  --btw       vermeld altijd BTW codes
+  --debcrd    vermeld altijd Debet/Credit codes
+  --bsknr     vermeld altijd het boekstuknummer
 EOS
 }
 
