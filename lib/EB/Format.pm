@@ -36,7 +36,7 @@ my $decimalpt;
 BEGIN {
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
     $btwpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[BTWPRECISION-2]}})?$/;
-    $decimalpt = ",";
+    $decimalpt = _T(",");
 }
 
 sub amount {
