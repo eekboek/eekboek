@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-18 22:54+0200\n"
-"PO-Revision-Date: 2005-09-18 23:04+0200\n"
+"POT-Creation-Date: 2005-09-20 18:12+0200\n"
+"PO-Revision-Date: 2005-09-20 18:12+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -53,15 +53,15 @@ msgstr ""
 "    --ident             show identification\n"
 "    --verbose           verbose information\n"
 
-#: lib/EB.pm:58
+#: lib/EB.pm:69
 msgid "Nederlands"
 msgstr "Engels"
 
-#: lib/EB.pm:61
+#: lib/EB.pm:72
 msgid "Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"
 msgstr "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec"
 
-#: lib/EB.pm:63
+#: lib/EB.pm:74
 msgid ""
 "Januari Februari Maart April Mei Juni Juli Augustus September Oktober "
 "November December"
@@ -69,94 +69,109 @@ msgstr ""
 "January February March April May June July August September October November "
 "December"
 
-#: lib/EB.pm:65
+#: lib/EB.pm:76
 msgid "Zon Maa Din Woe Don Vri Zat"
 msgstr "Sun Mon Tue Wed Thu Fri Sat"
 
-#: lib/EB.pm:67
+#: lib/EB.pm:78
 msgid "Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag"
 msgstr "Sunday Monday Tuesday Wednesday Thursday Friday Saturday"
 
-#: lib/EB/Globals.pm:34
-msgid "-- Inkoop Verkoop Bank Kas Memoriaal"
-msgstr "-- A/Payable A/Receivable Sales Bank Cash Memorial"
-
-#: lib/EB/Globals.pm:38
-msgid "Geen Hoog Laag"
-msgstr "None High Low"
-
-#: lib/EB/Shell.pm:113 lib/EB/Shell.pm:127 lib/EB/Shell.pm:133
-#: lib/EB/Shell.pm:139
-msgid "aan"
-msgstr "on"
-
-#: lib/EB/Shell.pm:114 lib/EB/Shell.pm:127 lib/EB/Shell.pm:133
-#: lib/EB/Shell.pm:139
-msgid "uit"
-msgstr "off"
-
-#: lib/EB/Shell.pm:127
+#: lib/EB/DB.pm:42
 #, perl-brace-format
-msgid "SQL Trace: {state}"
-msgstr "SQL Trace: {state}"
+msgid "Tabel {table} ontbreekt in database {db}"
+msgstr "Tabel {table} missing in database {db}"
 
-#: lib/EB/Shell.pm:133
+#: lib/EB/DB.pm:46
 #, perl-brace-format
-msgid "Journal: {state}"
-msgstr "Journal: {state}"
+msgid "Ongeldige EekBoek database: {db}."
+msgstr "Invalid EekBoek database: {db}."
 
-#: lib/EB/Shell.pm:139
+#: lib/EB/DB.pm:48
+msgid "Wellicht is de database nog niet geïnitialiseerd?"
+msgstr "Has the database been initialised?"
+
+#: lib/EB/DB.pm:53
 #, perl-brace-format
-msgid "Bevestiging: {state}"
-msgstr "Confirmation: {state}"
+msgid "Ongeldige EekBoek database versie: {db}."
+msgstr "Invalid Eekboek database version: {db}"
 
-#: lib/EB/Shell.pm:176
+#: lib/EB/DB.pm:61 lib/EB/DB.pm:72 lib/EB/DB.pm:83 lib/EB/DB.pm:93
 #, perl-brace-format
-msgid "Onbekend of verkeerd dagboek: {dbk} [{type}]"
-msgstr "Unknown or erroneous ledger: {dbk} [{type}]"
+msgid "Geen grootboekrekening voor {dc} ({acct})"
+msgstr "Missing account for {dc} ({acct})"
 
-#: lib/EB/Shell.pm:200
+#: lib/EB/DB.pm:62 lib/EB/DB.pm:66 lib/EB/Tools/Opening.pm:191
+#: lib/EB/Tools/Opening.pm:194
+msgid "Debiteuren"
+msgstr "Debtors"
+
+#: lib/EB/DB.pm:65 lib/EB/DB.pm:76 lib/EB/DB.pm:86 lib/EB/DB.pm:96
 #, perl-brace-format
-msgid "Boekstuk: {bsk}"
-msgstr "Booking: {bsk}"
+msgid "Foutieve grootboekrekening voor {dc} ({acct})"
+msgstr "Erroneous account for {dc} ({acct})"
 
-#: lib/EB/Shell.pm:249 lib/EB/Shell.pm:277 lib/EB/Shell.pm:306
-msgid "Te veel argumenten voor deze opdracht"
-msgstr "Too many arguments for this command"
+#: lib/EB/DB.pm:73 lib/EB/DB.pm:77 lib/EB/Tools/Opening.pm:199
+#: lib/EB/Tools/Opening.pm:202
+msgid "Crediteuren"
+msgstr "Creditors"
 
-#: lib/EB/Shell.pm:355 lib/EB/Report/Grootboek.pm:74
-#: lib/EB/Journal/Text.pm:106
-msgid "Nr"
-msgstr "Nr"
+#: lib/EB/DB.pm:84 lib/EB/DB.pm:87
+msgid "BTW betaald"
+msgstr "VAT paid"
 
-#: lib/EB/Shell.pm:355
-msgid "Naam"
-msgstr "Name"
+#: lib/EB/DB.pm:94 lib/EB/DB.pm:97
+msgid "overboeking winst"
+msgstr "profit transfer"
 
-#: lib/EB/Shell.pm:355
-msgid "Type"
-msgstr "Type"
-
-#: lib/EB/Shell.pm:355
-msgid "Rekening"
-msgstr "Account"
-
-#: lib/EB/Shell.pm:358
-msgid "n.v.t."
-msgstr "N/A"
-
-#: lib/EB/Shell.pm:384
+#: lib/EB/DB.pm:107 lib/EB/DB.pm:112
 #, perl-brace-format
-msgid "Database: {db}"
-msgstr "Database: {db}"
+msgid ""
+"Verkeerde grootboekrekening {acct} ({adesc}) voor dagboek {dbk} ({ddesc})"
+msgstr "Erroneous account {acct} ({adesc}) for ledger {dbk} ({ddesc})"
 
-#: lib/EB/Shell.pm:459 lib/EB/BTWAangifte.pm:34 lib/EB/Tools/Opening.pm:315
-msgid "De administratie is nog niet geopend"
-msgstr "The administration has not yet been opened"
+#: lib/EB/DB.pm:117
+msgid "CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT"
+msgstr "CONSISTENCY-VERIFICATION OF STANDARD ACCOUNTS FAILED"
 
-#: lib/EB/Shell.pm:462 lib/EB/Tools/Opening.pm:318
-msgid "De administratie is reeds in gebruik"
-msgstr "The administration is already in use"
+#: lib/EB/DB.pm:156 lib/EB/Journal/Text.pm:45 lib/EB/Journal/Text.pm:65
+#, perl-brace-format
+msgid "Onbekend dagboek: {dbk}"
+msgstr "Unknown ledger: {dbk}"
+
+#: lib/EB/DB.pm:165
+#, perl-brace-format
+msgid "Onbekend boekstuk {bsk} in dagboek {dbk}"
+msgstr "Unknown booking {bsk} in ledger {dbk}"
+
+#: lib/EB/DB.pm:177 lib/EB/Booking/Decode.pm:55
+#, perl-brace-format
+msgid "Onbekend boekstuk: {bsk}"
+msgstr "Unknown booking: {bsk}"
+
+#: lib/EB/DB.pm:185
+#, perl-brace-format
+msgid "Ongeldige boekstukaanduiding: {bsk}"
+msgstr "Invalid booking specification: {bsk}"
+
+#: lib/EB/DB.pm:225
+#, perl-brace-format
+msgid "Niet-bestaande administratie-eigenschap: {adm}"
+msgstr "Unknown administration property: {adm}"
+
+#: lib/EB/DB.pm:241
+#, perl-brace-format
+msgid "Niet-bestaande standaardrekening: {std}"
+msgstr "Unknown standard account: {std}"
+
+#: lib/EB/DB.pm:297
+#, perl-brace-format
+msgid "Database verbindingsprobleem: {err}"
+msgstr "Database connection problem: {err}"
+
+#: lib/EB/Finance.pm:39
+msgid ","
+msgstr "."
 
 #: lib/EB/Report/Text.pm:28
 msgid "RekNr"
@@ -188,58 +203,6 @@ msgstr "Balance Db"
 msgid "Saldo Cr"
 msgstr "Balance Cr"
 
-# ???
-#: lib/EB/Report/Grootboek.pm:48
-msgid "Grootboek"
-msgstr "Ledger"
-
-#: lib/EB/Report/Grootboek.pm:49 lib/EB/Report/Balres.pm:85
-#: lib/EB/Report/Proof.pm:61
-#, perl-brace-format
-msgid "Periode {from} - {to}"
-msgstr "Period {from} - {to}"
-
-#: lib/EB/Report/Grootboek.pm:72
-msgid "GrBk"
-msgstr "Acc"
-
-#: lib/EB/Report/Grootboek.pm:72
-msgid "Grootboek/Boekstuk"
-msgstr "Ledger/Booking"
-
-#: lib/EB/Report/Grootboek.pm:72 lib/EB/Journal/Text.pm:106
-msgid "Id"
-msgstr "Id"
-
-#: lib/EB/Report/Grootboek.pm:73 lib/EB/Journal/Text.pm:106
-msgid "Datum"
-msgstr "Date"
-
-#: lib/EB/Report/Grootboek.pm:74
-msgid "Dagboek"
-msgstr "Ledger"
-
-#: lib/EB/Report/Grootboek.pm:74 lib/EB/Journal/Text.pm:108
-msgid "Relatie"
-msgstr "Relation"
-
-#: lib/EB/Report/Grootboek.pm:93
-msgid "Beginsaldo"
-msgstr "Initial balance"
-
-#: lib/EB/Report/Grootboek.pm:119 lib/EB/Report/Grootboek.pm:142
-msgid "Totaal mutaties"
-msgstr "Mutations total"
-
-#: lib/EB/Report/Grootboek.pm:130
-#, perl-brace-format
-msgid "Totaal {adesc}"
-msgstr "Total {adesc}"
-
-#: lib/EB/Report/Grootboek.pm:146
-msgid "Totaal"
-msgstr "Total"
-
 #: lib/EB/Report/Balres.pm:75
 msgid "Openingsbalans"
 msgstr "Initial balance"
@@ -256,6 +219,12 @@ msgstr "Balance"
 #: lib/EB/Report/Balres.pm:83
 msgid "Verlies/Winst"
 msgstr "Profit/Loss"
+
+#: lib/EB/Report/Balres.pm:85 lib/EB/Report/Grootboek.pm:49
+#: lib/EB/Report/Proof.pm:61
+#, perl-brace-format
+msgid "Periode {from} - {to}"
+msgstr "Period {from} - {to}"
 
 #: lib/EB/Report/Balres.pm:101
 #, perl-brace-format
@@ -285,6 +254,57 @@ msgstr "TOTAL {rep}"
 msgid "Resultaten"
 msgstr "Results"
 
+# ???
+#: lib/EB/Report/Grootboek.pm:48
+msgid "Grootboek"
+msgstr "Ledger"
+
+#: lib/EB/Report/Grootboek.pm:72
+msgid "GrBk"
+msgstr "Acc"
+
+#: lib/EB/Report/Grootboek.pm:72
+msgid "Grootboek/Boekstuk"
+msgstr "Ledger/Booking"
+
+#: lib/EB/Report/Grootboek.pm:72 lib/EB/Journal/Text.pm:106
+msgid "Id"
+msgstr "Id"
+
+#: lib/EB/Report/Grootboek.pm:73 lib/EB/Journal/Text.pm:106
+msgid "Datum"
+msgstr "Date"
+
+#: lib/EB/Report/Grootboek.pm:74
+msgid "Dagboek"
+msgstr "Ledger"
+
+#: lib/EB/Report/Grootboek.pm:74 lib/EB/Journal/Text.pm:106
+#: lib/EB/Shell.pm:355
+msgid "Nr"
+msgstr "Nr"
+
+#: lib/EB/Report/Grootboek.pm:74 lib/EB/Journal/Text.pm:108
+msgid "Relatie"
+msgstr "Relation"
+
+#: lib/EB/Report/Grootboek.pm:93
+msgid "Beginsaldo"
+msgstr "Initial balance"
+
+#: lib/EB/Report/Grootboek.pm:119 lib/EB/Report/Grootboek.pm:142
+msgid "Totaal mutaties"
+msgstr "Mutations total"
+
+#: lib/EB/Report/Grootboek.pm:130
+#, perl-brace-format
+msgid "Totaal {adesc}"
+msgstr "Total {adesc}"
+
+#: lib/EB/Report/Grootboek.pm:146
+msgid "Totaal"
+msgstr "Total"
+
 #: lib/EB/Report/Proof.pm:59
 msgid "Proef- en Saldibalans"
 msgstr "Proofing balance"
@@ -293,10 +313,33 @@ msgstr "Proofing balance"
 msgid "TOTAAL"
 msgstr "TOTAL"
 
-#: lib/EB/BTWAangifte/Html.pm:40 lib/EB/BTWAangifte.pm:455
+#: lib/EB/Journal/Text.pm:57 lib/EB/Journal/Text.pm:86
 #, perl-brace-format
-msgid "Ongeldige mode '{ctl}' in {pkg}::addline"
-msgstr "Unsupported mode '{ctl}' in {pkg}::addline"
+msgid "Boekstuk {nr}"
+msgstr "Booking {nr}"
+
+#: lib/EB/Journal/Text.pm:76
+#, perl-brace-format
+msgid "Dagboek {nr}"
+msgstr "Ledger {nr}"
+
+# ???
+#: lib/EB/Journal/Text.pm:106
+msgid "Dag/Grootboek"
+msgstr "Ledger"
+
+#: lib/EB/Journal/Text.pm:107
+msgid "Rek"
+msgstr "Acc"
+
+#: lib/EB/Journal/Text.pm:107
+msgid "Boekstuk/regel"
+msgstr "Booking/line"
+
+#: lib/EB/Journal/Text.pm:122
+#, perl-brace-format
+msgid "Totaal {pfx}"
+msgstr "Total {pfx}"
 
 #: lib/EB/Booking/BKM.pm:48 lib/EB/Booking/IV.pm:47
 #, perl-brace-format
@@ -374,38 +417,105 @@ msgstr "Booking does not balance (difference is {diff})"
 msgid "Ongeldige operatie (IV) voor dagboek type {type}"
 msgstr "Invalid operation (IV) voor ledger type {type}"
 
-#: lib/EB/Journal/Text.pm:45 lib/EB/Journal/Text.pm:65
+#: lib/EB/Booking/Decode.pm:211
 #, perl-brace-format
-msgid "Onbekend dagboek: {dbk}"
-msgstr "Unknown ledger: {dbk}"
+msgid "Onbekend rekeningnummer: {acct}"
+msgstr "Unknown account: {acct}"
 
-#: lib/EB/Journal/Text.pm:57 lib/EB/Journal/Text.pm:86
+#: lib/EB/Booking/Delete.pm:55
 #, perl-brace-format
-msgid "Boekstuk {nr}"
-msgstr "Booking {nr}"
+msgid "Boekstuk {bsk} is in gebruik door {lst}"
+msgstr "Booking {bsk} is in use by {lst}"
 
-#: lib/EB/Journal/Text.pm:76
+#: lib/EB/Booking/Delete.pm:83
 #, perl-brace-format
-msgid "Dagboek {nr}"
-msgstr "Ledger {nr}"
+msgid "Boekstuk {bsk} verwijderd"
+msgstr "Booking {bsk} removed"
 
-# ???
-#: lib/EB/Journal/Text.pm:106
-msgid "Dag/Grootboek"
-msgstr "Ledger"
-
-#: lib/EB/Journal/Text.pm:107
-msgid "Rek"
-msgstr "Acc"
-
-#: lib/EB/Journal/Text.pm:107
-msgid "Boekstuk/regel"
-msgstr "Booking/line"
-
-#: lib/EB/Journal/Text.pm:122
+#: lib/EB/Booking/Delete.pm:87
 #, perl-brace-format
-msgid "Totaal {pfx}"
-msgstr "Total {pfx}"
+msgid "Boekstuk {bsk} niet verwijderd"
+msgstr "Booking {bsk} not removed"
+
+#: lib/EB/Globals.pm:34
+msgid "-- Inkoop Verkoop Bank Kas Memoriaal"
+msgstr "-- A/Payable A/Receivable Sales Bank Cash Memorial"
+
+#: lib/EB/Globals.pm:38
+msgid "Geen Hoog Laag"
+msgstr "None High Low"
+
+#: lib/EB/Shell.pm:113 lib/EB/Shell.pm:127 lib/EB/Shell.pm:133
+#: lib/EB/Shell.pm:139
+msgid "aan"
+msgstr "on"
+
+#: lib/EB/Shell.pm:114 lib/EB/Shell.pm:127 lib/EB/Shell.pm:133
+#: lib/EB/Shell.pm:139
+msgid "uit"
+msgstr "off"
+
+#: lib/EB/Shell.pm:127
+#, perl-brace-format
+msgid "SQL Trace: {state}"
+msgstr "SQL Trace: {state}"
+
+#: lib/EB/Shell.pm:133
+#, perl-brace-format
+msgid "Journal: {state}"
+msgstr "Journal: {state}"
+
+#: lib/EB/Shell.pm:139
+#, perl-brace-format
+msgid "Bevestiging: {state}"
+msgstr "Confirmation: {state}"
+
+#: lib/EB/Shell.pm:176
+#, perl-brace-format
+msgid "Onbekend of verkeerd dagboek: {dbk} [{type}]"
+msgstr "Unknown or erroneous ledger: {dbk} [{type}]"
+
+#: lib/EB/Shell.pm:200
+#, perl-brace-format
+msgid "Boekstuk: {bsk}"
+msgstr "Booking: {bsk}"
+
+#: lib/EB/Shell.pm:249 lib/EB/Shell.pm:277 lib/EB/Shell.pm:306
+msgid "Te veel argumenten voor deze opdracht"
+msgstr "Too many arguments for this command"
+
+#: lib/EB/Shell.pm:355
+msgid "Naam"
+msgstr "Name"
+
+#: lib/EB/Shell.pm:355
+msgid "Type"
+msgstr "Type"
+
+#: lib/EB/Shell.pm:355
+msgid "Rekening"
+msgstr "Account"
+
+#: lib/EB/Shell.pm:358
+msgid "n.v.t."
+msgstr "N/A"
+
+#: lib/EB/Shell.pm:384
+#, perl-brace-format
+msgid "Database: {db}"
+msgstr "Database: {db}"
+
+#: lib/EB/Shell.pm:458 lib/EB/Shell.pm:497
+msgid "Gaarne een boekstuk"
+msgstr "Please supply a booking"
+
+#: lib/EB/Shell.pm:541 lib/EB/Tools/Opening.pm:315 lib/EB/BTWAangifte.pm:34
+msgid "De administratie is nog niet geopend"
+msgstr "The administration has not yet been opened"
+
+#: lib/EB/Shell.pm:544 lib/EB/Tools/Opening.pm:318
+msgid "De administratie is reeds in gebruik"
+msgstr "The administration is already in use"
 
 #: lib/EB/Shell/Base.pm:567
 msgid "Toon versie."
@@ -425,70 +535,139 @@ msgstr "Help available for the following topics"
 msgid "Geen hulp beschikbaar voor {topic}."
 msgstr "No help available for {topic}."
 
-#: lib/EB/BTWAangifte.pm:45
-msgid "per maand"
-msgstr "Monthly"
-
-#: lib/EB/BTWAangifte.pm:46
-msgid "per jaar"
-msgstr "Yearly"
-
-#: lib/EB/BTWAangifte.pm:47
-msgid "per kwartaal"
-msgstr "Quarterly"
-
-#: lib/EB/BTWAangifte.pm:77
+#: lib/EB/Tools/Schema.pm:114
 #, perl-brace-format
-msgid ""
-"Aangifte {per} komt niet overeen met de BTW instelling van de administratie "
-"({admper})"
+msgid "Dagboek {id}: onbekende info \"{info}\""
+msgstr "Ledger {id}: unknown info \"{info}\""
+
+#: lib/EB/Tools/Schema.pm:119
+#, perl-brace-format
+msgid "Dagboek {id}: het :type ontbreekt"
+msgstr "Ledger {id}: the :type is missing"
+
+#: lib/EB/Tools/Schema.pm:120
+#, perl-brace-format
+msgid "Dagboek {id}: het :rekening nummer ontbreekt"
+msgstr "Ledger {id}: the :rekening is missing"
+
+#: lib/EB/Tools/Schema.pm:122
+#, perl-brace-format
+msgid "Dagboek {id}: rekeningnummer enkel toegestaan voor Kas en Bankboeken"
+msgstr "Ledger {id}: account number is only allowed for Cash and Bank"
+
+#: lib/EB/Tools/Schema.pm:132
+#, perl-brace-format
+msgid "Dubbel: BTW tarief {id}"
+msgstr "Multiple: VAT tariff {id}"
+
+#: lib/EB/Tools/Schema.pm:166
+#, perl-brace-format
+msgid "BTW tarief {id}: onbekende info \"{info}\""
+msgstr "VAT tariff {id}: unknown info \"{info}\""
+
+#: lib/EB/Tools/Schema.pm:171
+#, perl-brace-format
+msgid "BTW tarief {id}: geen percentage en de tariefgroep is niet \"{none}\""
 msgstr ""
-"{per} report does not match the corresponding setting ({admper}) of the "
-"administration"
+"VAT tariff {id}: no percentage given, and tariff group is not \"{none}\""
 
-#: lib/EB/BTWAangifte.pm:90
-msgid "j(aar)?"
-msgstr "y(ear)?"
+#: lib/EB/Tools/Schema.pm:172
+msgid "geen"
+msgstr "none"
 
-#: lib/EB/BTWAangifte.pm:93
+#: lib/EB/Tools/Schema.pm:194
 #, perl-brace-format
-msgid "{year}"
-msgstr "{year}"
+msgid "Dubbel: hoofdverdichting {vrd}"
+msgstr "Multiple: master group {vrd}"
 
-#: lib/EB/BTWAangifte.pm:97
-msgid "1e kwartaal"
-msgstr "1st quarter"
-
-#: lib/EB/BTWAangifte.pm:97
-msgid "2e kwartaal"
-msgstr "2nd quarter"
-
-#: lib/EB/BTWAangifte.pm:98
-msgid "3e kwartaal"
-msgstr "3rd quarter"
-
-#: lib/EB/BTWAangifte.pm:98
-msgid "4e kwartaal"
-msgstr "4th quarter"
-
-#: lib/EB/BTWAangifte.pm:102
+#: lib/EB/Tools/Schema.pm:198
 #, perl-brace-format
-msgid "{month} {year}"
-msgstr "{month} {year}"
+msgid "Dubbel: verdichting {vrd}"
+msgstr "Multiple: group {vrd}"
 
-#: lib/EB/BTWAangifte.pm:107
+#: lib/EB/Tools/Schema.pm:199
 #, perl-brace-format
-msgid "Ongeldige waarde voor BTW periode: \"{per}\""
-msgstr "Illegal value for VAT period: \"{per}\""
+msgid "Verdichting {vrd} heeft geen hoofdverdichting"
+msgstr "Group {vrd} has no associated master group"
 
-#: lib/EB/BTWAangifte.pm:396
+#: lib/EB/Tools/Schema.pm:204
 #, perl-brace-format
+msgid "Dubbel: rekening {acct}"
+msgstr "Multiple: account {acct}"
+
+#: lib/EB/Tools/Schema.pm:205
+#, perl-brace-format
+msgid "Rekening {id} heeft geen verdichting"
+msgstr "Account {id} has no group"
+
+#: lib/EB/Tools/Schema.pm:206
+#, perl-brace-format
+msgid "Rekening {id}: onherkenbare vlaggetjes {flags}"
+msgstr "Account {id}: unknown flags \"{flags}\""
+
+#: lib/EB/Tools/Schema.pm:221
+#, perl-brace-format
+msgid "Rekening {id}: onbekende koppeling \"{std}\""
+msgstr "Account {id}: unknown special \"{std}\""
+
+#: lib/EB/Tools/Schema.pm:224
+#, perl-brace-format
+msgid "Rekening {id}: extra koppeling voor \"{std}\""
+msgstr "Account {id}: extra special \"{std}\""
+
+#: lib/EB/Tools/Schema.pm:277
+#, perl-brace-format
+msgid "Ongeldige invoer: {line} (regel {lno})"
+msgstr "Invalid input: {line} (line {lno})"
+
+#: lib/EB/Tools/Schema.pm:282
 msgid ""
-"Er is een verschil van {amount} tussen de berekende en werkelijk ingehouden "
-"BTW. Voor de aangifte is de werkelijk ingehouden BTW gebruikt."
+"Men beginne met \"Balansrekeningen\", \"Resultaatrekeningen\", \"Dagboeken\" "
+"of \"BTW Tarieven\""
 msgstr ""
-"There's a difference of {amount} between the calculated and deducted VAT. "
-"For the report, the deducted amount is used."
+"Please start with \"Balansrekeningen\", \"Resultaatrekeningen\", \"Dagboeken"
+"\" or \"BTW Tarieven\""
+
+#: lib/EB/Tools/Schema.pm:288
+#, perl-brace-format
+msgid "Geen koppeling gevonden voor \"{std}\""
+msgstr "No account for {std}"
+
+#: lib/EB/Tools/Schema.pm:294
+#, perl-brace-format
+msgid "Geen BTW tarief gevonden met tariefgroep {gr}, inclusief"
+msgstr "No VAT tariff found with group {gr} and inclusive"
+
+#: lib/EB/Tools/Schema.pm:297
+msgid "FOUTEN GEVONDEN, VERWERKING AFGEBROKEN"
+msgstr "ERRORS FOUND, PROCESS DISCONTINUED"
+
+#: lib/EB/Tools/Schema.pm:315
+msgid "Installatiefout -- geen schema"
+msgstr "Installation error -- no schema"
+
+#: lib/EB/Tools/Schema.pm:532
+#, perl-brace-format
+msgid "Incompleet SQL commando: {sql}"
+msgstr "Incomplete SQL command: {sql}"
+
+#: lib/EB/Tools/Schema.pm:671
+msgid "HOOFDVERDICHTING MOET TUSSEN 1 EN 9 (INCL.) LIGGEN"
+msgstr "MASTER GROUP MUST BE BETWEEN 1 AND 9 INCLUSIVE"
+
+#: lib/EB/Tools/Schema.pm:680
+msgid "VERDICHTING MOET TUSSEN 10 EN 99 (INCL.) LIGGEN"
+msgstr "GROUP MUST BE BETWEEN 10 AND 99 INCLUSIVE"
+
+#: lib/EB/Tools/Schema.pm:703
+#, perl-brace-format
+msgid "{id} ZOU EEN BALANSREKENING MOETEN ZIJN"
+msgstr "{id} SHOULD HAVE BEEN A BALANCE ACCOUNT"
+
+#: lib/EB/Tools/Schema.pm:705
+#, perl-brace-format
+msgid "{id} ZOU EEN RESULTAATREKENING MOETEN ZIJN"
+msgstr "{id} SHOULD HAVE BEEN A RESULT ACCOUNT"
 
 #: lib/EB/Tools/Opening.pm:48 lib/EB/Tools/Opening.pm:52
 msgid "jaar"
@@ -596,218 +775,84 @@ msgstr ""
 msgid "Er is {amt} te weinig aan openstaande {dc} opgegeven"
 msgstr "Open bookings for {dc} is {amt} short"
 
-#: lib/EB/Tools/Opening.pm:191 lib/EB/Tools/Opening.pm:194 lib/EB/DB.pm:62
-#: lib/EB/DB.pm:66
-msgid "Debiteuren"
-msgstr "Debtors"
-
 #: lib/EB/Tools/Opening.pm:192 lib/EB/Tools/Opening.pm:200
 #, perl-brace-format
 msgid "Er is {amt} te veel aan openstaande {dc} opgegeven"
 msgstr "Open bookings for {dc} exceede by {amt}"
 
-#: lib/EB/Tools/Opening.pm:199 lib/EB/Tools/Opening.pm:202 lib/EB/DB.pm:73
-#: lib/EB/DB.pm:77
-msgid "Crediteuren"
-msgstr "Creditors"
-
 #: lib/EB/Tools/Opening.pm:206
 msgid "DE OPENING IS NIET UITGEVOERD!"
 msgstr "OPENING IS NOT COMPLETED!"
 
-#: lib/EB/Tools/Schema.pm:114
+#: lib/EB/BTWAangifte/Html.pm:40 lib/EB/BTWAangifte.pm:455
 #, perl-brace-format
-msgid "Dagboek {id}: onbekende info \"{info}\""
-msgstr "Ledger {id}: unknown info \"{info}\""
+msgid "Ongeldige mode '{ctl}' in {pkg}::addline"
+msgstr "Unsupported mode '{ctl}' in {pkg}::addline"
 
-#: lib/EB/Tools/Schema.pm:119
-#, perl-brace-format
-msgid "Dagboek {id}: het :type ontbreekt"
-msgstr "Ledger {id}: the :type is missing"
+#: lib/EB/BTWAangifte.pm:45
+msgid "per maand"
+msgstr "Monthly"
 
-#: lib/EB/Tools/Schema.pm:120
-#, perl-brace-format
-msgid "Dagboek {id}: het :rekening nummer ontbreekt"
-msgstr "Ledger {id}: the :rekening is missing"
+#: lib/EB/BTWAangifte.pm:46
+msgid "per jaar"
+msgstr "Yearly"
 
-#: lib/EB/Tools/Schema.pm:122
-#, perl-brace-format
-msgid "Dagboek {id}: rekeningnummer enkel toegestaan voor Kas en Bankboeken"
-msgstr "Ledger {id}: account number is only allowed for Cash and Bank"
+#: lib/EB/BTWAangifte.pm:47
+msgid "per kwartaal"
+msgstr "Quarterly"
 
-#: lib/EB/Tools/Schema.pm:132
+#: lib/EB/BTWAangifte.pm:77
 #, perl-brace-format
-msgid "Dubbel: BTW tarief {id}"
-msgstr "Multiple: VAT tariff {id}"
-
-#: lib/EB/Tools/Schema.pm:166
-#, perl-brace-format
-msgid "BTW tarief {id}: onbekende info \"{info}\""
-msgstr "VAT tariff {id}: unknown info \"{info}\""
-
-#: lib/EB/Tools/Schema.pm:171
-#, perl-brace-format
-msgid "BTW tarief {id}: geen percentage en de tariefgroep is niet \"{none}\""
+msgid ""
+"Aangifte {per} komt niet overeen met de BTW instelling van de administratie "
+"({admper})"
 msgstr ""
-"VAT tariff {id}: no percentage given, and tariff group is not \"{none}\""
+"{per} report does not match the corresponding setting ({admper}) of the "
+"administration"
 
-#: lib/EB/Tools/Schema.pm:172
-msgid "geen"
-msgstr "none"
+#: lib/EB/BTWAangifte.pm:90
+msgid "j(aar)?"
+msgstr "y(ear)?"
 
-#: lib/EB/Tools/Schema.pm:194
+#: lib/EB/BTWAangifte.pm:93
 #, perl-brace-format
-msgid "Dubbel: hoofdverdichting {vrd}"
-msgstr "Multiple: master group {vrd}"
+msgid "{year}"
+msgstr "{year}"
 
-#: lib/EB/Tools/Schema.pm:198
+#: lib/EB/BTWAangifte.pm:97
+msgid "1e kwartaal"
+msgstr "1st quarter"
+
+#: lib/EB/BTWAangifte.pm:97
+msgid "2e kwartaal"
+msgstr "2nd quarter"
+
+#: lib/EB/BTWAangifte.pm:98
+msgid "3e kwartaal"
+msgstr "3rd quarter"
+
+#: lib/EB/BTWAangifte.pm:98
+msgid "4e kwartaal"
+msgstr "4th quarter"
+
+#: lib/EB/BTWAangifte.pm:102
 #, perl-brace-format
-msgid "Dubbel: verdichting {vrd}"
-msgstr "Multiple: group {vrd}"
+msgid "{month} {year}"
+msgstr "{month} {year}"
 
-#: lib/EB/Tools/Schema.pm:199
+#: lib/EB/BTWAangifte.pm:107
 #, perl-brace-format
-msgid "Verdichting {vrd} heeft geen hoofdverdichting"
-msgstr "Group {vrd} has no associated master group"
+msgid "Ongeldige waarde voor BTW periode: \"{per}\""
+msgstr "Illegal value for VAT period: \"{per}\""
 
-#: lib/EB/Tools/Schema.pm:204
-#, perl-brace-format
-msgid "Dubbel: rekening {acct}"
-msgstr "Multiple: account {acct}"
-
-#: lib/EB/Tools/Schema.pm:205
-#, perl-brace-format
-msgid "Rekening {id} heeft geen verdichting"
-msgstr "Account {id} has no group"
-
-#: lib/EB/Tools/Schema.pm:206
-#, perl-brace-format
-msgid "Rekening {id}: onherkenbare vlaggetjes {flags}"
-msgstr "Account {id}: unknown flags \"{flags}\""
-
-#: lib/EB/Tools/Schema.pm:221
-#, perl-brace-format
-msgid "Rekening {id}: onbekende koppeling \"{std}\""
-msgstr "Account {id}: unknown special \"{std}\""
-
-#: lib/EB/Tools/Schema.pm:224
-#, perl-brace-format
-msgid "Rekening {id}: extra koppeling voor \"{std}\""
-msgstr "Account {id}: extra special \"{std}\""
-
-#: lib/EB/Tools/Schema.pm:277
-#, perl-brace-format
-msgid "Ongeldige invoer: {line} (regel {lno})"
-msgstr "Invalid input: {line} (line {lno})"
-
-#: lib/EB/Tools/Schema.pm:282
-msgid ""
-"Men beginne met \"Balansrekeningen\", \"Resultaatrekeningen\", \"Dagboeken\" "
-"of \"BTW Tarieven\""
-msgstr "Please start with \"Balansrekeningen\", \"Resultaatrekeningen\", \"Dagboeken\" or \"BTW Tarieven\""
-
-#: lib/EB/Tools/Schema.pm:288
-#, perl-brace-format
-msgid "Geen koppeling gevonden voor \"{std}\""
-msgstr "No account for {std}"
-
-#: lib/EB/Tools/Schema.pm:294
-#, perl-brace-format
-msgid "Geen BTW tarief gevonden met tariefgroep {gr}, inclusief"
-msgstr "No VAT tariff found with group {gr} and inclusive"
-
-#: lib/EB/Tools/Schema.pm:297
-msgid "FOUTEN GEVONDEN, VERWERKING AFGEBROKEN"
-msgstr "ERRORS FOUND, PROCESS DISCONTINUED"
-
-#: lib/EB/Tools/Schema.pm:315
-msgid "Installatiefout -- geen schema"
-msgstr "Installation error -- no schema"
-
-#: lib/EB/Tools/Schema.pm:532
-#, perl-brace-format
-msgid "Incompleet SQL commando: {sql}"
-msgstr "Incomplete SQL command: {sql}"
-
-#: lib/EB/Tools/Schema.pm:671
-msgid "HOOFDVERDICHTING MOET TUSSEN 1 EN 9 (INCL.) LIGGEN"
-msgstr "MASTER GROUP MUST BE BETWEEN 1 AND 9 INCLUSIVE"
-
-#: lib/EB/Tools/Schema.pm:680
-msgid "VERDICHTING MOET TUSSEN 10 EN 99 (INCL.) LIGGEN"
-msgstr "GROUP MUST BE BETWEEN 10 AND 99 INCLUSIVE"
-
-#: lib/EB/Tools/Schema.pm:703
-#, perl-brace-format
-msgid "{id} ZOU EEN BALANSREKENING MOETEN ZIJN"
-msgstr "{id} SHOULD HAVE BEEN A BALANCE ACCOUNT"
-
-#: lib/EB/Tools/Schema.pm:705
-#, perl-brace-format
-msgid "{id} ZOU EEN RESULTAATREKENING MOETEN ZIJN"
-msgstr "{id} SHOULD HAVE BEEN A RESULT ACCOUNT"
-
-#: lib/EB/DB.pm:42
-#, perl-brace-format
-msgid "Tabel {table} ontbreekt in database {db}"
-msgstr "Tabel {table} missing in database {db}"
-
-#: lib/EB/DB.pm:46
-#, perl-brace-format
-msgid "Ongeldige EekBoek database: {db}."
-msgstr "Invalid EekBoek database: {db}."
-
-#: lib/EB/DB.pm:48
-msgid "Wellicht is de database nog niet geïnitialiseerd?"
-msgstr "Has the database been initialised?"
-
-#: lib/EB/DB.pm:53
-#, perl-brace-format
-msgid "Ongeldige EekBoek database versie: {db}."
-msgstr "Invalid Eekboek database version: {db}"
-
-#: lib/EB/DB.pm:61 lib/EB/DB.pm:72 lib/EB/DB.pm:83 lib/EB/DB.pm:93
-#, perl-brace-format
-msgid "Geen grootboekrekening voor {dc} ({acct})"
-msgstr "Missing account for {dc} ({acct})"
-
-#: lib/EB/DB.pm:65 lib/EB/DB.pm:76 lib/EB/DB.pm:86 lib/EB/DB.pm:96
-#, perl-brace-format
-msgid "Foutieve grootboekrekening voor {dc} ({acct})"
-msgstr "Erroneous account for {dc} ({acct})"
-
-#: lib/EB/DB.pm:84 lib/EB/DB.pm:87
-msgid "BTW betaald"
-msgstr "VAT paid"
-
-#: lib/EB/DB.pm:94 lib/EB/DB.pm:97
-msgid "overboeking winst"
-msgstr "profit transfer"
-
-#: lib/EB/DB.pm:107 lib/EB/DB.pm:112
+#: lib/EB/BTWAangifte.pm:396
 #, perl-brace-format
 msgid ""
-"Verkeerde grootboekrekening {acct} ({adesc}) voor dagboek {dbk} ({ddesc})"
-msgstr "Erroneous account {acct} ({adesc}) for ledger {dbk} ({ddesc})"
-
-#: lib/EB/DB.pm:117
-msgid "CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT"
-msgstr "CONSISTENCY-VERIFICATION OF STANDARD ACCOUNTS FAILED"
-
-#: lib/EB/DB.pm:181
-#, perl-brace-format
-msgid "Niet-bestaande administratie-eigenschap: {adm}"
-msgstr "Unknown administration property: {adm}"
-
-#: lib/EB/DB.pm:197
-#, perl-brace-format
-msgid "Niet-bestaande standaardrekening: {std}"
-msgstr "Unknown standard account: {std}"
-
-#: lib/EB/DB.pm:253
-#, perl-brace-format
-msgid "Database verbindingsprobleem: {err}"
-msgstr "Database connection problem: {err}"
+"Er is een verschil van {amount} tussen de berekende en werkelijk ingehouden "
+"BTW. Voor de aangifte is de werkelijk ingehouden BTW gebruikt."
+msgstr ""
+"There's a difference of {amount} between the calculated and deducted VAT. "
+"For the report, the deducted amount is used."
 
 #, fuzzy
 #~ msgid "debiteuren"

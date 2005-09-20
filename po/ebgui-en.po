@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-18 21:17+0200\n"
+"POT-Creation-Date: 2005-09-20 09:21+0200\n"
 "PO-Revision-Date: 2005-09-17 21:49+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: GUI/eb.pl:329
+#: GUI/eb.pl:334
 msgid ""
 "Geen dataset opgegeven. Gebruik de environment variabele EB_DB_NAME om een "
 "database te selecteren, of geef een database naam mee op de command line met "
@@ -24,167 +24,104 @@ msgstr ""
 "No dataset. Please specify a dataset with --dataset or by setting the "
 "environment variable EB_DB_NAME"
 
-#: GUI/BtwPrefsDialog.pm:30
-msgid "Voorkeuren"
+#: GUI/AccPanel.pm:45
+#, fuzzy
+msgid "BTW Tarief"
+msgstr "VAT tariffs"
+
+#: GUI/AccPanel.pm:46
+msgid "Saldo"
+msgstr ""
+
+#: GUI/AccPanel.pm:47
+#, fuzzy
+msgid "Grootboekrekening"
+msgstr "Accounts"
+
+#: GUI/AccPanel.pm:50
+msgid "Nr."
+msgstr ""
+
+#: GUI/AccPanel.pm:51 GUI/BtwPanel.pm:53
+msgid "Omschrijving"
+msgstr ""
+
+#: GUI/AccPanel.pm:54
+#, fuzzy
+msgid "Indeling"
 msgstr "Preferences"
 
-#: GUI/BtwPrefsDialog.pm:31 GUI/RepBtw.pm:39
-msgid "Periode"
-msgstr "Period"
-
-#: GUI/BtwPrefsDialog.pm:32 GUI/NewDialog.pm:47
-msgid "Jaar"
-msgstr "Year"
-
-#: GUI/BtwPrefsDialog.pm:33
-msgid "Kwart 1"
+#: GUI/AccPanel.pm:54 GUI/MainFrame.pm:92
+msgid "Balans"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:34
-msgid "Jan"
+#: GUI/AccPanel.pm:54
+msgid "Resultaat"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:35
-msgid "Feb"
+#: GUI/AccPanel.pm:55
+msgid "Richting"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:36
-msgid "Mar"
+#: GUI/AccPanel.pm:55 GUI/NewDialog.pm:38
+msgid "Debet"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:37
-msgid "Kwart 2"
+#: GUI/AccPanel.pm:55 GUI/NewDialog.pm:39
+msgid "Credit"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:38
-msgid "Apr"
+#: GUI/AccPanel.pm:56
+msgid "Soort"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:39 GUI/BtwPrefsDialog.pm:121
-msgid "Mei"
+#: GUI/AccPanel.pm:56
+msgid "Kosten"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:40
-msgid "Jun"
+#: GUI/AccPanel.pm:56
+msgid "Omzet"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:41
-msgid "Kwart 3"
+#: GUI/AccPanel.pm:57
+msgid "Opening"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:42
-msgid "Jul"
+#: GUI/AccPanel.pm:59
+msgid "Actueel"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:43
-msgid "Aug"
+#: GUI/RelPanel.pm:40 GUI/MainFrame.pm:84
+msgid "Relaties"
+msgstr "Relations"
+
+#: GUI/RelPanel.pm:41
+msgid "Selecteer:"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:44
-msgid "Sep"
+#: GUI/RelPanel.pm:42 GUI/MainFrame.pm:99 GUI/StdAccPanel.pm:39
+msgid "Debiteuren"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:45
-msgid "Kwart 4"
+#: GUI/RelPanel.pm:43 GUI/MainFrame.pm:100 GUI/StdAccPanel.pm:41
+msgid "Crediteuren"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:46
-msgid "Okt"
+#: GUI/RelPanel.pm:45 GUI/BtwPanel.pm:61 GUI/MStdAccPanel.pm:41
+msgid ""
+"Sommige gegevens zijn in gebruik en\n"
+"kunnen niet meer worden gewijzigd."
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:47
-msgid "Nov"
+#: GUI/RelPanel.pm:46 GUI/BtwPanel.pm:62 GUI/RepBtw.pm:40
+#: GUI/MStdAccPanel.pm:42 GUI/IVPanel.pm:38 GUI/BKMPanel.pm:38
+msgid "Close"
 msgstr ""
 
-#: GUI/BtwPrefsDialog.pm:48
-msgid "Dec"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:49
-msgid "Standaardinstelling"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:50 GUI/NewDialog.pm:65 GUI/ListDialog.pm:35
-msgid "OK"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:51 GUI/NewDialog.pm:62 GUI/ListDialog.pm:36
-msgid "Cancel"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:113 GUI/NewDialog.pm:86
-msgid "dialog_1"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:114
-msgid "Gehele jaar"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:115
-msgid "Eerste kwartaal"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:116
+#: GUI/RelPanel.pm:143
 #, fuzzy
-msgid "Januari"
-msgstr "Year"
-
-#: GUI/BtwPrefsDialog.pm:117
-msgid "Februari"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:118
-#, fuzzy
-msgid "Maart"
-msgstr "Year"
-
-#: GUI/BtwPrefsDialog.pm:119
-msgid "Tweede kwartaal"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:120
-msgid "April"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:122
-msgid "Juni"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:123
-msgid "Derde kwartaal"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:124
-msgid "Juli"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:125
-msgid "Augustus"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:126
-msgid "September"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:127
-msgid "Vierde kwartaal"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:128
-msgid "Oktober"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:129
-msgid "November"
-msgstr ""
-
-#: GUI/BtwPrefsDialog.pm:130
-msgid "December"
-msgstr ""
-
-#: GUI/RepGrootboek.pm:47 GUI/MainFrame.pm:95
-msgid "Grootboek"
-msgstr "Ledger"
+msgid "Onderhoud Relaties"
+msgstr "Maintenance of VAT tariffs"
 
 #: GUI/MainFrame.pm:64
 msgid "Nieuw ..."
@@ -278,10 +215,6 @@ msgstr "Accounts"
 msgid "Onderhoud rekeningschema en grootboekrekeningen"
 msgstr "Maintenance of schema and accounts"
 
-#: GUI/MainFrame.pm:84 GUI/RelPanel.pm:40
-msgid "Relaties"
-msgstr "Relations"
-
 #: GUI/MainFrame.pm:84
 msgid "Onderhoud debiteuren en crediteuren"
 msgstr "Maintenance of relations"
@@ -318,10 +251,6 @@ msgstr ""
 msgid "Opmaken Proef- en Saldibalans"
 msgstr ""
 
-#: GUI/MainFrame.pm:92 GUI/AccPanel.pm:54
-msgid "Balans"
-msgstr ""
-
 #: GUI/MainFrame.pm:92
 msgid "Opmaken Balans"
 msgstr ""
@@ -333,6 +262,10 @@ msgstr ""
 #: GUI/MainFrame.pm:93
 msgid "Opmaken Resultaatrekening"
 msgstr ""
+
+#: GUI/MainFrame.pm:95 GUI/RepGrootboek.pm:47
+msgid "Grootboek"
+msgstr "Ledger"
 
 #: GUI/MainFrame.pm:95
 msgid "Opmaken Grootboekrapportage"
@@ -354,16 +287,8 @@ msgstr ""
 msgid "Opmaken BTW aangifte"
 msgstr ""
 
-#: GUI/MainFrame.pm:99 GUI/RelPanel.pm:42 GUI/StdAccPanel.pm:39
-msgid "Debiteuren"
-msgstr ""
-
 #: GUI/MainFrame.pm:99
 msgid "Opmaken Debiteurenoverzicht"
-msgstr ""
-
-#: GUI/MainFrame.pm:100 GUI/RelPanel.pm:43 GUI/StdAccPanel.pm:41
-msgid "Crediteuren"
 msgstr ""
 
 #: GUI/MainFrame.pm:100
@@ -394,150 +319,6 @@ msgstr ""
 msgid "EekBoek © 2005 Squirrel Consultancy ­ Geen administratie geladen"
 msgstr ""
 
-#: GUI/NewDialog.pm:38 GUI/AccPanel.pm:55
-msgid "Debet"
-msgstr ""
-
-#: GUI/NewDialog.pm:39 GUI/AccPanel.pm:55
-msgid "Credit"
-msgstr ""
-
-#: GUI/NewDialog.pm:40
-msgid "Wizard"
-msgstr ""
-
-#: GUI/NewDialog.pm:42
-msgid "Naam"
-msgstr ""
-
-#: GUI/NewDialog.pm:44
-msgid "Aanvang boekjaar"
-msgstr ""
-
-#: GUI/NewDialog.pm:46
-msgid "BTW Periode"
-msgstr "VAT Period"
-
-#: GUI/NewDialog.pm:47
-msgid "Geen"
-msgstr ""
-
-#: GUI/NewDialog.pm:47
-msgid "Half jaar"
-msgstr ""
-
-#: GUI/NewDialog.pm:47
-msgid "Trimester"
-msgstr ""
-
-#: GUI/NewDialog.pm:47
-msgid "Kwartaal"
-msgstr ""
-
-#: GUI/NewDialog.pm:47
-msgid "Maand"
-msgstr ""
-
-#: GUI/NewDialog.pm:48
-msgid "radio_box_1"
-msgstr ""
-
-#: GUI/NewDialog.pm:48
-msgid "Eenmanszaak"
-msgstr ""
-
-#: GUI/NewDialog.pm:48
-msgid "BV of NV"
-msgstr ""
-
-#: GUI/NewDialog.pm:48
-#, fuzzy
-msgid "Importeren uit bestaande administratie"
-msgstr "Open an existing administration"
-
-#: GUI/NewDialog.pm:49
-msgid "Database"
-msgstr ""
-
-#: GUI/NewDialog.pm:52
-msgid "Balanstotaal"
-msgstr ""
-
-#: GUI/NewDialog.pm:54
-msgid "Rekening"
-msgstr ""
-
-#: GUI/NewDialog.pm:55
-msgid "Bedrag"
-msgstr ""
-
-#: GUI/NewDialog.pm:56 GUI/BtwPanel.pm:57
-msgid "Verw"
-msgstr ""
-
-#: GUI/NewDialog.pm:63
-msgid "Back"
-msgstr ""
-
-#: GUI/NewDialog.pm:64
-msgid "Forward"
-msgstr ""
-
-#: GUI/AccPanel.pm:45
-#, fuzzy
-msgid "BTW Tarief"
-msgstr "VAT tariffs"
-
-#: GUI/AccPanel.pm:46
-msgid "Saldo"
-msgstr ""
-
-#: GUI/AccPanel.pm:47
-#, fuzzy
-msgid "Grootboekrekening"
-msgstr "Accounts"
-
-#: GUI/AccPanel.pm:50
-msgid "Nr."
-msgstr ""
-
-#: GUI/AccPanel.pm:51 GUI/BtwPanel.pm:53
-msgid "Omschrijving"
-msgstr ""
-
-#: GUI/AccPanel.pm:54
-#, fuzzy
-msgid "Indeling"
-msgstr "Preferences"
-
-#: GUI/AccPanel.pm:54
-msgid "Resultaat"
-msgstr ""
-
-#: GUI/AccPanel.pm:55
-msgid "Richting"
-msgstr ""
-
-#: GUI/AccPanel.pm:56
-msgid "Soort"
-msgstr ""
-
-#: GUI/AccPanel.pm:56
-msgid "Kosten"
-msgstr ""
-
-#: GUI/AccPanel.pm:56
-msgid "Omzet"
-msgstr ""
-
-#: GUI/AccPanel.pm:57
-msgid "Opening"
-msgstr ""
-
-#: GUI/AccPanel.pm:59
-msgid "Actueel"
-msgstr ""
-
 #: GUI/BtwPanel.pm:50
 #, fuzzy
 msgid "BTW Tariefcodes"
@@ -559,6 +340,10 @@ msgstr ""
 msgid "In/Excl"
 msgstr ""
 
+#: GUI/BtwPanel.pm:57 GUI/NewDialog.pm:56
+msgid "Verw"
+msgstr ""
+
 #: GUI/BtwPanel.pm:58 GUI/StdAccPanel.pm:55
 msgid "Apply"
 msgstr ""
@@ -571,25 +356,22 @@ msgstr ""
 msgid "Undo"
 msgstr ""
 
-#: GUI/BtwPanel.pm:61 GUI/RelPanel.pm:45 GUI/MStdAccPanel.pm:41
-msgid ""
-"Sommige gegevens zijn in gebruik en\n"
-"kunnen niet meer worden gewijzigd."
+#: GUI/DbOpenDialog.pm:39
+msgid "Selecteer een database:"
 msgstr ""
 
-#: GUI/BtwPanel.pm:62 GUI/RelPanel.pm:46 GUI/MStdAccPanel.pm:42
-#: GUI/BKMPanel.pm:38 GUI/IVPanel.pm:38 GUI/RepBtw.pm:40
-msgid "Close"
+#: GUI/DbOpenDialog.pm:110
+msgid "Selecteer Database"
 msgstr ""
 
-#: GUI/RelPanel.pm:41
-msgid "Selecteer:"
+#: GUI/DbOpenDialog.pm:111
+msgid "Selecteer een database uit deze lijst"
 msgstr ""
 
-#: GUI/RelPanel.pm:143
+#: GUI/RepDebCrd.pm:45
 #, fuzzy
-msgid "Onderhoud Relaties"
-msgstr "Maintenance of VAT tariffs"
+msgid "Debiteuren/Crediteuren"
+msgstr "Maintenance of relations"
 
 #: GUI/RepBalRes.pm:41
 msgid "Detail:"
@@ -644,35 +426,6 @@ msgstr ""
 msgid "BTW Betaald"
 msgstr ""
 
-#: GUI/RepDebCrd.pm:45
-#, fuzzy
-msgid "Debiteuren/Crediteuren"
-msgstr "Maintenance of relations"
-
-#: GUI/DbOpenDialog.pm:39
-msgid "Selecteer een database:"
-msgstr ""
-
-#: GUI/DbOpenDialog.pm:110
-msgid "Selecteer Database"
-msgstr ""
-
-#: GUI/DbOpenDialog.pm:111
-msgid "Selecteer een database uit deze lijst"
-msgstr ""
-
-#: GUI/ListDialog.pm:65
-msgid "Selecteer"
-msgstr ""
-
-#: GUI/BKMPanel.pm:59
-msgid "bkm_dialog"
-msgstr ""
-
-#: GUI/IVPanel.pm:58
-msgid "iv_dialog"
-msgstr ""
-
 #: GUI/RepBtw.pm:37
 msgid "Refresh"
 msgstr ""
@@ -681,6 +434,253 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
+#: GUI/RepBtw.pm:39 GUI/BtwPrefsDialog.pm:31
+msgid "Periode"
+msgstr "Period"
+
 #: GUI/RepBtw.pm:67
 msgid "BTW  aangifte"
+msgstr ""
+
+#: GUI/NewDialog.pm:40
+msgid "Wizard"
+msgstr ""
+
+#: GUI/NewDialog.pm:42
+msgid "Naam"
+msgstr ""
+
+#: GUI/NewDialog.pm:44
+msgid "Aanvang boekjaar"
+msgstr ""
+
+#: GUI/NewDialog.pm:46
+msgid "BTW Periode"
+msgstr "VAT Period"
+
+#: GUI/NewDialog.pm:47
+msgid "Geen"
+msgstr ""
+
+#: GUI/NewDialog.pm:47 GUI/BtwPrefsDialog.pm:32
+msgid "Jaar"
+msgstr "Year"
+
+#: GUI/NewDialog.pm:47
+msgid "Half jaar"
+msgstr ""
+
+#: GUI/NewDialog.pm:47
+msgid "Trimester"
+msgstr ""
+
+#: GUI/NewDialog.pm:47
+msgid "Kwartaal"
+msgstr ""
+
+#: GUI/NewDialog.pm:47
+msgid "Maand"
+msgstr ""
+
+#: GUI/NewDialog.pm:48
+msgid "radio_box_1"
+msgstr ""
+
+#: GUI/NewDialog.pm:48
+msgid "Eenmanszaak"
+msgstr ""
+
+#: GUI/NewDialog.pm:48
+msgid "BV of NV"
+msgstr ""
+
+#: GUI/NewDialog.pm:48
+#, fuzzy
+msgid "Importeren uit bestaande administratie"
+msgstr "Open an existing administration"
+
+#: GUI/NewDialog.pm:49
+msgid "Database"
+msgstr ""
+
+#: GUI/NewDialog.pm:52
+msgid "Balanstotaal"
+msgstr ""
+
+#: GUI/NewDialog.pm:54
+msgid "Rekening"
+msgstr ""
+
+#: GUI/NewDialog.pm:55
+msgid "Bedrag"
+msgstr ""
+
+#: GUI/NewDialog.pm:62 GUI/BtwPrefsDialog.pm:51 GUI/ListDialog.pm:36
+msgid "Cancel"
+msgstr ""
+
+#: GUI/NewDialog.pm:63
+msgid "Back"
+msgstr ""
+
+#: GUI/NewDialog.pm:64
+msgid "Forward"
+msgstr ""
+
+#: GUI/NewDialog.pm:65 GUI/BtwPrefsDialog.pm:50 GUI/ListDialog.pm:35
+msgid "OK"
+msgstr ""
+
+#: GUI/NewDialog.pm:86 GUI/BtwPrefsDialog.pm:113
+msgid "dialog_1"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:30
+msgid "Voorkeuren"
+msgstr "Preferences"
+
+#: GUI/BtwPrefsDialog.pm:33
+msgid "Kwart 1"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:34
+msgid "Jan"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:35
+msgid "Feb"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:36
+msgid "Mar"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:37
+msgid "Kwart 2"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:38
+msgid "Apr"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:39 GUI/BtwPrefsDialog.pm:121
+msgid "Mei"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:40
+msgid "Jun"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:41
+msgid "Kwart 3"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:42
+msgid "Jul"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:43
+msgid "Aug"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:44
+msgid "Sep"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:45
+msgid "Kwart 4"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:46
+msgid "Okt"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:47
+msgid "Nov"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:48
+msgid "Dec"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:49
+msgid "Standaardinstelling"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:114
+msgid "Gehele jaar"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:115
+msgid "Eerste kwartaal"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:116
+#, fuzzy
+msgid "Januari"
+msgstr "Year"
+
+#: GUI/BtwPrefsDialog.pm:117
+msgid "Februari"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:118
+#, fuzzy
+msgid "Maart"
+msgstr "Year"
+
+#: GUI/BtwPrefsDialog.pm:119
+msgid "Tweede kwartaal"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:120
+msgid "April"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:122
+msgid "Juni"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:123
+msgid "Derde kwartaal"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:124
+msgid "Juli"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:125
+msgid "Augustus"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:126
+msgid "September"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:127
+msgid "Vierde kwartaal"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:128
+msgid "Oktober"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:129
+msgid "November"
+msgstr ""
+
+#: GUI/BtwPrefsDialog.pm:130
+msgid "December"
+msgstr ""
+
+#: GUI/ListDialog.pm:65
+msgid "Selecteer"
+msgstr ""
+
+#: GUI/IVPanel.pm:58
+msgid "iv_dialog"
+msgstr ""
+
+#: GUI/BKMPanel.pm:59
+msgid "bkm_dialog"
 msgstr ""
