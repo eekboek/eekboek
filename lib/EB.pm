@@ -1,11 +1,13 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.1 2005/09/18 21:08:51 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.2 2005/09/20 16:10:33 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 15:34:59 2005
-# Update Count    : 48
+# Last Modified On: Mon Sep 19 15:02:05 2005
+# Update Count    : 61
 # Status          : Unknown, Use with caution!
+
+our $app;
 
 package EB;
 
@@ -33,8 +35,16 @@ sub EB_LIB() { $lib }
 # Some standard modules.
 use EB::Globals;
 
-# Note that the shell and GUI use a different EB::Locale module!
-use EB::Locale;
+BEGIN {
+    # The core and GUI use a different EB::Locale module.
+    if ( $app ) {
+	require EB::Wx::Locale;
+    }
+    else {
+	require EB::Locale;
+    }
+    EB::Locale::->import;
+}
 
 # Export our and the imported globals.
 BEGIN {
@@ -55,6 +65,7 @@ INIT {
     my $thisyear = (localtime(time))[5] + 1900;
     $year .= "-$thisyear" unless $year == $thisyear;
     warn("EekBoek $VERSION ".
+	 ($app ? "Wx " : "").
 	 "("._T("Nederlands").")".
 	 " -- Copyright $year Squirrel Consultancy\n");
     @months =
