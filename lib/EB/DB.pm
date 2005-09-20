@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.14 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.15 2005/09/20 16:10:49 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 21:30:18 2005
-# Update Count    : 137
+# Last Modified On: Tue Sep 20 16:54:23 2005
+# Update Count    : 143
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -139,6 +139,50 @@ sub store_journal {
 			  [qw(jnl_date jnl_dbk_id jnl_bsk_id jnl_bsr_seq
 			      jnl_acc_id jnl_amount jnl_desc jnl_rel)],
 			  @$_);
+    }
+}
+
+sub bskid {
+    my ($self, $nr) = @_;
+    return $nr if $nr =~ /^\d+$/ && !wantarray;
+
+    my $rr;
+
+    if ( $nr =~ /^([[:alpha:]].+):(\d+)$/ ) {
+	$rr = $self->do("SELECT dbk_id, dbk_desc".
+			" FROM Dagboeken".
+			" WHERE dbk_desc ILIKE ?", $1);
+	unless ( $rr ) {
+	    return wantarray ? (undef, undef, __x("Onbekend dagboek: {dbk}", dbk => $1)) : undef;
+	}
+	my ($dbk_id, $dbk_desc) = @$rr;
+
+	$rr = $self->do("SELECT bsk_id".
+			" FROM Boekstukken".
+			" WHERE bsk_nr = ?".
+			" AND bsk_dbk_id = ?", $2, $dbk_id);
+	unless ( $rr ) {
+	    return wantarray ? (undef, undef, __x("Onbekend boekstuk {bsk} in dagboek {dbk}",
+						  dbk => $dbk_id, bsk => $2)) : undef;
+	}
+	return wantarray ? ($rr->[0], "$dbk_desc:$2", undef) : $rr->[0];
+    }
+    elsif ( $nr =~ /^(\d+)$/ ) {
+
+	$rr = $self->do("SELECT bsk_nr, dbk_id, dbk_desc".
+			" FROM Boekstukken, Dagboeken".
+			" WHERE bsk_dbk_id = dbk_id".
+			" AND bsk_id = ?", $nr);
+	unless ( $rr ) {
+	    return wantarray ? (undef, undef, __x("Onbekend boekstuk: {bsk}",
+						  bsk => $nr)) : undef;
+	}
+	my ($bsk_nr, $dbk_id, $dbk_desc) = @$rr;
+
+	return wantarray ? ($nr, "$dbk_desc:$bsk_nr", undef) : $nr;
+    }
+    else {
+	die("?".__x("Ongeldige boekstukaanduiding: {bsk}", bsk => $nr)."\n");
     }
 }
 
