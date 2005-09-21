@@ -17,11 +17,14 @@ createdb -E latin1 ${EB_DB_NAME} ||
  createdb --template=template0 -E latin1 ${EB_DB_NAME} ||
   createdb -E latin1 ${EB_DB_NAME}
 
-# Vul de database met het schema, en open.
-$EBSHELL --schema=sample < opening.eb
+# Vul de database met het schema.
+$EBSHELL --schema=sample -c
 
 # Voeg de relaties toe.
 $EBSHELL --echo < relaties.eb
+
+# Vul de database met openingsgegevens, evt. openstaande posten, en open.
+$EBSHELL --echo < opening.eb
 
 # Aanmaken restore set.
 pg_dump -c $EB_DB_NAME > reset.sql

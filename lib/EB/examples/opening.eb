@@ -6,6 +6,8 @@ adm_begindatum 2004
 
 # Data voor openingsbalans:
 
+# Het balanstotaal is het totaal van alle debet posten, dat uiteraard
+# overeenkomt met het totaal van alle credit posten.
 adm_balanstotaal 15854,77
 
 # Grootboekrekening Bedrag
@@ -18,8 +20,10 @@ adm_balans 1120  1131.92
 adm_balans  500  2443.18
 
 # Openstaande posten als volgt:
-# (indien nodig) relatie KESTER "Repro van Kesteren" 4950
-# adm_relatie 2003-12-31 "Printwerk" crd "KESTER" 48.79
+# Eerst, indien nodig, de betreffende relatie toevoegen:
+#relatie KESTER "Repro van Kesteren" 4950
+# Dan het openstaande boekstuk:
+#adm_relatie 2003-12-31 "Printwerk" crd "KESTER" 48.79
 
 # Open de administratie.
 
