@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.6 2005/09/18 21:19:29 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.7 2005/09/21 10:20:30 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 23:16:29 2005
-# Update Count    : 77
+# Last Modified On: Tue Sep 20 22:38:51 2005
+# Update Count    : 78
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -97,7 +97,7 @@ sub perform {
 				 " WHERE jnl_dbk_id = dbk_id".
 				 " AND jnl_bsk_id = bsk_id".
 				 " AND jnl_acc_id = ?".
-				 " ORDER BY jnl_date, jnl_bsk_id",
+				 " ORDER BY jnl_date, jnl_bsk_id, jnl_bsr_seq",
 				 $acc_id);
 
 	my $dtot = 0;
