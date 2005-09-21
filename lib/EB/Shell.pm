@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.22 2005/09/21 13:37:49 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.23 2005/09/21 17:22:58 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 15:36:52 2005
-# Update Count    : 356
+# Last Modified On: Wed Sep 21 19:22:12 2005
+# Update Count    : 363
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -384,9 +384,25 @@ EOS
 }
 
 sub do_relatie {
-    my $self = shift;
+    my ($self, @args) = @_;
+
+    my $opts = {
+	       };
+
+    parse_args(\@args,
+	       [ 'dagboek=s',
+		 'btw=s',
+	       ], $opts)
+      or goto &help_relatie;
+
+    if ( @args == 4 ) {
+	$opts->{btw} = pop(@args);
+    }
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 3;
+    warn("?"._T("Te weinig argumenten voor deze opdracht")."\n"), return if @args < 3;
+
     use EB::Relation;
-    EB::Relation->new->add(@_);
+    EB::Relation->new->add(@args, $opts);
 }
 
 sub help_relatie {

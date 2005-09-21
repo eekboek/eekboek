@@ -17,7 +17,9 @@ sub new {
 
 sub add {
 
-    my ($self, $code, $desc, $acct, $bstate) = @_;
+    my ($self, $code, $desc, $acct, $opts) = @_;
+    my $bstate = $opts->{btw};
+    my $dbk = $opts->{dagboek};
 
     # Invoeren nieuwe relatie.
 
