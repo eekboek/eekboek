@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.4 2005/09/21 10:34:03 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.5 2005/09/21 13:09:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 12:33:45 2005
-# Update Count    : 63
+# Last Modified On: Wed Sep 21 13:10:52 2005
+# Update Count    : 64
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -46,10 +46,14 @@ BEGIN {
     EB::Locale::->import;
 }
 
+# Utilities.
+use EB::Utils;
+
 # Export our and the imported globals.
 BEGIN {
     @EXPORT = ( qw(EB_LIB),
 		@EB::Globals::EXPORT,
+		@EB::Utils::EXPORT,
 		@EB::Locale::EXPORT,
 	      );
 }

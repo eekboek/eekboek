@@ -204,21 +204,21 @@ sub journalise {
 	}
 	$tot += $bsr_amount;
 
-	push(@$ret, [$bsr_date,  $bsk_dbk_id, $bsk_id, $nr++,
+	push(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
 		     $bsr_acc_id,
 		     $bsr_amount - $btw, $bsr_desc,
 		     $bsr_type ? $bsr_rel_code : undef]);
-	push(@$ret, [$bsr_date,  $bsk_dbk_id, $bsk_id, $nr++,
+	push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
 		     $bsr_btw_acc,
 		     $btw, "BTW ".$bsr_desc,
 		     undef]) if $btw;
     }
 
-    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $nr++, $dbk_acc_id,
+    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
 		 -$tot, $bsk_desc, undef])
       unless $dbktype == DBKTYPE_MEMORIAAL;
 
-    unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, 0, undef,
+    unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsk_date, 0, undef,
 		    undef, $bsk_desc, undef]);
 
     $ret;

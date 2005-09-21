@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.18 2005/09/21 10:19:34 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.19 2005/09/21 13:09:01 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 22:04:14 2005
-# Update Count    : 104
+# Last Modified On: Wed Sep 21 14:50:56 2005
+# Update Count    : 106
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -177,14 +177,14 @@ sub perform {
     my $ret = EB::Finance::journalise($bsk_id);
     $rr = [ @$ret ];
     shift(@$rr);
-    $rr = [ sort { $a->[4] <=> $b->[4] } @$rr ];
+    $rr = [ sort { $a->[5] <=> $b->[5] } @$rr ];
     foreach my $r ( @$rr ) {
-	my (undef, undef, undef, $nr, $ac, $amt) = @$r;
+	my (undef, undef, undef, undef, $nr, $ac, $amt) = @$r;
 	next unless $nr;
 	warn("update $ac with ".numfmt($amt)."\n") if $trace_updates;
 	$dbh->upd_account($ac, $amt);
     }
-    my $tot = $ret->[$#{$ret}]->[5];
+    my $tot = $ret->[$#{$ret}]->[6];
     $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
 		   $tot, $bsk_id)->finish;
 

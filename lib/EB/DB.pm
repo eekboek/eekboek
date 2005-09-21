@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.16 2005/09/21 10:18:12 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.17 2005/09/21 13:09:01 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 19:25:10 2005
-# Update Count    : 144
+# Last Modified On: Wed Sep 21 14:43:02 2005
+# Update Count    : 146
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -136,7 +136,7 @@ sub store_journal {
     my ($self, $jnl) = @_;
     foreach ( @$jnl ) {
 	$self->sql_insert("Journal",
-			  [qw(jnl_date jnl_dbk_id jnl_bsk_id jnl_bsr_seq
+			  [qw(jnl_date jnl_dbk_id jnl_bsk_id jnl_bsr_date jnl_bsr_seq
 			      jnl_acc_id jnl_amount jnl_desc jnl_rel)],
 			  @$_);
     }

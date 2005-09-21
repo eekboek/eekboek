@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.6 2005/09/21 08:57:01 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.7 2005/09/21 13:09:01 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 10:56:22 2005
-# Update Count    : 277
+# Last Modified On: Wed Sep 21 15:00:17 2005
+# Update Count    : 278
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -328,7 +328,7 @@ sub collect {
     my ($vb) = @{$::dbh->do("SELECT SUM(jnl_amount)".
 			    " FROM Journal".
 			    " WHERE ( jnl_acc_id = 1530 OR jnl_acc_id = 1520 )".
-			    ($self->{periode} ? " AND jnl_date >= ? AND jnl_date <= ?" : ""),
+			    ($self->{periode} ? " AND jnl_bsr_date >= ? AND jnl_bsr_date <= ?" : ""),
 			    $self->{periode} ? ( $self->{p_start}, $self->{p_end} ) : ())};
     my $btw_delta = $vb - $crd_btw;
 

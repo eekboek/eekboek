@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.17 2005/09/20 17:04:37 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.18 2005/09/21 13:09:01 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 19:04:24 2005
-# Update Count    : 175
+# Last Modified On: Wed Sep 21 13:15:21 2005
+# Update Count    : 178
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -95,6 +95,8 @@ sub perform {
 	my $type = shift(@$args);
 
 	if ( $type eq "std" ) {
+	    my $dd = parse_date($args->[0]);
+	    shift(@$args) if $dd;
 	    my ($desc, $amt, $acct) = splice(@$args, 0, 3);
 	    warn(" "._T("boekstuk").": std $desc $amt $acct\n")
 	      if $did++ || @$args || $opts->{verbose};
@@ -143,7 +145,7 @@ sub perform {
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				 bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
-			     $nr++, $date, $bsk_id, $desc, $orig_amount,
+			     $nr++, $dd||$date, $bsk_id, $desc, $orig_amount,
 			     $btw_id, $btw_acc, 0, $acct, undef);
 
 	    $amt = -$amt, $btw = -$btw if $debcrd;
@@ -163,6 +165,8 @@ sub perform {
 	}
 	elsif ( $type eq "deb" || $type eq "crd" ) {
 	    my $debcrd = $type eq "deb" ? 1 : 0;
+	    my $dd = parse_date($args->[0]);
+	    shift(@$args) if $dd;
 
 	    my ($rel, $amt) = splice(@$args, 0, 2);
 	    warn(" "._T("boekstuk").": $type $rel $amt\n")
@@ -210,7 +214,7 @@ sub perform {
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				 bsr_btw_id bsr_type bsr_acc_id bsr_rel_code)],
-			     $nr++, $date, $bsk_id, "*".$bsk_desc,
+			     $nr++, $dd||$date, $bsk_id, "*".$bsk_desc,
 #			     $debcrd ? -$amt : $amt,
 			     -$amt,
 			     0, $type eq "deb" ? 1 : 2, $acct, $rel);
