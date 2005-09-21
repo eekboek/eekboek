@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.15 2005/09/20 16:10:49 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.16 2005/09/21 10:18:12 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 16:54:23 2005
-# Update Count    : 143
+# Last Modified On: Tue Sep 20 19:25:10 2005
+# Update Count    : 144
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -163,7 +163,7 @@ sub bskid {
 			" AND bsk_dbk_id = ?", $2, $dbk_id);
 	unless ( $rr ) {
 	    return wantarray ? (undef, undef, __x("Onbekend boekstuk {bsk} in dagboek {dbk}",
-						  dbk => $dbk_id, bsk => $2)) : undef;
+						  dbk => $dbk_desc, bsk => $2)) : undef;
 	}
 	return wantarray ? ($rr->[0], "$dbk_desc:$2", undef) : $rr->[0];
     }
