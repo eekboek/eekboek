@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.5 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.6 2005/09/21 08:57:01 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 17:01:31 2005
-# Update Count    : 272
+# Last Modified On: Wed Sep 21 10:56:22 2005
+# Update Count    : 277
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -67,6 +67,27 @@ sub perform {
     $self->report($opts);
 }
 
+sub periode {
+    my ($self, $p, $year, $v) = @_;
+    if ( $p == 1 ) {
+	return __x("{year}", year => $year);
+    }
+    elsif ( $p == 4 ) {
+	return __x("{quarter} {year}",
+		   quarter => (_T("1e kwartaal"), _T("2e kwartaal"),
+			       _T("3e kwartaal"), _T("4e kwartaal"))[$v-1],
+		   year => $year);
+    }
+    elsif ( $p == 12 ) {
+	return __x("{month} {year}",
+		   month => $EB::month_names[$v-1],
+		   year => $year);
+    }
+    else {
+	die("?".__x("Programmafout: Ongeldige BTW periode: {per}", per => $p)."\n");
+    }
+}
+
 sub parse_periode {
     my ($self, $v) = @_;
     my $year = substr($self->{adm_begin}, 0, 4);
@@ -84,24 +105,18 @@ sub parse_periode {
 	my $tbl = $periodetabel[$self->{adm_btw_periode}];
 	$self->{p_start} = $year . "-" . $tbl->[$n]->[0];
 	$self->{p_end}   = $year . "-" . $tbl->[$n]->[1];
-	$self->{periode} = $n . "e " . $tbl->[0] . " " . $year;
+	$self->{periode} = $self->periode($per, $year, $n);
     };
 
     my $yrpat = _T("j(aar)?");
     if ( $v =~ /^$yrpat$/i ) {
 	$pp->(1, 1);
-	$self->{periode} = __x("{year}", year => $year);
     }
     elsif ( $v =~ /^[kq](\d)$/i && $1 >= 1 && $1 <= 4) {
 	$pp->(4, $1);
-	$self->{periode} = (_T("1e kwartaal"), _T("2e kwartaal"),
-			    _T("3e kwartaal"), _T("4e kwartaal"))[$1-1];
     }
     elsif ( $v =~ /^(\d)$/i  && $1 >= 1 && $1 <= 12) {
 	$pp->(12, $1);
-	$self->{periode} = __x("{month} {year}",
-			       month => $EB::month_names[$1-1],
-			       year => $year);
     }
     else {
 	die("?".__x("Ongeldige waarde voor BTW periode: \"{per}\"",
@@ -122,7 +137,7 @@ sub collect {
 	if ( $self->{adm_btw_periode} == 1 ) {
 	    $self->{p_start} = $year . "-" . $tbl->[1]->[0];
 	    $self->{p_end}   = $year . "-" . $tbl->[1]->[1];
-	    $self->{periode} = $tbl->[0] . " " . $year;
+	    $self->{periode} = $self->periode(1, $year);
 	}
 	else {
 	    my @tm = localtime(time);
@@ -136,7 +151,7 @@ sub collect {
 	    }
 	    $self->{p_start} = $year . "-" . $tbl->[$m]->[0];
 	    $self->{p_end}   = $year . "-" . $tbl->[$m]->[1];
-	    $self->{periode} = $m . "e " . $tbl->[0] . " " . $year;
+	    $self->{periode} = $self->periode($self->{adm_btw_periode}, $year, $m);
 	}
     }
 
