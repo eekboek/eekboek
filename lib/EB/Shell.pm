@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.21 2005/09/21 10:19:01 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.22 2005/09/21 13:37:49 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 19:34:45 2005
-# Update Count    : 352
+# Last Modified On: Wed Sep 21 15:36:52 2005
+# Update Count    : 356
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -333,15 +333,31 @@ sub do_grootboek {
 		 'trace!',
 	       ], $opts);
 
+    my $fail;
+    foreach ( @args ) {
+	if ( /^\d+$/ ) {
+	    if ( defined($opts->{select}) ) {
+		$opts->{select} .= ",$_";
+	    }
+	    else {
+		$opts->{select} = $_;
+	    }
+	    next;
+	}
+	warn("?".__x("Ongeldig rekeningnummer: {acct}",
+		     acct => $_)."\n");
+	$fail++;
+    }
+    return if $fail;
     EB::Report::Grootboek->new->perform($opts);
     undef;
 }
 
 sub help_grootboek {
     <<EOS;
-Print het Grootboek
+Print het Grootboek, of een selectie daaruit.
 
-  grootboek 
+  grootboek [ <rek> ... ]
 EOS
 }
 
