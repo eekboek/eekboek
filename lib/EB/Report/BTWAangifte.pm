@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.7 2005/09/21 13:09:01 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.8 2005/09/21 17:14:35 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 15:00:17 2005
-# Update Count    : 278
+# Last Modified On: Wed Sep 21 19:14:18 2005
+# Update Count    : 284
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -109,19 +109,31 @@ sub parse_periode {
     };
 
     my $yrpat = _T("j(aar)?");
-    if ( $v =~ /^$yrpat$/i ) {
+    if ( $v =~ /^$yrpat|(j(aar)?)$/i ) {
 	$pp->(1, 1);
+	return;
     }
-    elsif ( $v =~ /^[kq](\d)$/i && $1 >= 1 && $1 <= 4) {
+    if ( $v =~ /^[kq](\d)$/i && $1 >= 1 && $1 <= 4) {
 	$pp->(4, $1);
+	return;
     }
-    elsif ( $v =~ /^(\d)$/i  && $1 >= 1 && $1 <= 12) {
+    if ( $v =~ /^(\d+)$/i  && $1 >= 1 && $1 <= 12) {
 	$pp->(12, $1);
+	return;
     }
-    else {
-	die("?".__x("Ongeldige waarde voor BTW periode: \"{per}\"",
-		    per => $v) . "\n");
+    if ( $v =~ /^(\w+)$/i ) {
+	my $i;
+	for ( $i = 0; $i < 12; $i++ ) {
+	    last if lc($EB::month_names[$i]) eq lc($v);
+	    last if lc($EB::months[$i]) eq lc($v);
+	}
+	if ( $i < 12 ) {
+	    $pp->(12, $i+1);
+	    return;
+	}
     }
+    die("?".__x("Ongeldige waarde voor BTW periode: \"{per}\"",
+		per => $v) . "\n");
 }
 
 sub collect {
