@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.17 2005/09/20 17:04:41 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.18 2005/09/21 10:19:34 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 19:04:09 2005
-# Update Count    : 103
+# Last Modified On: Tue Sep 20 22:04:14 2005
+# Update Count    : 104
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -160,7 +160,7 @@ sub perform {
 	    $btw_acc = $dagboek_type == DBKTYPE_INKOOP ?
 	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
 	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
-	    die("?D/C mismatch, accounts $acct <> $btw_acc")
+	    warn("?D/C mismatch, accounts $acct <> $btw_acc")
 	      if $dbh->lookup($acct,
 				  qw(Accounts acc_id acc_debcrd))
 		xor $dbh->lookup($btw_acc,
