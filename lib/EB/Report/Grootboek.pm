@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.7 2005/09/21 10:20:30 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.8 2005/09/21 13:32:04 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 22:38:51 2005
-# Update Count    : 78
+# Last Modified On: Wed Sep 21 15:30:02 2005
+# Update Count    : 88
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -40,9 +40,9 @@ sub perform {
     my ($self, $opts) = @_;
 
     my $detail = $opts->{detail};
+    my $sel = $opts->{select};
 
-    my $rr = $dbh->do("SELECT adm_begin FROM Metadata");
-    my $date = $rr->[0];
+    my $date = $dbh->adm("begin");
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
 
     print(_T("Grootboek"), " -- ",
@@ -51,10 +51,12 @@ sub perform {
 
     my $ah = $dbh->sql_exec("SELECT acc_id,acc_desc,acc_ibalance".
 			    " FROM Accounts".
-			    " WHERE acc_ibalance <> 0".
-			    " OR acc_id in".
-			    "  ( SELECT DISTINCT jnl_acc_id FROM Journal )".
-			    " ORDER BY acc_id");
+			    ($sel ?
+			     (" WHERE acc_id IN ($sel)") :
+			     (" WHERE acc_ibalance <> 0".
+			      " OR acc_id in".
+			      "  ( SELECT DISTINCT jnl_acc_id FROM Journal )".
+			      " ORDER BY acc_id")));
 
     my $dgrand = 0;
     my $cgrand = 0;
@@ -92,12 +94,12 @@ sub perform {
 	}
 	printf($fmt, "", " "._T("Beginsaldo"), "", "", @d, ("") x 3) if $detail > 0;
 
-	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_date,jnl_desc,jnl_rel".
+	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_bsr_date,jnl_desc,jnl_rel".
 				 " FROM journal, Boekstukken, Dagboeken".
 				 " WHERE jnl_dbk_id = dbk_id".
 				 " AND jnl_bsk_id = bsk_id".
 				 " AND jnl_acc_id = ?".
-				 " ORDER BY jnl_date, jnl_bsk_id, jnl_bsr_seq",
+				 " ORDER BY jnl_bsr_date, jnl_bsk_id, jnl_bsr_seq",
 				 $acc_id);
 
 	my $dtot = 0;
@@ -138,14 +140,20 @@ sub perform {
 	}
     }
 
-    print("\n");
-    printf($fmt, "", _T("Totaal mutaties"), "", "",
+    if ( $line ) {
+	print("\n");
+	printf($fmt, "", _T("Totaal mutaties"), "", "",
 	       numfmt($mdgrand), numfmt($mcgrand),
 	       ("") x 3);
-    print($line);
-    printf($fmt, "", _T("Totaal"), "", "",
+	print($line);
+	printf($fmt, "", _T("Totaal"), "", "",
 	       numfmt($dgrand), numfmt($cgrand),
 	       ("") x 3);
+    }
+    else {
+	print("?"._T("Geen informatie gevonden")."\n");
+    }
+
 }
 
 1;
