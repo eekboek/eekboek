@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-20 18:12+0200\n"
-"PO-Revision-Date: 2005-09-20 18:12+0200\n"
+"POT-Creation-Date: 2005-09-21 12:34+0200\n"
+"PO-Revision-Date: 2005-09-21 12:35+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -422,20 +422,20 @@ msgstr "Invalid operation (IV) voor ledger type {type}"
 msgid "Onbekend rekeningnummer: {acct}"
 msgstr "Unknown account: {acct}"
 
-#: lib/EB/Booking/Delete.pm:55
+#: lib/EB/Booking/Delete.pm:56
 #, perl-brace-format
 msgid "Boekstuk {bsk} is in gebruik door {lst}"
 msgstr "Booking {bsk} is in use by {lst}"
 
-#: lib/EB/Booking/Delete.pm:83
-#, perl-brace-format
-msgid "Boekstuk {bsk} verwijderd"
-msgstr "Booking {bsk} removed"
-
-#: lib/EB/Booking/Delete.pm:87
+#: lib/EB/Booking/Delete.pm:108
 #, perl-brace-format
 msgid "Boekstuk {bsk} niet verwijderd"
 msgstr "Booking {bsk} not removed"
+
+#: lib/EB/Booking/Delete.pm:112
+#, perl-brace-format
+msgid "Boekstuk {bsk} verwijderd"
+msgstr "Booking {bsk} removed"
 
 #: lib/EB/Globals.pm:34
 msgid "-- Inkoop Verkoop Bank Kas Memoriaal"
@@ -505,15 +505,15 @@ msgstr "N/A"
 msgid "Database: {db}"
 msgstr "Database: {db}"
 
-#: lib/EB/Shell.pm:458 lib/EB/Shell.pm:497
+#: lib/EB/Shell.pm:458 lib/EB/Shell.pm:503
 msgid "Gaarne een boekstuk"
 msgstr "Please supply a booking"
 
-#: lib/EB/Shell.pm:541 lib/EB/Tools/Opening.pm:315 lib/EB/BTWAangifte.pm:34
+#: lib/EB/Shell.pm:547 lib/EB/Tools/Opening.pm:315 lib/EB/BTWAangifte.pm:34
 msgid "De administratie is nog niet geopend"
 msgstr "The administration has not yet been opened"
 
-#: lib/EB/Shell.pm:544 lib/EB/Tools/Opening.pm:318
+#: lib/EB/Shell.pm:550 lib/EB/Tools/Opening.pm:318
 msgid "De administratie is reeds in gebruik"
 msgstr "The administration is already in use"
 
@@ -784,7 +784,7 @@ msgstr "Open bookings for {dc} exceede by {amt}"
 msgid "DE OPENING IS NIET UITGEVOERD!"
 msgstr "OPENING IS NOT COMPLETED!"
 
-#: lib/EB/BTWAangifte/Html.pm:40 lib/EB/BTWAangifte.pm:455
+#: lib/EB/BTWAangifte/Html.pm:40 lib/EB/BTWAangifte.pm:470
 #, perl-brace-format
 msgid "Ongeldige mode '{ctl}' in {pkg}::addline"
 msgstr "Unsupported mode '{ctl}' in {pkg}::addline"
@@ -801,7 +801,43 @@ msgstr "Yearly"
 msgid "per kwartaal"
 msgstr "Quarterly"
 
+#: lib/EB/BTWAangifte.pm:73
+#, perl-brace-format
+msgid "{year}"
+msgstr "{year}"
+
+#: lib/EB/BTWAangifte.pm:76
+#, perl-brace-format
+msgid "{quarter} {year}"
+msgstr "{quarter} {year}"
+
 #: lib/EB/BTWAangifte.pm:77
+msgid "1e kwartaal"
+msgstr "1st quarter"
+
+#: lib/EB/BTWAangifte.pm:77
+msgid "2e kwartaal"
+msgstr "2nd quarter"
+
+#: lib/EB/BTWAangifte.pm:78
+msgid "3e kwartaal"
+msgstr "3rd quarter"
+
+#: lib/EB/BTWAangifte.pm:78
+msgid "4e kwartaal"
+msgstr "4th quarter"
+
+#: lib/EB/BTWAangifte.pm:82
+#, perl-brace-format
+msgid "{month} {year}"
+msgstr "{month} {year}"
+
+#: lib/EB/BTWAangifte.pm:87
+#, perl-brace-format
+msgid "Programmafout: Ongeldige BTW periode: {per}"
+msgstr "ASSERT: Illegal VAT period: \"{per}\""
+
+#: lib/EB/BTWAangifte.pm:98
 #, perl-brace-format
 msgid ""
 "Aangifte {per} komt niet overeen met de BTW instelling van de administratie "
@@ -810,42 +846,16 @@ msgstr ""
 "{per} report does not match the corresponding setting ({admper}) of the "
 "administration"
 
-#: lib/EB/BTWAangifte.pm:90
+#: lib/EB/BTWAangifte.pm:111
 msgid "j(aar)?"
 msgstr "y(ear)?"
 
-#: lib/EB/BTWAangifte.pm:93
-#, perl-brace-format
-msgid "{year}"
-msgstr "{year}"
-
-#: lib/EB/BTWAangifte.pm:97
-msgid "1e kwartaal"
-msgstr "1st quarter"
-
-#: lib/EB/BTWAangifte.pm:97
-msgid "2e kwartaal"
-msgstr "2nd quarter"
-
-#: lib/EB/BTWAangifte.pm:98
-msgid "3e kwartaal"
-msgstr "3rd quarter"
-
-#: lib/EB/BTWAangifte.pm:98
-msgid "4e kwartaal"
-msgstr "4th quarter"
-
-#: lib/EB/BTWAangifte.pm:102
-#, perl-brace-format
-msgid "{month} {year}"
-msgstr "{month} {year}"
-
-#: lib/EB/BTWAangifte.pm:107
+#: lib/EB/BTWAangifte.pm:122
 #, perl-brace-format
 msgid "Ongeldige waarde voor BTW periode: \"{per}\""
 msgstr "Illegal value for VAT period: \"{per}\""
 
-#: lib/EB/BTWAangifte.pm:396
+#: lib/EB/BTWAangifte.pm:411
 #, perl-brace-format
 msgid ""
 "Er is een verschil van {amount} tussen de berekende en werkelijk ingehouden "

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-20 18:12+0200\n"
+"POT-Creation-Date: 2005-09-21 12:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -407,19 +407,19 @@ msgstr ""
 msgid "Onbekend rekeningnummer: {acct}"
 msgstr ""
 
-#: lib/EB/Booking/Delete.pm:55
+#: lib/EB/Booking/Delete.pm:56
 #, perl-brace-format
 msgid "Boekstuk {bsk} is in gebruik door {lst}"
 msgstr ""
 
-#: lib/EB/Booking/Delete.pm:83
-#, perl-brace-format
-msgid "Boekstuk {bsk} verwijderd"
-msgstr ""
-
-#: lib/EB/Booking/Delete.pm:87
+#: lib/EB/Booking/Delete.pm:108
 #, perl-brace-format
 msgid "Boekstuk {bsk} niet verwijderd"
+msgstr ""
+
+#: lib/EB/Booking/Delete.pm:112
+#, perl-brace-format
+msgid "Boekstuk {bsk} verwijderd"
 msgstr ""
 
 #: lib/EB/Globals.pm:34
@@ -490,15 +490,15 @@ msgstr ""
 msgid "Database: {db}"
 msgstr ""
 
-#: lib/EB/Shell.pm:458 lib/EB/Shell.pm:497
+#: lib/EB/Shell.pm:458 lib/EB/Shell.pm:503
 msgid "Gaarne een boekstuk"
 msgstr ""
 
-#: lib/EB/Shell.pm:541 lib/EB/Tools/Opening.pm:315 lib/EB/BTWAangifte.pm:34
+#: lib/EB/Shell.pm:547 lib/EB/Tools/Opening.pm:315 lib/EB/BTWAangifte.pm:34
 msgid "De administratie is nog niet geopend"
 msgstr ""
 
-#: lib/EB/Shell.pm:544 lib/EB/Tools/Opening.pm:318
+#: lib/EB/Shell.pm:550 lib/EB/Tools/Opening.pm:318
 msgid "De administratie is reeds in gebruik"
 msgstr ""
 
@@ -764,7 +764,7 @@ msgstr ""
 msgid "DE OPENING IS NIET UITGEVOERD!"
 msgstr ""
 
-#: lib/EB/BTWAangifte/Html.pm:40 lib/EB/BTWAangifte.pm:455
+#: lib/EB/BTWAangifte/Html.pm:40 lib/EB/BTWAangifte.pm:470
 #, perl-brace-format
 msgid "Ongeldige mode '{ctl}' in {pkg}::addline"
 msgstr ""
@@ -781,49 +781,59 @@ msgstr ""
 msgid "per kwartaal"
 msgstr ""
 
+#: lib/EB/BTWAangifte.pm:73
+#, perl-brace-format
+msgid "{year}"
+msgstr ""
+
+#: lib/EB/BTWAangifte.pm:76
+#, perl-brace-format
+msgid "{quarter} {year}"
+msgstr ""
+
 #: lib/EB/BTWAangifte.pm:77
+msgid "1e kwartaal"
+msgstr ""
+
+#: lib/EB/BTWAangifte.pm:77
+msgid "2e kwartaal"
+msgstr ""
+
+#: lib/EB/BTWAangifte.pm:78
+msgid "3e kwartaal"
+msgstr ""
+
+#: lib/EB/BTWAangifte.pm:78
+msgid "4e kwartaal"
+msgstr ""
+
+#: lib/EB/BTWAangifte.pm:82
+#, perl-brace-format
+msgid "{month} {year}"
+msgstr ""
+
+#: lib/EB/BTWAangifte.pm:87
+#, perl-brace-format
+msgid "Programmafout: Ongeldige BTW periode: {per}"
+msgstr ""
+
+#: lib/EB/BTWAangifte.pm:98
 #, perl-brace-format
 msgid ""
 "Aangifte {per} komt niet overeen met de BTW instelling van de administratie "
 "({admper})"
 msgstr ""
 
-#: lib/EB/BTWAangifte.pm:90
+#: lib/EB/BTWAangifte.pm:111
 msgid "j(aar)?"
 msgstr ""
 
-#: lib/EB/BTWAangifte.pm:93
-#, perl-brace-format
-msgid "{year}"
-msgstr ""
-
-#: lib/EB/BTWAangifte.pm:97
-msgid "1e kwartaal"
-msgstr ""
-
-#: lib/EB/BTWAangifte.pm:97
-msgid "2e kwartaal"
-msgstr ""
-
-#: lib/EB/BTWAangifte.pm:98
-msgid "3e kwartaal"
-msgstr ""
-
-#: lib/EB/BTWAangifte.pm:98
-msgid "4e kwartaal"
-msgstr ""
-
-#: lib/EB/BTWAangifte.pm:102
-#, perl-brace-format
-msgid "{month} {year}"
-msgstr ""
-
-#: lib/EB/BTWAangifte.pm:107
+#: lib/EB/BTWAangifte.pm:122
 #, perl-brace-format
 msgid "Ongeldige waarde voor BTW periode: \"{per}\""
 msgstr ""
 
-#: lib/EB/BTWAangifte.pm:396
+#: lib/EB/BTWAangifte.pm:411
 #, perl-brace-format
 msgid ""
 "Er is een verschil van {amount} tussen de berekende en werkelijk ingehouden "
