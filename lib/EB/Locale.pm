@@ -1,10 +1,10 @@
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.1 2005/09/18 21:08:13 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.2 2005/09/21 10:18:32 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 16:20:36 2005
-# Update Count    : 55
+# Last Modified On: Tue Sep 20 22:26:51 2005
+# Update Count    : 56
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -33,7 +33,7 @@ use Locale::gettext 1.05;
 use POSIX;     # Needed for setlocale()
 
 # Use outer settings.
-setlocale(LC_MESSAGES, "");
+setlocale(LC_MESSAGES, $ENV{EB_LANG}||"");
 
 our $core_localiser;
 unless ( $core_localiser ) {
