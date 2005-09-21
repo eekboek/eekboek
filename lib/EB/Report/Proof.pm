@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.7 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.8 2005/09/21 13:30:53 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 21:45:08 2005
-# Update Count    : 233
+# Last Modified On: Wed Sep 21 15:30:42 2005
+# Update Count    : 234
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -84,7 +84,7 @@ sub perform {
 	  ("SELECT jnl_amount,jnl_desc".
 	   " FROM Journal".
 	   " WHERE jnl_acc_id = ?".
-	   " ORDER BY jnl_date", $acc_id);
+	   " ORDER BY jnl_bsr_date", $acc_id);
 	while ( my $rr = $sth->fetchrow_arrayref ) {
 	    my ($amount, $desc) = @$rr;
 	    $did++;
