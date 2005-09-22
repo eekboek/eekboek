@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.5 2005/09/21 13:09:01 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.6 2005/09/22 14:07:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 13:10:52 2005
-# Update Count    : 64
+# Last Modified On: Thu Sep 22 15:43:54 2005
+# Update Count    : 66
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -15,7 +15,7 @@ use strict;
 use base qw(Exporter);
 
 our $VERSION;
-$VERSION = "0.08";
+$VERSION = "0.09";
 
 our @EXPORT;
 our @EXPORT_OK;
@@ -70,8 +70,8 @@ INIT {
     $year .= "-$thisyear" unless $year == $thisyear;
     warn("EekBoek $VERSION ".
 	 ($app ? "Wx " : "").
-	 "("._T("Nederlands").")".
-	 " -- Copyright $year Squirrel Consultancy\n");
+	 (LOCALISER ? "("._T("Nederlands").") " : "").
+	 "-- Copyright $year Squirrel Consultancy\n");
     @months =
       split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
     @month_names =
