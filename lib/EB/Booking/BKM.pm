@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.18 2005/09/21 13:09:01 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.19 2005/09/22 14:07:41 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 13:15:21 2005
-# Update Count    : 178
+# Last Modified On: Thu Sep 22 15:56:18 2005
+# Update Count    : 179
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -180,7 +180,7 @@ sub perform {
 			      $rel);
 	    unless ( defined($rr) ) {
 		warn("?".__x("Onbekende {what}: {who}",
-			     what => lc($type eq "deb" ? _T("Debiteur") : _T("Crediteur")).
+			     what => lc($type eq "deb" ? _T("Debiteur") : _T("Crediteur")),
 			     who => $rel)."\n");
 		$fail++;
 		next;
