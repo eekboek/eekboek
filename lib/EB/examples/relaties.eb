@@ -6,4 +6,6 @@ relatie KPN "KPN" 4900
 relatie ACME "Acme Corp." 8000
 
 # Relatie van buiten Europa. BTW code is 'extra'.
+# Andere mogelijkheden voor BTW zijn 'normaal',
+# 'verlegd' en 'intra' (intra-communautair).
 relatie --btw=extra ORA "O'Reilly & Associates" 8100
