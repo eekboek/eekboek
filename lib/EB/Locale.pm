@@ -1,10 +1,10 @@
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.2 2005/09/21 10:18:32 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.3 2005/09/22 14:07:30 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 22:26:51 2005
-# Update Count    : 56
+# Last Modified On: Thu Sep 22 15:50:41 2005
+# Update Count    : 62
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -18,16 +18,24 @@ our @EXPORT_OK;
 our @EXPORT;
 
 BEGIN {
-    @EXPORT_OK = qw(_T __x __n __nx __xn);
+    @EXPORT_OK = qw(LOCALISER _T __x __n __nx __xn);
     @EXPORT = ( @EXPORT_OK );
 }
 
-# This module supports two different gettext implementations.
+# This module supports three different gettext implementations.
 
-# First alternative: Locale-gettext 1.05 (on CPAN).
+# First alternative: no gettext.
+
+sub _T($) { $_[0] }
+
+sub LOCALISER() { "" }
+
+# Second alternative: Locale-gettext 1.05 (on CPAN).
 # Simple and leight-weight.
 # It only provides the straight-forward translation, so we need
 # to add the utility routines __x __n __xn __nx.
+
+=begin later
 
 use Locale::gettext 1.05;
 use POSIX;     # Needed for setlocale()
@@ -44,6 +52,10 @@ unless ( $core_localiser ) {
 sub _T($) {
     $core_localiser->get($_[0]);
 }
+
+sub LOCALISER() { "Locale::gettext" }
+
+=cut
 
 # Variable expansion. See GNU gettext for details.
 sub __expand($%) {
@@ -74,11 +86,9 @@ sub __nx($$$@) {
 # Make __xn a synonym for __nx.
 *__xn = \&__nx;
 
-=cut
-
 =begin alternative
 
-# Second alternative: libintl-perl (GNU gettext) (on CPAN).
+# Third alternative: libintl-perl (GNU gettext) (on CPAN).
 #
 
 # This implementation provides a smart hash binding as well as object
@@ -88,6 +98,8 @@ sub __nx($$$@) {
 use Locale::TextDomain(COREPACKAGE, $ENV{EB_LIB} . "EB/locale");
 
 sub _T($) { $__->{$_[0]} }
+
+sub LOCALISER() { "Locale::TextDomain" }
 
 =cut
 
