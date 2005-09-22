@@ -16,10 +16,24 @@ sub new {
 }
 
 sub add {
-
     my ($self, $code, $desc, $acct, $opts) = @_;
     my $bstate = $opts->{btw};
     my $dbk = $opts->{dagboek};
+
+    if ( defined($bstate) ) {
+	$bstate = lc($bstate);
+	if ( $bstate =~ /^\d+$/ && $bstate >= 0 && $bstate <= 3 ) { #### TODO
+	    # Ok.
+	}
+	elsif ( $bstate eq "normaal" ) { $bstate = BTW_NORMAAL }
+	elsif ( $bstate eq "verlegd" ) { $bstate = BTW_VERLEGD }
+	elsif ( $bstate eq "intra" )   { $bstate = BTW_INTRA   }
+	elsif ( $bstate eq "extra" )   { $bstate = BTW_EXTRA   }
+	else {
+	    warn("?".__x("Ongeldige waarde voor BTW status: {btw}", btw => $bstate)."\n");
+	    return;
+	}
+    }
 
     # Invoeren nieuwe relatie.
 

@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.6 2005/08/14 09:04:55 jv Exp $ ';
+my $RCS_Id = '$Id: exirel.pl,v 1.7 2005/09/22 14:06:29 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug 13 19:21:53 2005
-# Update Count    : 84
+# Last Modified On: Thu Sep 22 16:04:33 2005
+# Update Count    : 86
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -116,10 +116,10 @@ while ( <> ) {
 	    next;
 	}
 	print("relatie ",
+	      $a{btw_nummer} ne "" ? "--btw=extra " : "",
 	      '"', $a{debzk}, '"', " ",
 	      '"', $a{naam}, '"', " ",
 	      8000,
-	      $a{btw_nummer} ne "" ? " @{[BTW_EXTRA]} " : "",
 	      "\n");
 	next;
     }
@@ -137,10 +137,10 @@ while ( <> ) {
 	    next;
 	}
 	print("relatie ",
+	      $a{btw_nummer} ne "" ? "--btw=extra " : "",
 	      '"', $a{crdzk}, '"', " ",
 	      '"', $a{naam}, '"', " ",
 	      4000,
-	      $a{btw_nummer} ne "" ? " @{[BTW_EXTRA]} " : "",
 	      "\n");
 	next;
     }
