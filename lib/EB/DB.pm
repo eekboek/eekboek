@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.17 2005/09/21 13:09:01 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.18 2005/09/23 15:21:32 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 14:43:02 2005
-# Update Count    : 146
+# Last Modified On: Thu Sep 22 18:41:03 2005
+# Update Count    : 149
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -319,10 +319,24 @@ sub sql_insert {
 }
 
 my %sth;
+my $sql_prep_cache_hits;
+my $sql_prep_cache_miss;
 sub sql_prep {
     my ($self, $sql) = @_;
     $dbh ||= $self->connectdb();
-    $sth{$sql} ||= $dbh->prepare($sql);
+    if ( defined($sth{$sql}) ) {
+	$sql_prep_cache_hits++;
+	return $sth{$sql};
+    }
+    $sql_prep_cache_miss++;
+    $sth{$sql} = $dbh->prepare($sql);
+}
+
+END {
+    warn("SQL Prep Cache: number of hits = ",
+	 $sql_prep_cache_hits || 0, ", misses = ",
+	 $sql_prep_cache_miss || 0, "\n")
+      if %sth && $ENV{EB_SQL_PREP_STATS};
 }
 
 sub close {
