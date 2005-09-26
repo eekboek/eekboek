@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.19 2005/09/22 14:07:41 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.20 2005/09/26 20:18:43 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 22 15:56:18 2005
-# Update Count    : 179
+# Last Modified On: Mon Sep 26 18:54:40 2005
+# Update Count    : 206
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -102,10 +102,15 @@ sub perform {
 	      if $did++ || @$args || $opts->{verbose};
 
 	    my $dc = "acc_debcrd";
+	    my $explicit_dc;
 	    if ( $acct =~ /^(\d+)([cd])/i ) {
-		$acct = $1;
-		$dc = lc($2) eq 'd' ? 1 : 0;
+#		$acct = $1;
+#		$explicit_dc = $dc = lc($2) eq 'd' ? 1 : 0;
+		warn("?"._T("De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet toegestaan")."\n");
+		$fail++;
+		next;
 	    }
+	    $dc = 1;		# ####
 	    my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
 			      " FROM Accounts".
 			      " WHERE acc_id = ?", $acct);
@@ -126,40 +131,52 @@ sub perform {
 
 	    ($amt, $btw_id) = amount($amt, $btw_id);
 
-	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
-	    my $btw_acc = $debcrd ?
-	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
-		$dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
+	    if ( $btw_id ) {
+		warn("?".__x("Boekingen met BTW zijn niet mogelijk in een {dbk}.".
+			     " De BTW is op nul gesteld.",
+			     dbk => $dagboek_type == DBKTYPE_BANK ? "bankboek" :
+			     $dagboek_type == DBKTYPE_KAS ? "kasboek" :
+			     "memoriaal")."\n");
+		$btw_id = 0;
+	    }
 
-	    my $btw = 0;
+
+#	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+##	    my $btw_acc = $debcrd ?
+#	    my $btw_acc = (defined($explicit_dc) ? !$explicit_dc : ($amt < 0))  ?
+#	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
+#		$dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
+
+#	    my $btw = 0;
 	    my $bsr_amount = $amt;
 	    my $orig_amount = $amt;
-	    my ($btw_ink, $btw_verk);
-	    if ( $btw_id ) {
-		( $bsr_amount, $btw, $btw_ink, $btw_verk ) =
-		  @{EB::Finance::norm_btw($bsr_amount, $btw_id)};
-		$amt = $bsr_amount - $btw;
-	    }
-	    $orig_amount = -$orig_amount unless $debcrd;
+#	    my ($btw_ink, $btw_verk);
+#	    if ( $btw_id ) {
+#		( $bsr_amount, $btw, $btw_ink, $btw_verk ) =
+#		  @{EB::Finance::norm_btw($bsr_amount, $btw_id)};
+#		$amt = $bsr_amount - $btw;
+#	    }
+	    $orig_amount = -$orig_amount;# unless $debcrd;
 
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				 bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
 			     $nr++, $dd||$date, $bsk_id, $desc, $orig_amount,
-			     $btw_id, $btw_acc, 0, $acct, undef);
+#			     $btw_id, $btw_acc, 0, $acct, undef);
+			     $btw_id, undef, 0, $acct, undef);
 
-	    $amt = -$amt, $btw = -$btw if $debcrd;
+#	    $amt = -$amt, $btw = -$btw if $debcrd;
 	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
 	    $dbh->upd_account($acct, -$amt);
 	    $tot += $amt;
 
-	    if ( $btw ) {
-		my $btw_acct =
-		  $dbh->lookup($acct, qw(Accounts acc_id acc_debcrd)) ? $btw_ink : $btw_verk;
-		warn("update $btw_acct with ".numfmt(-$btw)."\n") if $trace_updates;
-		$dbh->upd_account($btw_acct, -$btw);
-		$tot += $btw;
-	    }
+#	    if ( $btw ) {
+#		my $btw_acct =
+#		  $dbh->lookup($acct, qw(Accounts acc_id acc_debcrd)) ? $btw_ink : $btw_verk;
+#		warn("update $btw_acct with ".numfmt(-$btw)."\n") if $trace_updates;
+#		$dbh->upd_account($btw_acct, -$btw);
+#		$tot += $btw;
+#	    }
 
 
 	}
@@ -189,7 +206,8 @@ sub perform {
 	    my $sql = "SELECT bsk_id, dbk_id, bsk_desc, bsk_amount ".
 	      " FROM Boekstukken, Boekstukregels, Dagboeken" .
 		" WHERE bsk_paid IS NULL".
-		  ($amt ? "  AND ABS(bsk_amount) = ABS(?)" : "").
+#		  ($amt ? "  AND ABS(bsk_amount) = ABS(?)" : "").
+		  ($amt ? "  AND bsk_amount = ?" : "").
 		    "  AND dbk_type = ?".
 		      "  AND bsk_dbk_id = dbk_id".
 			"  AND bsr_bsk_id = bsk_id".
@@ -201,12 +219,14 @@ sub perform {
 	    $rr = $dbh->do($sql, @sql_args);
 	    unless ( defined($rr) ) {
 		warn("?"._T("Geen bijbehorende open post gevonden")."\n");
-		warn("SQL: $sql\n");
-		warn("args: @sql_args\n");
+		warn("DEBUG: SQL: $sql\n");
+		warn("DEBUG: args: @sql_args\n");
 		$fail++;
 		next;
 	    }
 	    my ($bskid, $dbk_id, $bsk_desc, $bsk_amount) = @$rr;
+#	    warn("%".__x("Bedrag = {amt}, boekstuk = {bsk}",
+#			 amt => numfmt($amt), bsk => numfmt($bsk_amount))."\n");
 
 	    my $acct = $dbh->std_acc($debcrd ? "deb" : "crd");
 	    $amt = $bsk_amount;

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.19 2005/09/21 13:09:01 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.20 2005/09/26 20:18:43 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 14:50:56 2005
-# Update Count    : 106
+# Last Modified On: Mon Sep 26 19:03:59 2005
+# Update Count    : 119
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -100,14 +100,17 @@ sub perform {
 
     while ( @$args ) {
 	my ($desc, $amt, $acct) = splice(@$args, 0, 3);
-	$acct ||= $rr->[0];
+	$acct ||= $rel_acc_id;
 	warn(" "._T("boekstuk").": $desc $amt $acct\n")
 	  if $did++ || @$args || $opts->{verbose};
 
 	my $dc = "acc_debcrd";
-	if ( $acct =~ /^(\d+)([cd])/i ) {
-	    $acct = $1;
-	    $dc = lc($2) eq 'd' ? 1 : 0;
+	my $explicit_dc;
+	if ( $acct =~ /^(\d*)([cd])/i ) {
+	    warn("?"._T("De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet toegestaan")."\n");
+	    return;
+#	    $acct = $1 || $rel_acc_id;
+#	    $explicit_dc = $dc = lc($2) eq 'd' ? 1 : 0;
 	}
 	my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
 			  " FROM Accounts".
@@ -151,7 +154,11 @@ sub perform {
 	# Amount can override BTW id with @X postfix.
 	($amt, $btw_id) = amount($amt, $btw_id);
 
-	$amt = -$amt unless $debcrd;
+	# DC Phase out -- Ignore DC status of account.
+	# $amt = -$amt unless $debcrd;
+	$amt = -$amt if defined($explicit_dc) &&
+	  ($explicit_dc xor $dagboek_type == DBKTYPE_INKOOP);
+	$amt = -$amt if $dagboek_type == DBKTYPE_VERKOOP;
 
 	my $btw_acc;
 	# Geen BTW voor non-EU.
@@ -160,11 +167,11 @@ sub perform {
 	    $btw_acc = $dagboek_type == DBKTYPE_INKOOP ?
 	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
 	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
-	    warn("?D/C mismatch, accounts $acct <> $btw_acc")
-	      if $dbh->lookup($acct,
-				  qw(Accounts acc_id acc_debcrd))
-		xor $dbh->lookup($btw_acc,
-				 qw(Accounts acc_id acc_debcrd));
+#	    warn("?D/C mismatch, accounts $acct <> $btw_acc")
+#	      if $dbh->lookup($acct,
+#				  qw(Accounts acc_id acc_debcrd))
+#		xor $dbh->lookup($btw_acc,
+#				 qw(Accounts acc_id acc_debcrd));
 	}
 
 	$dbh->sql_insert("Boekstukregels",

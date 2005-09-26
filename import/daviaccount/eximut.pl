@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.6 2005/08/14 17:03:42 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.7 2005/09/26 20:18:43 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 14 15:18:55 2005
-# Update Count    : 190
+# Last Modified On: Mon Sep 26 19:14:15 2005
+# Update Count    : 210
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -129,7 +129,8 @@ sub flush {
 	      ' "' . uc($r0->{crdnr}) . '"');
 	foreach my $r ( @$mut ) {
 	    print join(" ", "", '"' . $r->{oms25} . '"',
-		       (debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+#		       (debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+		       $r->{bedrag}.
 		       fixbtw($r),
 		       $r->{reknr});
 	}
@@ -143,7 +144,8 @@ sub flush {
 	      ' "' . uc($r0->{debnr}) . '"');
 	foreach my $r ( @$mut ) {
 	    print join(" ", "", '"' . $r->{oms25} . '"',
-		       (debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+#		       (debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+		       0-$r->{bedrag}.
 		       fixbtw($r),
 		       $r->{reknr});
 	}
@@ -178,7 +180,8 @@ sub flush {
 	    if ( $r->{crdnr} ) {
 		print join(" ", " crd",
 			   '"'.uc($r->{crdnr}).'"',
-			   sprintf("%.2f", $r->{bedrag}),
+#			   sprintf("%.2f", $r->{bedrag}),
+			   sprintf("%.2f", 0-$r->{bedrag}),
 			  );
 		$tot += $r->{bedrag};
 	    }
@@ -193,9 +196,10 @@ sub flush {
 		print join(" ", " std",
 			   '"'.$r->{oms25}.'"',
 			   sprintf("%.2f",
-				   debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+#				   debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+				   0-$r->{bedrag}).
 			   fixbtw($r),
-			   $r->{reknr},
+			   $r->{reknr}# . (debcrd($r->{reknr}) ? 'D' : 'C'),
 			  );
 		$tot += $r->{bedrag};
 
@@ -219,6 +223,9 @@ sub fixbtw {
     my $r = shift;
     my $b = $r->{btw_code};
 
+    unless ( $r->{btw_bdr} && 0 + $r->{btw_bdr}) {
+	return btw_code($r->{reknr}) ? "\@0" : "";
+    }
     return "" if $b eq "";
 
     # FMUTA6.CSV heeft alle bedragen altijd inclusief BTW.

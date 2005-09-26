@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.11 2005/08/29 20:41:44 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.12 2005/09/26 20:18:43 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Aug 29 22:40:54 2005
-# Update Count    : 268
+# Last Modified On: Sun Sep  4 15:46:07 2005
+# Update Count    : 273
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -92,6 +92,22 @@ sub read_exact_data {
     }
     close($db);
     read_grootboek();
+    sql_constants();
+}
+
+sub sql_constants {
+    my $out = "-- Constants. DO NOT MODIFY.\n".
+      "COPY Constants (name, value) FROM stdin;\n";
+
+    foreach my $key ( sort(@EB::Globals::EXPORT) ) {
+	no strict;
+	next if ref($key->());
+	$out .= "$key\t" . $key->() . "\n";
+    }
+    $out .= "\\.\n";
+    open(my $f, ">constants.sql") or die("Cannot create constants.sql: $!\n");
+    print $f $out;
+    close($f);
 }
 
 

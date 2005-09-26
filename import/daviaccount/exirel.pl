@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.7 2005/09/22 14:06:29 jv Exp $ ';
+my $RCS_Id = '$Id: exirel.pl,v 1.8 2005/09/26 20:18:43 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 22 16:04:33 2005
-# Update Count    : 86
+# Last Modified On: Sun Sep 25 17:53:06 2005
+# Update Count    : 87
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -83,7 +83,7 @@ my $debmap = -s "debmap.pl" ? require "debmap.pl" : {} ;
 my %used;
 my $csv = new Text::CSV_XS ({binary => 1});
 my $db;
-if ( open (my $db, "FMUTA6.CSV") ) {
+if ( open($db, "fmuta6.csv") || open($db, "FMUTA6.CSV") ) {
     my $mut;
     while ( <$db> ) {
 	$csv->parse($_);

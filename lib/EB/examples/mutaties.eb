@@ -12,6 +12,9 @@
 #
 # Meerdere boekstukregels zijn mogelijk; de grootboekrekening is dan
 # verplicht.
+#
+# Een credit-boeking kan worden gespecificeerd door een negatief
+# bedrag.
 
 inkoop 2004-01-05 XS4ALL "ADSL" 22,80
 inkoop 2004-01-15 KPN "ADSL + Telefoon" 104,65
@@ -21,10 +24,10 @@ inkoop 2004-02-09 XS4ALL "ADSL" 22,80
 inkoop 2004-03-08 XS4ALL "ADSL" 22,80
 inkoop 2004-03-18 KPN "ADSL + Telefoon" 101,52
 
-inkoop 2004-04-05 XS4ALL "ADSL" 22,80
+inkoop 2004-04-05 XS4ALL "ADSL" 22,80 4905
 
 inkoop 2004-05-10 XS4ALL "ADSL" 22,80
-inkoop 2004-05-20 KPN "ADSL + Telefoon" 102,22
+inkoop 2004-05-20 KPN "ADSL + Telefoon" 102,22 4900
 
 inkoop 2004-06-07 XS4ALL "ADSL" 22,80
 
@@ -53,6 +56,9 @@ inkoop 2004-12-06 XS4ALL "ADSL" 22,80
 #
 # Meerdere boekstukregels zijn mogelijk; de grootboekrekening is dan
 # verplicht.
+#
+# Een debet-boeking kan worden gespecificeerd door een negatief
+# bedrag.
 
 verkoop 2004-02-18 ACME "Perl Cursus 1e bet." 3570 8300
 
@@ -70,66 +76,74 @@ verkoop 2004-08-19 ORA  "Produktie boek"      1000 8200
 #
 #  Argumenten bankboeking: "Omschrijving" boekstukregel
 #  Boekstukregel:
-#    std "Omschrijving" bedrag [ grootboekrekening ]
-#    crd "Omschrijving" crediteurcode bedrag
+#    std "Omschrijving" bedrag grootboekrekening
+#    crd "Omschrijving" crediteurcode bedrag (negatief!)
 #    deb "Omschrijving" debiteurcode bedrag
 #
 # Standaard wordt het eerste met deze crediteur/debiteur geassocieerde
 # open inkoop/verkoop-boekstuk afgeboekt.
+#
+# Voor deze boekingen geldt dat een negatief getal het banksaldo
+# vermindert, en een positief getal het saldo vermeerdert.
+#
+# 'std' boekingen met BTW zijn gevaarlijk, illegaal en daarom niet
+# toegestaan. 
 
-postbank 2004-01-06 "Girotel" std "Girotel" 2,70 4980
-postbank 2004-01-19 "ADSL" crd XS4ALL 22,80
-postbank 2004-01-31 "Tel." crd KPN 104,65
+postbank 2004-01-06 "Girotel" std "Girotel" -2,70 4980
+postbank 2004-01-19 "ADSL" crd XS4ALL -22,80
+postbank 2004-01-31 "Tel." crd KPN -104,65
 
-postbank 2004-02-10 "Girotel" std "Girotel" 2,70 4980
-postbank 2004-02-23 "ADSL" crd XS4ALL 22,80
+postbank 2004-02-10 "Girotel" std "Girotel" -2,70 4980
+postbank 2004-02-23 "ADSL" crd XS4ALL -22,80
 
-postbank 2004-03-09 "Girotel" std "Girotel" 2,70 4980
+postbank 2004-03-09 "Girotel" std "Girotel" -2,70 4980
 postbank 2004-03-18 "ACME" deb ACME 3570
-postbank 2004-03-31 "ADSL, Tel." crd XS4ALL 22,80 crd KPN 101,52
+postbank 2004-03-31 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -101,52
 
-postbank 2004-04-06 "Girotel, ADSL" std "Girotel" 2,70 4980 crd XS4ALL 22,80
+postbank 2004-04-06 "Girotel, ADSL" std "Girotel" -2,70 4980 crd XS4ALL -22,80
 postbank 2004-04-12 "ACME" deb ACME 3570
 
-postbank 2004-05-11 "Girotel" std "Girotel" 2,70 4980
-postbank 2004-05-31 "ADSL, ACME, Tel." crd XS4ALL 22,80 \
-	 deb ACME 595 crd KPN 102,22
+postbank 2004-05-11 "Girotel" std "Girotel" -2,70 4980
+postbank 2004-05-31 "ADSL, ACME, Tel." crd XS4ALL -22,80 \
+	 deb ACME 595 crd KPN -102,22
 
-postbank 2004-06-08 "Girotel, ACME" std "Girotel" 2,70 4980 deb ACME 714
-postbank 2004-06-21 "ADSL" crd XS4ALL 22,80
+postbank 2004-06-08 "Girotel, ACME" std "Girotel" -2,70 4980 deb ACME 714
+postbank 2004-06-21 "ADSL" crd XS4ALL -22,80
 
-postbank 2004-07-06 "Girotel" std "Girotel" 2,70 4980
-postbank 2004-07-31 "ADSL, Tel." crd XS4ALL 22,80 crd KPN 104,66
+postbank 2004-07-06 "Girotel" std "Girotel" -2,70 4980
+postbank 2004-07-31 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -104,66
 
-postbank 2004-08-10 "Girotel, ACME, ADSL" std "Girotel" 2,70 4980 \
-	 deb ACME 714 crd XS4ALL 22,80
+postbank 2004-08-10 "Girotel, ACME, ADSL" std "Girotel" -2,70 4980 \
+	 deb ACME 714 crd XS4ALL -22,80
 
 postbank 2004-08-19 "O'Reilly" deb ORA 1000
 
-postbank 2004-09-17 "Girotel" std "Girotel" 2,70 4980
-postbank 2004-09-30 "ADSL, Tel." crd XS4ALL 22,80 crd KPN 108,72
+postbank 2004-09-17 "Girotel" std "Girotel" -2,70 4980
+postbank 2004-09-30 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -108,72
 
-postbank 2004-10-12 "Girotel, ADSL" std "Girotel" 2,70 4980 crd XS4ALL 22,80
+postbank 2004-10-12 "Girotel, ADSL" std "Girotel" -2,70 4980 crd XS4ALL -22,80
 
-postbank 2004-11-08 "Girotel" std "Girotel" 2,70 4980
-postbank 2004-11-30 "ADSL, Tel." crd XS4ALL 22,80 crd KPN 109,67
+postbank 2004-11-08 "Girotel" std "Girotel" -2,70 4980
+postbank 2004-11-30 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -109,67
 
 # Er kan een expliciet volgnummer worden opgegeven.
 # Ook kan het saldo na boeking worden geverifiëerd.
 postbank:24 --saldo 10357,48 2004-12-07 "Girotel, ADSL" \
-	 std "Girotel" 2,70 4980 crd XS4ALL 22,80
+	 std "Girotel" -2,70 4980 crd XS4ALL -22,80
 
 # Afschrijvingen
 #
 # Memoriaal is als een bankboeking, maar er is geen impliciete
 # grootboekrekening waarop het totaal wordt geboekt. Het boekstuk moet
 # dus precies in balans zijn.
+# Ook hier geldt dat een positief bedrag de betreffende rekening
+# crediteert (vermeerdert) en een negatief bedrag vermindert.
 
 memoriaal 2004-12-31 "Afschrijving inventaris" \
-	  std "Afschrijving" 411,26 4330 \
+	  std "Afschrijving" -411,26 4330 \
 	  std "Afschrijving" 411,26 231 
 memoriaal 2004-12-31 "Afschrijving computers" \
-	  std "Afschrijving" 396,82 4340 \
+	  std "Afschrijving" -396,82 4340 \
 	  std "Afschrijving" 396,82 241 
 
 # Afboeking BTW
