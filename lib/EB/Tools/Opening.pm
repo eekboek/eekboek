@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.7 2005/09/18 21:07:57 jv Exp $
+# $Id: Opening.pm,v 1.8 2005/09/28 19:53:34 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 23:06:58 2005
-# Update Count    : 37
+# Last Modified On: Wed Sep 28 19:06:30 2005
+# Update Count    : 40
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -209,8 +209,8 @@ sub open {
     my $open = sprintf("%04d-%02d-%02d", 1900 + $tm[5], 1 + $tm[4], $tm[3]);
 
     $dbh->sql_exec("UPDATE Metadata".
-		   " SET adm_begin = ?, adm_btwperiod = ?, adm_name = ?, adm_opened = ?",
-		   $o->{begindatum} . "-01-01", $o->{btwperiode}, $o->{naam}, $open);
+		   " SET adm_begin = ?, adm_btwbegin = ?, adm_btwperiod = ?, adm_name = ?, adm_opened = ?",
+		   $o->{begindatum} . "-01-01", , $o->{begindatum} . "-01-01", $o->{btwperiode}, $o->{naam}, $open);
 
     if ( $o->{balanstotaal} ) {
 	foreach my $b ( @{$o->{balans}} ) {
