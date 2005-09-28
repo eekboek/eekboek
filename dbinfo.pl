@@ -8,7 +8,7 @@ my $postgres = 1;		# PostgreSQL
 my $verbose = 0;
 my $trace = 0;
 
-our $dbh = DBI::->connect($ENV{EBDB} || "dbi:Pg:dbname=eekboek")
+our $dbh = DBI::->connect("dbi:Pg:dbname=".$ENV{EB_DB_NAME})
   or die("Cannot connect to database: $DBI::errstr\n");
 
 foreach my $table ( $dbh->tables ) {
