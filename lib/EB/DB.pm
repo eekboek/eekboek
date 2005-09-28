@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.19 2005/09/28 13:50:09 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.20 2005/09/28 20:56:28 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 28 15:50:03 2005
-# Update Count    : 153
+# Last Modified On: Wed Sep 28 22:18:51 2005
+# Update Count    : 163
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,7 +42,7 @@ sub check_db {
 	 warn("?".__x("Tabel {table} ontbreekt in database {db}",
 		      table => $table, db => $dbh->{Name}) . "\n");
     }
-    warn(join(" ", sort keys %tables)."\n") if $fail;
+    # warn(join(" ", sort keys %tables)."\n") if $fail;
     die("?".__x("Ongeldige EekBoek database: {db}.",
 		db => $dbh->{Name}) . " " .
 	_T("Wellicht is de database nog niet geïnitialiseerd?")."\n") if $fail;
@@ -208,7 +208,7 @@ sub _init {
 
 my %adm;
 sub adm {
-    my ($self, $name) = @_;
+    my ($self, $name, $value) = @_;
     if ( $name eq "" ) {
 	%adm = ();
 	return;
@@ -223,11 +223,19 @@ sub adm {
 	    $adm{lc($k)} = $v;
 	}
     }
-    $adm{lc($name)} || die("?".__x("Niet-bestaande administratie-eigenschap: {adm}",
-				   adm => $name)."\n");
+    exists $adm{lc($name)} || die("?".__x("Niet-bestaande administratie-eigenschap: {adm}",
+					  adm => $name)."\n");
+    $name = lc($name);
+
+    if ( @_ == 3 ) {
+	$self->sql_exec("UPDATE Metadata SET adm_$name = ?", $value)->finish;
+	$self->commit;
+	$adm{$name} = $value;
+    }
+    else {
+	$adm{$name} ||= "";
+    }
 }
-
-
 
 my %std_acc;
 my @std_acc;
