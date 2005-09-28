@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.22 2005/09/28 20:55:48 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.23 2005/09/28 20:58:54 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 28 19:05:40 2005
-# Update Count    : 135
+# Last Modified On: Wed Sep 28 22:58:50 2005
+# Update Count    : 136
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -215,7 +215,7 @@ sub perform {
     $dbh->store_journal($ret);
 
     $tot = -$tot if $dagboek_type == DBKTYPE_INKOOP;
-    my $fail = defined($totaal) and $tot != $totaal;
+    my $fail = defined($totaal) && $tot != $totaal;
     if ( $opts->{journal} ) {
 	warn("?"._T("Dit overicht is ter referentie, de boeking is niet uitgevoerd!")."\n") if $fail;
 	EB::Journal::Text->new->journal({select => $bsk_id, detail => 1});
