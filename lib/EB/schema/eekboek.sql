@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.16 2005/09/21 13:09:01 jv Exp $
+-- $Id: eekboek.sql,v 1.17 2005/09/28 20:54:56 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -165,6 +165,7 @@ CREATE TABLE Metadata (
       -- btw periode: 0 = geen, 1 = jaar, 4 = kwartaal, 12 = maand
     adm_btwperiod	smallint,
     adm_opened		date,
+    adm_btwbegin	date,
     adm_closed		date,
     CONSTRAINT "meta_adm_btwperiod"
 	CHECK (adm_btwperiod = 0 OR adm_btwperiod = 1 OR adm_btwperiod = 4 OR adm_btwperiod = 12)
