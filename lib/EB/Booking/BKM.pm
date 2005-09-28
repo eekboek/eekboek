@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.21 2005/09/28 13:22:36 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.22 2005/09/28 20:55:49 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 27 22:59:51 2005
-# Update Count    : 230
+# Last Modified On: Wed Sep 28 22:30:11 2005
+# Update Count    : 239
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -40,6 +40,16 @@ sub new {
 sub perform {
     my ($self, $args, $opts) = @_;
 
+    my $begin = $dbh->adm("begin");
+    unless ( $begin && $dbh->adm("opened") ) {
+	warn("?"._T("De administratie is nog niet geopend")."\n");
+	return;
+    }
+    if ( $dbh->adm("closed") ) {
+	warn("?"._T("De administratie is gesloten en kan niet meer worden gewijzigd")."\n");
+	return;
+    }
+
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
     my $totaal = $opts->{totaal};
@@ -50,21 +60,18 @@ sub perform {
     }
 
     my $date;
-    if ( $args->[0] =~ /^\d+-\d+-\d+$/ ) {
-	$date = shift(@$args);
-    }
-    elsif ( $args->[0] =~ /^(\d+)-(\d+)-(\d{4})$/ ) {
-	$date = "$3-$2-$1";
-	shift(@$args);
-    }
-    elsif ( $args->[0] =~ /^(\d+)-(\d+)$/ ) {
-	$date = substr($dbh->adm("begin"), 0, 4) . "-$2-$1";
+    if ( $date = parse_date($args->[0], substr($begin, 0, 4)) ) {
 	shift(@$args);
     }
     else {
 	my @tm = localtime(time);
 	$date = sprintf("%04d-%02d-%02d",
 			1900 + $tm[5], 1 + $tm[4], $tm[3]);
+    }
+
+    if ( $date lt $begin ) {
+	warn("?"._T("De boekingsdatum valt vóór aanvang van het boekjaar")."\n");
+	return;
     }
 
     my $gdesc = shift(@$args);
@@ -95,8 +102,23 @@ sub perform {
 	my $type = shift(@$args);
 
 	if ( $type eq "std" ) {
-	    my $dd = parse_date($args->[0]);
-	    shift(@$args) if $dd;
+	    my $dd = parse_date($args->[0], substr($begin, 0, 4));
+	    if ( $dd ) {
+		shift(@$args);
+		if ( $dd lt $begin ) {
+		    warn("?"._T("De boekingsdatum valt vóór aanvang van het boekjaar")."\n");
+		    return;
+		}
+
+		if ( $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
+		    warn("?"._T("De boekingsdatum valt in de periode waarover al BTW aangifte is gedaan")."\n");
+		    return;
+		}
+	    }
+	    else {
+		$dd = $date;
+	    }
+
 	    my ($desc, $amt, $acct) = splice(@$args, 0, 3);
 	    warn(" "._T("boekstuk").": std $desc $amt $acct\n")
 	      if $did++ || @$args || $opts->{verbose};
@@ -206,7 +228,7 @@ sub perform {
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				 bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
-			     $nr++, $dd||$date, $bsk_id, $desc, $orig_amount,
+			     $nr++, $dd, $bsk_id, $desc, $orig_amount,
 			     $btw_id, $btw_acc, 0, $acct, undef);
 
 #	    $amt = -$amt, $btw = -$btw if $debcrd;
@@ -227,7 +249,20 @@ sub perform {
 	elsif ( $type eq "deb" || $type eq "crd" ) {
 	    my $debcrd = $type eq "deb" ? 1 : 0;
 	    my $dd = parse_date($args->[0]);
-	    shift(@$args) if $dd;
+	    if ( $dd ) {
+		shift(@$args);
+		if ( $dd lt $begin ) {
+		    warn("?"._T("De boekingsdatum valt vóór aanvang van het boekjaar")."\n");
+		    return;
+		}
+		if ( $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
+		    warn("?"._T("De boekingsdatum valt in de periode waarover al BTW aangifte is gedaan")."\n");
+		    return;
+		}
+	    }
+	    else {
+		$dd = $date;
+	    }
 
 	    my ($rel, $amt) = splice(@$args, 0, 2);
 	    warn(" "._T("boekstuk").": $type $rel $amt\n")
@@ -278,7 +313,7 @@ sub perform {
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				 bsr_btw_id bsr_type bsr_acc_id bsr_rel_code)],
-			     $nr++, $dd||$date, $bsk_id, "*".$bsk_desc,
+			     $nr++, $dd, $bsk_id, "*".$bsk_desc,
 #			     $debcrd ? -$amt : $amt,
 			     -$amt,
 			     0, $type eq "deb" ? 1 : 2, $acct, $rel);

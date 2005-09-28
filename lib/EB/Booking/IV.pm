@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.21 2005/09/28 13:22:36 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.22 2005/09/28 20:55:48 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 27 22:13:09 2005
-# Update Count    : 127
+# Last Modified On: Wed Sep 28 19:05:40 2005
+# Update Count    : 135
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -39,6 +39,16 @@ sub new {
 sub perform {
     my ($self, $args, $opts) = @_;
 
+    my $begin = $dbh->adm("begin");
+    unless ( $begin && $dbh->adm("opened") ) {
+	warn("?"._T("De administratie is nog niet geopend")."\n");
+	return;
+    }
+    if ( $dbh->adm("closed") ) {
+	warn("?"._T("De administratie is gesloten en kan niet meer worden gewijzigd")."\n");
+	return;
+    }
+
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
     my $totaal = $opts->{totaal};
@@ -49,21 +59,23 @@ sub perform {
     }
 
     my $date;
-    if ( $args->[0] =~ /^\d{4}-\d+-\d+$/ ) {
-	$date = shift(@$args);
-    }
-    elsif ( $args->[0] =~ /^(\d+)-(\d+)-(\d{4})$/ ) {
-	$date = "$3-$2-$1";
-	shift(@$args);
-    }
-    elsif ( $args->[0] =~ /^(\d+)-(\d+)$/ ) {
-	$date = substr($dbh->adm("begin"), 0, 4) . "-$2-$1";
+    if ( $date = parse_date($args->[0], substr($dbh->adm("begin"), 0, 4)) ) {
 	shift(@$args);
     }
     else {
 	my @tm = localtime(time);
 	$date = sprintf("%04d-%02d-%02d",
 			1900 + $tm[5], 1 + $tm[4], $tm[3]);
+    }
+
+    if ( $date lt $begin ) {
+	warn("?"._T("De boekingsdatum valt vóór aanvang van het boekjaar")."\n");
+	return;
+    }
+
+    if ( $dbh->adm("btwbegin") && $date lt $dbh->adm("btwbegin") ) {
+	warn("?"._T("De boekingsdatum valt in de periode waarover al BTW aangifte is gedaan")."\n");
+	return;
     }
 
     my $debcode;
