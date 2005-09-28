@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.14 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.15 2005/09/28 19:53:34 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 22:54:41 2005
-# Update Count    : 361
+# Last Modified On: Wed Sep 28 21:52:54 2005
+# Update Count    : 380
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -305,7 +305,10 @@ sub load_schema {
 }
 
 sub create_schema {
-    sql(sql_eekboek());
+    use EB::Tools::SQLEngine;
+    my $engine = EB::Tools::SQLEngine->new(trace => $trace);
+    $engine->callback(map { $_, __PACKAGE__->can("sql_$_") } qw(constants vrd acc std btw dbk) );
+    $engine->process(sql_eekboek());
     $dbh->commit;
 }
 
@@ -447,89 +450,6 @@ sub gen_schema {
 
 sub _tf {
     qw(f t)[shift];
-}
-
-# Basic SQL processor. Not very advanced, but does the job.
-# Note that COPY status will not work across different \i providers.
-# COPY status need to be terminated on the same level it was started.
-
-my $postgres; BEGIN { $postgres = 1 };
-
-sub sql {
-    my ($cmd, $copy) = (@_, 0);
-    my $sql = "";
-
-    foreach my $line ( split(/\n/, $cmd) ) {
-
-	# Detect \i provider (include).
-	if ( $line =~ /^\\i\s+(.*).sql/ ) {
-	    my $call = "sql_$1";
-	    no strict 'refs';
-	    sql($call->(), $copy);
-	    next;
-	}
-
-	# Handle COPY status.
-	if ( $copy ) {
-	    if ( $line eq "\\." ) {
-		# End COPY.
-		$dbh->dbh->pg_endcopy if $postgres;
-		$copy = 0;
-	    }
-	    elsif ( $postgres ) {
-		# Use PostgreSQL fast load.
-		$dbh->dbh->pg_putline($line."\n");
-	    }
-	    else {
-		# Use portable INSERT.
-		$dbh->sql_exec($copy,
-			       map { $_ eq 't' ? 1 :
-				       $_ eq 'f' ? 0 :
-					 $_ eq '\\N' ? undef :
-					   $_
-				       } split(/\t/, $line))->finish;
-	    }
-	    next;
-	}
-
-	# Ordinary lines.
-	# Strip comments.
-	$line =~ s/--.*$//m;
-	# Ignore empty lines.
-	next unless $line =~ /\S/;
-	# Trim whitespace.
-	$line =~ s/\s+/ /g;
-	$line =~ s/^\s+//;
-	$line =~ s/\s+$//;
-	# Append to command string.
-	$sql .= $line . " ";
-
-	# Execute if trailing ;
-	if ( $line =~ /(.+);$/ ) {
-
-	    # Check for COPY/
-	    if ( $sql =~ /^copy\s(\S+)\s+(\([^\051]+\))/i ) {
-		if ( $postgres ) {
-		    # Use PostgreSQL fast load.
-		    $copy = 1;
-		}
-		else {
-		    # Prepare SQL statement.
-		    $copy = "INSERT INTO $1 $2 VALUES (" .
-		      join(",", map { "?" } split(/,/, $2)) . ")";
-		    $sql = "";
-		    next;
-		}
-	    }
-
-	    # Execute.
-	    warn("+ $sql\n") if $trace;
-	    $dbh->dbh->do($sql);
-	    $sql = "";
-	}
-    }
-
-    die("?".__x("Incompleet SQL commando: {sql}", sql => $sql)."\n") if $sql;
 }
 
 ################ Subroutines ################
