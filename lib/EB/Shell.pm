@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.23 2005/09/21 17:22:58 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.24 2005/09/28 20:57:00 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 19:22:12 2005
-# Update Count    : 363
+# Last Modified On: Wed Sep 28 19:16:50 2005
+# Update Count    : 368
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -423,9 +423,18 @@ sub outro { undef }
 sub postcmd { shift; $dbh->rollback; shift }
 
 sub do_btwaangifte {
-    my $self = shift;
+    my ($self, @args) = @_;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 2;
+    my $close = 0;
+    my $opts = {};
+    if ( lc($args[-1]) eq "definitief" ) {
+	$close = 1;
+	pop(@args);
+    }
+    $opts->{close} = $close;
+    $opts->{periode} = $args[0] if @args;
     use EB::BTWAangifte;
-    EB::BTWAangifte->new->perform({periode => shift});
+    EB::BTWAangifte->new->perform($opts);
     undef;
 }
 
@@ -433,13 +442,16 @@ sub help_btwaangifte {
     <<EOS;
 Print de BTW aangifte.
 
-  btwaangifte [ periode ]
+  btwaangifte [ periode ] [ definitief ]
 
 Aangifteperiode kan zijn:
 
   j            het gehele jaar
   k1 k2 k3 k4  1e/2e/3e/4e kwartaal (ook: q1, ...)
   1 2 3 .. 12  maand
+
+Met de toevoeging "definitief" wordt de BTW periode afgesloten en zijn
+geen boekingen meer mogelijk.
 EOS
 }
 

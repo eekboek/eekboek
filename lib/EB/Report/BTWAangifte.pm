@@ -1,14 +1,18 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.8 2005/09/21 17:14:35 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.9 2005/09/28 20:57:00 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 19:14:18 2005
-# Update Count    : 284
+# Last Modified On: Wed Sep 28 22:22:16 2005
+# Update Count    : 299
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
+
+package main;
+
+our $dbh;
 
 package EB::BTWAangifte;
 
@@ -94,22 +98,29 @@ sub parse_periode {
 
     my $pp = sub {
 	my ($per, $n) = @_;
-	warn("!".
-	     __x("Aangifte {per} komt niet overeen met de BTW instelling".
-		 " van de administratie ({admper})",
-		 per => $periodetabel[$per][0],
-		 admper => $periodetabel[$self->{adm_btw_periode}][0],
-		)."\n")
-	  unless $self->{adm_btw_periode} == $per;
+	unless ( $self->{adm_btw_periode} == $per ) {
+	    warn($self->{close} ? "?" :"!".
+		 __x("Aangifte {per} komt niet overeen met de BTW instelling".
+		     " van de administratie ({admper})",
+		     per => $periodetabel[$per][0],
+		     admper => $periodetabel[$self->{adm_btw_periode}][0],
+		    )."\n")
+	}
 	$self->{adm_btw_periode} = $per;
 	my $tbl = $periodetabel[$self->{adm_btw_periode}];
 	$self->{p_start} = $year . "-" . $tbl->[$n]->[0];
 	$self->{p_end}   = $year . "-" . $tbl->[$n]->[1];
 	$self->{periode} = $self->periode($per, $year, $n);
+	if ( $per == $n ) {
+	    $self->{p_next}  = ($year+1) . "-" . $tbl->[1]->[0];
+	}
+	else {
+	    $self->{p_next}  = $year . "-" . $tbl->[$n+1]->[0];
+	}
     };
 
     my $yrpat = _T("j(aar)?");
-    if ( $v =~ /^$yrpat|(j(aar)?)$/i ) {
+    if ( $v =~ /^$yrpat$|j(aar)?$/i ) {
 	$pp->(1, 1);
 	return;
     }
@@ -165,6 +176,11 @@ sub collect {
 	    $self->{p_end}   = $year . "-" . $tbl->[$m]->[1];
 	    $self->{periode} = $self->periode($self->{adm_btw_periode}, $year, $m);
 	}
+    }
+
+    unless ( $self->{p_start} eq $dbh->adm("btwbegin") ) {
+	my $msg = _T("BTW aangifte periode sluit niet aan bij de vorige aangifte");
+	$opts->{close} ? die("?$msg\n") : warn("!$msg\n");
     }
 
     # Target: alle boekstukken van type 0 (inkoop/verkoop).
@@ -427,6 +443,10 @@ sub report {
     }
     else {
 	$rep->finish;
+    }
+
+    if ( $opts->{close} ) {
+	$dbh->adm("btwbegin", $self->{p_next});	# implied commit
     }
 }
 
