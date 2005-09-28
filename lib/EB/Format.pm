@@ -42,7 +42,7 @@ BEGIN {
 sub amount {
     if ( @_ == 2 ) {
 	my ($amt, $btw_id) = @_;
-	if ( $amt =~ /^(.+)\@(\d)$/ ) {
+	if ( $amt =~ /^(.+)\@(.+)$/ ) {
 	    $amt = $1;
 	    $btw_id = $2;
 	}

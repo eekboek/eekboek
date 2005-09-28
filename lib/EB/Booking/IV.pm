@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.20 2005/09/26 20:18:43 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.21 2005/09/28 13:22:36 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Sep 26 19:03:59 2005
-# Update Count    : 119
+# Last Modified On: Tue Sep 27 22:13:09 2005
+# Update Count    : 127
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -156,22 +156,27 @@ sub perform {
 
 	# DC Phase out -- Ignore DC status of account.
 	# $amt = -$amt unless $debcrd;
-	$amt = -$amt if defined($explicit_dc) &&
-	  ($explicit_dc xor $dagboek_type == DBKTYPE_INKOOP);
+#	$amt = -$amt if defined($explicit_dc) &&
+#	  ($explicit_dc xor $dagboek_type == DBKTYPE_INKOOP);
 	$amt = -$amt if $dagboek_type == DBKTYPE_VERKOOP;
 
 	my $btw_acc;
 	# Geen BTW voor non-EU.
 	if ( $btw_id && ($sbtw == BTW_NORMAAL || $sbtw == BTW_INTRA) ) {
-	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
-	    $btw_acc = $dagboek_type == DBKTYPE_INKOOP ?
-	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
-	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
-#	    warn("?D/C mismatch, accounts $acct <> $btw_acc")
-#	      if $dbh->lookup($acct,
-#				  qw(Accounts acc_id acc_debcrd))
-#		xor $dbh->lookup($btw_acc,
-#				 qw(Accounts acc_id acc_debcrd));
+	    my $t = "btw_" . ($dagboek_type == DBKTYPE_INKOOP ? "i" : "v");
+	    if ( $btw_id =~ /^[hl]$/i ) {
+		$t .= lc($btw_id);
+		$btw_id = $dbh->do("SELECT btw_id".
+				   " FROM BTWTabel".
+				   " WHERE btw_tariefgroep = ?".
+				   " AND btw_incl",
+				   lc($btw_id) eq 'h' ? BTWTYPE_HOOG : BTWTYPE_LAAG)->[0];
+	    }
+	    else {
+		my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+		$t .= ($group == BTWTYPE_HOOG ? "h" : "l");
+	    }
+	    $btw_acc = $dbh->std_acc($t);
 	}
 
 	$dbh->sql_insert("Boekstukregels",
@@ -197,12 +202,16 @@ sub perform {
 
     $dbh->store_journal($ret);
 
-    EB::Journal::Text->new->journal({select => $bsk_id, detail=>1}) if $opts->{journal};
-
     $tot = -$tot if $dagboek_type == DBKTYPE_INKOOP;
-    if ( defined($totaal) and $tot != $totaal ) {
+    my $fail = defined($totaal) and $tot != $totaal;
+    if ( $opts->{journal} ) {
+	warn("?"._T("Dit overicht is ter referentie, de boeking is niet uitgevoerd!")."\n") if $fail;
+	EB::Journal::Text->new->journal({select => $bsk_id, detail => 1});
+    }
+
+    if ( $fail ) {
 	$dbh->rollback;
-	return "?"._T("Opdracht niet uitgevoerd.")." ".
+	return "?"._T("De boeking is niet uitgevoerd!")." ".
 	  __x(" Boekstuk totaal is {act} in plaats van {exp}",
 	      act => numfmt($tot), exp => numfmt($totaal)) . ".";
     }

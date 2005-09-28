@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.20 2005/09/26 20:18:43 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.21 2005/09/28 13:22:36 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Sep 26 18:54:40 2005
-# Update Count    : 206
+# Last Modified On: Tue Sep 27 22:59:51 2005
+# Update Count    : 230
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -129,9 +129,12 @@ sub perform {
 		#return;
 	    }
 
-	    ($amt, $btw_id) = amount($amt, $btw_id);
+	    my $bid;
+	    ($amt, $bid) = amount($amt, undef);
+	    $btw_id = 0, undef($bid) if defined($bid) && !$bid; # override: @0
 
-	    if ( $btw_id ) {
+	    # If there's BTW associated, it must be explicitly confirmed.
+	    if ( $btw_id && !defined($bid) ) {
 		warn("?".__x("Boekingen met BTW zijn niet mogelijk in een {dbk}.".
 			     " De BTW is op nul gesteld.",
 			     dbk => $dagboek_type == DBKTYPE_BANK ? "bankboek" :
@@ -139,7 +142,49 @@ sub perform {
 			     "memoriaal")."\n");
 		$btw_id = 0;
 	    }
-
+	    my $btw_acc;
+	    if ( defined($bid) ) {
+		if ( $bid =~ /^[hl]|[hl][iv]|[iv][hl]$/i ) {
+		    $bid = lc($bid);
+		    my $t = $bid =~ /h/ ? "h" : "l";
+		    if ( $bid =~ /([iv])/ ) {
+			$t = $1.$t;
+		    }
+		    else {
+			$t = $amt < 0 ? "i$t" : "v$t";
+		    }
+		    $btw_acc = $dbh->std_acc("btw_$t");
+		    $btw_id = $dbh->do("SELECT btw_id".
+				       " FROM BTWTabel".
+				       " WHERE btw_tariefgroep = ?".
+				       " AND btw_incl",
+				       $bid =~ /h/ ? BTWTYPE_HOOG : BTWTYPE_LAAG)->[0];
+		}
+		elsif ( $bid =~ /^\d+|\d+[iv]|[iv]\d+$/i ) {
+		    my $t = $btw_id = $1 if $bid =~ /(\d+)/;
+		    my $group = $dbh->lookup($t, qw(BTWTabel btw_id btw_tariefgroep));
+		    unless ( $group ) {
+			warn("?".__x("Ongeldige BTW codering: {cod}",
+				     cod => '@'.$bid)."\n");
+			$fail++;
+			next;
+		    }
+		    if ( $bid =~ /([iv])/ ) {
+			$t = $1;
+		    }
+		    else {
+			$t = $amt < 0 ? "i" : "v";
+		    }
+		    $t .= $group == BTWTYPE_HOOG ? "h" : "l";
+		    $btw_acc = $dbh->std_acc("btw_$t");
+		}
+		else {
+		    warn("?".__x("Ongeldige BTW codering: {cod}",
+				 cod => '@'.$bid)."\n");
+		    $fail++;
+		    next;
+		}
+	    }
 
 #	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
 ##	    my $btw_acc = $debcrd ?
@@ -147,36 +192,35 @@ sub perform {
 #	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
 #		$dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
 
-#	    my $btw = 0;
+	    my $btw = 0;
 	    my $bsr_amount = $amt;
 	    my $orig_amount = $amt;
-#	    my ($btw_ink, $btw_verk);
-#	    if ( $btw_id ) {
-#		( $bsr_amount, $btw, $btw_ink, $btw_verk ) =
-#		  @{EB::Finance::norm_btw($bsr_amount, $btw_id)};
-#		$amt = $bsr_amount - $btw;
-#	    }
+	    my ($btw_ink, $btw_verk);
+	    if ( $btw_id ) {
+		( $bsr_amount, $btw, $btw_ink, $btw_verk ) =
+		  @{EB::Finance::norm_btw($bsr_amount, $btw_id)};
+		$amt = $bsr_amount - $btw;
+	    }
 	    $orig_amount = -$orig_amount;# unless $debcrd;
 
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				 bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
 			     $nr++, $dd||$date, $bsk_id, $desc, $orig_amount,
-#			     $btw_id, $btw_acc, 0, $acct, undef);
-			     $btw_id, undef, 0, $acct, undef);
+			     $btw_id, $btw_acc, 0, $acct, undef);
 
 #	    $amt = -$amt, $btw = -$btw if $debcrd;
 	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
 	    $dbh->upd_account($acct, -$amt);
 	    $tot += $amt;
 
-#	    if ( $btw ) {
-#		my $btw_acct =
-#		  $dbh->lookup($acct, qw(Accounts acc_id acc_debcrd)) ? $btw_ink : $btw_verk;
-#		warn("update $btw_acct with ".numfmt(-$btw)."\n") if $trace_updates;
-#		$dbh->upd_account($btw_acct, -$btw);
-#		$tot += $btw;
-#	    }
+	    if ( $btw ) {
+		my $btw_acct =
+		  $dbh->lookup($acct, qw(Accounts acc_id acc_debcrd)) ? $btw_ink : $btw_verk;
+		warn("update $btw_acct with ".numfmt(-$btw)."\n") if $trace_updates;
+		$dbh->upd_account($btw_acct, -$btw);
+		$tot += $btw;
+	    }
 
 
 	}
@@ -286,9 +330,13 @@ sub perform {
 
     $dbh->store_journal(EB::Finance::journalise($bsk_id));
 
-    EB::Journal::Text->new->journal({select => $bsk_id, detail => 1}) if $opts->{journal};
+    if ( $opts->{journal} ) {
+	warn("?"._T("Dit overicht is ter referentie, de boeking is niet uitgevoerd!")."\n") if $fail;
+	EB::Journal::Text->new->journal({select => $bsk_id, detail => 1});
+    }
 
     if ( $fail ) {
+	warn("?"._T("De boeking is niet uitgevoerd!")."\n");
 	$dbh->rollback;
 	return undef;
     }
