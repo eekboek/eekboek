@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.18 2005/09/23 15:21:32 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.19 2005/09/28 13:50:09 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 22 18:41:03 2005
-# Update Count    : 149
+# Last Modified On: Wed Sep 28 15:50:03 2005
+# Update Count    : 153
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -50,11 +50,12 @@ sub check_db {
     my ($maj, $min, $rev)
       = @{$self->do("SELECT adm_scm_majversion, adm_scm_minversion, adm_scm_revision".
 		    " FROM Metadata")};
-    die("?".__x("Ongeldige EekBoek database versie: {db}.",
-		ver => $dbh->{Name}) . "\n")
+    die("?".__x("Ongeldige EekBoek database: {db} versie {ver}.".
+		" Minimaal benodigde versie is {req}.",
+		db => $dbh->{Name}, ver => "$maj.$min.$rev",
+		req => join(".", SCM_MAJVERSION, SCM_MINVERSION, SCM_REVISION)) . "\n")
       unless $maj == SCM_MAJVERSION &&
-	$min == SCM_MINVERSION &&
-	  $rev == SCM_REVISION;
+	sprintf("%03d%03d", $min, $rev) ge sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION);
 
     for ( $self->std_acc("deb") ) {
 	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
