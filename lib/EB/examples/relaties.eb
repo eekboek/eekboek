@@ -1,11 +1,32 @@
-# Relatie <code> "<omschrijving>" standaardrekening
+# Aanmaken relaties.
+#
+# Syntax:
+#
+#   Relatie <code> "<omschrijving>" standaardrekening
+#
+# Als dagboek wordt het laagstgenummerde inkoop/verkoop dagboek
+# genomen.
+#
+# Opties:
+#
+#  --dagboek=XXXX            selecteer dagboek
+#  --btw=XXX                 btw type, zie verderop
+#
+# Een relatie is crediteur indien het dagboek een inkoopdagboek is,
+# of, indien geen dagboek is opgegeven, dan de debet/credit status van
+# de standaardrekening Credit is.
+
 relatie XS4ALL "XS4All Internet B.V." 4905
 relatie KPN "KPN" 4900
+
+# Een relatie is debiteur indien het dagboek een verkoopdagboek is,
+# of, indien geen dagboek is opgegeven, dan de debet/credit status van
+# de standaardrekening Debit is.
 
 # Relatie <code> "<omschrijving>" standaardrekening
 relatie ACME "Acme Corp." 8000
 
 # Relatie van buiten Europa. BTW code is 'extra'.
 # Andere mogelijkheden voor BTW zijn 'normaal',
-# 'verlegd' en 'intra' (intra-communautair).
+# 'verlegd' en 'intra' (intra-communautair, binnen Europa).
 relatie --btw=extra ORA "O'Reilly & Associates" 8100
