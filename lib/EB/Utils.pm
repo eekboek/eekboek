@@ -54,7 +54,10 @@ sub parse_date_range {
     unless ( %rev_months ) {
 	my $i = 1;
 	foreach ( @EB::months ) {
-	    $rev_months{lc $_} = $i++;
+	    $rev_months{lc $_} = $i;
+	    $rev_months{"m$i"} = $i;
+	    $rev_months{sprintf("m%02d", $i)} = $i;
+	    $i++;
 	}
 	$i = 1;
 	foreach ( @EB::month_names ) {
@@ -74,11 +77,13 @@ sub parse_date_range {
     }
     # 03-04 - 05-06 -> [ "2004-04-03", "2004-06-25" ]
     elsif ( $range =~ /^(\d\d)-(\d\d)\s*-\s*(\d\d)-(\d\d)$/ ) {
+	return unless $default_year;
 	($d1, $m1, $y1, $d2, $m2, $y2) = ($1, $2, $default_year, $3, $4, $default_year);
     }
     # 3 april - 5 juni -> [ "2004-04-03", "2004-06-25" ]
     # 3 april - 5 juni 2004 -> [ "2004-04-03", "2004-06-25" ]
     elsif ( $range =~ /^(\d+)\s+(\w+)\s*-\s*(\d+)\s+(\w+)(?:\s+(\d{4}))?$/ ) {
+	return unless $default_year;
 	return unless $m1 = $rev_month_names{$2} || $rev_months{$2};
 	return unless $m2 = $rev_month_names{$4} || $rev_months{$4};
 	$d1 = $1; $d2 = $3;
@@ -94,6 +99,7 @@ sub parse_date_range {
     # april - juni -> [ "2004-04-01", "2004-06-30" ]
     # april - juni 2004 -> [ "2004-04-01", "2004-06-30" ]
     elsif ( $range =~ /^(\w+)\s*-\s*(\w+)(?:\s+(\d{4}))?$/ ) {
+	return unless $default_year;
 	return unless $m1 = $rev_month_names{$1} || $rev_months{$1};
 	return unless $m2 = $rev_month_names{$2} || $rev_months{$2};
 	$d1 = 1; $d2 = -1;
@@ -106,6 +112,7 @@ sub parse_date_range {
     # k2 -> [ "2004-04-01", "2004-06-30" ]
     # k2 2004 -> [ "2004-04-01", "2004-06-30" ]
     elsif ( $range =~ /^[kq](\d+)(?:\s+(\d{4}))?$/ ) {
+	return unless $2||$default_year;
 	return unless $1 >= 1 && $1 <= 4;
 	$m1 = 3 * $1 - 2;
 	$m2 = $m1 + 2;
@@ -113,11 +120,13 @@ sub parse_date_range {
     }
     # jaar          -> [ "2004-01-01", "2004-12-31" ]
     elsif ( $range eq lc(EB::_T("jaar")) || $range eq "jaar" ) {
+	return unless $default_year;
 	$d1 = 1; $d2 = -1; $m1 = 1; $m2 = 12; $y1 = $y2 = $default_year;
     }
     # apr | april   -> [ "2004-04-01", "2004-04-30" ]
     # apr 2004      -> [ "2004-04-01", "2004-04-30" ]
     elsif ( $range =~ /^(\w+)(?:\s+(\d{4}))?$/ ) {
+	return unless $2||$default_year;
 	return unless $m1 = $m2 = $rev_month_names{$1} || $rev_months{$1};
 	$d1 = 1; $d2 = -1;
 	$y1 = $y2 = $2 || $default_year;

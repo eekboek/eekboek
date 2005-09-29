@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.24 2005/09/28 20:57:00 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.25 2005/09/29 20:00:45 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 28 19:16:50 2005
-# Update Count    : 368
+# Last Modified On: Thu Sep 29 21:30:11 2005
+# Update Count    : 386
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -40,10 +40,17 @@ sub default {
     undef;
 }
 
+sub intro {
+    my $self = $_[0];
+    goto &do_database if $self->{interactive};
+    undef;
+}
+sub outro { undef }
+sub postcmd { shift; $dbh->rollback; shift }
+
 ################ Subroutines ################
 
 use EB;
-use EB::DB;
 use EB::Finance;
 use EB::Tools::Opening;
 
@@ -141,7 +148,7 @@ sub do_confirm {
 
 sub parseline {
     my ($self, $line) = @_;
-
+    $line =~ s/;\s*$//;
     my ($cmd, $env, @args) = $self->SUPER::parseline($line);
 
     if ( $cmd =~ /^(.+):(\S+)$/ ) {
@@ -185,6 +192,7 @@ sub _add {
 	       };
 
     my $args = \@args;
+    return unless
     parse_args($args,
 	       [ 'boekstuk|nr=s',
 		 'journal!',
@@ -203,14 +211,17 @@ sub _add {
 sub do_journaal {
     my ($self, @args) = @_;
     my $b = $bsk;
-    my $opts = { dagboeken    => 0,
-		 detail       => 1,
+    my $opts = { detail       => 1,
+		 periode      => '',
 		 verbose      => $self->{verbose},
+		 trace        => $self->{trace},
 	       };
 
+    return unless
     parse_args(\@args,
-	       [ 'dagboeken',
-		 'detail!',
+	       [ 'detail!',
+		 'totaal' => sub { $opts->{detail} = 0 },
+		 'periode=s' => sub { periode_arg($opts, @_) },
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -231,6 +242,12 @@ Print journaalposten.
   journaal <dagboek>     -- alle journaalposten van dit dagboek
   journaal <dagboek>:<n> -- boekstuk n van dit dagboek
   journaal               -- journaalposten van de laatste boeking
+
+Opties
+
+  --[no]detail           -- mate van detail, standaard is met details
+  --totaal               -- alleen het totaal (detail = 0)
+  --periode=XXX          -- alleen over deze periode
 EOS
 }
 
@@ -240,6 +257,7 @@ sub do_balans {
     my $opts = { verbose      => $self->{verbose},
 	       };
 
+    return unless
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
@@ -268,6 +286,7 @@ sub do_result {
     my $opts = { verbose      => $self->{verbose},
 	       };
 
+    return unless
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
@@ -297,6 +316,7 @@ sub do_proefensaldibalans {
     my $opts = { verbose      => $self->{verbose},
 	       };
 
+    return unless
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
@@ -324,11 +344,15 @@ sub do_grootboek {
     require EB::Report::Grootboek;
 
     my $opts = { detail       => 2,
+		 periode      => '',
 		 verbose      => $self->{verbose},
+		 trace        => $self->{trace},
 	       };
 
+    return unless
     parse_args(\@args,
 	       [ 'detail=i',
+		 'periode=s' => sub { periode_arg($opts, @_) },
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -358,6 +382,11 @@ sub help_grootboek {
 Print het Grootboek, of een selectie daaruit.
 
   grootboek [ <rek> ... ]
+
+Opties:
+
+  --detail=N            -- mate van detail, N=0,1,2 (standaard is 2)
+  --periode=XXX         -- alleen over deze periode
 EOS
 }
 
@@ -389,6 +418,7 @@ sub do_relatie {
     my $opts = {
 	       };
 
+    return unless
     parse_args(\@args,
 	       [ 'dagboek=s',
 		 'btw=s',
@@ -409,18 +439,20 @@ sub help_relatie {
     <<EOS;
 Aanmaken nieuwe relatie.
 
-  relatie <code> "Omschrijving" <rekening> [ <country-code> ]
+  relatie <code> "Omschrijving" <rekening>
+
+Opties:
+
+  --dagboek=XXX  -- selecteer dagboek voor deze relatie
+  --btw=XXX      -- btw-type: normaal, verlegd, intra, extra
 EOS
 }
 
-sub do_database { __x("Database: {db}", db => $ENV{EB_DB_NAME}) }
-sub intro {
-    my $self = $_[0];
-    goto &do_database if $self->{interactive};
-    undef;
+sub do_database {
+    my ($self, @args) = @_;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
+    __x("Database: {db}", db => $ENV{EB_DB_NAME})
 }
-sub outro { undef }
-sub postcmd { shift; $dbh->rollback; shift }
 
 sub do_btwaangifte {
     my ($self, @args) = @_;
@@ -461,6 +493,7 @@ sub do_dump_schema {
     my $opts = { sql => 0,
 	       };
 
+    return unless
     parse_args(\@args,
 	       [ 'sql!',
 	       ], $opts)
@@ -492,6 +525,7 @@ sub do_verwijder {
     my $opts = { verbose      => $self->{verbose},
 	       };
 
+    return unless
     parse_args(\@args,
 	       [ 'verbose!',
 		 'trace!',
@@ -532,6 +566,7 @@ sub do_toon {
 		 bsknr    => 1,
 	       };
 
+    return unless
     parse_args(\@args,
 	       [ 'btw!',
 		 'bsknr!',
@@ -583,6 +618,18 @@ sub parse_args {
     my $ret = GetOptions($opts, @$ctl);
     $ret;
 }
+
+sub periode_arg {
+    my ($opts, $name, $value) = @_;
+    if ( my $p = parse_date_range($value, substr($dbh->adm("begin"),0,4)) ) {
+	$opts->{$name} = $p;
+    }
+    else {
+	die("?".__x("Ongeldige periode-aanduiding: {per}",
+		    per => $value)."\n");
+    }
+}
+
 
 sub check_open {
     my ($self, $open) = @_;

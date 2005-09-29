@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.9 2005/09/21 13:09:01 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.10 2005/09/29 20:00:45 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 14:58:18 2005
-# Update Count    : 147
+# Last Modified On: Thu Sep 29 18:35:08 2005
+# Update Count    : 149
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -33,6 +33,7 @@ sub journal {
     my $nr = $opts->{select};
     my $pfx = $opts->{postfix} || "";
     my $detail = $opts->{detail};
+    my $per = $opts->{periode};
 
     my $sth;
     if ( $nr ) {
@@ -52,8 +53,9 @@ sub journal {
 				    " AND dbk_id = ?".
 				    " AND jnl_bsk_id = bsk_id".
 				    " AND jnl_dbk_id = dbk_id".
+				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
 				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
-				    $2, $rr->[1]);
+				    $2, $rr->[1], $per ? @$per : ());
 	    $pfx ||= __x("Boekstuk {nr}", nr => "$rr->[0]:$2");
 	}
 	elsif ( $nr =~ /^([[:alpha:]].+)$/ ) {
@@ -71,8 +73,9 @@ sub journal {
 				    " WHERE dbk_id = ?".
 				    " AND jnl_bsk_id = bsk_id".
 				    " AND jnl_dbk_id = dbk_id".
+				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
 				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
-				    $rr->[1]);
+				    $rr->[1], $per ? @$per : ());
 	    $pfx ||= __x("Dagboek {nr}", nr => $rr->[0]);
 	}
 	else {
@@ -81,8 +84,9 @@ sub journal {
 				    " FROM Journal, Boekstukken".
 				    " WHERE jnl_bsk_id = ?".
 				    " AND jnl_bsk_id = bsk_id".
+				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
 				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
-				    $nr);
+				    $nr, $per ? @$per : ());
 	    $pfx ||= __x("Boekstuk {nr}", nr => $nr);
 	}
     }
@@ -91,7 +95,9 @@ sub journal {
 				"jnl_acc_id, jnl_amount, jnl_desc, jnl_rel".
 				" FROM Journal, Boekstukken".
 				" WHERE jnl_bsk_id = bsk_id".
-				" ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, sign(jnl_amount) DESC, jnl_acc_id, jnl_bsr_seq");
+				($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
+				" ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, sign(jnl_amount) DESC, jnl_acc_id, jnl_bsr_seq",
+				$per ? @$per : ());
     }
     my $rr;
     my $nl = 0;

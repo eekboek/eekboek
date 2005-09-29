@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.8 2005/09/21 13:32:04 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.9 2005/09/29 20:00:45 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 21 15:30:02 2005
-# Update Count    : 88
+# Last Modified On: Thu Sep 29 19:04:05 2005
+# Update Count    : 95
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -41,6 +41,7 @@ sub perform {
 
     my $detail = $opts->{detail};
     my $sel = $opts->{select};
+    my $per = $opts->{periode};
 
     my $date = $dbh->adm("begin");
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
@@ -69,6 +70,21 @@ sub perform {
 
     while ( my $ar = $ah->fetchrow_arrayref ) {
 	my ($acc_id, $acc_desc, $acc_ibalance) = @$ar;
+
+	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_bsr_date,jnl_desc,jnl_rel".
+				 " FROM journal, Boekstukken, Dagboeken".
+				 " WHERE jnl_dbk_id = dbk_id".
+				 " AND jnl_bsk_id = bsk_id".
+				 " AND jnl_acc_id = ?".
+				 ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
+				 " ORDER BY jnl_bsr_date, jnl_bsk_id, jnl_bsr_seq",
+				 $acc_id, $per ? @$per : ());
+
+	if ( $per && !$sth->rows ) {
+	    $sth->finish;
+	    next;
+	}
+
 	unless ( $line ) {
 	    $line = sprintf($fmt,
 			    _T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"),
@@ -84,6 +100,7 @@ sub perform {
 	printf($fmt, $acc_id, $acc_desc, ("") x 7) if $detail;
 
 	my @d = ($n0, $n0);
+	$acc_ibalance = 0 if $per;
 	if ( $acc_ibalance ) {
 	    if ( $acc_ibalance > 0 ) {
 		$d[0] = numfmt($acc_ibalance);
@@ -92,15 +109,9 @@ sub perform {
 		$d[1] = numfmt(-$acc_ibalance);
 	    }
 	}
-	printf($fmt, "", " "._T("Beginsaldo"), "", "", @d, ("") x 3) if $detail > 0;
 
-	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_bsr_date,jnl_desc,jnl_rel".
-				 " FROM journal, Boekstukken, Dagboeken".
-				 " WHERE jnl_dbk_id = dbk_id".
-				 " AND jnl_bsk_id = bsk_id".
-				 " AND jnl_acc_id = ?".
-				 " ORDER BY jnl_bsr_date, jnl_bsk_id, jnl_bsr_seq",
-				 $acc_id);
+	printf($fmt, "", " "._T("Beginsaldo"), "", "", @d, ("") x 3)
+	  if $detail > 0 && !$per;
 
 	my $dtot = 0;
 	my $ctot = 0;
