@@ -1,5 +1,9 @@
 #!/usr/bin/perl -w
 
+package main;
+
+our $dbh;
+
 package EB::Relation;
 
 use EB;
@@ -34,6 +38,31 @@ sub add {
 	    return;
 	}
     }
+    my $debiteur;
+    my $ddesc;
+    if ( $dbk ) {
+	my $rr = $dbh->do("SELECT dbk_id, dbk_type, dbk_desc".
+			       " FROM Dagboeken".
+			       " WHERE dbk_desc ILIKE ?",
+			  $dbk);
+	unless ( $rr ) {
+	    warn("?".__x("Onbekend dagboek: {dbk}", dbk => $dbk)."\n");
+	    return;
+	}
+	my ($id, $type, $desc) = @$rr;
+	if ( $type == DBKTYPE_INKOOP ) {
+	    $debiteur = 0;
+	}
+	elsif ( $type == DBKTYPE_VERKOOP ) {
+	    $debiteur = 1;
+	}
+	else {
+	    warn("?".__x("Ongeldig dagboek voor relatie: {dbk}", dbk => $dbk)."\n");
+	    return;
+	}
+	$dbk = $id;
+	$ddesc = $desc;
+    }
 
     # Invoeren nieuwe relatie.
 
@@ -41,7 +70,7 @@ sub add {
     # bijbehorende grootboekrekening.
 
     # Koppeling met dagboek op basis van het laagstgenummerde
-    # inkoop/verkoop dagboek.
+    # inkoop/verkoop dagboek (tenzij meegegeven).
 
     my $dbcd = "acc_debcrd";
     if ( $acct =~ /^(\d+)([DC]$)/i) {
@@ -49,37 +78,39 @@ sub add {
 	$dbcd = uc($2) eq 'D' ? 1 : 0;
     }
 
-    my $rr = $::dbh->do("SELECT acc_desc,acc_balres,$dbcd".
+    my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dbcd".
 			" FROM Accounts".
 			" WHERE acc_id = ?", $acct);
     unless ( $rr ) {
 	warn("?".__x("Onbekende grootboekrekening: {acct}", acct => $acct). "\n");
 	return;
     }
-
     my ($adesc, $balres, $debcrd) = @$rr;
     if ( $balres ) {
 	warn("?".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
 		     acct => $acct, desc => $adesc)."\n");
 	return;
     }
+    $debcrd = defined($debiteur) ? $debiteur : 1 - $debcrd;
 
-    $debcrd = 1 - $debcrd;
-    my $sth = $::dbh->sql_exec("SELECT dbk_id".
-			       " FROM Dagboeken".
-			       " WHERE dbk_type = ?".
-			       " ORDER BY dbk_id",
-			       $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP);
-    $rr = $sth->fetchrow_arrayref;
-    $sth->finish;
+    unless ( $dbk ) {
+	my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_desc".
+				 " FROM Dagboeken".
+				 " WHERE dbk_type = ?".
+				 " ORDER BY dbk_id",
+				 $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP);
+	$rr = $sth->fetchrow_arrayref;
+	$sth->finish;
+	($dbk, $ddesc) = @$rr;
+    }
 
-    $::dbh->sql_insert("Relaties",
+    $dbh->sql_insert("Relaties",
 		       [qw(rel_code rel_desc rel_debcrd rel_btw_status rel_ledger rel_acc_id)],
-		       $code, $desc, $debcrd, $bstate || 0, $rr->[0], $acct);
+		       $code, $desc, $debcrd, $bstate || 0, $dbk, $acct);
 
-    $::dbh->commit;
+    $dbh->commit;
     ($debcrd ? _T("Debiteur") : _T("Crediteur")) . " " . $code .
-      " -> $acct ($adesc)";
+      " -> $acct ($adesc), dagboek $ddesc";
 }
 
 1;
