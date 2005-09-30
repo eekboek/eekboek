@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.25 2005/09/29 20:00:45 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.26 2005/09/30 16:40:05 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 29 21:30:11 2005
-# Update Count    : 386
+# Last Modified On: Fri Sep 30 18:23:03 2005
+# Update Count    : 481
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -29,7 +29,12 @@ sub new {
 
     _plug_cmds();
 
-    $class->SUPER::new($opts);
+    my $self = $class->SUPER::new($opts);
+
+    if ( $self->{interactive} ) {
+	$self->term->Attribs->{completion_function} = sub { $self->eb_complete(@_) };
+    }
+    $self;
 }
 
 sub prompt {
@@ -47,6 +52,67 @@ sub intro {
 }
 sub outro { undef }
 sub postcmd { shift; $dbh->rollback; shift }
+
+my $dbk_pat;
+my $dbk_i_pat;
+my $dbk_v_pat;
+my $dbk_bkm_pat;
+
+sub eb_complete {
+    my ($self, $word, $line, $pos) = @_;
+    my $i = index($line, ' ');
+    #warn "\nCompleting '$word' in '$line' (pos $pos, space $i)\n";
+    my $pre = substr($line, 0, $pos);
+    #warn "\n[$pre][", substr($line, $pos), "]\n";
+
+    if ( $i < 0 || $i > $pos-1 ) {
+	my @a = grep { /^$word/ } $self->completions;
+	if ( @a ) {
+	    return $a[0] if @a == 1;
+	    $self->term->display_match_list([$a[0],@a], $#a+1, -1);
+	    print STDERR ("$line");
+	}
+	return;
+    }
+    if ( $word =~ /^\d+$/ )  {
+	my $sth = $dbh->sql_exec("SELECT acc_id,acc_desc from Accounts".
+				 " WHERE acc_id LIKE ?".
+				 " ORDER BY acc_id", "$word%");
+	return () if $sth->rows == 0;
+	return ($sth->fetchrow_arrayref->[0]) if $sth->rows == 1;
+	print STDERR ("\n");
+	while ( my $rr = $sth->fetchrow_arrayref ) {
+	    printf STDERR ("%9d  %s\n", @$rr);
+	}
+	print STDERR ("$line");
+	return ();
+    }
+    my $t;
+    if ( ($word =~ /^[[:alpha:]]/ || $word eq "?")
+	 && (($pre =~ /^\s*(?:$dbk_bkm_pat).*\s(crd|deb)\s+$/ and $t = $1)
+	     || ($pre =~ /^\s*(?:$dbk_i_pat)(?::\S+)?(?:\s+[0-9---]+)?\s*$/ and $t = "deb")
+	     || ($pre =~ /^\s*(?:$dbk_v_pat)(?::\S+)?(?:\s+[0-9---]+)?\s*$/ and $t = "crd"))) {
+	$word = "" if $word eq "?";
+	my $sth = $dbh->sql_exec("SELECT rel_code,rel_desc from Relaties".
+				 " WHERE rel_code LIKE ?".
+				 " AND " . ($t eq "deb" ? "" : "NOT ") . "rel_debcrd".
+				 " ORDER BY rel_code", "$word%");
+	return () if $sth->rows == 0;
+	if ( $sth->rows == 1 && $word ne "" ) {
+	    $t = $sth->fetchrow_arrayref->[0];
+	    $t =~ s/\s+$//;
+	    return ($t);
+	}
+	print STDERR ("\n");
+	while ( my $rr = $sth->fetchrow_arrayref ) {
+	    printf STDERR ("  %s  %s\n", @$rr);
+	}
+	print STDERR ("$line");
+	return ();
+    }
+    warn "\n[$pre][", substr($line, $pos), "]\n";
+    return ();
+}
 
 ################ Subroutines ################
 
@@ -69,6 +135,15 @@ sub _plug_cmds {
 	    my $self = shift;
 	    $self->_help($dbk, $dbk_id, $dbk_desc, $dbk_type, @_);
 	};
+	if ( $dbk_type == DBKTYPE_INKOOP ) {
+	    $dbk_v_pat .= lc($dbk_desc)."|";
+	}
+	elsif ( $dbk_type == DBKTYPE_VERKOOP ) {
+	    $dbk_i_pat .= lc($dbk_desc)."|";
+	}
+	else {
+	    $dbk_bkm_pat .= lc($dbk_desc)."|";
+	}
     }
 
     # Opening (adm_...) commands.
@@ -83,6 +158,9 @@ sub _plug_cmds {
 	    (shift->{o} ||= EB::Tools::Opening->new)->shellhelp(@_);
 	};
     }
+
+    $dbk_pat = $dbk_i_pat.$dbk_v_pat.$dbk_bkm_pat;
+    chop foreach ($dbk_pat, $dbk_i_pat, $dbk_v_pat, $dbk_bkm_pat);
 }
 
 sub _help {
@@ -562,7 +640,7 @@ EOS
 sub do_toon {
     my ($self, @args) = @_;
     my $b = $bsk;
-    my $opts = { bverbose => !$self->{verbose},
+    my $opts = { verbose => !$self->{verbose},
 		 bsknr    => 1,
 	       };
 
@@ -606,6 +684,32 @@ Opties:
   --btw       vermeld altijd BTW codes
   --debcrd    vermeld altijd Debet/Credit codes
   --bsknr     vermeld altijd het boekstuknummer
+EOS
+}
+
+sub do_openstaand {
+    my ($self, @args) = @_;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
+
+    my $opts = { verbose => !$self->{verbose},
+		 bsknr    => 1,
+	       };
+
+    return unless
+    parse_args(\@args,
+	       [ 'verbose!',
+		 'trace!',
+	       ], $opts);
+
+    use EB::Report::Open;
+    EB::Report::Open->new->perform($opts);
+}
+
+sub help_openstaand {
+    <<EOS;
+Toont een overzicht van openstaande posten.
+
+  openstaand
 EOS
 }
 
