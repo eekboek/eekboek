@@ -75,7 +75,15 @@ sub add {
     my $dbcd = "acc_debcrd";
     if ( $acct =~ /^(\d+)([DC]$)/i) {
 	$acct = $1;
-	$dbcd = uc($2) eq 'D' ? 1 : 0;
+	$dbcd = uc($2) eq 'D' ? 1 : 0; # Note: D -> Crediteur
+	if ( defined($debiteur) && $dbcd == $debiteur ) {
+	    warn("?".__x("Dagboek {dbk} implicieert {typ1} maar {acct} impliceert {typ2}",
+			 dbk => $ddesc,
+			 typ1 => lc($debiteur ? _T("Debiteur") : _T("Crediteur")),
+			 acct => $acct.$2,
+			 typ2 => lc($dbcd ? _T("Crediteur") : _T("Debiteur")))."\n");
+	    return;
+	}
     }
 
     my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dbcd".
