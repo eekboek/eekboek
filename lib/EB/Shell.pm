@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.27 2005/10/01 09:35:09 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.28 2005/10/01 13:23:18 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 30 18:42:51 2005
-# Update Count    : 482
+# Last Modified On: Sat Oct  1 11:49:09 2005
+# Update Count    : 484
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -110,7 +110,7 @@ sub eb_complete {
 	print STDERR ("$line");
 	return ();
     }
-    warn "\n[$pre][", substr($line, $pos), "]\n";
+    #warn "\n[$pre][", substr($line, $pos), "]\n";
     return ();
 }
 
@@ -615,7 +615,7 @@ sub do_verwijder {
     my $cmd;
     my $id = shift(@args);
     if ( $self->{interactive} ) {
-	($id, my $dbs, my $err) = $dbh->bskid($id);
+	(my $xid, my $id, my $err) = $dbh->bskid($id);
 	unless ( defined($id) ) {
 	    warn("?".$err."\n");
 	    return;
