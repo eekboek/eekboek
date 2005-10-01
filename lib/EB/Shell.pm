@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.28 2005/10/01 13:23:18 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.29 2005/10/01 13:32:36 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 11:49:09 2005
-# Update Count    : 484
+# Last Modified On: Sat Oct  1 15:30:41 2005
+# Update Count    : 485
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -283,7 +283,7 @@ sub _add {
 	       ], $opts);
 
     $bsk = $action->perform($args, $opts);
-    $bsk ? $bsk =~ /^\d+/ ? __x("Boekstuk: {bsk}", bsk => $bsk) : $bsk	: "";
+    $bsk ? $bsk =~ /^\w+:\d+/ ? __x("Boekstuk: {bsk}", bsk => $bsk) : $bsk : "";
 }
 
 sub do_journaal {
