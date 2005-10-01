@@ -1,10 +1,10 @@
 # SQLEngine.pm -- 
-# RCS Info        : $Id: SQLEngine.pm,v 1.1 2005/09/28 19:55:49 jv Exp $
+# RCS Info        : $Id: SQLEngine.pm,v 1.2 2005/10/01 13:19:24 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 28 21:52:43 2005
-# Update Count    : 13
+# Last Modified On: Sat Oct  1 15:18:34 2005
+# Update Count    : 25
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ use EB;
 use strict;
 
 sub new {
-    my ($class, @args) = shift;
+    my ($class, @args) = @_;
     $class = ref($class) || $class;
     bless { _cb => {}, @args } => $class;
 }
@@ -105,9 +105,24 @@ sub process {
 		}
 	    }
 
-	    # Execute.
-	    warn("+ $sql\n") if $self->{trace};
-	    $dbh->dbh->do($sql);
+	    # Intercept transaction commands. Must be handled by DBI calls.
+	    if ( $sql =~ /^begin\b/i ) {
+		warn("+ INTERCEPTED:: $sql\n") if $self->{trace};
+		$dbh->dbh->begin_work if $dbh->{AutoCommit};
+	    }
+	    elsif ( $sql =~ /^commit\b/i ) {
+		warn("+ INTERCEPTED: $sql\n") if $self->{trace};
+		$dbh->dbh->commit;
+	    }
+	    elsif ( $sql =~ /^rollback\b/i ) {
+		warn("+ INTERCEPTED: $sql\n") if $self->{trace};
+		$dbh->dbh->rollback;
+	    }
+	    else {
+		# Execute.
+		warn("+ $sql\n") if $self->{trace};
+		$dbh->dbh->do($sql);
+	    }
 	    $sql = "";
 	}
     }
