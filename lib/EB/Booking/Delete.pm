@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Delete.pm,v 1.3 2005/09/21 10:20:11 jv Exp $ ';
+my $RCS_Id = '$Id: Delete.pm,v 1.4 2005/10/01 13:26:53 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Delete;
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 20:47:18 2005
-# Update Count    : 47
+# Last Modified On: Sat Oct  1 15:26:25 2005
+# Update Count    : 52
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,8 +21,6 @@ use strict;
 use warnings;
 
 use EB;
-
-my $trace_updates = $ENV{EB_TRACE_UPDATES};		# for debugging
 
 sub new {
     return bless {};
@@ -34,13 +32,14 @@ sub perform {
     my $sth;
     my $rr;
     my $orig = $id;
-    my $bsk = $dbh->bskid($id);
+    my ($bsk, $dbsk, $err) = $dbh->bskid($id);
+    die("?$err\n") unless defined $bsk;
 
     # Check if this boekstuk is used by others. This can only be the
-    # case if one of its boekstukregels fulfills a payment for another
-    # bookstuk.
+    # case if has been paid.
 
     if ( my $p = $dbh->lookup($bsk, qw(Boekstukken bsk_id bsk_paid)) ) {
+	# It has been paid. Show the user the list of bookstukken.
 	$sth = $dbh->sql_exec("SELECT dbk_desc, bsk_nr".
 			      " FROM Boekstukken,Boekstukregels,Dagboeken".
 			      " WHERE bsk_id = bsr_bsk_id".
@@ -54,7 +53,7 @@ sub perform {
 	    }
 	    chomp($t);
 	    return "?".__x("Boekstuk {bsk} is in gebruik door {lst}",
-			   bsk => $orig, lst => $t)."\n";
+			   bsk => $dbsk, lst => $t)."\n";
 	}
     }
 
@@ -106,11 +105,11 @@ sub perform {
 	warn("?".$@);
 	$dbh->rollback;
 	return "?".__x("Boekstuk {bsk} niet verwijderd",
-		       bsk => $orig)."\n";
+		       bsk => $dbsk)."\n";
     }
-    
+
     return __x("Boekstuk {bsk} verwijderd",
-	       bsk => $orig)."\n";
+	       bsk => $dbsk)."\n";
 }
 
 1;

@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.2 2005/09/20 17:07:39 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.3 2005/10/01 13:24:29 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 19:07:34 2005
-# Update Count    : 42
+# Last Modified On: Sat Oct  1 12:06:07 2005
+# Update Count    : 47
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -45,6 +45,8 @@ sub decode {
     my $ex_btw	   = $opts->{btw};
     my $ex_bsknr   = $opts->{bsknr};
     my $ex_debcrd  = $opts->{debcrd};
+
+    $bsk = $dbh->bskid($bsk);
 
     my $rr = $dbh->do("SELECT bsk_id, bsk_nr, bsk_desc, ".
 		      "bsk_dbk_id, bsk_date, bsk_amount, bsk_paid".
