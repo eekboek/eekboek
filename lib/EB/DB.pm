@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.20 2005/09/28 20:56:28 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.21 2005/10/01 10:12:15 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 28 22:18:51 2005
-# Update Count    : 163
+# Last Modified On: Sat Oct  1 12:05:36 2005
+# Update Count    : 164
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -179,7 +179,7 @@ sub bskid {
 						  bsk => $nr)) : undef;
 	}
 	my ($bsk_nr, $dbk_id, $dbk_desc) = @$rr;
-
+	$bsk_nr =~ s/\s+$//;
 	return wantarray ? ($nr, "$dbk_desc:$bsk_nr", undef) : $nr;
     }
     else {
