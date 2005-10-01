@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.21 2005/10/01 10:12:15 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.22 2005/10/01 13:21:03 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 12:05:36 2005
-# Update Count    : 164
+# Last Modified On: Sat Oct  1 15:20:46 2005
+# Update Count    : 182
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -32,6 +32,7 @@ sub check_db {
 
     my $fail = 0;
 
+    # Check the existence of the required tables.
     my %tables = map { lc, 1 } $dbh->tables;
 
     foreach my $table ( qw(constants standaardrekeningen verdichtingen accounts
@@ -47,9 +48,36 @@ sub check_db {
 		db => $dbh->{Name}) . " " .
 	_T("Wellicht is de database nog niet geïnitialiseerd?")."\n") if $fail;
 
+    # Check version, and try automatic upgrade.
     my ($maj, $min, $rev)
       = @{$self->do("SELECT adm_scm_majversion, adm_scm_minversion, adm_scm_revision".
 		    " FROM Metadata")};
+    while ( !($maj == SCM_MAJVERSION &&
+	      sprintf("%03d%03d", $min, $rev) ge sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION)) ) {
+	# Basically, this will migrate to the highest possibly version, and then retry.
+	my $cur = sprintf("%03d%03d%03d", $maj, $min, $rev);
+	my $tmpl = EB_LIB . "EB/migrate/$cur?????????.sql";
+	my @a = reverse sort glob($tmpl);
+	if ( @a >= 1 && open(my $fh, "<$a[0]")) {
+	    warn("!"._T("De database wordt aangepast aan de nieuwere versie")."\n");
+
+	    local($/);		# slurp mode
+	    my $sql = <$fh>;	# slurp
+	    close($fh);
+
+	    require EB::Tools::SQLEngine;
+	    eval {
+		EB::Tools::SQLEngine->new->process($sql);
+	    };
+	    $dbh->rollback if $@;
+
+	    ($maj, $min, $rev)
+	      = @{$self->do("SELECT adm_scm_majversion, adm_scm_minversion, adm_scm_revision".
+			    " FROM Metadata")};
+	    die("?"._T("De migratie is mislukt. Gelieve de documentatie te raadplegen.")."\n")
+	      if $cur eq sprintf("%03d%03d%03d", $maj, $min, $rev);
+	}
+    }
     die("?".__x("Ongeldige EekBoek database: {db} versie {ver}.".
 		" Minimaal benodigde versie is {req}.",
 		db => $dbh->{Name}, ver => "$maj.$min.$rev",
@@ -57,6 +85,7 @@ sub check_db {
       unless $maj == SCM_MAJVERSION &&
 	sprintf("%03d%03d", $min, $rev) ge sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION);
 
+    # Verify koppelingen.
     for ( $self->std_acc("deb") ) {
 	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
 	$fail++, warn("?".__x("Geen grootboekrekening voor {dc} ({acct})",
@@ -99,6 +128,7 @@ sub check_db {
 	  unless $rr->[0];
     }
 
+    # Verify some grootboekrekeningen.
     my $sth = $self->sql_exec("SELECT acc_id, acc_desc, dbk_id, dbk_type, dbk_desc FROM Dagboeken, Accounts".
 			      " WHERE dbk_acc_id = acc_id");
     while ( my $rr = $sth->fetchrow_arrayref ) {
