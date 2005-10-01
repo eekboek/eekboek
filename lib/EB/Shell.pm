@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.26 2005/09/30 16:40:05 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.27 2005/10/01 09:35:09 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 30 18:23:03 2005
-# Update Count    : 481
+# Last Modified On: Fri Sep 30 18:42:51 2005
+# Update Count    : 482
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -640,7 +640,7 @@ EOS
 sub do_toon {
     my ($self, @args) = @_;
     my $b = $bsk;
-    my $opts = { verbose => !$self->{verbose},
+    my $opts = { verbose => 0,
 		 bsknr    => 1,
 	       };
 
