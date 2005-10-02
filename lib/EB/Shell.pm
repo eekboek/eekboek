@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.29 2005/10/01 13:32:36 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.30 2005/10/02 09:42:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 15:30:41 2005
-# Update Count    : 485
+# Last Modified On: Sun Oct  2 11:41:06 2005
+# Update Count    : 486
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -100,7 +100,6 @@ sub eb_complete {
 	return () if $sth->rows == 0;
 	if ( $sth->rows == 1 && $word ne "" ) {
 	    $t = $sth->fetchrow_arrayref->[0];
-	    $t =~ s/\s+$//;
 	    return ($t);
 	}
 	print STDERR ("\n");
