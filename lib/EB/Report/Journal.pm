@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.10 2005/09/29 20:00:45 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.11 2005/10/02 11:24:39 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 29 18:35:08 2005
-# Update Count    : 149
+# Last Modified On: Sun Oct  2 13:04:14 2005
+# Update Count    : 151
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -108,10 +108,14 @@ sub journal {
 	    $jnl_amount, $jnl_desc, $jnl_rel) = @$rr;
 
 	if ( $jnl_bsr_seq == 0 ) {
-	    printf($repfmt,
-		   _T("Datum"), _T("Id"), _T("Nr"), _T("Dag/Grootboek"),
-		   _T("Rek"), _T("Debet"), _T("Credit"), _T("Boekstuk/regel"),
-		   _T("Relatie")) unless $nl;
+	    unless ( $nl ) {
+		my $t = sprintf($repfmt,
+				_T("Datum"), _T("Id"), _T("Nr"), _T("Dag/Grootboek"),
+				_T("Rek"), _T("Debet"), _T("Credit"), _T("Boekstuk/regel"),
+				_T("Relatie"));
+		$t =~ s/ +$//;
+		print($t);
+	    }
 	    $nl++, next unless $detail;
 	    print("\n") if $nl++;
 	    $self->_repline($jnl_bsr_date, $jnl_bsk_id, $bsk_nr, _dbk_desc($jnl_dbk_id), '',
@@ -133,8 +137,10 @@ sub _repline {
     for ( $deb, $crd ) {
 	$_ = $_ ? numfmt($_) : '';
     }
-    printf($repfmt,
-	   $date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel || '');
+    my $t = sprintf($repfmt,
+		    $date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel || '');
+    $t =~ s/ +$//;
+    print($t);
 }
 
 my %dbk_desc;

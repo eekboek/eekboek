@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.9 2005/09/29 20:00:45 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.10 2005/10/02 11:24:30 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 29 19:04:05 2005
-# Update Count    : 95
+# Last Modified On: Sun Oct  2 13:23:25 2005
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -65,8 +65,9 @@ sub perform {
     my $mcgrand = 0;
     my $n0 = numfmt(0);
 
-    my $fmt = "%5s  %-30.30s  %4s  %10s %10s %10s  %-10.10s  %4s  %-8s\n";
+    my $fmt = "%5s  %-30.30s  %4s  %10s %10s %10s  %-10.10s  %-4s  %-8s\n";
     my $line;
+    my $t;
 
     while ( my $ar = $ah->fetchrow_arrayref ) {
 	my ($acc_id, $acc_desc, $acc_ibalance) = @$ar;
@@ -89,7 +90,9 @@ sub perform {
 	    $line = sprintf($fmt,
 			    _T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"),
 			    _T("Datum"), _T("Debet"), _T("Credit"),
-			    _T("Dagboek"), _T("Nr"), _T("Relatie"));
+			    _T("Dagboek"),
+			    sprintf("%4s", _T("Nr")), _T("Relatie"));
+	    $line =~ s/ +$//;
 	    print($line);
 	    $line =~ s/./-/g;
 	    print($line);
@@ -97,7 +100,7 @@ sub perform {
 	else {
 	    print("\n") if $detail;
 	}
-	printf($fmt, $acc_id, $acc_desc, ("") x 7) if $detail;
+	printfx($fmt, $acc_id, $acc_desc, ("") x 7) if $detail;
 
 	my @d = ($n0, $n0);
 	$acc_ibalance = 0 if $per;
@@ -110,7 +113,7 @@ sub perform {
 	    }
 	}
 
-	printf($fmt, "", " "._T("Beginsaldo"), "", "", @d, ("") x 3)
+	printfx($fmt, "", " "._T("Beginsaldo"), "", "", @d, ("") x 3)
 	  if $detail > 0 && !$per;
 
 	my $dtot = 0;
@@ -124,14 +127,14 @@ sub perform {
 	    else {
 		$dtot += $amount;
 	    }
-	    printf($fmt, "", "  " . $desc, $bsk_id, $date,
+	    printfx($fmt, "", "  " . $desc, $bsk_id, $date,
 		   $amount >= 0 ? (numfmt($amount), $n0) : ($n0, numfmt(-$amount)),
 		   $dbk_desc, $bsk_nr, $rel||"") if $detail > 1;
 	}
 
-	printf($fmt, "", " "._T("Totaal mutaties"), "", "",
-	       $ctot > $dtot ? ("", numfmt($ctot-$dtot)) : (numfmt($dtot-$ctot), ""),
-	       ("") x 3) if $detail && ($dtot || $ctot || $acc_ibalance);
+	printfx($fmt, "", " "._T("Totaal mutaties"), "", "",
+		$ctot > $dtot ? ("", numfmt($ctot-$dtot)) : (numfmt($dtot-$ctot), ""),
+		("") x 3) if $detail && ($dtot || $ctot || $acc_ibalance);
 
 	if ( $dtot > $ctot ) {
 	    $mdgrand += $dtot - $ctot;
@@ -140,9 +143,9 @@ sub perform {
 	    $mcgrand += $ctot - $dtot;
 	}
 
-	printf($fmt, $acc_id, __x("Totaal {adesc}", adesc => $acc_desc), "", "",
-	       $ctot > $dtot + $acc_ibalance ? ("", numfmt($ctot-$dtot-$acc_ibalance)) : (numfmt($dtot+$acc_ibalance-$ctot),""),
-	       ("") x 3);
+	printfx($fmt, $acc_id, __x("Totaal {adesc}", adesc => $acc_desc), "", "",
+		$ctot > $dtot + $acc_ibalance ? ("", numfmt($ctot-$dtot-$acc_ibalance)) : (numfmt($dtot+$acc_ibalance-$ctot),""),
+		("") x 3);
 	if ( $ctot > $dtot + $acc_ibalance ) {
 	    $cgrand += $ctot - $dtot-$acc_ibalance;
 	}
@@ -153,18 +156,25 @@ sub perform {
 
     if ( $line ) {
 	print("\n");
-	printf($fmt, "", _T("Totaal mutaties"), "", "",
-	       numfmt($mdgrand), numfmt($mcgrand),
-	       ("") x 3);
+	printfx($fmt, "", _T("Totaal mutaties"), "", "",
+		numfmt($mdgrand), numfmt($mcgrand),
+		("") x 3);
 	print($line);
-	printf($fmt, "", _T("Totaal"), "", "",
-	       numfmt($dgrand), numfmt($cgrand),
-	       ("") x 3);
+	printfx($fmt, "", _T("Totaal"), "", "",
+		numfmt($dgrand), numfmt($cgrand),
+		("") x 3);
     }
     else {
 	print("?"._T("Geen informatie gevonden")."\n");
     }
 
+}
+
+sub printfx {
+    my ($fmt, @args) = @_;
+    my $t = sprintf($fmt, @args);
+    $t =~ s/ +$//;
+    print($t);
 }
 
 1;
