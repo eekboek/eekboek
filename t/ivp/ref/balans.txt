@@ -7,9 +7,9 @@ RekNr   Grootboekrekening                             Debet     Credit
 240     Computers                                  13378,48
 241     Afschrijving computers                                12503,60
 500     Kapitaal                                               2443,18
-1120    Postbank                                   10357,48
+1120    Postbank                                   10334,68
 1500    BTW Verkoop Hoog                                       1463,00
-1520    BTW Inkoop Hoog                              144,50
-        << Winst >>                                            7098,98
+1520    BTW Inkoop Hoog                              148,14
+        << Winst >>                                            7079,82
 ----------------------------------------------------------------------
-        TOTAAL Balans                              25224,83   25224,83
+        TOTAAL Balans                              25205,67   25205,67

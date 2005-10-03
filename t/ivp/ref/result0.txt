@@ -3,7 +3,7 @@ Verlies/Winst -- Periode 2004-01-01 - 2004-12-31
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 ----------------------------------------------------------------------
 5       Bedrijfsopbrengsten                                    8700,00
-6       Personeelslasten                            1601,02
-        << Winst >>                                 7098,98
+6       Personeelslasten                            1620,18
+        << Winst >>                                 7079,82
 ----------------------------------------------------------------------
         TOTAAL Resultaten                           8700,00    8700,00

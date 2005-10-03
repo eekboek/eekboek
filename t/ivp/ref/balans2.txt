@@ -14,10 +14,10 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 
 2       Vlottende activa
 24        Liquide middelen
-1120      Postbank                                 10357,48
-24       Totaal Liquide middelen                   10357,48
+1120      Postbank                                 10334,68
+24       Totaal Liquide middelen                   10334,68
 
-2       Totaal Vlottende activa                    10357,48
+2       Totaal Vlottende activa                    10334,68
 
 3       Eigen vermogen
 31        Kapitaal
@@ -29,11 +29,11 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 4       Vreemd vermogen
 48        Belastingen & soc. lasten
 1500      BTW Verkoop Hoog                                     1463,00
-1520      BTW Inkoop Hoog                            144,50
-48       Totaal Belastingen & soc. lasten                      1318,50
+1520      BTW Inkoop Hoog                            148,14
+48       Totaal Belastingen & soc. lasten                      1314,86
 
-4       Totaal Vreemd vermogen                                 1318,50
+4       Totaal Vreemd vermogen                                 1314,86
 
-        << Winst >>                                            7098,98
+        << Winst >>                                            7079,82
 ----------------------------------------------------------------------
-        TOTAAL Balans                              10860,66   10860,66
+        TOTAAL Balans                              10837,86   10837,86

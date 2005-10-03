@@ -26,5 +26,5 @@ Berekening
 5. Berekening totaal
 
 5a   Subtotaal                                               1463
-5b   Voorbelasting                                            145
-5c   Subtotaal                                               1318
+5b   Voorbelasting                                            149
+5c   Subtotaal                                               1314

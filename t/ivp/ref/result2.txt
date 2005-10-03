@@ -19,12 +19,12 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 
 69        Algemene kosten
 4900      Telefoon- en faxkosten                     530,62
-4905      Internetkosten                             229,92
+4905      Internetkosten                             249,08
 4980      Bankkosten                                  32,40
-69       Totaal Algemene kosten                      792,94
+69       Totaal Algemene kosten                      812,10
 
-6       Totaal Personeelslasten                     1601,02
+6       Totaal Personeelslasten                     1620,18
 
-        << Winst >>                                 7098,98
+        << Winst >>                                 7079,82
 ----------------------------------------------------------------------
         TOTAAL Resultaten                           8700,00    8700,00

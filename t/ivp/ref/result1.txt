@@ -8,9 +8,9 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 
 6       Personeelslasten
 63       Afschrijving materiele vaste activa         808,08
-69       Algemene kosten                             792,94
-6       Totaal Personeelslasten                     1601,02
+69       Algemene kosten                             812,10
+6       Totaal Personeelslasten                     1620,18
 
-        << Winst >>                                 7098,98
+        << Winst >>                                 7079,82
 ----------------------------------------------------------------------
         TOTAAL Resultaten                           8700,00    8700,00

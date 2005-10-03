@@ -8,17 +8,17 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit   Saldo D
 
 2       Vlottende activa
 22       Totaal Vorderingen                        10163,00   10163,00
-24       Totaal Liquide middelen                   11141,70     784,22   10357,48
-2       Totaal Vlottende activa                    21304,70   10947,22   10357,48
+24       Totaal Liquide middelen                   11141,70     807,02   10334,68
+2       Totaal Vlottende activa                    21304,70   10970,02   10334,68
 
 3       Eigen vermogen
 31       Totaal Kapitaal                                       2443,18               2443,18
 3       Totaal Eigen vermogen                                  2443,18               2443,18
 
 4       Vreemd vermogen
-46       Totaal Leveranciers kredieten               905,04     905,04
-48       Totaal Belastingen & soc. lasten            144,50    1463,00               1318,50
-4       Totaal Vreemd vermogen                      1049,54    2368,04               1318,50
+46       Totaal Leveranciers kredieten               927,84     927,84
+48       Totaal Belastingen & soc. lasten            148,14    1463,00               1314,86
+4       Totaal Vreemd vermogen                      1075,98    2390,84               1314,86
 
 5       Bedrijfsopbrengsten
 51       Totaal Netto omzet                                    8700,00               8700,00
@@ -26,8 +26,8 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit   Saldo D
 
 6       Personeelslasten
 63       Totaal Afschrijving materiele vaste act     808,08                808,08
-69       Totaal Algemene kosten                      792,94                792,94
-6       Totaal Personeelslasten                     1601,02               1601,02
+69       Totaal Algemene kosten                      812,10                812,10
+6       Totaal Personeelslasten                     1620,18               1620,18
 
 --------------------------------------------------------------------------------------------
-        TOTAAL                                     38678,11   38678,11   12461,68   12461,68
+        TOTAAL                                     38723,71   38723,71   12458,04   12458,04

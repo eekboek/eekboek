@@ -3,9 +3,9 @@ Balans -- Periode 2004-01-01 - 2004-12-31
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 ----------------------------------------------------------------------
 1       Vaste Activa                                 503,18
-2       Vlottende activa                           10357,48
+2       Vlottende activa                           10334,68
 3       Eigen vermogen                                         2443,18
-4       Vreemd vermogen                                        1318,50
-        << Winst >>                                            7098,98
+4       Vreemd vermogen                                        1314,86
+        << Winst >>                                            7079,82
 ----------------------------------------------------------------------
-        TOTAAL Balans                              10860,66   10860,66
+        TOTAAL Balans                              10837,86   10837,86
