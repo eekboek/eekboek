@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.1 2005/09/30 16:40:15 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.2 2005/10/03 20:16:06 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 30 18:31:45 2005
-# Update Count    : 32
+# Last Modified On: Mon Oct  3 20:34:11 2005
+# Update Count    : 35
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -38,11 +38,12 @@ sub perform {
     my $rep = $opts->{reporter} || EB::Report::Open::Text->new($opts);
 
     my $sth = $dbh->sql_exec("SELECT bsk_id, dbk_desc, bsk_nr, bsk_desc, bsk_date,".
-			     " bsk_amount, dbk_type, bsr_rel_code".
+			     " bsk_open, dbk_type, bsr_rel_code".
 			     " FROM Boekstukken, Dagboeken, Boekstukregels".
 			     " WHERE bsk_dbk_id = dbk_id".
 			     " AND bsr_bsk_id = bsk_id AND bsr_nr = 1".
-			     " AND bsk_paid IS NULL".
+			     " AND bsk_open IS NOT NULL".
+			     " AND bsk_open != 0".
 			     " AND dbk_type in (@{[DBKTYPE_INKOOP]},@{[DBKTYPE_VERKOOP]})");
     unless ( $sth->rows ) {
 	$sth->finish;
