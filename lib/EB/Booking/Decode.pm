@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.5 2005/10/03 20:30:19 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.6 2005/10/03 20:59:52 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct  3 22:30:03 2005
-# Update Count    : 71
+# Last Modified On: Mon Oct  3 22:57:57 2005
+# Update Count    : 80
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -158,8 +158,8 @@ sub decode {
 	next unless $trail;
 
 	my $btw = ($ex_btw
-		   || ( $bsr_type==0 && $dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS
-			|| $dbktype == DBKTYPE_MEMORIAAL)
+		   || ( $bsr_type==0 && ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS
+			|| $dbktype == DBKTYPE_MEMORIAAL))
 		   || btw_code($bsr_acc_id) != $bsr_btw_id) ? '@'.$bsr_btw_id : "";
 
 	if ( $bsr_amount < 0 ) {
