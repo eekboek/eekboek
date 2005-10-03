@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.8 2005/09/28 19:53:34 jv Exp $
+# $Id: Opening.pm,v 1.9 2005/10/03 19:03:38 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 28 19:06:30 2005
-# Update Count    : 40
+# Last Modified On: Sat Oct  1 21:57:02 2005
+# Update Count    : 41
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -244,9 +244,9 @@ sub open {
 		$amt = -$amt;
 	    }
 	    $dbh->sql_insert("Boekstukken",
-			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_paid bsk_amount)],
+			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_open bsk_amount)],
 			     $::dbh->get_sequence("bsk_nr_0_seq"),
-			     $desc, $dagboek, $date, undef, $amt);
+			     $desc, $dagboek, $date, $amt, $amt);
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_rel_code bsr_amount
 				 bsr_type)],

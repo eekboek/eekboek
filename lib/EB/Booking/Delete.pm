@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Delete.pm,v 1.4 2005/10/01 13:26:53 jv Exp $ ';
+my $RCS_Id = '$Id: Delete.pm,v 1.5 2005/10/03 19:03:08 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Delete;
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 15:26:25 2005
-# Update Count    : 52
+# Last Modified On: Sat Oct  1 22:11:33 2005
+# Update Count    : 63
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -38,13 +38,16 @@ sub perform {
     # Check if this boekstuk is used by others. This can only be the
     # case if has been paid.
 
-    if ( my $p = $dbh->lookup($bsk, qw(Boekstukken bsk_id bsk_paid)) ) {
+    my ($amt, $open) = @{$dbh->do("SELECT bsk_amount,bsk_open".
+				  " FROM Boekstukken".
+				  " WHERE bsk_id = ?", $bsk)};
+    if ( defined($open) && $amt != $open ) {
 	# It has been paid. Show the user the list of bookstukken.
 	$sth = $dbh->sql_exec("SELECT dbk_desc, bsk_nr".
 			      " FROM Boekstukken,Boekstukregels,Dagboeken".
 			      " WHERE bsk_id = bsr_bsk_id".
 			      " AND bsk_dbk_id = dbk_id".
-			      " AND bsr_id = ?", $p);
+			      " AND bsr_paid = ?", $bsk);
 	$rr = $sth->fetchall_arrayref;
 	if ( $rr ) {
 	    my $t = "";
@@ -57,15 +60,16 @@ sub perform {
 	}
     }
 
-    # Collect list of boekstukregels.
-    $sth = $dbh->sql_exec("SELECT bsr_id".
+    # Collect list of affectec boekstukken.
+    $sth = $dbh->sql_exec("SELECT bsr_paid,bsr_amount".
 			  " FROM Boekstukregels".
-			  " WHERE bsr_bsk_id = ?", $bsk);
+			  " WHERE bsr_paid IS NOT NULL AND bsr_bsk_id = ?", $bsk);
     $rr = $sth->fetchall_arrayref;
-    my @bsr;
+    my @bsk; my @amt;
     if ( $rr ) {
 	foreach ( @$rr ) {
-	    push(@bsr, $_->[0]);
+	    push(@bsk, $_->[0]);
+	    push(@amt, $_->[1]);
 	}
     }
 
@@ -84,9 +88,9 @@ sub perform {
 
 	# Clear 'paid' info.
 	$dbh->sql_exec("UPDATE Boekstukken".
-		       " SET bsk_paid = NULL".
-		       " WHERE bsk_paid = ?", $_)->finish
-			 foreach @bsr;
+		       " SET bsk_open = bsk_open - ?".
+		       " WHERE bsk_id = ?", shift(@amt), $_)->finish
+			 foreach @bsk;
 
 	# Delete boekstukregels.
 	$dbh->sql_exec("DELETE FROM Boekstukregels".

@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.17 2005/09/28 20:54:56 jv Exp $
+-- $Id: eekboek.sql,v 1.18 2005/10/03 19:04:48 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -98,19 +98,19 @@ CREATE TABLE Relaties (
 -- Boekstukken
 CREATE TABLE Boekstukken (
     bsk_id       serial not null primary key,
-    bsk_nr       char(4),	-- free choice
+    bsk_nr       char(4),	-- vrije keuze, default serienummer
     bsk_desc     text not null,
     bsk_dbk_id   int references Dagboeken,
     bsk_date     date,
-    bsk_amount   int,
-    bsk_paid     int,
+    bsk_amount   int,		-- bedrag, negatief voor inkoop
+    bsk_open     int,		-- openstaand bedrag
     UNIQUE(bsk_nr, bsk_dbk_id)
 );
 
 -- Boekstukregels
 CREATE TABLE Boekstukregels (
     bsr_id       serial not null primary key,
-    bsr_nr       int,	-- 1, 2, 3, ...
+    bsr_nr       int,	-- volgnummer in dit boekstuk (1, 2, 3, ...)
     bsr_date     date,
     bsr_bsk_id   int references Boekstukken,
     bsr_desc     text, -- editable copy van bsk_desc
@@ -131,22 +131,20 @@ CREATE TABLE Boekstukregels (
 --  #bsr_art_num  I: Artikel (levering van)
     bsr_rel_code  CHAR(10) references Relaties,
                   -- BKM: Debiteur (betaling van), Crediteur (betaling aan)
-                  -- I: Crediteur, V: Debiteur
+                  -- I: Crediteur, V: Debiteur (alle bsrs dezelfde)
+    bsr_paid	  int references Boekstukken,
+		  -- Boekstuknummer dat door deze bsr wordt betaald
     UNIQUE(bsr_nr, bsr_bsk_id),
     CONSTRAINT "bsr_type"
 	CHECK (bsr_type >= 0 AND bsr_type <= 2 OR bsr_type = 9)
 );
 
-ALTER TABLE ONLY Boekstukken
-    ADD CONSTRAINT "bsk_paid_fk_bsr_id"
-        FOREIGN KEY (bsk_paid) REFERENCES Boekstukregels(bsr_id);
-
 -- Journal
 CREATE TABLE Journal (
-    jnl_date	date not null,
+    jnl_date	date not null,	--boekstukdatum
     jnl_dbk_id	int references Dagboeken,
     jnl_bsk_id	int not null references Boekstukken,
-    jnl_bsr_date date not null,
+    jnl_bsr_date date not null,	--boekstukregeldatum
     jnl_bsr_seq	int not null,
     jnl_acc_id	int references Accounts,
     jnl_amount	int,
@@ -161,12 +159,12 @@ CREATE TABLE Metadata (
     adm_scm_minversion  smallint NOT NULL,
     adm_scm_revision    smallint NOT NULL,
     adm_name	       	text,
-    adm_begin		date,
+    adm_begin		date,	-- boekjaar, in YYYY-01-01
       -- btw periode: 0 = geen, 1 = jaar, 4 = kwartaal, 12 = maand
     adm_btwperiod	smallint,
-    adm_opened		date,
-    adm_btwbegin	date,
-    adm_closed		date,
+    adm_opened		date,	-- openingsdatum
+    adm_btwbegin	date,	-- begin huidige BTW periode
+    adm_closed		date,	-- sluitdatum
     CONSTRAINT "meta_adm_btwperiod"
 	CHECK (adm_btwperiod = 0 OR adm_btwperiod = 1 OR adm_btwperiod = 4 OR adm_btwperiod = 12)
 );
@@ -177,3 +175,5 @@ INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision, 
 	 (select value from constants where name = 'SCM_REVISION'),
 	 date_trunc('year',now())
 	);
+
+UPDATE Metadata SET adm_btwbegin = adm_begin;
