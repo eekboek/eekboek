@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.22 2005/10/01 13:21:03 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.23 2005/10/03 18:59:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 15:20:46 2005
-# Update Count    : 182
+# Last Modified On: Mon Oct  3 20:18:55 2005
+# Update Count    : 187
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -76,6 +76,9 @@ sub check_db {
 			    " FROM Metadata")};
 	    die("?"._T("De migratie is mislukt. Gelieve de documentatie te raadplegen.")."\n")
 	      if $cur eq sprintf("%03d%03d%03d", $maj, $min, $rev);
+	}
+	else {
+	    last;
 	}
     }
     die("?".__x("Ongeldige EekBoek database: {db} versie {ver}.".
@@ -263,8 +266,15 @@ sub adm {
 	$adm{$name} = $value;
     }
     else {
-	$adm{$name} ||= "";
+	defined $adm{$name} ? $adm{$name} : "";
     }
+}
+
+sub dbver {
+    my ($self) = @_;
+    sprintf("%03d%03d%03d", $self->adm("scm_majversion"),
+	    $self->adm("scm_minversion")||0, $self->adm("scm_revision"));
+
 }
 
 my %std_acc;
@@ -337,6 +347,7 @@ sub connectdb {
 		     err => $DBI::errstr)."\n");
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
+    $dbh->{ChopBlanks} = 1;
     $self->check_db unless $nocheck;
     $dbh;
 }
