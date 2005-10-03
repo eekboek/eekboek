@@ -1,16 +1,11 @@
 # SQLEngine.pm -- 
-# RCS Info        : $Id: SQLEngine.pm,v 1.2 2005/10/01 13:19:24 jv Exp $
+# RCS Info        : $Id: SQLEngine.pm,v 1.3 2005/10/03 20:16:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 15:18:34 2005
-# Update Count    : 25
+# Last Modified On: Mon Oct  3 22:05:00 2005
+# Update Count    : 28
 # Status          : Unknown, Use with caution!
-
-package main;
-
-our $config;
-our $dbh;
 
 package EB::Tools::SQLEngine;
 
@@ -40,6 +35,7 @@ my $postgres; BEGIN { $postgres = 1 };
 sub process {
     my ($self, $cmd, $copy) = (@_, 0);
     my $sql = "";
+    my $dbh = $self->{dbh} || $::dbh;
 
     foreach my $line ( split(/\n/, $cmd) ) {
 
