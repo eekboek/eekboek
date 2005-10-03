@@ -95,7 +95,7 @@ sub add {
     }
     my ($adesc, $balres, $debcrd) = @$rr;
     if ( $balres ) {
-	warn("?".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
+	warn("1".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
 		     acct => $acct, desc => $adesc)."\n");
 	return;
     }
