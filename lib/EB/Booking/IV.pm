@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.24 2005/10/01 13:32:19 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.25 2005/10/03 19:01:50 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 15:29:45 2005
-# Update Count    : 138
+# Last Modified On: Mon Oct  3 21:01:39 2005
+# Update Count    : 145
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -107,6 +107,7 @@ sub perform {
 
     my $nr = 1;
     my $bsk_id;
+    my $bsk_nr;
     my $gdesc;
     my $did = 0;
 
@@ -143,16 +144,15 @@ sub perform {
 	}
 
 	if ( $nr == 1 ) {
-	    if ( $bsk_id = $opts->{boekstuk} ) {
-		$dbh->set_sequence("bsk_nr_${dagboek}_seq", $bsk_id);
+	    if ( $bsk_nr = $opts->{boekstuk} ) {
+		$dbh->set_sequence("bsk_nr_${dagboek}_seq", $bsk_nr);
 	    }
 	    else {
-		$bsk_id = $dbh->get_sequence("bsk_nr_${dagboek}_seq");
+		$bsk_nr = $dbh->get_sequence("bsk_nr_${dagboek}_seq");
 	    }
-
 	    $dbh->sql_insert("Boekstukken",
-			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_paid)],
-			     $bsk_id, $desc, $dagboek, $date, undef);
+			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date)],
+			     $bsk_nr, $desc, $dagboek, $date);
 	    $gdesc = $desc;
 	    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
 	}
@@ -209,8 +209,8 @@ sub perform {
 	$dbh->upd_account($ac, $amt);
     }
     my $tot = $ret->[$#{$ret}]->[6];
-    $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
-		   $tot, $bsk_id)->finish;
+    $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ?, bsk_open = ? WHERE bsk_id = ?",
+		   $tot, $tot, $bsk_id)->finish;
 
     $dbh->store_journal($ret);
 
@@ -231,7 +231,7 @@ sub perform {
 	$dbh->commit;
     }
 
-    join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_id);
+    join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr);
 }
 
 1;

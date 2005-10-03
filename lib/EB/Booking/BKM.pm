@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.23 2005/10/01 13:32:14 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.24 2005/10/03 19:01:17 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 15:31:08 2005
-# Update Count    : 240
+# Last Modified On: Mon Oct  3 20:39:29 2005
+# Update Count    : 262
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -84,15 +84,16 @@ sub perform {
 	      bal => numfmt($dbh->lookup($gacct, qw(Accounts acc_id acc_balance)))), "\n")
       if $gacct;
 
-    if ( $bsk_id = $opts->{boekstuk} ) {
-	$dbh->set_sequence("bsk_nr_${dagboek}_seq", $bsk_id);
+    my $bsk_nr;
+    if ( $bsk_nr = $opts->{boekstuk} ) {
+	$dbh->set_sequence("bsk_nr_${dagboek}_seq", $bsk_nr);
     }
     else {
-	$bsk_id = $dbh->get_sequence("bsk_nr_${dagboek}_seq");
+	$bsk_nr = $dbh->get_sequence("bsk_nr_${dagboek}_seq");
     }
     $dbh->sql_insert("Boekstukken",
-		     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_paid)],
-		     $bsk_id, $gdesc, $dagboek, $date, undef);
+		     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date)],
+		     $bsk_nr, $gdesc, $dagboek, $date);
     $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
     my $tot = 0;
     my $did = 0;
@@ -270,58 +271,87 @@ sub perform {
 
 	    $amt = amount($amt);
 
-	    my $rr = $dbh->do("SELECT rel_acc_id FROM Relaties" .
-			      " WHERE rel_code = ?" .
-			      "  AND " . ($debcrd ? "" : "NOT ") . "rel_debcrd",
-			      $rel);
-	    unless ( defined($rr) ) {
-		warn("?".__x("Onbekende {what}: {who}",
-			     what => lc($type eq "deb" ? _T("Debiteur") : _T("Crediteur")),
-			     who => $rel)."\n");
-		$fail++;
-		next;
-	    }
-
-	    my $sql = "SELECT bsk_id, dbk_id, bsk_desc, bsk_amount ".
-	      " FROM Boekstukken, Boekstukregels, Dagboeken" .
-		" WHERE bsk_paid IS NULL".
-#		  ($amt ? "  AND ABS(bsk_amount) = ABS(?)" : "").
-		  ($amt ? "  AND bsk_amount = ?" : "").
-		    "  AND dbk_type = ?".
+	    my ($rr, $sql, @sql_args);
+	    if ( $rel =~ /:/ ) {
+		my ($id, $bsk, $err) = $dbh->bskid($rel);
+		unless ( defined($id) ) {
+		    warn("?$err\n");
+		    $fail++;
+		    next;
+		}
+		$sql = "SELECT bsk_id, dbk_id, bsk_desc, bsk_amount, bsr_rel_code".
+		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
+		    " WHERE bsk_id = ?".
 		      "  AND bsk_dbk_id = dbk_id".
 			"  AND bsr_bsk_id = bsk_id".
-			  "  AND bsr_rel_code = ?".
-			    " ORDER BY bsk_id";
-	    my @sql_args = ( $amt ? $amt : (),
-			   $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP,
-			   $rel );
-	    $rr = $dbh->do($sql, @sql_args);
-	    unless ( defined($rr) ) {
-		warn("?"._T("Geen bijbehorende open post gevonden")."\n");
-		warn("DEBUG: SQL: $sql\n");
-		warn("DEBUG: args: @sql_args\n");
-		$fail++;
-		next;
+			  " AND bsr_nr = 1".
+			    "  AND dbk_type = ?";
+		@sql_args = ( $id, $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP);
+		$rr = $dbh->do($sql, @sql_args);
+		unless ( defined($rr) ) {
+		    warn("?"._T("Geen bijbehorende open post gevonden")."\n");
+		    warn("DEBUG: SQL: $sql\n");
+		    warn("DEBUG: args: @sql_args\n");
+		    $fail++;
+		    next;
+		}
 	    }
-	    my ($bskid, $dbk_id, $bsk_desc, $bsk_amount) = @$rr;
+	    else {
+		$rr = $dbh->do("SELECT rel_acc_id FROM Relaties" .
+			       " WHERE rel_code = ?" .
+			       "  AND " . ($debcrd ? "" : "NOT ") . "rel_debcrd",
+			       $rel);
+		unless ( defined($rr) ) {
+		    warn("?".__x("Onbekende {what}: {who}",
+				 what => lc($type eq "deb" ? _T("Debiteur") : _T("Crediteur")),
+				 who => $rel)."\n");
+		    $fail++;
+		    next;
+		}
+
+		$sql = "SELECT bsk_id, dbk_id, bsk_desc, bsk_amount ".
+		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
+		    " WHERE bsk_open != 0".
+    #		  ($amt ? "  AND ABS(bsk_amount) = ABS(?)" : "").
+		      ($amt ? "  AND bsk_open = ?" : "").
+			"  AND dbk_type = ?".
+			  "  AND bsk_dbk_id = dbk_id".
+			    "  AND bsr_bsk_id = bsk_id".
+			      "  AND bsr_rel_code = ?".
+				" ORDER BY bsk_id";
+		@sql_args = ( $amt ? $amt : (),
+			       $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP,
+			       $rel );
+		$rr = $dbh->do($sql, @sql_args);
+		unless ( defined($rr) ) {
+		    warn("?"._T("Geen bijbehorende open post gevonden")."\n");
+		    warn("DEBUG: SQL: $sql\n");
+		    warn("DEBUG: args: @sql_args\n");
+		    $fail++;
+		    next;
+		}
+		$rr = [@$rr, $rel];
+	    }
+
+	    my ($bskid, $dbk_id, $bsk_desc, $bsk_amount, $bsr_rel) = @$rr;
 #	    warn("%".__x("Bedrag = {amt}, boekstuk = {bsk}",
 #			 amt => numfmt($amt), bsk => numfmt($bsk_amount))."\n");
 
 	    my $acct = $dbh->std_acc($debcrd ? "deb" : "crd");
-	    $amt = $bsk_amount;
+#	    $amt = $bsk_amount;
 
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
-				 bsr_btw_id bsr_type bsr_acc_id bsr_rel_code)],
+				 bsr_btw_id bsr_type bsr_acc_id bsr_rel_code bsr_paid)],
 			     $nr++, $dd, $bsk_id, "*".$bsk_desc,
 #			     $debcrd ? -$amt : $amt,
 			     -$amt,
-			     0, $type eq "deb" ? 1 : 2, $acct, $rel);
+			     0, $type eq "deb" ? 1 : 2, $acct, $bsr_rel, $bskid);
 	    my $id = $dbh->get_sequence("boekstukregels_bsr_id_seq", "noincr");
 	    $dbh->sql_exec("UPDATE Boekstukken".
-			   " SET bsk_paid = ?".
+			   " SET bsk_open = bsk_open - ?".
 			   " WHERE bsk_id = ?",
-			   $id, $bskid);
+			   $amt, $bskid);
 
 	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
 	    $dbh->upd_account($acct, -$amt);
@@ -377,7 +407,7 @@ sub perform {
     }
     $dbh->commit;
 
-    join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_id);
+    join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr);
 }
 
 1;
