@@ -165,10 +165,10 @@ sub journalise {
     my ($jnl_date, $jnl_bsk_id, $jnl_bsr_seq, $jnl_dbk_id, $jnl_acc_id,
 	$jnl_amount, $jnl_desc, $jnl_rel);
 
-    my $rr = $::dbh->do("SELECT bsk_nr, bsk_desc, bsk_dbk_id, bsk_date, bsk_paid".
+    my $rr = $::dbh->do("SELECT bsk_nr, bsk_desc, bsk_dbk_id, bsk_date".
 		      " FROM boekstukken".
 		      " WHERE bsk_id = ?", $bsk_id);
-    my ($bsk_nr, $bsk_desc, $bsk_dbk_id, $bsk_date, $bsk_paid) = @$rr;
+    my ($bsk_nr, $bsk_desc, $bsk_dbk_id, $bsk_date) = @$rr;
 
     my ($dbktype, $dbk_acc_id) =
       @{$::dbh->do("SELECT dbk_type, dbk_acc_id".
