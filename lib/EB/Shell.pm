@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.30 2005/10/02 09:42:19 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.31 2005/10/03 16:47:30 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  2 11:41:06 2005
-# Update Count    : 486
+# Last Modified On: Mon Oct  3 18:47:03 2005
+# Update Count    : 491
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -65,7 +65,7 @@ sub eb_complete {
     my $pre = substr($line, 0, $pos);
     #warn "\n[$pre][", substr($line, $pos), "]\n";
 
-    if ( $i < 0 || $i > $pos-1 ) {
+    if ( $i < 0 || $i > $pos-1 || $pre =~ /^help\s+$/ ) {
 	my @a = grep { /^$word/ } $self->completions;
 	if ( @a ) {
 	    return $a[0] if @a == 1;
@@ -574,7 +574,7 @@ sub do_dump_schema {
     parse_args(\@args,
 	       [ 'sql!',
 	       ], $opts)
-      or goto &help_dumpschema;
+      or goto &help_dump_schema;
 
     require EB::Tools::Schema;
 
@@ -663,7 +663,7 @@ sub do_toon {
 	return;
     }
     my $res = EB::Booking::Decode->decode($id, $opts);
-    if ( $res !~ /^[?!]/ && $opts->{trail} ) {	# no error
+    if ( $self->{interactive} && $res !~ /^[?!]/ && $opts->{trail} ) {	# no error
 	my $t = $res;
 	$t =~ s/\s+\\\s+/ /g;
 	$self->term->addhistory($t);
