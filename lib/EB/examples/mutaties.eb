@@ -54,6 +54,9 @@ inkoop 2004-11-17 KPN "ADSL + Telefoon" 109,67
 
 inkoop 2004-12-06 XS4ALL "ADSL" 22,80
 
+# Expliciet boekstuknummer:
+inkoop:20 2004-12-07 XS4ALL "ADSL" 22,80
+
 # Verkopen (Dagboek: Verkoop)
 #
 #  Argumenten verkoop: debiteurcode boekstukregel
@@ -150,6 +153,16 @@ postbank 2004-11-30 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -109,67
 # Ook kan het saldo na boeking worden geverifiëerd.
 postbank:24 --saldo 10357,48 2004-12-07 "Girotel, ADSL" \
 	 std "Girotel" -2,70 4980 crd XS4ALL -22,80
+
+# Partiële betalingen door het boekstuk op te geven i.p.v. de
+# debiteur/crediteur.
+openstaand
+postbank:25 2004-12-09 "Eerste deel ADSL" --saldo=10347,48 \
+	 crd Inkoop:20 -10
+openstaand
+postbank:26 2004-12-10 "Tweede deel ADSL" --saldo=10334,68 \
+	 crd XS4ALL -12,80
+openstaand
 
 # Afschrijvingen
 #
