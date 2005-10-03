@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.23 2005/10/03 18:59:19 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.24 2005/10/03 20:15:44 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct  3 20:18:55 2005
-# Update Count    : 187
+# Last Modified On: Mon Oct  3 22:15:06 2005
+# Update Count    : 196
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -56,9 +56,11 @@ sub check_db {
 	      sprintf("%03d%03d", $min, $rev) ge sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION)) ) {
 	# Basically, this will migrate to the highest possibly version, and then retry.
 	my $cur = sprintf("%03d%03d%03d", $maj, $min, $rev);
-	my $tmpl = EB_LIB . "EB/migrate/$cur?????????.sql";
+	my $tmpl = EB_LIB . "EB/migrate/$cur?????????.*l";
 	my @a = reverse sort glob($tmpl);
-	if ( @a >= 1 && open(my $fh, "<$a[0]")) {
+	last unless @a == 1;
+
+	if ( $a[0] =~ /\.sql$/ && open(my $fh, "<$a[0]")) {
 	    warn("!"._T("De database wordt aangepast aan de nieuwere versie")."\n");
 
 	    local($/);		# slurp mode
@@ -67,19 +69,24 @@ sub check_db {
 
 	    require EB::Tools::SQLEngine;
 	    eval {
-		EB::Tools::SQLEngine->new->process($sql);
+		EB::Tools::SQLEngine->new(dbh => $dbh, trace => $trace)->process($sql);
 	    };
 	    $dbh->rollback if $@;
 
-	    ($maj, $min, $rev)
-	      = @{$self->do("SELECT adm_scm_majversion, adm_scm_minversion, adm_scm_revision".
-			    " FROM Metadata")};
-	    die("?"._T("De migratie is mislukt. Gelieve de documentatie te raadplegen.")."\n")
-	      if $cur eq sprintf("%03d%03d%03d", $maj, $min, $rev);
 	}
-	else {
-	    last;
+	elsif ( $a[0] =~ /\.pl$/ ) {
+	    warn("!"._T("De database wordt aangepast aan de nieuwere versie")."\n");
+	    my $sd = $::dbh;
+	    $::dbh = $self;
+	    eval { require $a[0] };
+	    $::dbh = $sd;
+	    warn("?".$@) if $@;
 	}
+	($maj, $min, $rev)
+	  = @{$self->do("SELECT adm_scm_majversion, adm_scm_minversion, adm_scm_revision".
+			" FROM Metadata")};
+	die("?"._T("De migratie is mislukt. Gelieve de documentatie te raadplegen.")."\n")
+	  if $cur eq sprintf("%03d%03d%03d", $maj, $min, $rev);
     }
     die("?".__x("Ongeldige EekBoek database: {db} versie {ver}.".
 		" Minimaal benodigde versie is {req}.",
