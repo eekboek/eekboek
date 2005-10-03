@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: trail.pl,v 1.1 2005/09/20 16:13:36 jv Exp $ ';
+my $RCS_Id = '$Id: trail.pl,v 1.2 2005/10/03 18:57:17 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 21 10:31:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 18:09:09 2005
-# Update Count    : 138
+# Last Modified On: Sun Oct  2 13:54:33 2005
+# Update Count    : 143
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -35,6 +35,7 @@ my $ex_btw = 0;			# explicit btw code
 my $ex_debcrd = 0;		# explicit D/C
 my $single = 0;			# one line
 my $trail = 1;
+my $dborder = 0;		# dagboekvolgorde
 
 # Development options (not shown with -help).
 my $debug = 0;			# debugging
@@ -66,7 +67,13 @@ $dbh = EB::DB->new(trace => $trace);
 
 my $sth;
 
-my $ob = $trail ? "bsk_date," : "";
+# Door het boekstuktype toe te voegen aan de datum worden de IV
+# boekingen voor de BKMs gesorteerd. Dit voorkomt problemen wanneer
+# een IV is geboek op dezelfde dag als de BKM.
+# Soms is dit niet voldoende, gebruik dan de --dagboekvolgorde optie.
+
+my $ob = $trail ?
+  $dborder ? "dbk_type,bsk_date," : "bsk_date,dbk_type," : "";
 
 if ( @ARGV ) {
     my $nr = shift;
@@ -95,14 +102,16 @@ if ( @ARGV ) {
     }
     else {
 	$sth = $dbh->sql_exec("SELECT bsk_id".
-			      " FROM Boekstukken".
+			      " FROM Boekstukken, Dagboeken".
 			      " WHERE bsk_id = ?".
+			      " AND bsk_dbk_id = dbk_id".
 			      " ORDER BY ${ob}bsk_dbk_id,bsk_nr", $nr);
     }
 }
 else {
     $sth = $dbh->sql_exec("SELECT bsk_id".
-			  " FROM Boekstukken".
+			  " FROM Boekstukken, Dagboeken".
+			  " WHERE bsk_dbk_id = dbk_id".
 			  " ORDER BY ${ob}bsk_dbk_id,bsk_nr");
 }
 
@@ -184,6 +193,7 @@ sub app_options {
 		     'debcrd!'  => \$ex_debcrd,
 		     'all'      => sub { $ex_debcrd = $ex_btw = $ex_bsknr = 1 },
 		     'single'	=> \$single,
+		     'dagboekvolgorde' => \$dborder,
 		     'ident'	=> \$ident,
 		     'verbose'	=> \$verbose,
 		     'trace'	=> \$trace,
@@ -210,6 +220,7 @@ Usage: $0 [options] [file ...]
     -debcrd		expliciete aanduiding voor debet/credit
     -all		alles expliciet
     -single		elk boekstuk geheel op een regel
+    -dagboekvolgorde    sorteer per dagboek
     -help		this message
     -ident		show identification
     -verbose		verbose information
