@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.8 2005/09/28 13:21:13 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.9 2005/10/04 10:22:31 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 27 21:55:06 2005
-# Update Count    : 213
+# Last Modified On: Tue Oct  4 12:04:46 2005
+# Update Count    : 215
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -30,6 +30,7 @@ use Getopt::Long 2.13;
 
 # Command line options.
 my $verbose = 0;		# verbose processing
+my $auto = 0;			# auto gen missing relations
 
 # Development options (not shown with -help).
 my $debug = 0;			# debugging
@@ -123,7 +124,7 @@ sub flush {
 
     if ( $dbktype eq 'I' ) {	# Inkoop
 	foreach my $r ( @$mut ) {
-	    check_rel($r0->{crdnr}, $r->{reknr}, "D");
+	    check_rel($r0->{crdnr}, $r->{reknr}, "C");
 	}
 	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}),
 	      ' "' . uc($r0->{crdnr}) . '"');
@@ -138,7 +139,7 @@ sub flush {
     }
     elsif ( $dbktype eq 'V' ) {	# Verkoop
 	foreach my $r ( @$mut ) {
-	    check_rel($r0->{debnr}, $r->{reknr}, "C");
+	    check_rel($r0->{debnr}, $r->{reknr}, "D");
 	}
 	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}),
 	      ' "' . uc($r0->{debnr}) . '"');
@@ -294,7 +295,7 @@ sub check_rel {
 	  my $r = $dbh->do("SELECT rel_acc_id FROM Relaties WHERE rel_code = ?", $code);
 	  unless ( $r && $r->[0] ) {
 	      print("relatie \"$code\" \"Automatisch aangemaakt voor code $code\" ",
-		    $acc, $debcrd, "\n");
+		    $acc, $debcrd, "\n") if $auto;
 	      $rel{$code} = $acc;
 	  }
 	  else {
@@ -329,6 +330,7 @@ sub app_options {
 
     if ( !GetOptions(
 		     'ident'	=> \$ident,
+		     'auto'	=> \$auto,
 		     'verbose'	=> \$verbose,
 		     'trace'	=> \$trace,
 		     'help|?'	=> \$help,
