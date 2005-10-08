@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.14 2005/10/08 15:28:54 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.15 2005/10/08 20:36:10 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 17:28:53 2005
-# Update Count    : 193
+# Last Modified On: Sat Oct  8 19:03:25 2005
+# Update Count    : 196
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -32,7 +32,21 @@ sub journal {
     my $pfx = $opts->{postfix} || "";
     my $detail = $opts->{detail};
     my $per = $opts->{periode};
-    my $rep = $opts->{reporter} || EB::Report::Journal::Text->new($opts);
+    my $rep;
+    my $gen = $opts->{gen};
+    if ( $gen ) {
+	my $pkg = __PACKAGE__ . "::" . ucfirst(lc($gen));
+	$gen = $pkg;
+	$pkg =~ s;::;/;g;
+	eval {
+	    require "$pkg.pm";
+	};
+	die("?".__x("Onbekend uitvoertype: {gen}", gen => $gen)."\n") if $@;
+	$rep = $gen->new($opts);
+    }
+    else {
+	$rep = $opts->{reporter} || EB::Report::Journal::Text->new($opts);
+    }
 
     my $sth;
     if ( $nr ) {
