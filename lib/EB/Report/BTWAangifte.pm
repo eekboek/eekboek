@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.11 2005/10/08 14:42:51 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.12 2005/10/08 20:35:46 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 16:42:08 2005
-# Update Count    : 308
+# Last Modified On: Sat Oct  8 22:10:01 2005
+# Update Count    : 310
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -14,7 +14,7 @@ package main;
 
 our $dbh;
 
-package EB::BTWAangifte;
+package EB::Report::BTWAangifte;
 
 use strict;
 
@@ -65,10 +65,10 @@ sub perform {
     $self->collect($opts);
 
     if ( $opts->{html} ) {
-	require EB::BTWAangifte::Html;
+	require EB::Report::BTWAangifte::Html;
 	$self->{reporter} = EB::BTWAangifte::Html->new($opts);
     }
-    $self->{reporter} ||= $opts->{reporter} || EB::BTWAangifte::Text->new($opts);
+    $self->{reporter} ||= $opts->{reporter} || EB::Report::BTWAangifte::Text->new($opts);
 
     $self->report($opts);
 }
@@ -481,7 +481,7 @@ sub roundup {
     $vb;
 }
 
-package EB::BTWAangifte::Text;
+package EB::Report::BTWAangifte::Text;
 
 use strict;
 use EB;
