@@ -1,31 +1,22 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.4 2005/10/08 14:42:57 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.5 2005/10/08 20:36:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 16:40:43 2005
-# Update Count    : 14
+# Last Modified On: Sat Oct  8 22:08:47 2005
+# Update Count    : 17
 # Status          : Unknown, Use with caution!
 
-package EB::BTWAangifte::Html;
+package EB::Report::BTWAangifte::Html;
 
 use strict;
 use EB;
 
+use base qw(EB::Report::GenBase);
+
 sub new {
     my ($class, $opts) = @_;
-    $class = ref($class) || $class;
-    my $self = { $opts };
-    bless $self => $class;
-    if ( $opts->{output} ) {
-	open(my $fh, ">", $opts->{output})
-	  or die("?".__x("Fout tijdens aanmaken {file}: {err}",
-			 file => $opts->{output}, err => $!)."\n");
-	$self->{fh} = $fh;
-    }
-    else {
-	$self->{fh} = *STDOUT;
-    }
+    my self = $class->SUPER::new($opts);
     $self;
 }
 
