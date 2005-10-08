@@ -1,0 +1,52 @@
+/* $Id: btwaangifte.css,v 1.1 2005/10/08 14:45:33 jv Exp $ */
+
+@import eekboek.css;
+
+.title {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 100%;
+    font-weight: bold;
+}
+
+.btwaangifte {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    line-height: 150%;
+    color: #000000;
+    table-width: 100%;
+}
+
+.heading {
+    font-size: 120%;
+    font-weight: bold;    
+}
+
+.subheading {
+    font-weight: bold;    
+}
+
+.c_num {
+    padding-left: 10pt;
+    padding-right: 6pt;
+}
+
+.c_desc {
+    padding-right: 10pt;
+}
+
+.c_col1 {
+    padding-left: 10pt;
+    padding-right: 10pt;
+    text-align: right;
+}
+
+.c_col2 {
+    padding-left: 10pt;
+    padding-right: 10pt;
+    text-align: right;
+}
+
+.notice {
+    font-size: 100%;
+    font-weight: bold;
+    color: #ff0000;
+}
