@@ -1,10 +1,10 @@
 # SQLEngine.pm -- 
-# RCS Info        : $Id: SQLEngine.pm,v 1.4 2005/10/08 11:17:52 jv Exp $
+# RCS Info        : $Id: SQLEngine.pm,v 1.5 2005/10/08 11:27:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 13:16:34 2005
-# Update Count    : 32
+# Last Modified On: Sat Oct  8 13:27:23 2005
+# Update Count    : 37
 # Status          : Unknown, Use with caution!
 
 package EB::Tools::SQLEngine;
@@ -61,13 +61,20 @@ sub process {
 	    }
 	    else {
 		# Use portable INSERT.
-		my $sth = $dbh->prepare($copy,
-					map { $_ eq 't' ? 1 :
-						$_ eq 'f' ? 0 :
-						  $_ eq '\\N' ? undef :
-						    $_
-						} split(/\t/, $line));
-		$sth->execute;
+		my @args = map { $_ eq 't' ? 1 :
+				   $_ eq 'f' ? 0 :
+				     $_ eq '\\N' ? undef :
+				       $_
+				   } split(/\t/, $line);
+		my $s = $copy;
+		my @a = map {
+		    !defined($_) ? "NULL" :
+		      /^[0-9]+$/ ? $_ : $dbh->quote($_)
+		  } @args;
+		$s =~ s/\?/shift(@a)/eg;
+		warn("++ $s;\n");
+		my $sth = $dbh->prepare($copy);
+		$sth->execute(@args);
 		$sth->finish;
 	    }
 	    next;
