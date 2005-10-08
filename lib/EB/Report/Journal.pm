@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.12 2005/10/08 13:50:24 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.13 2005/10/08 14:45:20 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 15:44:09 2005
-# Update Count    : 188
+# Last Modified On: Sat Oct  8 15:58:32 2005
+# Update Count    : 192
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -146,11 +146,12 @@ use EB::Finance;
 my ($date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel);
 
 sub new {
-    my ($class) = @_;
+    my ($class, $opts) = @_;
     $class = ref($class) || $class;
     my $self = {};
     bless $self => $class;
     $^ = 'jnlfmt0';
+    $= = $opts->{page} || 99999999;
     $self;
 }
 
