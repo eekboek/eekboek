@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.24 2005/10/03 20:15:44 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.25 2005/10/08 11:06:33 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct  3 22:15:06 2005
-# Update Count    : 196
+# Last Modified On: Sat Oct  8 13:06:23 2005
+# Update Count    : 197
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -53,7 +53,7 @@ sub check_db {
       = @{$self->do("SELECT adm_scm_majversion, adm_scm_minversion, adm_scm_revision".
 		    " FROM Metadata")};
     while ( !($maj == SCM_MAJVERSION &&
-	      sprintf("%03d%03d", $min, $rev) ge sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION)) ) {
+	      sprintf("%03d%03d", $min, $rev) eq sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION)) ) {
 	# Basically, this will migrate to the highest possibly version, and then retry.
 	my $cur = sprintf("%03d%03d%03d", $maj, $min, $rev);
 	my $tmpl = EB_LIB . "EB/migrate/$cur?????????.*l";
@@ -89,11 +89,11 @@ sub check_db {
 	  if $cur eq sprintf("%03d%03d%03d", $maj, $min, $rev);
     }
     die("?".__x("Ongeldige EekBoek database: {db} versie {ver}.".
-		" Minimaal benodigde versie is {req}.",
+		" Benodigde versie is {req}.",
 		db => $dbh->{Name}, ver => "$maj.$min.$rev",
 		req => join(".", SCM_MAJVERSION, SCM_MINVERSION, SCM_REVISION)) . "\n")
       unless $maj == SCM_MAJVERSION &&
-	sprintf("%03d%03d", $min, $rev) ge sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION);
+	sprintf("%03d%03d", $min, $rev) eq sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION);
 
     # Verify koppelingen.
     for ( $self->std_acc("deb") ) {
