@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.33 2005/10/08 14:44:05 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.34 2005/10/08 20:34:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 16:44:02 2005
-# Update Count    : 498
+# Last Modified On: Sat Oct  8 22:07:04 2005
+# Update Count    : 501
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -300,6 +300,8 @@ sub do_journaal {
 		 'totaal' => sub { $opts->{detail} = 0 },
 		 'periode=s' => sub { periode_arg($opts, @_) },
 		 'page=i',
+		 'gen=s',
+		 'output=s',
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -552,8 +554,8 @@ sub do_btwaangifte {
     warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 1;
     $opts->{close} = $close;
     $opts->{periode} = $args[0] if @args;
-    use EB::BTWAangifte;
-    EB::BTWAangifte->new($opts)->perform($opts);
+    use EB::Report::BTWAangifte;
+    EB::Report::BTWAangifte->new($opts)->perform($opts);
     undef;
 }
 
