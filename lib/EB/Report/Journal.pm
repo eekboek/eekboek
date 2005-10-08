@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.13 2005/10/08 14:45:20 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.14 2005/10/08 15:28:54 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 15:58:32 2005
-# Update Count    : 192
+# Last Modified On: Sat Oct  8 17:28:53 2005
+# Update Count    : 193
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -178,7 +178,6 @@ sub outline {
     }
 
     if ( $type eq 'T' ) {
-	my $amt;
 	($loc, $deb, $crd) = @args;
 	for ( $deb, $crd ) {
 	    $_ = $_ ? numfmt($_) : '';
