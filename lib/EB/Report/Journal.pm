@@ -1,16 +1,16 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.11 2005/10/02 11:24:39 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.12 2005/10/08 13:50:24 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  2 13:04:14 2005
-# Update Count    : 151
+# Last Modified On: Sat Oct  8 15:44:09 2005
+# Update Count    : 188
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
-package EB::Journal::Text;
+package EB::Report::Journal;
 
 use strict;
 use warnings;
@@ -25,8 +25,6 @@ sub new {
 
 use locale;
 
-my $repfmt = "%-10s  %3s  %-4s  %-30.30s  %5s  %9s  %9s  %-30.30s  %s\n";
-
 sub journal {
     my ($self, $opts) = @_;
 
@@ -34,6 +32,7 @@ sub journal {
     my $pfx = $opts->{postfix} || "";
     my $detail = $opts->{detail};
     my $per = $opts->{periode};
+    my $rep = $opts->{reporter} || EB::Report::Journal::Text->new($opts);
 
     my $sth;
     if ( $nr ) {
@@ -108,39 +107,20 @@ sub journal {
 	    $jnl_amount, $jnl_desc, $jnl_rel) = @$rr;
 
 	if ( $jnl_bsr_seq == 0 ) {
-	    unless ( $nl ) {
-		my $t = sprintf($repfmt,
-				_T("Datum"), _T("Id"), _T("Nr"), _T("Dag/Grootboek"),
-				_T("Rek"), _T("Debet"), _T("Credit"), _T("Boekstuk/regel"),
-				_T("Relatie"));
-		$t =~ s/ +$//;
-		print($t);
-	    }
 	    $nl++, next unless $detail;
 	    print("\n") if $nl++;
-	    $self->_repline($jnl_bsr_date, $jnl_bsk_id, $bsk_nr, _dbk_desc($jnl_dbk_id), '',
-			    '', '', $jnl_desc);
+	    $rep->outline('H', $jnl_bsr_date, $jnl_bsk_id, $bsk_nr, _dbk_desc($jnl_dbk_id), $jnl_desc);
 	    next;
 	}
 
 	$totd += $jnl_amount if $jnl_amount > 0;
 	$totc -= $jnl_amount if $jnl_amount < 0;
 	next unless $detail;
-	$self->_repline($jnl_bsr_date, '', '', "  "._acc_desc($jnl_acc_id),
-			$jnl_acc_id, numdebcrd($jnl_amount), "  ".$jnl_desc, $jnl_rel);
+	$rep->outline('D', $jnl_bsr_date, _acc_desc($jnl_acc_id),
+			$jnl_acc_id, numdebcrd($jnl_amount), $jnl_desc, $jnl_rel || '');
     }
-    $self->_repline('', '', '', __x("Totaal {pfx}", pfx => $pfx), '', $totd, $totc);
-}
-
-sub _repline {
-    my ($self, $date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel) = (@_, ('') x 7);
-    for ( $deb, $crd ) {
-	$_ = $_ ? numfmt($_) : '';
-    }
-    my $t = sprintf($repfmt,
-		    $date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel || '');
-    $t =~ s/ +$//;
-    print($t);
+    $rep->outline('T', __x("Totaal {pfx}", pfx => $pfx), $totd, $totc);
+    $rep->finish;
 }
 
 my %dbk_desc;
@@ -155,5 +135,81 @@ sub _acc_desc {
     $acc_desc{$_[0]} ||= $::dbh->lookup($_[0],
 				      qw(Accounts acc_id acc_desc =));
 }
+
+package EB::Report::Journal::Text;
+
+use strict;
+
+use EB;
+use EB::Finance;
+
+my ($date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel);
+
+sub new {
+    my ($class) = @_;
+    $class = ref($class) || $class;
+    my $self = {};
+    bless $self => $class;
+    $^ = 'jnlfmt0';
+    $self;
+}
+
+sub outline {
+    my ($self, $type, @args) = @_;
+
+    ($date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel) = ('') x 9;
+
+    if ( $type eq 'H' ) {
+	($date, $bsk, $nr, $loc, $desc) = @args;
+	$~ = 'jnlfmt1';
+	write;
+	return;
+    }
+
+    if ( $type eq 'D' ) {
+	($date, $loc, $acc, $deb, $crd, $desc, $rel) = @args;
+	for ( $deb, $crd ) {
+	    $_ = $_ ? numfmt($_) : '';
+	}
+	$~ = 'jnlfmt2';
+	write;
+	return;
+    }
+
+    if ( $type eq 'T' ) {
+	my $amt;
+	($loc, $deb, $crd) = @args;
+	for ( $deb, $crd ) {
+	    $_ = $_ ? numfmt($_) : '';
+	}
+	$~ = 'jnlfmt1';
+	write;
+	return;
+    }
+
+    die("?".__x("Programmafout: verkeerd type in {here}",
+		here => __PACKAGE__ . "::_repline")."\n");
+}
+
+sub finish {
+}
+
+format jnlfmt0 =
+@<<<<<<<<<  @>>  @<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>  @>>>>>>>>  @>>>>>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<
+_T("Datum"), _T("Id"), _T("Nr"), _T("Dag/Grootboek"), _T("Rek"), _T("Debet"), _T("Credit"), _T("Boekstuk/regel"), _T("Relatie")
+.
+
+format jnlfmt1 =
+@<<<<<<<<<  @>>  @<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>  @>>>>>>>>  @>>>>>>>>  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<
+$date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel
+~~                                                                                  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$desc
+.
+format jnlfmt2 =
+@<<<<<<<<<  @>>  @<<<    @<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>  @>>>>>>>>  @>>>>>>>>    ^<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<
+$date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel
+~~                                                                                    ^<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$desc
+.
 
 1;
