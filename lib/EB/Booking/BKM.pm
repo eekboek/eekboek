@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.24 2005/10/03 19:01:17 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.25 2005/10/08 14:45:54 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct  3 20:39:29 2005
-# Update Count    : 262
+# Last Modified On: Sat Oct  8 15:51:53 2005
+# Update Count    : 263
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -28,7 +28,7 @@ use warnings;
 use EB;
 use EB::DB;
 use EB::Finance;
-use EB::Journal::Text;
+use EB::Report::Journal;
 use locale;
 
 my $trace_updates = $ENV{EB_TRACE_UPDATES};		# for debugging
@@ -397,7 +397,7 @@ sub perform {
 
     if ( $opts->{journal} ) {
 	warn("?"._T("Dit overicht is ter referentie, de boeking is niet uitgevoerd!")."\n") if $fail;
-	EB::Journal::Text->new->journal({select => $bsk_id, detail => 1});
+	EB::Report::Journal->new->journal({select => $bsk_id, detail => 1});
     }
 
     if ( $fail ) {
