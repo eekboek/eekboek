@@ -1,21 +1,32 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.3 2005/10/08 14:18:17 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.4 2005/10/08 14:42:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 16:17:28 2005
-# Update Count    : 4
+# Last Modified On: Sat Oct  8 16:40:43 2005
+# Update Count    : 14
 # Status          : Unknown, Use with caution!
 
 package EB::BTWAangifte::Html;
 
 use strict;
+use EB;
 
 sub new {
     my ($class, $opts) = @_;
     $class = ref($class) || $class;
     my $self = { $opts };
     bless $self => $class;
+    if ( $opts->{output} ) {
+	open(my $fh, ">", $opts->{output})
+	  or die("?".__x("Fout tijdens aanmaken {file}: {err}",
+			 file => $opts->{output}, err => $!)."\n");
+	$self->{fh} = $fh;
+    }
+    else {
+	$self->{fh} = *STDOUT;
+    }
+    $self;
 }
 
 sub addline {
@@ -24,11 +35,11 @@ sub addline {
     my $naps = "";
     if ( $ctl ) {
 	if ( $ctl eq 'H1' ) {
-	    print("<tr><td colspan=\"4\" class=\"heading\">", html($tag0), "</td></tr>\n");
+	    $self->{fh}->print("<tr><td colspan=\"4\" class=\"heading\">", html($tag0), "</td></tr>\n");
 	    return;
 	}
 	elsif ( $ctl eq 'H2' ) {
-	    print("<tr><td colspan=\"4\" class=\"subheading\">", html($tag0), " ", html($tag1), "</td></tr>\n");
+	    $self->{fh}->print("<tr><td colspan=\"4\" class=\"subheading\">", html($tag0), " ", html($tag1), "</td></tr>\n");
 	    return;
 	}
 	elsif ( $ctl eq 'X' ) {
@@ -43,40 +54,38 @@ sub addline {
 	}
     }
 
-    print("<tr><td class=\"c_num\">",   $span, html($tag0), $naps,
-	  "</td><td class=\"c_desc\">", $span, html($tag1), $naps,
-	  "</td><td class=\"c_col1\">", $span, defined($sub) ? html($sub) : "&nbsp;", $naps,
-	  "</td><td class=\"c_col2\">", $span, defined($amt) ? html($amt) : "&nbsp;", $naps,
-	  "</td></tr>\n");
+    $self->{fh}->print("<tr><td class=\"c_num\">",   $span, html($tag0), $naps,
+		       "</td><td class=\"c_desc\">", $span, html($tag1), $naps,
+		       "</td><td class=\"c_col1\">", $span, defined($sub) ? html($sub) : "&nbsp;", $naps,
+		       "</td><td class=\"c_col2\">", $span, defined($amt) ? html($amt) : "&nbsp;", $naps,
+		       "</td></tr>\n");
 }
 
 sub start {
     my ($self, $text) = @_;
-    print<<EOD;
-<html>
-<head>
-<title>@{[html($text)]}</title>
-<link rel="stylesheet" href="css/btwaangifte.css">
-</head>
-<body>
-EOD
-    print("<h1 class=\"btwaangifte\"><span class=\"title\">", html($text), "</span></h1>\n");
-    print("<table class=\"btwaangifte\">\n");
+    $self->{fh}->print
+      ("<html>\n",
+       "<head>\n",
+       "<title>", html($text), "</title>\n",
+       '<link rel="stylesheet" href="css/btwaangifte.css">', "\n",
+       "</head>\n",
+       "<body>\n",
+       "<h1 class=\"btwaangifte\"><span class=\"title\">", html($text), "</span></h1>\n",
+       "<table class=\"btwaangifte\">\n");
 }
 
 sub finish {
     my ($self, $notice) = @_;
-    print<<EOD;
-</table>
-EOD
+    $self->{fh}->print("</table>\n");
 
-    print("<p class=\"btwaangifte\"><span class=\"notice\">".
-	  html($notice) . "</span></p>\n") if $notice;
+    $self->{fh}->print
+      ("<p class=\"btwaangifte\"><span class=\"notice\">",
+       html($notice), "</span></p>\n") if $notice;
 
-    print<<EOD;
-</body>
-</html>
-EOD
+    $self->{fh}->print("</body>\n",
+		       "</html>\n");
+
+    close($self->{fh}) if $self->{output};
 }
 
 sub html {

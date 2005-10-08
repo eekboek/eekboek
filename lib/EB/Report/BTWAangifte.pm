@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.10 2005/10/08 11:35:07 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.11 2005/10/08 14:42:51 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 13:33:14 2005
-# Update Count    : 302
+# Last Modified On: Sat Oct  8 16:42:08 2005
+# Update Count    : 308
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -64,9 +64,11 @@ sub perform {
     my ($self, $opts) = @_;
     $self->collect($opts);
 
-    #use EB::BTWAangifte::Html;
-    #$self->{reporter} ||= EB::BTWAangifte::Html->new($opts);
-    $self->{reporter} = $opts->{reporter} || EB::BTWAangifte::Text->new($opts);
+    if ( $opts->{html} ) {
+	require EB::BTWAangifte::Html;
+	$self->{reporter} = EB::BTWAangifte::Html->new($opts);
+    }
+    $self->{reporter} ||= $opts->{reporter} || EB::BTWAangifte::Text->new($opts);
 
     $self->report($opts);
 }
@@ -482,11 +484,23 @@ sub roundup {
 package EB::BTWAangifte::Text;
 
 use strict;
+use EB;
 
 sub new {
-    my ($class) = @_;
+    my ($class, $opts) = @_;
     $class = ref($class) || $class;
-    bless {} => $class;
+    my $self = {};
+    bless $self => $class;
+    if ( $opts->{output} ) {
+	open(my $fh, ">", $opts->{output})
+	  or die("?".__x("Fout tijdens aanmaken {file}: {err}",
+			 file => $opts->{output}, err => $!)."\n");
+	$self->{fh} = $fh;
+    }
+    else {
+	$self->{fh} = *STDOUT;
+    }
+    $self;
 }
 
 sub addline {
@@ -494,10 +508,10 @@ sub addline {
     $ctl = '' if $ctl && $ctl eq 'X';
     if ( $ctl ) {
 	if ( $ctl eq 'H1' ) {
-	    print("\n", $tag0, "\n");
+	    $self->{fh}->print("\n", $tag0, "\n");
 	}
 	elsif ( $ctl eq 'H2' ) {
-	    print("\n", $tag0, " ", $tag1, "\n\n");
+	    $self->{fh}->print("\n", $tag0, " ", $tag1, "\n\n");
 	}
 	else {
 	    die("?".__x("Ongeldige mode '{ctl}' in {pkg}::addline",
@@ -507,20 +521,21 @@ sub addline {
 	return;
     }
 
-    printf("%-5s%-40s%10s%10s\n",
-	   $tag0, $tag1,
-	   defined($sub) ? $sub : "",
-	   defined($amt) ? $amt : "");
+    $self->{fh}->printf("%-5s%-40s%10s%10s\n",
+			$tag0, $tag1,
+			defined($sub) ? $sub : "",
+			defined($amt) ? $amt : "");
 }
 
 sub start {
     my ($self, $text) = @_;
-    print($text, "\n");
+    $self->{fh}->print($text, "\n");
 }
 
 sub finish {
     my ($self, $notice) = @_;
     warn("!$notice\n") if $notice;
+    $self->{fh}->close if $self->{output};
 }
 
 1;
