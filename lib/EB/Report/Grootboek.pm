@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.10 2005/10/02 11:24:30 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.11 2005/10/08 16:10:33 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  2 13:23:25 2005
-# Update Count    : 111
+# Last Modified On: Sat Oct  8 18:04:51 2005
+# Update Count    : 130
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -26,7 +26,6 @@ use warnings;
 use EB;
 use EB::DB;
 use EB::Finance;
-use EB::Report::Text;
 
 use locale;
 
@@ -36,12 +35,15 @@ sub new {
     return bless {};
 }
 
+my $did;
+
 sub perform {
     my ($self, $opts) = @_;
 
     my $detail = $opts->{detail};
     my $sel = $opts->{select};
     my $per = $opts->{periode};
+    my $rep = $opts->{reporter} || EB::Report::Grootboek::Text->new($opts);
 
     my $date = $dbh->adm("begin");
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
@@ -65,9 +67,8 @@ sub perform {
     my $mcgrand = 0;
     my $n0 = numfmt(0);
 
-    my $fmt = "%5s  %-30.30s  %4s  %10s %10s %10s  %-10.10s  %-4s  %-8s\n";
-    my $line;
     my $t;
+    $did = 0;
 
     while ( my $ar = $ah->fetchrow_arrayref ) {
 	my ($acc_id, $acc_desc, $acc_ibalance) = @$ar;
@@ -86,21 +87,10 @@ sub perform {
 	    next;
 	}
 
-	unless ( $line ) {
-	    $line = sprintf($fmt,
-			    _T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"),
-			    _T("Datum"), _T("Debet"), _T("Credit"),
-			    _T("Dagboek"),
-			    sprintf("%4s", _T("Nr")), _T("Relatie"));
-	    $line =~ s/ +$//;
-	    print($line);
-	    $line =~ s/./-/g;
-	    print($line);
-	}
-	else {
+	if ( $did ) {
 	    print("\n") if $detail;
 	}
-	printfx($fmt, $acc_id, $acc_desc, ("") x 7) if $detail;
+	$rep->outline('H1', $acc_id, $acc_desc) if $detail;
 
 	my @d = ($n0, $n0);
 	$acc_ibalance = 0 if $per;
@@ -113,7 +103,7 @@ sub perform {
 	    }
 	}
 
-	printfx($fmt, "", " "._T("Beginsaldo"), "", "", @d, ("") x 3)
+	$rep->outline('H2', _T("Beginsaldo"), @d)
 	  if $detail > 0 && !$per;
 
 	my $dtot = 0;
@@ -127,14 +117,14 @@ sub perform {
 	    else {
 		$dtot += $amount;
 	    }
-	    printfx($fmt, "", "  " . $desc, $bsk_id, $date,
-		   $amount >= 0 ? (numfmt($amount), $n0) : ($n0, numfmt(-$amount)),
-		   $dbk_desc, $bsk_nr, $rel||"") if $detail > 1;
+	    $rep->outline('D', $desc, $bsk_id, $date,
+			  $amount >= 0 ? (numfmt($amount), $n0) : ($n0, numfmt(-$amount)),
+			  $dbk_desc, $bsk_nr, $rel||"") if $detail > 1;
 	}
 
-	printfx($fmt, "", " "._T("Totaal mutaties"), "", "",
-		$ctot > $dtot ? ("", numfmt($ctot-$dtot)) : (numfmt($dtot-$ctot), ""),
-		("") x 3) if $detail && ($dtot || $ctot || $acc_ibalance);
+	$rep->outline('T2', _T("Totaal mutaties"),
+		      $ctot > $dtot ? ("", numfmt($ctot-$dtot)) : (numfmt($dtot-$ctot), ""))
+	  if $detail && ($dtot || $ctot || $acc_ibalance);
 
 	if ( $dtot > $ctot ) {
 	    $mdgrand += $dtot - $ctot;
@@ -143,9 +133,8 @@ sub perform {
 	    $mcgrand += $ctot - $dtot;
 	}
 
-	printfx($fmt, $acc_id, __x("Totaal {adesc}", adesc => $acc_desc), "", "",
-		$ctot > $dtot + $acc_ibalance ? ("", numfmt($ctot-$dtot-$acc_ibalance)) : (numfmt($dtot+$acc_ibalance-$ctot),""),
-		("") x 3);
+	$rep->outline('T1', $acc_id, __x("Totaal {adesc}", adesc => $acc_desc),
+		      $ctot > $dtot + $acc_ibalance ? ("", numfmt($ctot-$dtot-$acc_ibalance)) : (numfmt($dtot+$acc_ibalance-$ctot),""));
 	if ( $ctot > $dtot + $acc_ibalance ) {
 	    $cgrand += $ctot - $dtot-$acc_ibalance;
 	}
@@ -154,15 +143,9 @@ sub perform {
 	}
     }
 
-    if ( $line ) {
-	print("\n");
-	printfx($fmt, "", _T("Totaal mutaties"), "", "",
-		numfmt($mdgrand), numfmt($mcgrand),
-		("") x 3);
-	print($line);
-	printfx($fmt, "", _T("Totaal"), "", "",
-		numfmt($dgrand), numfmt($cgrand),
-		("") x 3);
+    if ( $did ) {
+	$rep->outline('TM', _T("Totaal mutaties"), numfmt($mdgrand), numfmt($mcgrand));
+	$rep->outline('TG', _T("Totaal"), numfmt($dgrand), numfmt($cgrand));
     }
     else {
 	print("?"._T("Geen informatie gevonden")."\n");
@@ -170,11 +153,114 @@ sub perform {
 
 }
 
-sub printfx {
-    my ($fmt, @args) = @_;
-    my $t = sprintf($fmt, @args);
-    $t =~ s/ +$//;
-    print($t);
+package EB::Report::Grootboek::Text;
+
+use strict;
+use EB;
+
+my ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel);
+
+sub new {
+    my ($class, $opts) = @_;
+    $class = ref($class) || $class;
+    my $self = {};
+    bless $self => $class;
+    $^ = 'gbkfmt0';
+    $= = $opts->{page} || 99999999;
+    $self;
 }
+
+sub outline {
+    my ($self, $type, @args) = @_;
+
+    ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = ('') x 9;
+
+    if ( $type eq 'H1' ) {
+	($gbk, $desc) = @args;
+	$~ = 'gbkfmt1';
+	write;
+	return;
+    }
+
+    if ( $type eq 'H2' ) {
+	($desc, $deb, $crd) = @args;
+	$~ = 'gbkfmt2';
+	write;
+	return;
+    }
+
+    if ( $type eq 'D' ) {
+	($desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = @args;
+	$~ = 'gbkfmt3';
+	write;
+	return;
+    }
+
+    if ( $type eq 'T2' ) {
+	$~ = 'gbkfmt2';
+	($desc, $deb, $crd) = @args;
+	write;
+	return;
+    }
+
+    if ( $type eq 'T1' ) {
+	($gbk, $desc, $deb, $crd) = @args;
+	$~ = 'gbkfmt1';
+	write;
+	return;
+    }
+
+    if ( $type eq 'TM' ) {
+	$~ = 'gbkfmt1';
+	write;
+	($desc, $deb, $crd) = @args;
+	write;
+	return;
+    }
+
+    if ( $type eq 'TG' ) {
+	($desc, $deb, $crd) = @args;
+	$~ = 'gbkfmtl';
+	write;
+	$~ = 'gbkfmt1';
+	write;
+	return;
+    }
+
+    die("?".__x("Programmafout: verkeerd type in {here}",
+		here => __PACKAGE__ . "::_repline")."\n");
+}
+
+sub finish {
+}
+
+format gbkfmt0 =
+@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @>>>  @<<<<<<<<<
+_T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"), _T("Datum"), _T("Debet"), _T("Credit"), _T("Dagboek"), _T("Nr"), _T("Relatie")
+-------------------------------------------------------------------------------------------------@<<<<<<<<<
+(++$did ? ("-" x length(_T("Relatie"))) : "this should not happen")
+.
+
+format gbkfmtl =
+-------------------------------------------------------------------------------------------------@<<<<<<<<<
+"-" x length(_T("Relatie"))
+.
+
+format gbkfmt1 =
+@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @<<<  @<<<<<<<<<
+$gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel
+.
+
+format gbkfmt2 =
+        @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<                  @>>>>>>>>> @>>>>>>>>>
+$desc, $deb, $crd
+.
+
+format gbkfmt3 =
+         ^<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @<<<  @<<<<<<<<<
+$desc, $id, $date, $deb, $crd, $dbk, $nr, $rel
+~~       ^<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$desc
+.
 
 1;
