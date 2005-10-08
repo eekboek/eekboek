@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.25 2005/10/08 11:06:33 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.26 2005/10/08 11:28:05 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 13:06:23 2005
-# Update Count    : 197
+# Last Modified On: Sat Oct  8 13:13:43 2005
+# Update Count    : 198
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -71,6 +71,7 @@ sub check_db {
 	    eval {
 		EB::Tools::SQLEngine->new(dbh => $dbh, trace => $trace)->process($sql);
 	    };
+	    warn("?".$@) if $@;
 	    $dbh->rollback if $@;
 
 	}
