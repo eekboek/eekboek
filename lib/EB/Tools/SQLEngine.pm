@@ -1,10 +1,10 @@
 # SQLEngine.pm -- 
-# RCS Info        : $Id: SQLEngine.pm,v 1.3 2005/10/03 20:16:23 jv Exp $
+# RCS Info        : $Id: SQLEngine.pm,v 1.4 2005/10/08 11:17:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct  3 22:05:00 2005
-# Update Count    : 28
+# Last Modified On: Sat Oct  8 13:16:34 2005
+# Update Count    : 32
 # Status          : Unknown, Use with caution!
 
 package EB::Tools::SQLEngine;
@@ -35,7 +35,7 @@ my $postgres; BEGIN { $postgres = 1 };
 sub process {
     my ($self, $cmd, $copy) = (@_, 0);
     my $sql = "";
-    my $dbh = $self->{dbh} || $::dbh;
+    my $dbh = $self->{dbh} || $::dbh->dbh;
 
     foreach my $line ( split(/\n/, $cmd) ) {
 
@@ -52,21 +52,23 @@ sub process {
 	if ( $copy ) {
 	    if ( $line eq "\\." ) {
 		# End COPY.
-		$dbh->dbh->pg_endcopy if $postgres;
+		$dbh->pg_endcopy if $postgres;
 		$copy = 0;
 	    }
 	    elsif ( $postgres ) {
 		# Use PostgreSQL fast load.
-		$dbh->dbh->pg_putline($line."\n");
+		$dbh->pg_putline($line."\n");
 	    }
 	    else {
 		# Use portable INSERT.
-		$dbh->sql_exec($copy,
-			       map { $_ eq 't' ? 1 :
-				       $_ eq 'f' ? 0 :
-					 $_ eq '\\N' ? undef :
-					   $_
-				       } split(/\t/, $line))->finish;
+		my $sth = $dbh->prepare($copy,
+					map { $_ eq 't' ? 1 :
+						$_ eq 'f' ? 0 :
+						  $_ eq '\\N' ? undef :
+						    $_
+						} split(/\t/, $line));
+		$sth->execute;
+		$sth->finish;
 	    }
 	    next;
 	}
@@ -103,21 +105,21 @@ sub process {
 
 	    # Intercept transaction commands. Must be handled by DBI calls.
 	    if ( $sql =~ /^begin\b/i ) {
-		warn("+ INTERCEPTED:: $sql\n") if $self->{trace};
-		$dbh->dbh->begin_work if $dbh->{AutoCommit};
+		warn("++ INTERCEPTED:: $sql\n") if $self->{trace};
+		$dbh->begin_work if $dbh->{AutoCommit};
 	    }
 	    elsif ( $sql =~ /^commit\b/i ) {
-		warn("+ INTERCEPTED: $sql\n") if $self->{trace};
-		$dbh->dbh->commit;
+		warn("++ INTERCEPTED: $sql\n") if $self->{trace};
+		$dbh->commit;
 	    }
 	    elsif ( $sql =~ /^rollback\b/i ) {
-		warn("+ INTERCEPTED: $sql\n") if $self->{trace};
-		$dbh->dbh->rollback;
+		warn("++ INTERCEPTED: $sql\n") if $self->{trace};
+		$dbh->rollback;
 	    }
 	    else {
 		# Execute.
-		warn("+ $sql\n") if $self->{trace};
-		$dbh->dbh->do($sql);
+		warn("++ $sql\n") if $self->{trace};
+		$dbh->do($sql);
 	    }
 	    $sql = "";
 	}
