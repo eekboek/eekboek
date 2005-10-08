@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.31 2005/10/03 16:47:30 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.32 2005/10/08 11:37:30 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct  3 18:47:03 2005
-# Update Count    : 491
+# Last Modified On: Sat Oct  8 13:37:07 2005
+# Update Count    : 492
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -533,13 +533,13 @@ sub do_database {
 
 sub do_btwaangifte {
     my ($self, @args) = @_;
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 2;
     my $close = 0;
     my $opts = {};
     if ( lc($args[-1]) eq "definitief" ) {
 	$close = 1;
 	pop(@args);
     }
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 1;
     $opts->{close} = $close;
     $opts->{periode} = $args[0] if @args;
     use EB::BTWAangifte;
