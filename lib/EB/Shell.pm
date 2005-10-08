@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.32 2005/10/08 11:37:30 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.33 2005/10/08 14:44:05 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 13:37:07 2005
-# Update Count    : 492
+# Last Modified On: Sat Oct  8 16:44:02 2005
+# Update Count    : 498
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -236,7 +236,7 @@ sub parseline {
 }
 
 use EB::Finance;
-use EB::Journal::Text;
+use EB::Report::Journal;
 
 my $bsk;
 
@@ -299,6 +299,7 @@ sub do_journaal {
 	       [ 'detail!',
 		 'totaal' => sub { $opts->{detail} = 0 },
 		 'periode=s' => sub { periode_arg($opts, @_) },
+		 'page=i',
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -306,7 +307,7 @@ sub do_journaal {
     $b = shift(@args) if @args;
     undef $b if $b && lc($b) eq "all";
     $opts->{select} = $b;
-    EB::Journal::Text->new->journal($opts);
+    EB::Report::Journal->new->journal($opts);
     undef;
 }
 
@@ -325,6 +326,7 @@ Opties
   --[no]detail           -- mate van detail, standaard is met details
   --totaal               -- alleen het totaal (detail = 0)
   --periode=XXX          -- alleen over deze periode
+  --page=NN		 -- regels per pagina (default: geen paginering)
 EOS
 }
 
@@ -535,6 +537,14 @@ sub do_btwaangifte {
     my ($self, @args) = @_;
     my $close = 0;
     my $opts = {};
+
+    return unless
+    parse_args(\@args,
+	       [ 'html',
+		 'output=s',
+	       ], $opts)
+      or goto &help_btwaangifte;
+
     if ( lc($args[-1]) eq "definitief" ) {
 	$close = 1;
 	pop(@args);
@@ -543,7 +553,7 @@ sub do_btwaangifte {
     $opts->{close} = $close;
     $opts->{periode} = $args[0] if @args;
     use EB::BTWAangifte;
-    EB::BTWAangifte->new->perform($opts);
+    EB::BTWAangifte->new($opts)->perform($opts);
     undef;
 }
 
@@ -561,6 +571,11 @@ Aangifteperiode kan zijn:
 
 Met de toevoeging "definitief" wordt de BTW periode afgesloten en zijn
 geen boekingen meer mogelijk.
+
+Opties:
+
+  --output=NNN  produceer het rapport in dit bestand
+  --html        produceer HTML uitvoer
 EOS
 }
 
