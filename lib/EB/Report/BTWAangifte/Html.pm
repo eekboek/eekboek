@@ -1,10 +1,10 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.2 2005/09/18 21:07:57 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.3 2005/10/08 14:18:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 18:41:55 2005
-# Update Count    : 3
+# Last Modified On: Sat Oct  8 16:17:28 2005
+# Update Count    : 4
 # Status          : Unknown, Use with caution!
 
 package EB::BTWAangifte::Html;
@@ -56,7 +56,7 @@ sub start {
 <html>
 <head>
 <title>@{[html($text)]}</title>
-<link rel="stylesheet" href="css/eekboek.css">
+<link rel="stylesheet" href="css/btwaangifte.css">
 </head>
 <body>
 EOD
