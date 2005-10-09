@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.34 2005/10/08 20:34:23 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.35 2005/10/09 20:27:22 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 22:07:04 2005
-# Update Count    : 501
+# Last Modified On: Sun Oct  9 22:22:32 2005
+# Update Count    : 505
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -118,6 +118,9 @@ sub eb_complete {
 use EB;
 use EB::Finance;
 use EB::Tools::Opening;
+
+my @outopts;
+INIT { @outopts = qw(html csv text gen=s output=s page=i) }
 
 sub _plug_cmds {
     my $sth = $dbh->sql_exec("SELECT dbk_id,dbk_desc,dbk_type FROM Dagboeken");
@@ -299,9 +302,7 @@ sub do_journaal {
 	       [ 'detail!',
 		 'totaal' => sub { $opts->{detail} = 0 },
 		 'periode=s' => sub { periode_arg($opts, @_) },
-		 'page=i',
-		 'gen=s',
-		 'output=s',
+		 @outopts,
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -329,6 +330,10 @@ Opties
   --totaal               -- alleen het totaal (detail = 0)
   --periode=XXX          -- alleen over deze periode
   --page=NN		 -- regels per pagina (default: geen paginering)
+  --output=NNN  produceer het rapport in dit bestand
+                Uitvoertype is afhankelijk van bestandsextensie, b.v.
+                xx.html levert HTML, xx.csv een CSV, etc.
+  --gen=XXX     Uitvoertype (html, csv, text, ...)
 EOS
 }
 
@@ -542,8 +547,7 @@ sub do_btwaangifte {
 
     return unless
     parse_args(\@args,
-	       [ 'html',
-		 'output=s',
+	       [ @outopts,
 	       ], $opts)
       or goto &help_btwaangifte;
 
@@ -577,7 +581,9 @@ geen boekingen meer mogelijk.
 Opties:
 
   --output=NNN  produceer het rapport in dit bestand
-  --html        produceer HTML uitvoer
+                Uitvoertype is afhankelijk van bestandsextensie, b.v.
+                xx.html levert HTML, xx.csv een CSV, etc.
+  --gen=XXX     Uitvoertype (html, csv, text, ...)
 EOS
 }
 

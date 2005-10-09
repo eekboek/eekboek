@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.12 2005/10/08 20:35:46 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.13 2005/10/09 20:27:22 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 22:10:01 2005
-# Update Count    : 310
+# Last Modified On: Sun Oct  9 22:12:34 2005
+# Update Count    : 313
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -60,16 +60,13 @@ sub periodetabel {
     \@periodetabel;
 }
 
+use EB::Report::GenBase;
+
 sub perform {
     my ($self, $opts) = @_;
     $self->collect($opts);
 
-    if ( $opts->{html} ) {
-	require EB::Report::BTWAangifte::Html;
-	$self->{reporter} = EB::BTWAangifte::Html->new($opts);
-    }
-    $self->{reporter} ||= $opts->{reporter} || EB::Report::BTWAangifte::Text->new($opts);
-
+    $self->{reporter} = EB::Report::GenBase->backend($self, $opts);
     $self->report($opts);
 }
 
@@ -385,58 +382,58 @@ sub report {
     $rep->start("BTW Aangifte $self->{periode} -- $self->{adm_name}");
 
     # Binnenland
-    $rep->addline('H1', "Binnenland");
+    $rep->outline('H1', "Binnenland");
 
     # 1. Door mij verrichte leveringen/diensten
-    $rep->addline('H2', "1.", "Door mij verrichte leveringen/diensten");
+    $rep->outline('H2', "1.", "Door mij verrichte leveringen/diensten");
 
     # 1a. Belast met hoog tarief
-    $rep->addline('', "1a", "Belast met hoog tarief", $data->{deb_h}, $data->{deb_btw_h});
+    $rep->outline('', "1a", "Belast met hoog tarief", $data->{deb_h}, $data->{deb_btw_h});
 
     # 1b. Belast met laag tarief
-    $rep->addline('', "1b", "Belast met laag tarief", $data->{deb_l}, $data->{deb_btw_l});
+    $rep->outline('', "1b", "Belast met laag tarief", $data->{deb_l}, $data->{deb_btw_l});
 
     # 1c. Belast met ander, niet-nul tarief
-    $rep->addline('', "1c", "Belast met ander tarief", $data->{deb_x}, $data->{deb_btw_x});
+    $rep->outline('', "1c", "Belast met ander tarief", $data->{deb_x}, $data->{deb_btw_x});
 
     # 1d. Belast met 0%/verlegd
-    $rep->addline('', "1c", "Belast met 0% / verlegd", $data->{deb_0}, undef);
+    $rep->outline('', "1c", "Belast met 0% / verlegd", $data->{deb_0}, undef);
 
     # Buitenland
-    $rep->addline('H1', "Buitenland");
+    $rep->outline('H1', "Buitenland");
 
     # 3. Door mij verrichte leveringen
-    $rep->addline('H2', "3.", "Door mij verrichte leveringen");
+    $rep->outline('H2', "3.", "Door mij verrichte leveringen");
 
     # 3a. Buiten de EU
-    $rep->addline('', "3a", "Buiten de EU", $data->{extra_deb}, undef);
+    $rep->outline('', "3a", "Buiten de EU", $data->{extra_deb}, undef);
 
     # 3b. Binnen de EU
-    $rep->addline('', "3a", "Binnen de EU", $data->{intra_deb}, undef);
+    $rep->outline('', "3a", "Binnen de EU", $data->{intra_deb}, undef);
 
     # 4. Aan mij verrichte leveringen
-    $rep->addline('H2', "4.", "Aan mij verrichte leveringen");
+    $rep->outline('H2', "4.", "Aan mij verrichte leveringen");
 
     # 4a. Van buiten de EU
-    $rep->addline('', "4a", "Van buiten de EU", $data->{extra_crd}, 0);
+    $rep->outline('', "4a", "Van buiten de EU", $data->{extra_crd}, 0);
 
     # 4b. Verwervingen van goederen uit de EU.
-    $rep->addline('', "4b", "Verwervingen van goederen uit de EU", $data->{intra_crd}, 0);
+    $rep->outline('', "4b", "Verwervingen van goederen uit de EU", $data->{intra_crd}, 0);
 
     # 5 Berekening totaal
-    $rep->addline('H1', "Berekening");
-    $rep->addline('H2', "5.", "Berekening totaal");
+    $rep->outline('H1', "Berekening");
+    $rep->outline('H2', "5.", "Berekening totaal");
 
     # 5a. Subtotaal
-    $rep->addline('', "5a", "Subtotaal", undef, $data->{sub0});
+    $rep->outline('', "5a", "Subtotaal", undef, $data->{sub0});
 
     # 5b. Voorbelasting
-    $rep->addline('', "5b", "Voorbelasting", undef, $data->{vb});
+    $rep->outline('', "5b", "Voorbelasting", undef, $data->{vb});
 
     # 5c Subtotaal
-    $rep->addline('', "5c", "Subtotaal", undef, $data->{sub1});
+    $rep->outline('', "5c", "Subtotaal", undef, $data->{sub1});
 
-    $rep->addline('X', "xx", "Onbekend", undef, numfmt($data->{onbekend})) if $data->{onbekend};
+    $rep->outline('X', "xx", "Onbekend", undef, numfmt($data->{onbekend})) if $data->{onbekend};
 
     if ( $data->{btw_delta} ) {
 	$rep->finish(__x("Er is een verschil van {amount}".
@@ -485,25 +482,15 @@ package EB::Report::BTWAangifte::Text;
 
 use strict;
 use EB;
+use base qw(EB::Report::GenBase);
 
 sub new {
     my ($class, $opts) = @_;
-    $class = ref($class) || $class;
-    my $self = {};
-    bless $self => $class;
-    if ( $opts->{output} ) {
-	open(my $fh, ">", $opts->{output})
-	  or die("?".__x("Fout tijdens aanmaken {file}: {err}",
-			 file => $opts->{output}, err => $!)."\n");
-	$self->{fh} = $fh;
-    }
-    else {
-	$self->{fh} = *STDOUT;
-    }
+    my $self = $class->SUPER::new($opts);
     $self;
 }
 
-sub addline {
+sub outline {
     my ($self, $ctl, $tag0, $tag1, $sub, $amt) = @_;
     $ctl = '' if $ctl && $ctl eq 'X';
     if ( $ctl ) {
@@ -514,7 +501,7 @@ sub addline {
 	    $self->{fh}->print("\n", $tag0, " ", $tag1, "\n\n");
 	}
 	else {
-	    die("?".__x("Ongeldige mode '{ctl}' in {pkg}::addline",
+	    die("?".__x("Ongeldige mode '{ctl}' in {pkg}::outline",
 			ctl => $ctl,
 			pkg => __PACKAGE__ ) . "\n");
 	}

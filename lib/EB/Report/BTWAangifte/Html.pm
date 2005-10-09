@@ -1,10 +1,10 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.5 2005/10/08 20:36:37 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.6 2005/10/09 20:27:21 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 22:08:47 2005
-# Update Count    : 17
+# Last Modified On: Sun Oct  9 22:13:02 2005
+# Update Count    : 19
 # Status          : Unknown, Use with caution!
 
 package EB::Report::BTWAangifte::Html;
@@ -16,11 +16,11 @@ use base qw(EB::Report::GenBase);
 
 sub new {
     my ($class, $opts) = @_;
-    my self = $class->SUPER::new($opts);
+    my $self = $class->SUPER::new($opts);
     $self;
 }
 
-sub addline {
+sub outline {
     my ($self, $ctl, $tag0, $tag1, $sub, $amt) = @_;
     my $span = "";
     my $naps = "";

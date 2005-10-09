@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.15 2005/10/08 20:36:10 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.16 2005/10/09 20:27:21 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 19:03:25 2005
-# Update Count    : 196
+# Last Modified On: Sun Oct  9 22:08:05 2005
+# Update Count    : 202
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,6 +18,7 @@ use warnings;
 use EB;
 use EB::Finance;
 use EB::DB;
+use EB::Report::GenBase;
 
 sub new {
     bless {};
@@ -32,21 +33,9 @@ sub journal {
     my $pfx = $opts->{postfix} || "";
     my $detail = $opts->{detail};
     my $per = $opts->{periode};
-    my $rep;
-    my $gen = $opts->{gen};
-    if ( $gen ) {
-	my $pkg = __PACKAGE__ . "::" . ucfirst(lc($gen));
-	$gen = $pkg;
-	$pkg =~ s;::;/;g;
-	eval {
-	    require "$pkg.pm";
-	};
-	die("?".__x("Onbekend uitvoertype: {gen}", gen => $gen)."\n") if $@;
-	$rep = $gen->new($opts);
-    }
-    else {
-	$rep = $opts->{reporter} || EB::Report::Journal::Text->new($opts);
-    }
+
+    my $rep = EB::Report::GenBase->backend($self, $opts);
+    $rep->start;
 
     my $sth;
     if ( $nr ) {
@@ -122,7 +111,7 @@ sub journal {
 
 	if ( $jnl_bsr_seq == 0 ) {
 	    $nl++, next unless $detail;
-	    print("\n") if $nl++;
+	    $rep->outline(' ') if $nl++;
 	    $rep->outline('H', $jnl_bsr_date, $jnl_bsk_id, $bsk_nr, _dbk_desc($jnl_dbk_id), $jnl_desc);
 	    next;
 	}
@@ -156,17 +145,20 @@ use strict;
 
 use EB;
 use EB::Finance;
+use base qw(EB::Report::GenBase);
 
 my ($date, $bsk, $nr, $loc, $acc, $deb, $crd, $desc, $rel);
 
 sub new {
     my ($class, $opts) = @_;
-    $class = ref($class) || $class;
-    my $self = {};
-    bless $self => $class;
-    $^ = 'jnlfmt0';
-    $= = $opts->{page} || 99999999;
+    my $self = $class->SUPER::new($opts);
     $self;
+}
+
+sub start {
+    my ($self) = @_;
+    $^ = 'jnlfmt0';
+    $= = $self->{page} || 99999999;
 }
 
 sub outline {
@@ -197,6 +189,11 @@ sub outline {
 	    $_ = $_ ? numfmt($_) : '';
 	}
 	$~ = 'jnlfmt1';
+	write;
+	return;
+    }
+
+    if ( $type eq ' ' ) {
 	write;
 	return;
     }
