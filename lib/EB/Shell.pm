@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.35 2005/10/09 20:27:22 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.36 2005/10/10 20:17:52 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  9 22:22:32 2005
-# Update Count    : 505
+# Last Modified On: Mon Oct 10 18:31:39 2005
+# Update Count    : 524
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -66,7 +66,9 @@ sub eb_complete {
     #warn "\n[$pre][", substr($line, $pos), "]\n";
 
     if ( $i < 0 || $i > $pos-1 || $pre =~ /^help\s+$/ ) {
-	my @a = grep { /^$word/ } $self->completions;
+	my @extra;
+	@extra = qw(rapporten periodes) if $pre =~ /^help\s+$/;
+	my @a = grep { /^$word/ } (@extra, $self->completions);
 	if ( @a ) {
 	    return $a[0] if @a == 1;
 	    $self->term->display_match_list([$a[0],@a], $#a+1, -1);
@@ -302,7 +304,7 @@ sub do_journaal {
 	       [ 'detail!',
 		 'totaal' => sub { $opts->{detail} = 0 },
 		 'periode=s' => sub { periode_arg($opts, @_) },
-		 @outopts,
+		 EB::Report::GenBase->backend_options(EB::Report::Journal::, $opts),
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -329,11 +331,9 @@ Opties
   --[no]detail           -- mate van detail, standaard is met details
   --totaal               -- alleen het totaal (detail = 0)
   --periode=XXX          -- alleen over deze periode
-  --page=NN		 -- regels per pagina (default: geen paginering)
-  --output=NNN  produceer het rapport in dit bestand
-                Uitvoertype is afhankelijk van bestandsextensie, b.v.
-                xx.html levert HTML, xx.csv een CSV, etc.
-  --gen=XXX     Uitvoertype (html, csv, text, ...)
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
 EOS
 }
 
@@ -545,9 +545,12 @@ sub do_btwaangifte {
     my $close = 0;
     my $opts = {};
 
+    use EB::Report::BTWAangifte;
+
     return unless
     parse_args(\@args,
-	       [ @outopts,
+	       [ EB::Report::GenBase->backend_options(EB::Report::BTWAangifte::, $opts),
+		 "definitief" => sub { $close = 1 },
 	       ], $opts)
       or goto &help_btwaangifte;
 
@@ -558,7 +561,6 @@ sub do_btwaangifte {
     warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 1;
     $opts->{close} = $close;
     $opts->{periode} = $args[0] if @args;
-    use EB::Report::BTWAangifte;
     EB::Report::BTWAangifte->new($opts)->perform($opts);
     undef;
 }
@@ -567,7 +569,7 @@ sub help_btwaangifte {
     <<EOS;
 Print de BTW aangifte.
 
-  btwaangifte [ periode ] [ definitief ]
+  btwaangifte [ opties ] [ periode ]
 
 Aangifteperiode kan zijn:
 
@@ -575,15 +577,55 @@ Aangifteperiode kan zijn:
   k1 k2 k3 k4  1e/2e/3e/4e kwartaal (ook: q1, ...)
   1 2 3 .. 12  maand
 
-Met de toevoeging "definitief" wordt de BTW periode afgesloten en zijn
-geen boekingen meer mogelijk.
+Standaard is de eerstvolgende periode waarover nog geen aangifte is
+gedaan.
 
 Opties:
 
-  --output=NNN  produceer het rapport in dit bestand
-                Uitvoertype is afhankelijk van bestandsextensie, b.v.
-                xx.html levert HTML, xx.csv een CSV, etc.
-  --gen=XXX     Uitvoertype (html, csv, text, ...)
+  --definitief  de BTW periode wordt afgesloten. Er zijn geen boekingen
+                in deze periode meer mogelijk.
+                Uit historische overwegingen kan dit ook door het
+                woord "definitief" achter de opdracht te plaatsen.
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
+EOS
+}
+
+sub help_rapporten {
+    <<EOS;
+Alle rapport-producerende opdrachten kennen de volgende opties:
+
+  --periode=XXX   De periode waarover de rapportage moet plaatsvinden.
+                  (Niet voor elke opdracht relevant.)
+                  Zie "help periodes" voor details.
+  --output=XXX    Produceer het rapport in dit bestand
+                  Uitvoertype is afhankelijk van bestandsextensie, b.v.
+                  xx.html levert HTML, xx.txt een tekstbestand,
+                  xx.csv een CSV, etc.
+  --gen-XXX       Forceer uitvoertype (html, csv, text, ...)
+                  Afhankelijk van de beschikbare uitvoertypes zijn ook
+                  de kortere opties --html, --csv en --text toegestaan.
+  --page=NNN      Paginagrootte voor tekstrapporten.
+EOS
+}
+
+sub help_periodes {
+    <<EOS;
+De volgende periode-aanduidingen zijn mogelijk:
+
+   2005-04-01 - 2005-07-31
+   01-04-2005 - 31-07-2005
+   01-04 - 31-07-2005
+   01-04 - 31-07  (vooropgesteld dat het boekjaar 2005 is)
+   1 april 2005 - 31 juli 2005 (en varianten)
+   1 apr 2005 - 31 jul 2005 (en varianten)
+   apr - jul
+   k2  (tweede kwartaal)
+   april 2003 (01-04-2003 - 30-04-2003)
+   april  (01-04 - 30-04 boekjaar)
+   m4  (vierde maand)
+   jaar (gehele boekjaar)
 EOS
 }
 
@@ -723,7 +765,7 @@ sub do_openstaand {
 		 'trace!',
 	       ], $opts);
 
-    use EB::Report::Open;
+    require EB::Report::Open;
     EB::Report::Open->new->perform($opts);
 }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.11 2005/10/08 16:10:33 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.12 2005/10/10 20:17:19 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 18:04:51 2005
-# Update Count    : 130
+# Last Modified On: Mon Oct 10 22:16:21 2005
+# Update Count    : 138
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -26,8 +26,7 @@ use warnings;
 use EB;
 use EB::DB;
 use EB::Finance;
-
-use locale;
+use EB::Report::GenBase;
 
 ################ Subroutines ################
 
@@ -43,7 +42,9 @@ sub perform {
     my $detail = $opts->{detail};
     my $sel = $opts->{select};
     my $per = $opts->{periode};
-    my $rep = $opts->{reporter} || EB::Report::Grootboek::Text->new($opts);
+
+    my $rep = EB::Report::GenBase->backend($self, $opts);
+    $rep->start;
 
     my $date = $dbh->adm("begin");
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
@@ -88,7 +89,7 @@ sub perform {
 	}
 
 	if ( $did ) {
-	    print("\n") if $detail;
+	    $rep->outline(' ') if $detail;
 	}
 	$rep->outline('H1', $acc_id, $acc_desc) if $detail;
 
@@ -157,16 +158,19 @@ package EB::Report::Grootboek::Text;
 
 use strict;
 use EB;
+use base qw(EB::Report::GenBase);
 
 my ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel);
 
 sub new {
     my ($class, $opts) = @_;
-    $class = ref($class) || $class;
-    my $self = {};
-    bless $self => $class;
-    $^ = 'gbkfmt0';
-    $= = $opts->{page} || 99999999;
+    my $self = $class->SUPER::new($opts);
+    $self;
+}
+
+sub start {
+    my ($self) = @_;
+    $self->{fh}->format_top_name('gbkfmt0');
     $self;
 }
 
@@ -174,56 +178,54 @@ sub outline {
     my ($self, $type, @args) = @_;
 
     ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = ('') x 9;
+    $did++;
 
     if ( $type eq 'H1' ) {
 	($gbk, $desc) = @args;
-	$~ = 'gbkfmt1';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt1');
 	return;
     }
 
     if ( $type eq 'H2' ) {
 	($desc, $deb, $crd) = @args;
-	$~ = 'gbkfmt2';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt2');
 	return;
     }
 
     if ( $type eq 'D' ) {
 	($desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = @args;
-	$~ = 'gbkfmt3';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt3');
 	return;
     }
 
     if ( $type eq 'T2' ) {
-	$~ = 'gbkfmt2';
 	($desc, $deb, $crd) = @args;
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt2');
 	return;
     }
 
     if ( $type eq 'T1' ) {
 	($gbk, $desc, $deb, $crd) = @args;
-	$~ = 'gbkfmt1';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt1');
 	return;
     }
 
     if ( $type eq 'TM' ) {
-	$~ = 'gbkfmt1';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt1');
 	($desc, $deb, $crd) = @args;
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt1');
 	return;
     }
 
     if ( $type eq 'TG' ) {
 	($desc, $deb, $crd) = @args;
-	$~ = 'gbkfmtl';
-	write;
-	$~ = 'gbkfmt1';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmtl');
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt1');
+	return;
+    }
+
+    if ( $type eq ' ' ) {
+	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt1');
 	return;
     }
 
@@ -232,13 +234,15 @@ sub outline {
 }
 
 sub finish {
+    my ($self) = @_;
+    $self->{fh}->close;
 }
 
 format gbkfmt0 =
 @>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @>>>  @<<<<<<<<<
 _T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"), _T("Datum"), _T("Debet"), _T("Credit"), _T("Dagboek"), _T("Nr"), _T("Relatie")
 -------------------------------------------------------------------------------------------------@<<<<<<<<<
-(++$did ? ("-" x length(_T("Relatie"))) : "this should not happen")
+"-" x length(_T("Relatie"))
 .
 
 format gbkfmtl =

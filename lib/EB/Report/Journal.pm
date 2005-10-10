@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.16 2005/10/09 20:27:21 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.17 2005/10/10 20:17:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  9 22:08:05 2005
-# Update Count    : 202
+# Last Modified On: Mon Oct 10 22:09:14 2005
+# Update Count    : 217
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -23,8 +23,6 @@ use EB::Report::GenBase;
 sub new {
     bless {};
 }
-
-use locale;
 
 sub journal {
     my ($self, $opts) = @_;
@@ -157,8 +155,7 @@ sub new {
 
 sub start {
     my ($self) = @_;
-    $^ = 'jnlfmt0';
-    $= = $self->{page} || 99999999;
+    $self->{fh}->format_top_name('jnlfmt0');
 }
 
 sub outline {
@@ -168,8 +165,7 @@ sub outline {
 
     if ( $type eq 'H' ) {
 	($date, $bsk, $nr, $loc, $desc) = @args;
-	$~ = 'jnlfmt1';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::jnlfmt1');
 	return;
     }
 
@@ -178,8 +174,7 @@ sub outline {
 	for ( $deb, $crd ) {
 	    $_ = $_ ? numfmt($_) : '';
 	}
-	$~ = 'jnlfmt2';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::jnlfmt2');
 	return;
     }
 
@@ -188,13 +183,12 @@ sub outline {
 	for ( $deb, $crd ) {
 	    $_ = $_ ? numfmt($_) : '';
 	}
-	$~ = 'jnlfmt1';
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::jnlfmt1');
 	return;
     }
 
     if ( $type eq ' ' ) {
-	write;
+	$self->{fh}->format_write(__PACKAGE__.'::jnlfmt1');
 	return;
     }
 
@@ -203,6 +197,8 @@ sub outline {
 }
 
 sub finish {
+    my ($self) = @_;
+    $self->{fh}->close;
 }
 
 format jnlfmt0 =

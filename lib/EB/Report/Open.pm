@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.2 2005/10/03 20:16:06 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.3 2005/10/10 20:17:19 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct  3 20:34:11 2005
-# Update Count    : 35
+# Last Modified On: Mon Oct 10 18:29:38 2005
+# Update Count    : 46
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -35,7 +35,8 @@ sub new {
 sub perform {
     my ($self, $opts) = @_;
 
-    my $rep = $opts->{reporter} || EB::Report::Open::Text->new($opts);
+    my $rep = EB::Report::GenBase->backend($self, $opts);
+    $rep->start;
 
     my $sth = $dbh->sql_exec("SELECT bsk_id, dbk_desc, bsk_nr, bsk_desc, bsk_date,".
 			     " bsk_open, dbk_type, bsr_rel_code".
@@ -51,14 +52,14 @@ sub perform {
     }
 
     my @tm = localtime(time);
-    $rep->addline('H','','',
+    $rep->outline('H','','',
 		  __x("Openstaande posten d.d. {date}",
 		      date => sprintf("%04d-%02d-%02d", 1900+$tm[5], 1+$tm[4], $tm[3])),
 		  '','');
 
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($bsk_id, $dbk_desc, $bsk_nr, $bsk_desc, $bsk_date, $bsk_amount, $dbk_type, $bsr_rel) = @$rr;
-	$rep->addline('D', $bsk_date, join(":", $dbk_desc, $bsk_nr), $bsk_desc, $bsr_rel,
+	$rep->outline('D', $bsk_date, join(":", $dbk_desc, $bsk_nr), $bsk_desc, $bsr_rel,
 		      numfmt($dbk_type == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount));
     }
 
@@ -69,44 +70,68 @@ sub perform {
 package EB::Report::Open::Text;
 
 use EB;
+use base qw(EB::Report::GenBase);
 
 my $fmt = "%-10s  %-16s  %-30s  %-10s  %9s\n";
 
 sub new {
-    return bless {};
+    my ($class, $opts) = @_;
+    $class->SUPER::new($opts);
 }
 
 my $hdr;
 
-sub addline {
-    my ($self, $type, $date, $bsk, $desc, $rel, $amt) = @_;
+my ($date, $bsk, $desc, $rel, $amt);
+
+sub start {
+    my $self = shift;
+    $^ = 'ropn0';
+    $~ = 'ropn';
+}
+
+sub outline {
+    my ($self, $type, @args) = @_;
+
+    $self->{did}++;
+
+    ($date, $bsk, $desc, $rel, $amt) = ('') x 5;
 
     if ( $type eq 'H' ) {
-	print($desc, "\n\n");
+	($desc) = @args;
+	write;
 	return;
     }
 
-    my $line;
-    unless ( $self->{hdr} ) {
-	my $hdr = sprintf($fmt, _T("Datum"), _T("Boekstuk"),
-			  _T("Omschrijving"), _T("Relatie"), _T("Bedrag"));
-	$hdr =~ s/ +$//;
-	print($hdr);
-	$hdr =~ tr/\n/_/c;
-	print($hdr);
-	$self->{hdr} = $hdr;
+    if ( $type eq 'D' ) {
+	($date, $bsk, $desc, $rel, $amt) = @args;
+	write;
+	return;
     }
 
-    if ( $type eq 'D' ) {
-	$line = sprintf($fmt, $date, $bsk, $desc, $rel, $amt);
-    }
-    $line =~ s/^ +$//;
-    print($line);
+    die("?".__x("Programmafout: verkeerd type in {here}",
+		here => __PACKAGE__ . "::_repline")."\n");
 }
 
 sub finish {
     my ($self) = @_;
-    print($self->{hdr}) if $self->{hdr};
+    print('-'x83, "\n") if $self->{did};
 }
+
+format ropn0 =
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$desc
+
+@<<<<<<<<<  @<<<<<<<<<<<<<<<  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<  @>>>>>>>>
+_T("Datum"), _T("Boekstuk"), _T("Omschrijving"), _T("Relatie"), _T("Bedrag")
+-----------------------------------------------------------------------------------
+.
+format ropnx =
+-----------------------------------------------------------------------------------
+.
+format ropn =
+@<<<<<<<<<  @<<<<<<<<<<<<<<<  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<  @>>>>>>>>
+$date, $bsk, $desc, $rel, $amt
+~~                            ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$desc
 
 1;

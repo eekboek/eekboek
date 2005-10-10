@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.13 2005/10/09 20:27:22 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.14 2005/10/10 20:17:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  9 22:12:34 2005
-# Update Count    : 313
+# Last Modified On: Mon Oct 10 22:08:11 2005
+# Update Count    : 314
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -522,7 +522,7 @@ sub start {
 sub finish {
     my ($self, $notice) = @_;
     warn("!$notice\n") if $notice;
-    $self->{fh}->close if $self->{output};
+    $self->{fh}->close;
 }
 
 1;

@@ -1,10 +1,10 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.6 2005/10/09 20:27:21 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.7 2005/10/10 20:17:19 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  9 22:13:02 2005
-# Update Count    : 19
+# Last Modified On: Mon Oct 10 22:09:06 2005
+# Update Count    : 20
 # Status          : Unknown, Use with caution!
 
 package EB::Report::BTWAangifte::Html;
@@ -76,7 +76,7 @@ sub finish {
     $self->{fh}->print("</body>\n",
 		       "</html>\n");
 
-    close($self->{fh}) if $self->{output};
+    close($self->{fh});
 }
 
 sub html {
