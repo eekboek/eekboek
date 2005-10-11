@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.36 2005/10/10 20:17:52 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.37 2005/10/11 20:58:31 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 10 18:31:39 2005
-# Update Count    : 524
+# Last Modified On: Tue Oct 11 12:50:33 2005
+# Update Count    : 525
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -753,18 +753,20 @@ EOS
 
 sub do_openstaand {
     my ($self, @args) = @_;
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
-
     my $opts = { verbose => !$self->{verbose},
+		 
 		 bsknr    => 1,
 	       };
 
     return unless
     parse_args(\@args,
-	       [ 'verbose!',
+	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
+
+		 'verbose!',
 		 'trace!',
 	       ], $opts);
 
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
     require EB::Report::Open;
     EB::Report::Open->new->perform($opts);
 }
