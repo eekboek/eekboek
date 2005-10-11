@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.14 2005/10/08 20:32:57 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.15 2005/10/11 20:57:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 18:27:48 2005
-# Update Count    : 79
+# Last Modified On: Tue Oct 11 22:19:39 2005
+# Update Count    : 81
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -62,17 +62,19 @@ our @months;
 our @month_names;
 our @days;
 our @day_names;
+our $ident;
 
 INIT {
     # Banner. Wow! Static code!
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
     $year .= "-$thisyear" unless $year == $thisyear;
-    warn(__x("EekBoek {version} {extra}{locale}-- Copyright {year} Squirrel Consultancy",
-	     version => $VERSION,
-	     extra   => ($app ? "Wx " : ""),
-	     locale  => (LOCALISER ? "("._T("Nederlands").") " : ""),
-	     year    => $year)."\n");
+    $ident = __x("EekBoek {version} {extra}{locale}-- Copyright {year} Squirrel Consultancy",
+		 version => $VERSION,
+		 extra   => ($app ? "Wx " : ""),
+		 locale  => (LOCALISER ? "("._T("Nederlands").") " : ""),
+		 year    => $year);
+    warn($ident, "\n");
     @months =
       split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
     @month_names =
