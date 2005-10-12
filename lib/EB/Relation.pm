@@ -72,6 +72,14 @@ sub add {
     # Koppeling met dagboek op basis van het laagstgenummerde
     # inkoop/verkoop dagboek (tenzij meegegeven).
 
+    if ( my $rr = $dbh->do("SELECT rel_code,rel_desc".
+			   " FROM Relaties".
+			   " WHERE upper(rel_code) = ?",
+			   uc($code)) ) {
+	warn("?".__x("Relatiecode {code} is niet uniek", code => uc($code))."\n");
+	return;
+    }
+
     my $dbcd = "acc_debcrd";
     if ( $acct =~ /^(\d+)([DC]$)/i) {
 	$acct = $1;

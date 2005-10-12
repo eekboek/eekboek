@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.26 2005/10/08 14:45:54 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.27 2005/10/12 12:02:44 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 15:51:35 2005
-# Update Count    : 146
+# Last Modified On: Wed Oct 12 12:47:35 2005
+# Update Count    : 148
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -83,11 +83,11 @@ sub perform {
     if ( $dagboek_type == DBKTYPE_INKOOP
 	 || $dagboek_type == DBKTYPE_VERKOOP ) {
 	$debcode = shift(@$args);
-	$rr = $dbh->do("SELECT rel_acc_id, rel_btw_status FROM Relaties" .
-		       " WHERE rel_code = ?" .
+	$rr = $dbh->do("SELECT rel_code, rel_acc_id, rel_btw_status FROM Relaties" .
+		       " WHERE UPPER(rel_code) = ?" .
 		       "  AND " . ($dagboek_type == DBKTYPE_INKOOP ? "NOT " : "") . "rel_debcrd" .
 		       "  AND rel_ledger = ?",
-		       $debcode, $dagboek);
+		       uc($debcode), $dagboek);
 	unless ( defined($rr) ) {
 	    warn("?".__x("Onbekende {what}: {who}",
 			 what => lc($dagboek_type == DBKTYPE_VERKOOP ? _T("Debiteur") : _T("Crediteur")),
@@ -103,7 +103,8 @@ sub perform {
 	return;
     }
 
-    my ($rel_acc_id, $sbtw) = @$rr;
+    my ($rel_acc_id, $sbtw);
+    ($debcode, $rel_acc_id, $sbtw) = @$rr;
 
     my $nr = 1;
     my $bsk_id;

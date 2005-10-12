@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.25 2005/10/08 14:45:54 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.26 2005/10/12 12:02:44 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 15:51:53 2005
-# Update Count    : 263
+# Last Modified On: Wed Oct 12 12:49:03 2005
+# Update Count    : 265
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -297,10 +297,10 @@ sub perform {
 		}
 	    }
 	    else {
-		$rr = $dbh->do("SELECT rel_acc_id FROM Relaties" .
-			       " WHERE rel_code = ?" .
+		$rr = $dbh->do("SELECT rel_code FROM Relaties" .
+			       " WHERE upper(rel_code) = ?" .
 			       "  AND " . ($debcrd ? "" : "NOT ") . "rel_debcrd",
-			       $rel);
+			       uc($rel));
 		unless ( defined($rr) ) {
 		    warn("?".__x("Onbekende {what}: {who}",
 				 what => lc($type eq "deb" ? _T("Debiteur") : _T("Crediteur")),
@@ -308,7 +308,7 @@ sub perform {
 		    $fail++;
 		    next;
 		}
-
+		$rel = $$rr;
 		$sql = "SELECT bsk_id, dbk_id, bsk_desc, bsk_amount ".
 		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
 		    " WHERE bsk_open != 0".
@@ -321,7 +321,7 @@ sub perform {
 				" ORDER BY bsk_id";
 		@sql_args = ( $amt ? $amt : (),
 			       $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP,
-			       $rel );
+			      $rel);
 		$rr = $dbh->do($sql, @sql_args);
 		unless ( defined($rr) ) {
 		    warn("?"._T("Geen bijbehorende open post gevonden")."\n");
