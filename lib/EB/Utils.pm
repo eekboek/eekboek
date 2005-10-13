@@ -165,6 +165,14 @@ sub parse_date_range {
 
 BEGIN { push(@EXPORT, qw(parse_date_range)) }
 
+sub iso8601date {
+    my ($time) = shift || time;
+    my @tm = localtime($time);
+    sprintf("%04d-%02d-%02d", 1900+$tm[5], 1+$tm[4], $tm[3]);
+}
+
+BEGIN { push(@EXPORT, qw(iso8601date)) }
+
 # ... more to come ...
 
 BEGIN { @EXPORT_OK = @EXPORT }
