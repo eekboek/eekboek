@@ -1,10 +1,14 @@
-# RCS Info        : $Id: GenBase.pm,v 1.3 2005/10/10 20:17:19 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.4 2005/10/13 11:26:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 10 21:42:32 2005
-# Update Count    : 44
+# Last Modified On: Wed Oct 12 22:19:04 2005
+# Update Count    : 46
 # Status          : Unknown, Use with caution!
+
+package main;
+
+our $dbh;
 
 package EB::Report::GenBase;
 
@@ -80,6 +84,16 @@ sub backend {
 
     # Handle pagesize.
     $be->{fh}->format_lines_per_page($be->{page} = defined($opts->{page}) ? $opts->{page} : 999999);
+
+    if ( $opts->{periode} ) {
+	$be->{periode} = $opts->{periode};
+	$be->{periodex} = 1;
+    }
+    else {
+	$be->{periode} = [ $dbh->adm("begin"),
+			   iso8601date() ];
+	$be->{periodex} = 0;
+    }
 
     # Return instance.
     $be;
