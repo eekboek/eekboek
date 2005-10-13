@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.26 2005/10/12 12:02:44 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.27 2005/10/13 11:25:59 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 12 12:49:03 2005
-# Update Count    : 265
+# Last Modified On: Thu Oct 13 13:11:43 2005
+# Update Count    : 267
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -297,6 +297,7 @@ sub perform {
 		}
 	    }
 	    else {
+		# Lookup rel code.
 		$rr = $dbh->do("SELECT rel_code FROM Relaties" .
 			       " WHERE upper(rel_code) = ?" .
 			       "  AND " . ($debcrd ? "" : "NOT ") . "rel_debcrd",
@@ -308,7 +309,10 @@ sub perform {
 		    $fail++;
 		    next;
 		}
-		$rel = $$rr;
+		# Get actuqal code.
+		$rel = $rr->[0];
+
+		# Find associated booking.
 		$sql = "SELECT bsk_id, dbk_id, bsk_desc, bsk_amount ".
 		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
 		    " WHERE bsk_open != 0".
