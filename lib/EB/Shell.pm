@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.37 2005/10/11 20:58:31 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.38 2005/10/13 11:21:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 11 12:50:33 2005
-# Update Count    : 525
+# Last Modified On: Thu Oct 13 13:14:18 2005
+# Update Count    : 526
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -754,14 +754,13 @@ EOS
 sub do_openstaand {
     my ($self, @args) = @_;
     my $opts = { verbose => !$self->{verbose},
-		 
 		 bsknr    => 1,
 	       };
 
     return unless
     parse_args(\@args,
 	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
-
+		 'periode=s' => sub { periode_arg($opts, @_) },
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
