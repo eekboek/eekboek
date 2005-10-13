@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.4 2005/10/11 21:06:10 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.5 2005/10/13 11:25:44 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 11 23:05:39 2005
-# Update Count    : 71
+# Last Modified On: Thu Oct 13 13:24:47 2005
+# Update Count    : 80
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -36,6 +36,7 @@ sub perform {
     my ($self, $opts) = @_;
 
     my $rep = EB::Report::GenBase->backend($self, $opts);
+    my $per = $rep->{periode};
 
     my $sth = $dbh->sql_exec("SELECT bsk_id, dbk_id, dbk_desc, bsk_nr, bsk_desc, bsk_date,".
 			     " bsk_open, dbk_type, bsr_rel_code".
@@ -45,7 +46,9 @@ sub perform {
 			     " AND bsk_open IS NOT NULL".
 			     " AND bsk_open != 0".
 			     " AND dbk_type in (@{[DBKTYPE_INKOOP]},@{[DBKTYPE_VERKOOP]})".
-			     " ORDER BY dbk_id, bsk_date");
+			     ($per ? " AND bsk_date >= ? AND bsk_date <= ?" : "").
+			     " ORDER BY dbk_id, bsk_date",
+			     $per ? @$per : ());
     unless ( $sth->rows ) {
 	$sth->finish;
 	return "!"._T("Geen openstaande posten gevonden");
@@ -90,8 +93,16 @@ sub start {
     $adm = $dbh->adm("name");
     $year = substr($dbh->adm("begin"), 0, 4);
     my @tm = localtime(time);
-    $now = sprintf("%02d-%02d-%04d %02d:%02d",
-		   $tm[3], 1+$tm[4], 1900+$tm[5], @tm[2,1]);
+    $now = sprintf("%04d-%02d-%02d %02d:%02d",
+		   1900+$tm[5], 1+$tm[4], $tm[3], @tm[2,1]);
+    if ( $self->{periode} ) {
+	$per = __x("Periode: {from} t/m {to}",
+		   from => $self->{periode}->[0],
+		   to   => $self->{periode}->[1]);
+    }
+    else {
+	$per = '';
+    }
 }
 
 sub outline {
@@ -124,9 +135,9 @@ format ropn0 =
 @||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 $hdr
 @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>
-$adm, __x("Boekjaar: {jaar}", jaar => $year)
+$per, ''
 @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-$EB::ident, $now
+$adm, $now . ' ' . $EB::ident
 
 @<<<<<<<<<  @<<<<<<<<<<<<<<<  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<  @>>>>>>>>
 _T("Datum"), _T("Boekstuk"), _T("Omschrijving"), _T("Relatie"), _T("Bedrag")
