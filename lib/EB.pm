@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.15 2005/10/11 20:57:58 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.16 2005/10/13 11:27:08 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 11 22:19:39 2005
-# Update Count    : 81
+# Last Modified On: Wed Oct 12 22:26:07 2005
+# Update Count    : 82
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -69,12 +69,12 @@ INIT {
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
     $year .= "-$thisyear" unless $year == $thisyear;
-    $ident = __x("EekBoek {version} {extra}{locale}-- Copyright {year} Squirrel Consultancy",
-		 version => $VERSION,
+    $ident = __x("EekBoek {version}", version => $VERSION);
+    warn(__x("{ident} {extra}{locale}-- Copyright {year} Squirrel Consultancy",
+		 ident   => $ident,
 		 extra   => ($app ? "Wx " : ""),
 		 locale  => (LOCALISER ? "("._T("Nederlands").") " : ""),
-		 year    => $year);
-    warn($ident, "\n");
+		 year    => $year)."\n");
     @months =
       split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
     @month_names =
