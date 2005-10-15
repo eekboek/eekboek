@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.9 2005/09/23 15:21:54 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.10 2005/10/15 18:42:46 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 22 17:51:38 2005
-# Update Count    : 235
+# Last Modified On: Thu Oct 13 21:19:44 2005
+# Update Count    : 237
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -50,9 +50,9 @@ sub perform {
 							verdicht => $detail >= 0,
 							proef    => 1);
 
-    my $rr = $dbh->do("SELECT adm_begin FROM Metadata");
-    my $date = $rr->[0];
-    my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
+    my $rr;
+    my $date = $dbh->adm("begin");
+    my $now = $ENV{EB_SQL_NOW} || iso8601date();
     $rep->addline('H', '',
 		  _T("Proef- en Saldibalans") .
 		  " -- " .

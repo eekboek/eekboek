@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.14 2005/10/10 20:17:19 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.15 2005/10/15 18:46:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 10 22:08:11 2005
-# Update Count    : 314
+# Last Modified On: Thu Oct 13 21:31:00 2005
+# Update Count    : 317
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -30,9 +30,9 @@ sub new {
     $class = ref($class) || $class;
     my $self = {};
     bless $self, $class;
-    @{$self}{qw(adm_begin adm_name adm_btw_periode)} =
-      @{$::dbh->do("SELECT adm_begin, adm_name, adm_btwperiod FROM Metadata")};
-    $self->{adm_btw_periode} ||= 4;
+    $self->{"adm_$_"} = $dbh->adm($_)
+      for qw(begin name btwperiod);
+    $self->{adm_btwperiod} ||= 4;
 
     unless ( $self->{adm_begin} ) {
 	die("?"._T("De administratie is nog niet geopend")."\n");
@@ -97,16 +97,16 @@ sub parse_periode {
 
     my $pp = sub {
 	my ($per, $n) = @_;
-	unless ( $self->{adm_btw_periode} == $per ) {
+	unless ( $self->{adm_btwperiod} == $per ) {
 	    warn($self->{close} ? "?" :"!".
 		 __x("Aangifte {per} komt niet overeen met de BTW instelling".
 		     " van de administratie ({admper})",
 		     per => $periodetabel[$per][0],
-		     admper => $periodetabel[$self->{adm_btw_periode}][0],
+		     admper => $periodetabel[$self->{adm_btwperiod}][0],
 		    )."\n")
 	}
-	$self->{adm_btw_periode} = $per;
-	my $tbl = $periodetabel[$self->{adm_btw_periode}];
+	$self->{adm_btwperiod} = $per;
+	my $tbl = $periodetabel[$self->{adm_btwperiod}];
 	$self->{p_start} = $year . "-" . $tbl->[$n]->[0];
 	$self->{p_end}   = $year . "-" . $tbl->[$n]->[1];
 	$self->{periode} = $self->periode($per, $year, $n);
@@ -155,8 +155,8 @@ sub collect {
 
     unless ( $self->{periode} ) {
 	my $year = substr($self->{adm_begin}, 0, 4);
-	my $tbl = $self->periodetabel->[$self->{adm_btw_periode}];
-	if ( $self->{adm_btw_periode} == 1 ) {
+	my $tbl = $self->periodetabel->[$self->{adm_btwperiod}];
+	if ( $self->{adm_btwperiod} == 1 ) {
 	    $self->{p_start} = $year . "-" . $tbl->[1]->[0];
 	    $self->{p_end}   = $year . "-" . $tbl->[1]->[1];
 	    $self->{periode} = $self->periode(1, $year);
@@ -166,14 +166,14 @@ sub collect {
 	    $tm[5] += 1900;
 	    my $m;
 	    if ( $year < 1900+$tm[5] ) {
-		$m = $self->{adm_btw_periode};
+		$m = $self->{adm_btwperiod};
 	    }
 	    else {
-		$m = 1 + int($tm[4] / (12/$self->{adm_btw_periode}));
+		$m = 1 + int($tm[4] / (12/$self->{adm_btwperiod}));
 	    }
 	    $self->{p_start} = $year . "-" . $tbl->[$m]->[0];
 	    $self->{p_end}   = $year . "-" . $tbl->[$m]->[1];
-	    $self->{periode} = $self->periode($self->{adm_btw_periode}, $year, $m);
+	    $self->{periode} = $self->periode($self->{adm_btwperiod}, $year, $m);
 	}
     }
 

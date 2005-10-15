@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.7 2005/09/18 21:07:57 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.8 2005/10/15 18:43:22 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 18 21:48:32 2005
-# Update Count    : 182
+# Last Modified On: Thu Oct 13 21:17:38 2005
+# Update Count    : 184
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -67,8 +67,7 @@ sub perform {
       || new EB::Report::Text(detail   => $detail,
 			      verdicht => $detail >= 0);
 
-    my $rr = $dbh->do("SELECT adm_begin FROM Metadata");
-    my $date = $rr->[0];
+    my $date = $dbh->adm("begin");
     my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
     if ( $balans < 0 ) {
 	$rep->addline('H', '',
@@ -94,6 +93,7 @@ sub perform {
 			  " WHERE acc_id = jnl_acc_id".
 			  " GROUP BY jnl_acc_id,acc_balance,acc_ibalance");
 
+    my $rr;
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($acc_id, $balance,$ibalance, $sum) = @$rr;
 	$sum += $ibalance;
