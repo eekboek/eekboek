@@ -9,7 +9,9 @@ use base qw(Exporter);
 our @EXPORT;
 
 sub _newconst($$) {
-    eval("sub $_[0](){$_[1]}");
+    my $t = $_[1];
+    $t = "'$t'" unless $t =~ /^\d+$/ || $t =~ /^\[.*\]$/;
+    eval("sub $_[0](){$t}");
     push(@EXPORT, $_[0]);
 }
 
@@ -18,7 +20,7 @@ sub N__($) { $_[0] }
 BEGIN {
     _newconst("SCM_MAJVERSION", 1);
     _newconst("SCM_MINVERSION", 0);
-    _newconst("SCM_REVISION", 3);
+    _newconst("SCM_REVISION", 4);
 
     _newconst("AMTPRECISION", 2);
     _newconst("AMTWIDTH", 9);
@@ -26,6 +28,8 @@ BEGIN {
     _newconst("BTWWIDTH", 5);
     _newconst("AMTSCALE", 100);
     _newconst("BTWSCALE", 10000);
+
+    _newconst("BKY_PREVIOUS", "<<<<");
 
     my $i = 1;
     map { _newconst("DBKTYPE_$_", $i++) }
@@ -55,6 +59,7 @@ unless ( caller ) {
     foreach my $key ( sort(@EXPORT) ) {
 	no strict;
 	next if ref($key->());
+	next unless $key->() =~ /^\d+$/;
 	print STDOUT ("$key\t", $key->(), "\n");
     }
     print STDOUT ("\\.\n");
