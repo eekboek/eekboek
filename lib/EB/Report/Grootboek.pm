@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.12 2005/10/10 20:17:19 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.13 2005/10/15 18:45:40 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 10 22:16:21 2005
-# Update Count    : 138
+# Last Modified On: Sat Oct 15 20:44:58 2005
+# Update Count    : 139
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -47,7 +47,7 @@ sub perform {
     $rep->start;
 
     my $date = $dbh->adm("begin");
-    my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
+    my $now = $ENV{EB_SQL_NOW} || iso8601date();
 
     print(_T("Grootboek"), " -- ",
 	  __x("Periode {from} - {to}",

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.8 2005/10/15 18:43:22 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.9 2005/10/15 18:45:44 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 13 21:17:38 2005
-# Update Count    : 184
+# Last Modified On: Sat Oct 15 20:44:44 2005
+# Update Count    : 185
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -68,7 +68,7 @@ sub perform {
 			      verdicht => $detail >= 0);
 
     my $date = $dbh->adm("begin");
-    my $now = $ENV{EB_SQL_NOW} || $dbh->do("SELECT now()")->[0];
+    my $now = $ENV{EB_SQL_NOW} || iso8601date();
     if ( $balans < 0 ) {
 	$rep->addline('H', '',
 		      _T("Openingsbalans") .
