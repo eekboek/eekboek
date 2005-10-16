@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.5 2005/09/22 14:06:29 jv Exp $
+# $Id: Base.pm,v 1.6 2005/10/16 11:54:28 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -25,8 +25,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$VERSION      = 0.05;   # $Date: 2005/09/22 14:06:29 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
+$VERSION      = 0.05;   # $Date: 2005/10/16 11:54:28 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -386,20 +386,24 @@ sub run {
             if ($cmd =~ /$RE_SHEBANG/) {
                 $cmd = "shell";
             }
-            eval {
-                my $meth = "do_$cmd";
-                $output = $self->$meth(@args);
-            };
-            if ($@) {
+	    my $meth = "do_$cmd";
+	    if ( $self->can($meth) ) {
+		eval {
+		    $output = $self->$meth(@args);
+		};
+		if ($@) {
 # jv                $output = sprintf "%s: Bad command or filename", $self->progname;
-                my $err = $@;
-                chomp $err;
+		    my $err = $@;
+		    chomp $err;
 # jv                warn "$output ($err)\n";
-                warn "$err\n";
-                eval {
-                    $output = $self->default($cmd, @args);
-                };
-            }
+		    warn "?$err\n";
+		    eval {
+			$output = $self->default($cmd, @args);
+		    };
+		}
+	    }
+	    warn("?"._T("Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten.")."\n");
+	    undef($output);
         }
 
         $output = $self->postcmd($output);
@@ -1791,7 +1795,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.5 $.
+This documentation describes C<Shell::Base>, $Revision: 1.6 $.
 
 =head1 COPYRIGHT
 
