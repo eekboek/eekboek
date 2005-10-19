@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.9 2005/10/15 18:45:44 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.10 2005/10/19 16:36:42 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 15 20:44:44 2005
-# Update Count    : 185
+# Last Modified On: Wed Oct 19 12:31:31 2005
+# Update Count    : 283
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,16 +24,15 @@ use warnings;
 ################ The Process ################
 
 use EB;
-use EB::DB;
-use EB::Finance;
-use EB::Report::Text;
-
-use locale;
+use EB::Tools::Einde;
 
 ################ Subroutines ################
 
 sub new {
-    return bless {};
+    my ($class, $opts) = @_;
+    $class = ref($class) || $class;
+    $opts = {} unless $opts;
+    bless { %$opts }, $class;
 }
 
 sub balans {
@@ -60,52 +59,55 @@ sub perform {
     my $balans = $opts->{balans};
     my $detail = $opts->{detail};
     $detail = $opts->{verdicht} ? 2 : -1 unless defined $detail;
+    $opts->{detail} = $detail;
 
     my $dtot = 0;
     my $ctot = 0;
-    my $rep = $opts->{reporter}
-      || new EB::Report::Text(detail   => $detail,
-			      verdicht => $detail >= 0);
+    my $rep = EB::Report::GenBase->backend($self, $opts);
 
-    my $date = $dbh->adm("begin");
-    my $now = $ENV{EB_SQL_NOW} || iso8601date();
-    if ( $balans < 0 ) {
-	$rep->addline('H', '',
-		      _T("Openingsbalans") .
-		      " -- " .
-		      __x("Periode {per} d.d. {date}",
-			  per => substr($date, 0, 4),
-			  date => substr($now,0,10)));
+    my ($begin, $end);
+    if ( $opts->{periode} ) {
+	($begin,$end) = @{$opts->{periode}};
+    }
+    elsif ( $opts->{boekjaar} ) {
+	$begin = $dbh->lookup($opts->{boekjaar}, qw(Boekjaren bky_code bky_begin));
+	$end = $dbh->lookup($opts->{boekjaar}, qw(Boekjaren bky_code bky_end));
+	unless ( $end ) {
+	    warn("?".__x("Onbekend boekjaar: {code}", code => $opts->{boekjaar})."\n");
+	    return;
+	}
     }
     else {
-	$rep->addline('H', '',
-		      ($balans ? _T("Balans") : _T("Verlies/Winst")) .
-		      " -- " .
-		      __x("Periode {from} - {to}",
-		      from => $date, to => substr($now,0,10)));
+	$begin = $dbh->adm("begin");
+	$end = $dbh->adm("end");
     }
+
+    my $now = $opts->{per} || $end;
+    $now = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $ENV{EB_SQL_NOW} lt $now;
+    $now = iso8601date() if $now gt iso8601date();
 
     my $sth;
-
-    # Need this until we've got the acc_balance column right...
-    $sth = $dbh->sql_exec("SELECT jnl_acc_id,acc_balance,acc_ibalance,SUM(jnl_amount)".
-			  " FROM journal,accounts".
-			  " WHERE acc_id = jnl_acc_id".
-			  " GROUP BY jnl_acc_id,acc_balance,acc_ibalance");
-
     my $rr;
-    while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($acc_id, $balance,$ibalance, $sum) = @$rr;
-	$sum += $ibalance;
-	next if $balance == $sum;
-	warn("!".__x("Grootboekrekening {acct}, totaal {actual}, moet zijn {exp}, aangepast",
-		     acct => $acc_id, actual => numfmt($balance), exp => numfmt($sum)) . "\n");
-	$dbh->sql_exec("UPDATE Accounts".
-		       " SET acc_balance = ?".
-		       " WHERE acc_id = ?",
-		       $sum, $acc_id)->finish;
+    my $table = "Accounts";
+    if ( $balans < 0 ) {
+	my $date = $dbh->adm("begin");
+	$rep->start(_T("Openingsbalans"),
+		    __x("Datum: {date}", date => $now));
+	$dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,acc_ibalance,acc_balance".
+		       " INTO TEMP TAccounts".
+		       " FROM Accounts")->finish;
     }
-    $dbh->commit;
+    else {
+	if ( $balans && $now ne $dbh->adm("end") ) {
+	    $table = EB::Tools::Einde->GetTAccountsBal($begin, $now);
+	}
+	elsif ( !$balans ) {
+	    $table = EB::Tools::Einde->GetTAccountsRes($begin, $now);
+	}
+	$rep->start($balans ? _T("Balans") : _T("Verlies/Winst"),
+		    $balans ? __x("Periode: t/m {to}", to => $now) :
+		    __x("Periode: {from} t/m {to}", from => $begin, to => $now));
+    }
 
     if ( $detail >= 0 ) {	# Verdicht
 	my @vd;
@@ -139,7 +141,7 @@ sub perform {
 	    foreach my $vd ( @{$hvd->[2]} ) {
 		my $did_vd = 0;
 		$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balance".
-				      " FROM Accounts".
+				      " FROM ${table}".
 				      " WHERE".($balans ? "" : " NOT")." acc_balres".
 				      "  AND acc_struct = ?".
 				      "  AND acc_balance <> 0".
@@ -186,7 +188,7 @@ sub perform {
     }
     else {			# Op Grootboek
 	$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_debcrd, acc_balance".
-			      " FROM Accounts".
+			      " FROM ${table}".
 			      " WHERE".($balans ? "" : " NOT")." acc_balres".
 			      "  AND acc_balance <> 0".
 			      " ORDER BY acc_id");
@@ -221,6 +223,108 @@ sub perform {
     $rep->addline('T', '', __x("TOTAAL {rep}", rep => $balans ? _T("Balans") : _T("Resultaten")),
 		  $dtot, $ctot);
     $rep->finish;
+
+    # Rollback temp table.
+    # $dbh->sql_exec("DROP TABLE ${table}")->finish;
+    $dbh->rollback;
 }
+
+package EB::Report::Balres::Text;
+
+use strict;
+use warnings;
+
+use EB;
+use EB::Finance;
+use base qw(EB::Report::GenBase);
+
+sub new {
+    my ($class, $opts) = @_;
+    my $self = $class->SUPER::new($opts);
+    $self;
+}
+
+# Format variables for headings.
+my ($title, $period, $tag3, $adm, $now, $ident);
+
+sub start {
+    my ($self, $t1, $t2) = @_;
+    $title = $t1;
+    $period = $t2;
+    $tag3 = $self->{detail} >= 0 ? _T("Verdichting/Grootboekrekening") : _T("Grootboekrekening");
+    if ( $self->{boekjaar} ) {
+	$adm = $dbh->lookup($self->{boekjaar},
+			    qw(Boekjaren bky_code bky_name));
+    }
+    else {
+	$adm = $dbh->adm("name");
+    }
+    $now = $ENV{EB_SQL_NOW} || iso8601date();
+    $ident = $EB::ident;
+    $ident = (split(' ', $ident))[0] if $ENV{EB_SQL_NOW};
+    $self->{fh}->format_top_name('rt00');
+}
+
+# Format variables for report lines.
+my ($acc, $desc, $deb, $crd);
+
+sub addline {
+    my ($self, $type);
+    ($self, $type, $acc, $desc, $deb, $crd) = @_;
+
+    if ( $deb && $deb <= 0 && !$crd ) {
+	($deb, $crd) = ('', -$deb);
+    }
+    elsif ( $crd && $crd <= 0 && !$deb ) {
+	($deb, $crd) = (-$crd, '');
+    }
+    for ( $deb, $crd ) {
+	$_ = $_ ? numfmt($_) : '';
+    }
+
+    if ( $type =~ /^D(\d+)/ ) {
+	$desc = (" " x $1) . $desc;
+    }
+    elsif ( $type =~ /^[HT](\d+)/ ) {
+	$desc = (" " x ($1-1)) . $desc;
+    }
+
+    if ( $type eq 'T' ) {
+	$self->{fh}->format_write(__PACKAGE__.'::rtl');
+	$self->{fh}->format_write(__PACKAGE__.'::rt01');
+	return;
+    }
+
+    $self->{fh}->format_write(__PACKAGE__.'::rt01');
+    if ( $type =~ /^T(\d+)$/ && $1 <= $self->{detail} ) {
+	($acc, $desc, $deb, $crd) = ('') x 6;
+	$self->{fh}->format_write(__PACKAGE__.'::rt01');
+    }
+}
+
+sub finish {
+}
+
+format rt00 =
+@|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+$title
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$period
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>
+$adm, $ident . ", " . $now
+
+@<<<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>  @>>>>>>>>
+_T("RekNr"), $tag3, _T("Debet"), _T("Credit")
+----------------------------------------------------------------------
+.
+
+format rtl =
+----------------------------------------------------------------------
+.
+
+format rt01 =
+@<<<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>  @>>>>>>>>
+$acc, $desc, $deb, $crd
+.
 
 1;
