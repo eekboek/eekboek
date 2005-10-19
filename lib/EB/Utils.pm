@@ -15,7 +15,7 @@ my %rev_months;
 my %rev_month_names;
 
 sub parse_date {
-    my ($date, $default_year) = @_;
+    my ($date, $default_year, $delta) = @_;
 
     # Parse a date and return it in ISO format (scalar) or
     # (YYYY,MM,DD) list context.
@@ -24,17 +24,36 @@ sub parse_date {
     if ( $date =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/ ) {
 	($y, $m, $d) = ($1, $2, $3);
     }
-    elsif ( $date =~ /^(\d\d)-(\d\d)-(\d\d\d\d)$/ ) {
+    elsif ( $date =~ /^(\d\d?)-(\d\d?)-(\d\d\d\d)$/ ) {
 	($d, $m, $y) = ($1, $2, $3);
     }
-    elsif ( $date =~ /^(\d\d)-(\d\d)$/ ) {
+    elsif ( $date =~ /^(\d\d?)-(\d\d?)$/ ) {
 	($d, $m, $y) = ($1, $2, $default_year);
+    }
+    elsif ( $date =~ /^(\d\d?) (\w+)$/ ) {
+	unless ( %rev_months ) {
+	    my $i = 1;
+	    foreach ( @EB::months ) {
+		$rev_months{lc $_} = $i;
+		$rev_months{"m$i"} = $i;
+		$rev_months{sprintf("m%02d", $i)} = $i;
+		$i++;
+	    }
+	    $i = 1;
+	    foreach ( @EB::month_names ) {
+		$rev_month_names{lc $_} = $i++;
+	    }
+	}
+	return unless $default_year;
+	return unless $m = $rev_month_names{$2} || $rev_months{$2};
+	($d, $y) = ($1, $default_year);
     }
     else {
 	return;		# invalid format
     }
     my $time = eval { timelocal(0, 0, 0, $d, $m-1, $y) };
     return unless $time;	# invalid date
+    $time += $delta * 24*60*60 if $delta;
     my @tm = localtime($time);
     @tm = (1900 + $tm[5], 1 + $tm[4], $tm[3]);
     wantarray ? @tm : sprintf("%04d-%02d-%02d", @tm);
