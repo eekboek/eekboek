@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.9 2005/10/03 19:03:38 jv Exp $
+# $Id: Opening.pm,v 1.10 2005/10/19 16:33:49 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 21:57:02 2005
-# Update Count    : 41
+# Last Modified On: Wed Oct 19 11:12:34 2005
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -23,7 +23,7 @@ use EB::DB;
 # List of API methods (for the shell).
 sub commands {
     [qw(open set_naam set_btwperiode set_begindatum set_balanstotaal
-	set_balans set_relatie)];
+	set_boekjaarcode set_balans set_relatie)];
 }
 
 sub new {
@@ -37,7 +37,7 @@ sub new {
 sub set_naam {
     return shellhelp() unless @_ == 2;
     my ($self, $naam) = @_;
-    $self->check_open(0);
+    #$self->check_open(0);
     $self->{o}->{naam} = $naam;
     "";
 }
@@ -48,7 +48,7 @@ sub set_btwperiode {
     my $pat = join("|", _T("jaar"), _T("maand"), _T("kwartaal"));
     return __x("Ongeldige BTW periode: {per}", per => $per)."\n"
       unless $per =~ /^$pat|jaar|maand}kwartaal$/i;
-    $self->check_open(0);
+    #$self->check_open(0);
     $self->{o}->{btwperiode} = 1 if lc($per) eq _T("jaar") || lc($per) eq "jaar";
     $self->{o}->{btwperiode} = 4 if lc($per) eq _T("kwartaal") || lc($per) eq "kwartaal";
     $self->{o}->{btwperiode} = 12 if lc($per) eq _T("maand") || lc($per) eq "maand";
@@ -62,6 +62,19 @@ sub set_begindatum {
       && $jaar >= 1990 && $jaar < 2099;	# TODO
     $self->check_open(0);
     $self->{o}->{begindatum} = $jaar;
+    "";
+}
+
+sub set_boekjaarcode {
+    return shellhelp() unless @_ == 2;
+    my ($self, $code) = @_;
+    my $t;
+    return __x("Ongeldige boekjaar-code: {year}", year => $code)."\n" unless $code =~ /^\w{1,4}$/;
+    return __x("Boekjaar-code {year} bestaat al ({desc}",
+	       year => $code, desc => $t)."\n"
+      if $t = $dbh->lookup($code, qw(Boekjaren bky_code bky_desc));
+    #$self->check_open(0);
+    $self->{o}->{boekjaarcode} = $code;
     "";
 }
 
@@ -124,6 +137,10 @@ sub set_relatie {
 
 # The actual opening process.
 sub open {
+    if ( $dbh->adm_open ) {
+	goto &reopen;
+    }
+
     return shellhelp() unless @_ == 1;
     my ($self) = @_;
     $self->check_open(0);
@@ -134,6 +151,21 @@ sub open {
       unless $o->{naam};
     $fail++, warn(_T("De begindatum is nog niet opgegeven")."\n")
       unless $o->{begindatum};
+
+    my $gbj;
+    unless ( $gbj = defined($o->{boekjaarcode}) ) {
+	warn(__x("Er is geen boekjaarcode opgegeven, de waarde {val} wordt gebruikt",
+		 val => $o->{boekjaarcode} = substr($o->{begindatum}, 0, 4))."\n");
+	$fail++, warn(__x("Boekjaarcode \"{code}\" is reeds in gebruik",
+			  code => $o->{boekjaarcode})."\n")
+	  if $dbh->lookup($o->{boekjaarcode}, qw(Boekjaren bky_code bky_name));
+    }
+    elsif ( $o->{boekjaarcode} !~ /^\w{1,4}$/ ) {
+	warn(__x("Ongeldige boekjaarcode: {code}",
+		 code => $o->{boekjaarcode})."\n");
+	$fail++;
+    }
+
     $fail++, warn(_T("De BTW periode is nog niet opgegeven")."\n")
       unless $o->{btwperiode};
     if ( ($o->{balans} || $o->{relatie}) && !defined($o->{balanstotaal}) ) {
@@ -205,12 +237,22 @@ sub open {
     }
     return _T("DE OPENING IS NIET UITGEVOERD!")."\n" if $fail;
 
-    my @tm = localtime(time);
-    my $open = sprintf("%04d-%02d-%02d", 1900 + $tm[5], 1 + $tm[4], $tm[3]);
+    my $now = iso8601date();
 
+    $dbh->sql_insert("Boekjaren",
+		     [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened)],
+		     $o->{boekjaarcode}, $o->{naam},
+		     $o->{begindatum} . "-01-01", $o->{begindatum} . "-12-31", # TODO
+		     $o->{btwperiode}, $now);
     $dbh->sql_exec("UPDATE Metadata".
-		   " SET adm_begin = ?, adm_btwbegin = ?, adm_btwperiod = ?, adm_name = ?, adm_opened = ?",
-		   $o->{begindatum} . "-01-01", , $o->{begindatum} . "-01-01", $o->{btwperiode}, $o->{naam}, $open);
+		   " SET adm_bky = ?",
+		   $o->{boekjaarcode});
+    $dbh->sql_exec("UPDATE Boekjaren".
+		   " SET bky_closed = ?, bky_end = ?".
+		   " WHERE bky_code = ?",
+		   scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
+		   scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
+		   BKY_PREVIOUS);
 
     if ( $o->{balanstotaal} ) {
 	foreach my $b ( @{$o->{balans}} ) {
@@ -243,10 +285,11 @@ sub open {
 		$dagboek = $dbk_inkoop;
 		$amt = -$amt;
 	    }
+
 	    $dbh->sql_insert("Boekstukken",
-			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_open bsk_amount)],
-			     $::dbh->get_sequence("bsk_nr_0_seq"),
-			     $desc, $dagboek, $date, $amt, $amt);
+			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky bsk_open bsk_amount)],
+			     $dbh->get_sequence("bsk_nr_0_seq"),
+			     $desc, $dagboek, $date, BKY_PREVIOUS, $amt, $amt);
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_rel_code bsr_amount
 				 bsr_type)],
@@ -254,11 +297,11 @@ sub open {
 			     $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr"),
 			     $desc, $code, $amt, 9);
 	}
-	my $highest = $dbh->get_sequence("bsk_nr_0_seq") + 1;
-	$dbh->set_sequence("bsk_nr_${dbk_inkoop}_seq", $highest)
-	  if $dbk_inkoop;
-	$dbh->set_sequence("bsk_nr_${dbk_verkoop}_seq", $highest)
-	  if $dbk_verkoop;
+#	my $highest = $dbh->get_sequence("bsk_nr_0_seq") + 1;
+#	$dbh->set_sequence("bsk_nr_${dbk_inkoop}_seq", $highest)
+#	  if $dbk_inkoop;
+#	$dbh->set_sequence("bsk_nr_${dbk_verkoop}_seq", $highest)
+#	  if $dbk_verkoop;
     }
     $dbh->commit;
     delete($self->{o});
@@ -272,22 +315,103 @@ sub open {
 
 }
 
+# A new bookyear.
+sub reopen {
+    return shellhelp() unless @_ == 1;
+    my ($self) = @_;
+    $self->check_open(1);
+
+    my $o = $self->{o};
+    my $fail = 0;
+
+    # New begin date is old + one year.
+    my $y = $dbh->adm("begin");
+    $y =~ s/^(\d\d\d\d)/sprintf("%04d", $1+1)/e;
+    if ( $y gt iso8601date() ) {
+	warn(__x("Begindatum {year} komt in de toekomst te liggen",
+		 year => substr($y, 0, 4))."\n");
+	$fail++;
+    }
+
+    $o->{begindatum} = $y;
+
+    warn(_T("Er is geen nieuwe naam van de administratie opgegeven, deze blijft ongewijzigd")."\n")
+      unless $o->{naam};
+    warn(_T("Er is geen nieuwe BTW periode opgegeven, deze blijft ongewijzigd")."\n")
+      unless $o->{btwperiode};
+
+    if ( !defined($o->{boekjaarcode}) ) {
+	warn(__x("Er is geen boekjaarcode opgegeven, de waarde {val} wordt gebruikt",
+		val => $o->{boekjaarcode} = substr($o->{begindatum}, 0, 4))."\n");
+    }
+    return _T("HET NIEUWE BOEKJAAR IS NIET GEOPEND!")."\n" if $fail;
+
+    my $now = iso8601date();
+
+    $dbh->sql_insert("Boekjaren",
+		     [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened)],
+		     $o->{boekjaarcode},
+		     defined $o->{naam} ? $o->{naam} : $dbh->adm("name"),
+		     $o->{begindatum}, substr($o->{begindatum}, 0, 4) . "-12-31",
+		     defined $o->{btwperiode} ? $o->{btwperiode} : $dbh->adm("btwperiod"),
+		     $now);
+
+    $dbh->adm("bky", $o->{boekjaarcode});
+    $dbh->adm("");		# flush cache
+
+    # Reset boekstuknummer sequences.
+    my $sth = $dbh->sql_exec("SELECT dbk_id FROM Dagboeken");
+    my $max = 1;
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	my $t = $dbh->get_sequence("bsk_nr_".$rr->[0]."_seq");
+	$dbh->set_sequence("bsk_nr_".$rr->[0]."_seq", 1);
+	$max = $t if $t > $max;
+    }
+    # Sequence for bookings prev period.
+    $dbh->set_sequence("bsk_nr_0_seq", $max);
+
+    $dbh->commit;
+    delete($self->{o});
+
+    undef;
+}
+
 sub shellhelp {
     <<EOS;
 Het openen van een administratie kan slechts éénmaal gebeuren, vóór
-het invoeren van de eerste mutatie.
+het invoeren van de eerste mutatie. Het openen van een nieuw boekjaar
+kan te allen tijde worden uitgevoerd, uiteraard maar één keer per
+boekjaar.
 
 Het openen kan een aantal opdrachten omvatten, en wordt afgesloten met
 de opdracht "adm_open". Zolang deze opdracht niet is gegeven blijft de
 administratie ongewijzigd.
 
-Mogelijke opdrachten:
+Mogelijke opdrachten voor openen van een boekjaar:
+
+  adm_naam "Naam van de administratie"
+  adm_btwperiode [ jaar | kwartaal | maand ]
+  adm_boekjaarcode <code>
+                Een code van max 4 letters en/of cijfers waarmee het
+		boekjaar kan worden geïdentificeerd.
+		Standaard wordt het jaartal van het boekjaar genomen.
+  adm_open
+		Alle informatie die met de bovenstaande opdrachten is
+		ingevoerd, wordt verwerkt.
+
+Opdrachten voor het openen van een administratie:
 
   adm_naam "Naam van de administratie"
   adm_btwperiode [ jaar | kwartaal | maand ]
   adm_begindatum <jaar>
 		Een administratie loopt altijd van 1 januari tot en
 		met 31 december van een kalenderjaar.
+  adm_boekjaarcode <code>
+                Een code van max 4 letters en/of cijfers waarmee het
+		boekjaar kan worden geïdentificeerd.
+		Standaard wordt het jaartal van het boekjaar genomen.
+		De boekjaarcode is alleen relevant indien er meerdere
+		boekjaren in één administratie worden bijgehouden.
   adm_balanstotaal <bedrag>
 		Als een balanstotaal is opgegeven, moeten er ook
 		openingsbalansboekingen worden uitgevoerd met een of
@@ -311,10 +435,10 @@ EOS
 sub check_open {
     my ($self, $open) = @_;
     $open = 1 unless defined($open);
-    if ( $open && !$dbh->adm_busy ) {
+    if ( $open && !$dbh->adm_open ) {
 	die("?"._T("De administratie is nog niet geopend")."\n");
     }
-    elsif ( !$open && $dbh->adm_busy ) {
+    elsif ( !$open && $dbh->adm_open ) {
 	die("?"._T("De administratie is reeds in gebruik")."\n");
     }
     1;

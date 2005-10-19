@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.4 2005/10/13 11:26:52 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.5 2005/10/19 16:34:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 12 22:19:04 2005
-# Update Count    : 46
+# Last Modified On: Tue Oct 18 21:07:10 2005
+# Update Count    : 51
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ use IO::File;
 sub new {
     my ($class, $opts) = @_;
     $class = ref($class) || $class;
-    my $self = { $opts };
+    my $self = { %$opts };
     bless $self => $class;
 }
 
@@ -61,7 +61,7 @@ sub backend {
     $gen ||= "text";
 
     # Build class and package name.
-    my $class = ref($self) . "::" . ucfirst($gen);
+    my $class = (ref($self)||$self) . "::" . ucfirst($gen);
     my $pkg = $class;
     $pkg =~ s;::;/;g;;
     $pkg .= ".pm";
@@ -85,9 +85,23 @@ sub backend {
     # Handle pagesize.
     $be->{fh}->format_lines_per_page($be->{page} = defined($opts->{page}) ? $opts->{page} : 999999);
 
-    if ( $opts->{periode} ) {
-	$be->{periode} = $opts->{periode};
+    if ( $opts->{per} ) {
+	$be->{periode} = [$opts->{per},$opts->{per}];
 	$be->{periodex} = 1;
+    }
+    elsif ( $opts->{periode} ) {
+	$be->{periode} = $opts->{periode};
+	$be->{periodex} = 2;
+    }
+    elsif ( $opts->{boekjaar} ) {
+	my $bky = $opts->{boekjaar};
+	my $rr = $dbh->do("SELECT bky_begin, bky_end".
+			  " FROM Boekjaren".
+			  " WHERE bky_code = ?", $bky);
+	die("?",__x("Onbekend boekjaar: {bky}", bky => $bky)."\n"), return unless $rr;
+	my ($begin, $end) = @$rr;
+	$be->{periode} = [$begin, $end];
+	$be->{periodex} = 3;
     }
     else {
 	$be->{periode} = [ $dbh->adm("begin"),

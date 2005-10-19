@@ -1,10 +1,10 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.19 2005/10/06 09:32:00 jv Exp $
+-- $Id: eekboek.sql,v 1.20 2005/10/19 16:33:02 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
     name	text not null primary key,
-    value	int
+    value	text
 );
 
 \i constants.sql
@@ -77,6 +77,7 @@ CREATE TABLE Dagboeken (
 
 \i dbk.sql
 
+-- Sequence voor openstaande / vorig boekjaar boekingen.
 CREATE SEQUENCE bsk_nr_0_seq;
 
 -- Debiteuren / Crediteuren
@@ -95,6 +96,25 @@ CREATE TABLE Relaties (
 	CHECK (rel_btw_status >= 0 AND rel_btw_status <= 3)
 );
 
+-- Boekjaren
+CREATE TABLE Boekjaren (
+    bky_code	 varchar(4) not null primary key,
+    bky_name	 text not null,
+    bky_begin	 date not null,
+    bky_end	 date not null,
+      -- btw periode: 0 = geen, 1 = jaar, 4 = kwartaal, 12 = maand
+    bky_btwperiod smallint,
+    bky_opened	  date,	-- openingsdatum
+    bky_closed	  date,	-- sluitdatum
+    CONSTRAINT "bky_btwperiod"
+	CHECK (bky_btwperiod = 0 OR bky_btwperiod = 1 OR bky_btwperiod = 4 OR bky_btwperiod = 12)
+);
+
+-- Verplichte entry voor openstaande boekingen (openingsbalans).
+INSERT INTO Boekjaren
+    (bky_code, bky_name, bky_begin, bky_end, bky_btwperiod, bky_opened)
+    VALUES('<<<<', 'Voorgaand boekjaar', '1900-01-01', '2099-12-31', 0, (SELECT now()));
+
 -- Boekstukken
 CREATE TABLE Boekstukken (
     bsk_id       serial not null primary key,
@@ -102,9 +122,10 @@ CREATE TABLE Boekstukken (
     bsk_desc     text not null,
     bsk_dbk_id   int references Dagboeken,
     bsk_date     date,
+    bsk_bky      VARCHAR(4) references Boekjaren,
     bsk_amount   int,		-- bedrag, negatief voor inkoop
     bsk_open     int,		-- openstaand bedrag
-    UNIQUE(bsk_nr, bsk_dbk_id)
+    UNIQUE(bsk_nr, bsk_dbk_id, bsk_bky)
 );
 
 -- Boekstukregels
@@ -153,27 +174,24 @@ CREATE TABLE Journal (
     UNIQUE(jnl_bsk_id, jnl_dbk_id, jnl_bsr_seq)
 );
 
+CREATE TABLE Boekjaarbalans (
+    bkb_bky      varchar(4) references Boekjaren,
+    bkb_end	 date,
+    bkb_acc_id   int references Accounts,
+    bkb_balance  int
+);
+
 -- Metadata
 CREATE TABLE Metadata (
     adm_scm_majversion  smallint NOT NULL,
     adm_scm_minversion  smallint NOT NULL,
     adm_scm_revision    smallint NOT NULL,
-    adm_name	       	text,
-    adm_begin		date,	-- boekjaar, in YYYY-01-01
-      -- btw periode: 0 = geen, 1 = jaar, 4 = kwartaal, 12 = maand
-    adm_btwperiod	smallint,
-    adm_opened		date,	-- openingsdatum
-    adm_btwbegin	date,	-- begin huidige BTW periode
-    adm_closed		date,	-- sluitdatum
-    CONSTRAINT "meta_adm_btwperiod"
-	CHECK (adm_btwperiod = 0 OR adm_btwperiod = 1 OR adm_btwperiod = 4 OR adm_btwperiod = 12)
+    adm_bky		varchar(4) references Boekjaren,
+    adm_btwbegin	date	-- begin huidige BTW periode
 );
 
-INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision, adm_begin)
-  values((select value from constants where name = 'SCM_MAJVERSION'),
-	 (select value from constants where name = 'SCM_MINVERSION'),
-	 (select value from constants where name = 'SCM_REVISION'),
-	 date_trunc('year',now())
-	);
+-- Harde waarden, moeten overeenkomen met de code.
+INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision)
+  VALUES (1, 0, 4);
 
-UPDATE Metadata SET adm_btwbegin = adm_begin;
+UPDATE Metadata SET adm_bky = '<<<<'; -- Voorgaand boekjaar

@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.38 2005/10/13 11:21:23 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.39 2005/10/19 16:39:53 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 13 13:14:18 2005
-# Update Count    : 526
+# Last Modified On: Tue Oct 18 20:00:05 2005
+# Update Count    : 567
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,7 +18,8 @@ our $dbh;
 package EB::Shell;
 
 use strict;
-use locale;
+
+my $bky;			# current boekjaar (if set)
 
 use base qw(EB::Shell::DeLuxe);
 
@@ -38,7 +39,11 @@ sub new {
 }
 
 sub prompt {
-    shift->{prompt};
+    my $t = $ENV{EB_DB_NAME};
+    $t =~ s/^eekboek_//;
+    $t = shift->{prompt} . " [$t";
+    $t .= ":$bky" if defined $bky;
+    $t . "] ";
 }
 
 sub default {
@@ -47,11 +52,29 @@ sub default {
 
 sub intro {
     my $self = $_[0];
-    goto &do_database if $self->{interactive};
+    if ( $self->{interactive} ) {
+	do_database();
+	bky_msg();
+    }
     undef;
 }
 sub outro { undef }
 sub postcmd { shift; $dbh->rollback; shift }
+
+sub bky_msg {
+    my $sth = $dbh->sql_exec("SELECT bky_code".
+			     " FROM Boekjaren".
+			     " WHERE bky_end < ?".
+			     " AND bky_closed IS NULL".
+			     " ORDER BY bky_begin",
+			     defined $bky ?
+			     $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin)) :
+			     $dbh->adm("begin"));
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	warn("!".__x("Pas op! Boekjaar {bky} is nog niet afgesloten",
+		     bky => $rr->[0])."\n");
+    }
+}
 
 my $dbk_pat;
 my $dbk_i_pat;
@@ -240,10 +263,19 @@ sub parseline {
     ($cmd, $env, @args);
 }
 
+sub argcnt($$;$) {
+    my ($cnt, $min, $max) = @_;
+    $max = $min unless defined $max;
+    return 1 if $cnt >= $min && $cnt <= $max;
+    warn("?"._T("Te weinig argumenten voor deze opdracht")."\n") if $cnt < $min;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n") if $cnt > $max;
+    undef;
+}
+
 use EB::Finance;
 use EB::Report::Journal;
 
-my $bsk;
+my $bsk;			# current/last boekstuk
 
 sub _add {
     my ($self, $dagboek, @args) = @_;
@@ -268,6 +300,7 @@ sub _add {
 
     my $opts = { dagboek      => $dagboek,
 		 dagboek_type => $dagboek_type,
+		 boekjaar     => $bky || $dbh->adm("bky"),
 		 journal      => $self->{journal},
 		 totaal	      => undef,
 		 verbose      => $self->{verbose},
@@ -277,6 +310,7 @@ sub _add {
     return unless
     parse_args($args,
 	       [ 'boekstuk|nr=s',
+		 'boekjaar=s',
 		 'journal!',
 		 'totaal=s',
 		 'verbose!',
@@ -290,11 +324,28 @@ sub _add {
     $bsk ? $bsk =~ /^\w+:\d+/ ? __x("Boekstuk: {bsk}", bsk => $bsk) : $bsk : "";
 }
 
+sub do_boekjaar {
+    my ($self, @args) = @_;
+    return unless argcnt(@args, 1);
+    my $b = $dbh->lookup($args[0], qw(Boekjaren bky_code bky_name));
+    warn("?".__x("Onbekend boekjaar: {code}", code => $args[0])."\n"), return unless defined $b;
+    $bky = $args[0];
+    bky_msg();
+    __x("Boekjaar voor deze sessie: {bky} ({desc})", bky => $bky, desc => $b);
+}
+
+sub help_boekjaar {
+    <<EOS;
+Gebruik voor navolgende opdrachten het opgegeven boekjaar.
+
+  boekjaar <code>
+EOS
+}
 sub do_journaal {
     my ($self, @args) = @_;
     my $b = $bsk;
     my $opts = { detail       => 1,
-		 periode      => '',
+		 boekjaar     => $bky || $dbh->adm("bky"),
 		 verbose      => $self->{verbose},
 		 trace        => $self->{trace},
 	       };
@@ -303,6 +354,7 @@ sub do_journaal {
     parse_args(\@args,
 	       [ 'detail!',
 		 'totaal' => sub { $opts->{detail} = 0 },
+		 'boekjaar=s',
 		 'periode=s' => sub { periode_arg($opts, @_) },
 		 EB::Report::GenBase->backend_options(EB::Report::Journal::, $opts),
 		 'verbose!',
@@ -341,16 +393,19 @@ sub do_balans {
     my ($self, @args) = @_;
     require EB::Report::Balres;
     my $opts = { verbose      => $self->{verbose},
+		 boekjaar     => $bky || $dbh->adm("bky"),
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
+		 'boekjaar=s',
 		 'verbose!',
+		 'per=s' => sub { date_arg($opts, @_) },
 		 'trace!',
 	       ], $opts);
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
+    return unless argcnt(@args, 0);
     EB::Report::Balres->new->balans($opts);
     undef;
 }
@@ -360,9 +415,11 @@ sub help_balans {
 Print de balansrekening.
 
 Opties:
-  <geen>        Balans op grootboekrekening
-  --verdicht    verdicht, gedetailleerd
-  --detail=N    verdicht, mate van detail N = 0, 1 of 2
+  <geen>          Balans op grootboekrekening
+  --verdicht      Verdicht, gedetailleerd
+  --detail=N      Verdicht, mate van detail N = 0, 1 of 2
+  --per=XXX       Selecteer einddatum
+  --boekjaar=XX   Selecteer boekjaar
 EOS
 }
 
@@ -370,16 +427,19 @@ sub do_result {
     my ($self, @args) = @_;
     require EB::Report::Balres;
     my $opts = { verbose      => $self->{verbose},
+		 boekjaar     => $bky || $dbh->adm("bky"),
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
+		 'boekjaar=s',
+		 'periode=s' => sub { periode_arg($opts, @_) },
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
+    return unless argcnt(@args, 0);
     EB::Report::Balres->new->result($opts);
     undef;
 }
@@ -389,9 +449,11 @@ sub help_result {
 Print de resultatenrekening.
 
 Opties:
-  <geen>        Resultatenrekening op grootboekrekening
-  --verdicht    verdicht, gedetailleerd
-  --detail=N    verdicht, mate van detail N = 0, 1 of 2
+  <geen>           Resultatenrekening op grootboekrekening
+  --verdicht       Verdicht, gedetailleerd
+  --detail=N       Verdicht, mate van detail N = 0, 1 of 2
+  --periode=XXX    Selecteer periode
+  --boekjaar=XX    Selecteer boekjaar
 EOS
 }
 
@@ -606,6 +668,7 @@ Alle rapport-producerende opdrachten kennen de volgende opties:
   --gen-XXX       Forceer uitvoertype (html, csv, text, ...)
                   Afhankelijk van de beschikbare uitvoertypes zijn ook
                   de kortere opties --html, --csv en --text toegestaan.
+		  (Let op: --gen-XXX, niet --gen=XXX)
   --page=NNN      Paginagrootte voor tekstrapporten.
 EOS
 }
@@ -760,12 +823,12 @@ sub do_openstaand {
     return unless
     parse_args(\@args,
 	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
-		 'periode=s' => sub { periode_arg($opts, @_) },
+		 'per=s' => sub { date_arg($opts, @_) },
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
 
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
+    return unless argcnt(@args, 0);
     require EB::Report::Open;
     EB::Report::Open->new->perform($opts);
 }
@@ -774,7 +837,49 @@ sub help_openstaand {
     <<EOS;
 Toont een overzicht van openstaande posten.
 
-  openstaand
+  openstaand [ opties ]
+
+Opties:
+
+  --per XXX      t/m einddatum
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
+EOS
+}
+
+sub do_jaareinde {
+    my ($self, @args) = @_;
+    my $opts = { verbose => !$self->{verbose},
+		 boekjaar  => $bky,
+	       };
+
+    return unless
+    parse_args(\@args,
+	       [ 'boekjaar=s',
+		 'definitief',
+		 'verbose!',
+		 'trace!',
+	       ], $opts);
+
+    return unless argcnt(@args, 0);
+    require EB::Tools::Einde;
+    EB::Tools::Einde->new->perform($opts);
+}
+
+sub help_jaareinde {
+    <<EOS;
+Sluit het boekjaar af. De BTW rekeningen worden afgeboekt, en de
+winst/verlies wordt verrekend met de daartoe aangewezen
+balansrekening.
+
+  jaareinde [ opties ]
+
+Opties:
+
+  --boekjaar=XXX   Sluit het opgegeven boekjaar af
+  --definitief     Sluit het boekjaar definitief af. Er zijn dan geen
+                   boekingen meer mogelijk.
 EOS
 }
 
@@ -799,6 +904,16 @@ sub periode_arg {
     }
 }
 
+sub date_arg {
+    my ($opts, $name, $value) = @_;
+    if ( my $p = parse_date($value, substr($dbh->adm("begin"),0,4)) ) {
+	$opts->{$name} = $p;
+    }
+    else {
+	die("?".__x("Ongeldige datum: {per}",
+		    per => $value)."\n");
+    }
+}
 
 sub check_open {
     my ($self, $open) = @_;

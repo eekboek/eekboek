@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.27 2005/10/13 11:25:59 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.28 2005/10/19 16:37:18 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 13 13:11:43 2005
-# Update Count    : 267
+# Last Modified On: Sun Oct 16 21:55:55 2005
+# Update Count    : 281
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -29,35 +29,29 @@ use EB;
 use EB::DB;
 use EB::Finance;
 use EB::Report::Journal;
-use locale;
+use base qw(EB::Booking);
 
 my $trace_updates = $ENV{EB_TRACE_UPDATES};		# for debugging
-
-sub new {
-    return bless {};
-}
 
 sub perform {
     my ($self, $args, $opts) = @_;
 
-    my $begin = $dbh->adm("begin");
-    unless ( $begin && $dbh->adm("opened") ) {
-	warn("?"._T("De administratie is nog niet geopend")."\n");
-	return;
-    }
-    if ( $dbh->adm("closed") ) {
-	warn("?"._T("De administratie is gesloten en kan niet meer worden gewijzigd")."\n");
-	return;
-    }
+    return unless $self->adm_open;
 
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
     my $totaal = $opts->{totaal};
+
+    my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
+
     if ( defined($totaal) ) {
 	$totaal = amount($totaal);
 	return "?".__x("Ongeldig totaal: {total}", total => $totaal) unless defined $totaal;
 	#$totaal = -$totaal if $dagboek_type == DBKTYPE_INKOOP;
     }
+
+    my ($begin, $end);
+    return unless ($begin, $end) = $self->begindate;
 
     my $date;
     if ( $date = parse_date($args->[0], substr($begin, 0, 4)) ) {
@@ -65,14 +59,10 @@ sub perform {
     }
     else {
 	my @tm = localtime(time);
-	$date = sprintf("%04d-%02d-%02d",
-			1900 + $tm[5], 1 + $tm[4], $tm[3]);
+	$date = iso8601date();
     }
 
-    if ( $date lt $begin ) {
-	warn("?"._T("De boekingsdatum valt vóór aanvang van het boekjaar")."\n");
-	return;
-    }
+    return unless $self->in_bky($date, $begin, $end);
 
     my $gdesc = shift(@$args);
 
@@ -84,16 +74,10 @@ sub perform {
 	      bal => numfmt($dbh->lookup($gacct, qw(Accounts acc_id acc_balance)))), "\n")
       if $gacct;
 
-    my $bsk_nr;
-    if ( $bsk_nr = $opts->{boekstuk} ) {
-	$dbh->set_sequence("bsk_nr_${dagboek}_seq", $bsk_nr);
-    }
-    else {
-	$bsk_nr = $dbh->get_sequence("bsk_nr_${dagboek}_seq");
-    }
+    my $bsk_nr = $self->bsk_nr($opts);
     $dbh->sql_insert("Boekstukken",
-		     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date)],
-		     $bsk_nr, $gdesc, $dagboek, $date);
+		     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
+		     $bsk_nr, $gdesc, $dagboek, $date, $bky);
     $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
     my $tot = 0;
     my $did = 0;
@@ -106,11 +90,7 @@ sub perform {
 	    my $dd = parse_date($args->[0], substr($begin, 0, 4));
 	    if ( $dd ) {
 		shift(@$args);
-		if ( $dd lt $begin ) {
-		    warn("?"._T("De boekingsdatum valt vóór aanvang van het boekjaar")."\n");
-		    return;
-		}
-
+		return unless $self->in_bky($dd, $begin, $end);
 		if ( $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
 		    warn("?"._T("De boekingsdatum valt in de periode waarover al BTW aangifte is gedaan")."\n");
 		    return;
@@ -252,10 +232,7 @@ sub perform {
 	    my $dd = parse_date($args->[0]);
 	    if ( $dd ) {
 		shift(@$args);
-		if ( $dd lt $begin ) {
-		    warn("?"._T("De boekingsdatum valt vóór aanvang van het boekjaar")."\n");
-		    return;
-		}
+		return unless $self->in_bky($dd, $begin, $end);
 		if ( $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
 		    warn("?"._T("De boekingsdatum valt in de periode waarover al BTW aangifte is gedaan")."\n");
 		    return;
@@ -391,7 +368,7 @@ sub perform {
     }
     elsif ( $tot ) {
 	warn("?".__x("Boekstuk is niet in balans (verschil is {diff})",
-		     diff => numfmt($tot)).")\n");
+		     diff => numfmt($tot))."\n");
 	$fail++;
     }
     $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ? WHERE bsk_id = ?",
