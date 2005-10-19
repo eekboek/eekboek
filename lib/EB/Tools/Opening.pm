@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.10 2005/10/19 16:33:49 jv Exp $
+# $Id: Opening.pm,v 1.11 2005/10/19 16:53:55 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 19 11:12:34 2005
-# Update Count    : 110
+# Last Modified On: Wed Oct 19 18:52:41 2005
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -245,8 +245,8 @@ sub open {
 		     $o->{begindatum} . "-01-01", $o->{begindatum} . "-12-31", # TODO
 		     $o->{btwperiode}, $now);
     $dbh->sql_exec("UPDATE Metadata".
-		   " SET adm_bky = ?",
-		   $o->{boekjaarcode});
+		   " SET adm_bky = ?, adm_btwbegin = ?",
+		   $o->{boekjaarcode}, $o->{begindatum} . "-01-01");
     $dbh->sql_exec("UPDATE Boekjaren".
 		   " SET bky_closed = ?, bky_end = ?".
 		   " WHERE bky_code = ?",
