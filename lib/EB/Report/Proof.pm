@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.10 2005/10/15 18:42:46 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.11 2005/10/19 16:36:00 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 13 21:19:44 2005
-# Update Count    : 237
+# Last Modified On: Wed Oct 19 12:32:40 2005
+# Update Count    : 251
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,14 +24,14 @@ use warnings;
 ################ The Process ################
 
 use EB;
-use EB::DB;
-use EB::Finance;
-use EB::Report::Text;
 
 ################ Subroutines ################
 
 sub new {
-    return bless {};
+    my ($class, $opts) = @_;
+    $class = ref($class) || $class;
+    $opts = {} unless $opts;
+    bless { %$opts }, $class;
 }
 
 sub proefensaldibalans {
@@ -44,20 +44,18 @@ sub perform {
 
     my $detail = $opts->{detail};
     $detail = $opts->{verdicht} ? 2 : -1 unless defined $detail;
+    $opts->{proef} = 1;
+    $opts->{detail} = $detail;
 
     my @grand = (0) x 4;	# grand total
-    my $rep = $opts->{reporter} || new EB::Report::Text(detail   => $detail,
-							verdicht => $detail >= 0,
-							proef    => 1);
+    my $rep = EB::Report::GenBase->backend($self, $opts);
 
     my $rr;
     my $date = $dbh->adm("begin");
     my $now = $ENV{EB_SQL_NOW} || iso8601date();
-    $rep->addline('H', '',
-		  _T("Proef- en Saldibalans") .
-		  " -- " .
-		  __x("Periode {from} - {to}",
-		      from => $date, to => substr($now,0,10)));
+    $rep->start(_T("Proef- en Saldibalans"),
+		__x("Periode: {from} t/m {to}",
+		    from => $date, to => substr($now,0,10)));
 
     my $sth;
 
@@ -211,5 +209,101 @@ sub perform {
     }
     $rep->finish;
 }
+
+package EB::Report::Proof::Text;
+
+use strict;
+use warnings;
+
+use EB;
+use EB::Finance;
+use base qw(EB::Report::GenBase);
+
+sub new {
+    my ($class, $opts) = @_;
+    my $self = $class->SUPER::new($opts);
+    $self;
+}
+
+my ($title, $period, $tag3, $adm, $now, $ident);
+
+sub start {
+    my ($self, $t1, $t2) = @_;
+    $title = $t1;
+    $period = $t2;
+    $tag3 = $self->{detail} >= 0 ? _T("Verdichting/Grootboekrekening") : _T("Grootboekrekening");
+    if ( $self->{boekjaar} ) {
+	$adm = $dbh->lookup($self->{boekjaar},
+			    qw(Boekjaren bky_code bky_name));
+    }
+    else {
+	$adm = $dbh->adm("name");
+    }
+    $now = $ENV{EB_SQL_NOW} || iso8601date();
+    $ident = $EB::ident;
+    $ident = (split(' ', $ident))[0] if $ENV{EB_SQL_NOW};
+    $self->{fh}->format_top_name('rt00');
+}
+
+my ($acc, $desc, $deb, $crd, $sdeb, $scrd);
+
+sub addline {
+    my ($self, $type);
+    ($self, $type, $acc, $desc, $deb, $crd, $sdeb, $scrd) = @_;
+
+    if ( $deb && $deb <= 0 && !$crd ) {
+	($deb, $crd) = ('', -$deb);
+    }
+    elsif ( $crd && $crd <= 0 && !$deb ) {
+	($deb, $crd) = (-$crd, '');
+    }
+    for ( $deb, $crd, $sdeb, $scrd ) {
+	$_ = $_ ? numfmt($_) : '';
+    }
+
+    if ( $type =~ /^D(\d+)/ ) {
+	$desc = (" " x $1) . $desc;
+    }
+    elsif ( $type =~ /^[HT](\d+)/ ) {
+	$desc = (" " x ($1-1)) . $desc;
+    }
+
+    if ( $type eq 'T' ) {
+	$self->{fh}->format_write(__PACKAGE__.'::rtl');
+	$self->{fh}->format_write(__PACKAGE__.'::rt01');
+	return;
+    }
+
+    $self->{fh}->format_write(__PACKAGE__.'::rt01');
+    if ( $type =~ /^T(\d+)$/ && $1 <= $self->{detail} ) {
+	($acc, $desc, $deb, $crd, $sdeb, $scrd) = ('') x 6;
+	$self->{fh}->format_write(__PACKAGE__.'::rt01');
+    }
+}
+
+sub finish {
+}
+
+format rt00 =
+@|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+$title
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$period
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>
+$adm, $ident . ", " . $now
+
+@<<<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>  @>>>>>>>>  @>>>>>>>>  @>>>>>>>>
+_T("RekNr"), $tag3, _T("Debet"), _T("Credit"), _T("Saldo Db"), _T("Saldo Cr")
+--------------------------------------------------------------------------------------------
+.
+
+format rtl =
+--------------------------------------------------------------------------------------------
+.
+
+format rt01 =
+@<<<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>  @>>>>>>>>  @>>>>>>>>  @>>>>>>>>
+$acc, $desc, $deb, $crd, $sdeb, $scrd
+.
 
 1;
