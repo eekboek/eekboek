@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.39 2005/10/19 16:39:53 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.40 2005/10/19 16:44:50 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 18 20:00:05 2005
-# Update Count    : 567
+# Last Modified On: Wed Oct 19 18:44:40 2005
+# Update Count    : 568
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -820,6 +820,8 @@ sub do_openstaand {
 		 bsknr    => 1,
 	       };
 
+    require EB::Report::Open;
+
     return unless
     parse_args(\@args,
 	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
@@ -829,7 +831,6 @@ sub do_openstaand {
 	       ], $opts);
 
     return unless argcnt(@args, 0);
-    require EB::Report::Open;
     EB::Report::Open->new->perform($opts);
 }
 
