@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.6 2005/10/16 11:54:28 jv Exp $
+# $Id: Base.pm,v 1.7 2005/10/19 16:32:45 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -25,8 +25,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$VERSION      = 0.05;   # $Date: 2005/10/16 11:54:28 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
+$VERSION      = 0.05;   # $Date: 2005/10/19 16:32:45 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -402,8 +402,10 @@ sub run {
 		    };
 		}
 	    }
-	    warn("?"._T("Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten.")."\n");
-	    undef($output);
+	    else {
+		warn("?"._T("Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten.")."\n");
+		undef($output);
+	    }
         }
 
         $output = $self->postcmd($output);
@@ -1795,7 +1797,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.6 $.
+This documentation describes C<Shell::Base>, $Revision: 1.7 $.
 
 =head1 COPYRIGHT
 
