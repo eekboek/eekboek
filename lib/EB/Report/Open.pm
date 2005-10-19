@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.6 2005/10/18 16:24:08 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.7 2005/10/19 16:35:34 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 18 18:23:26 2005
-# Update Count    : 87
+# Last Modified On: Wed Oct 19 12:33:22 2005
+# Update Count    : 88
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -83,7 +83,7 @@ sub new {
     $class->SUPER::new($opts);
 }
 
-my ($adm, $hdr, $year, $per, $now);
+my ($adm, $hdr, $year, $per, $now, $ident);
 my ($date, $bsk, $desc, $rel, $amt);
 
 sub start {
@@ -102,6 +102,8 @@ sub start {
     else {
 	$per = '';
     }
+    $ident = $EB::ident;
+    $ident = (split(' ', $ident))[0] if $ENV{EB_SQL_NOW};
 }
 
 sub outline {
@@ -136,7 +138,7 @@ $hdr
 @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>
 $per, ''
 @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-$adm, $now . ' ' . $EB::ident
+$adm, $ident . ", " . $now
 
 @<<<<<<<<<  @<<<<<<<<<<<<<<<  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<  @>>>>>>>>
 _T("Datum"), _T("Boekstuk"), _T("Omschrijving"), _T("Relatie"), _T("Bedrag")
