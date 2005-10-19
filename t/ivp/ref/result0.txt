@@ -1,4 +1,6 @@
-Verlies/Winst -- Periode 2004-01-01 - 2004-12-31
+                            Verlies/Winst
+Periode: 2004-01-01 t/m 2004-12-31
+EekBoek Demo Administratie 2004                    EekBoek, 2004-12-31
 
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 ----------------------------------------------------------------------
