@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.9 2005/10/04 10:22:31 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.10 2005/10/19 16:40:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  4 12:04:46 2005
-# Update Count    : 215
+# Last Modified On: Sat Oct 15 20:09:51 2005
+# Update Count    : 216
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -207,7 +207,7 @@ sub flush {
 	    }
 	}
 	print("\n");
-	warn("?MEMORIAAL BOEKSTUK ".$r0->{bkstnr}.
+	warn("!!MEMORIAAL BOEKSTUK ".$r0->{bkstnr}.
 	     " IS NIET IN BALANS ($tot)\n")
 	  if $dbktype eq "M" && abs($tot) >= 0.01;
     }
