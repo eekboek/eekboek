@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.26 2005/10/08 11:28:05 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.27 2005/10/19 16:38:43 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  8 13:13:43 2005
-# Update Count    : 198
+# Last Modified On: Tue Oct 18 16:37:02 2005
+# Update Count    : 219
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -256,12 +256,15 @@ sub adm {
     }
     unless ( %adm ) {
 	$self->connectdb;
-	my $sth = $self->sql_exec("SELECT * FROM Metadata");
+	my $sth = $self->sql_exec("SELECT *".
+				  " FROM Metadata, Boekjaren".
+				  " WHERE adm_bky = bky_code");
 	my $rr = $sth->fetchrow_hashref;
 	$sth->finish;
 	while ( my($k,$v) = each(%$rr) ) {
-	    $k =~ s/^adm_//;
-	    $adm{lc($k)} = $v;
+	    my $k1 = $k;
+	    $k =~ s/^(adm|bky)_//;
+	    $adm{lc($k)} = [$k1, $v];
 	}
     }
     exists $adm{lc($name)} || die("?".__x("Niet-bestaande administratie-eigenschap: {adm}",
@@ -269,12 +272,13 @@ sub adm {
     $name = lc($name);
 
     if ( @_ == 3 ) {
-	$self->sql_exec("UPDATE Metadata SET adm_$name = ?", $value)->finish;
+	$self->sql_exec("UPDATE Metadata".
+			" SET ".$adm{$name}->[0]." = ?", $value)->finish;
 	$self->commit;
-	$adm{$name} = $value;
+	$adm{$name}->[1] = $value;
     }
     else {
-	defined $adm{$name} ? $adm{$name} : "";
+	defined $adm{$name} ? $adm{$name}->[1] : "";
     }
 }
 
@@ -333,6 +337,12 @@ sub accts {
 
 sub dbh{
     $dbh;
+}
+
+sub adm_open {
+    my ($self) = @_;
+    $self->connectdb;
+    $self->adm("bky") ne BKY_PREVIOUS;
 }
 
 sub adm_busy {
@@ -457,11 +467,10 @@ sub get_sequence {
 
 sub set_sequence {
     my ($self, $seq, $value) = @_;
-    my $sth = $self->sql_exec("SELECT setval('$seq',$value)");
-    my $rr = $sth->fetchrow_arrayref;
-    $sth->finish;
-
-    return ($rr && defined($rr->[0]) ? $rr->[0] : undef);
+    # Init a sequence to value.
+    # The next call to get_sequence will return this value.
+    $self->sql_exec("SELECT setval('$seq', $value, false)")->finish;
+    $value;
 }
 
 sub do {
