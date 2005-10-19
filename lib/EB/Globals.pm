@@ -40,9 +40,10 @@ BEGIN {
     map { _newconst("BTWTYPE_$_", $i++) }
       qw(GEEN HOOG LAAG);
     _newconst("BTWTYPES", "[qw(".N__("Geen Hoog Laag").")]");
-    $i = 0;
-    map { _newconst("BTWPER_$_", $i++) }
-      qw(GEEN JAAR HALFJAAR TRIMESTER KWARTAAL);
+    _newconst("BTWPER_GEEN", 0);
+    _newconst("BTWPER_JAAR", 1);
+    _newconst("BTWPER_KWARTAAL", 4);
+    _newconst("BTWPER_MAAND", 12);
 
     $i = 0;
     map { _newconst("BTW_$_", $i++) }
@@ -59,7 +60,6 @@ unless ( caller ) {
     foreach my $key ( sort(@EXPORT) ) {
 	no strict;
 	next if ref($key->());
-	next unless $key->() =~ /^\d+$/;
 	print STDOUT ("$key\t", $key->(), "\n");
     }
     print STDOUT ("\\.\n");
