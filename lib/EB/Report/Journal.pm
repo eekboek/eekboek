@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.17 2005/10/10 20:17:19 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.18 2005/10/19 16:35:12 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 10 22:09:14 2005
-# Update Count    : 217
+# Last Modified On: Tue Oct 18 20:05:42 2005
+# Update Count    : 218
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -30,9 +30,9 @@ sub journal {
     my $nr = $opts->{select};
     my $pfx = $opts->{postfix} || "";
     my $detail = $opts->{detail};
-    my $per = $opts->{periode};
 
     my $rep = EB::Report::GenBase->backend($self, $opts);
+    my $per = $rep->{periode};
     $rep->start;
 
     my $sth;
