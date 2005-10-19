@@ -1,0 +1,101 @@
+#!/usr/bin/perl -w
+my $RCS_Id = '$Id: Booking.pm,v 1.1 2005/10/19 16:37:43 jv Exp $ ';
+
+package main;
+
+our $dbh;
+our $spp;
+our $config;
+
+package EB::Booking;
+
+# Booking.pm -- Base class for Bookings.
+# RCS Info        : $Id: Booking.pm,v 1.1 2005/10/19 16:37:43 jv Exp $
+# Author          : Johan Vromans
+# Created On      : Sat Oct 15 23:36:51 2005
+# Last Modified By: Johan Vromans
+# Last Modified On: Sun Oct 16 23:19:47 2005
+# Update Count    : 28
+# Status          : Unknown, Use with caution!
+
+use strict;
+use warnings;
+
+use EB;
+
+my $trace_updates = $ENV{EB_TRACE_UPDATES};		# for debugging
+
+sub new {
+    my ($class) = @_;
+    $class = ref($class) || $class;
+    return bless {} => $class;
+}
+
+sub adm_open {
+    my ($self) = @_;
+    unless ( $dbh->adm_open ) {
+	warn("?"._T("De administratie is nog niet geopend")."\n");
+	return;
+    }
+    1;
+}
+
+sub bsk_nr {
+    my ($self, $opts) = @_;
+    my $bsk_nr;
+    my $prev = defined($opts->{boekjaar}) && $opts->{boekjaar} ne $dbh->adm("bky");
+    if ( $bsk_nr = $opts->{boekstuk} ) {
+	my $t = $prev ? "0" : $opts->{dagboek};
+	$dbh->set_sequence("bsk_nr_${t}_seq", $bsk_nr)
+#	  if $dbh->get_sequence("bsk_nr_${t}_seq", "noincr") < $bsk_nr;
+    }
+    elsif ( $prev ) {
+	$bsk_nr = $dbh->get_sequence("bsk_nr_0_seq");
+    }
+    else {
+	$bsk_nr = $dbh->get_sequence("bsk_nr_".$opts->{dagboek}."_seq");
+    }
+    $bsk_nr;
+}
+
+sub begindate {
+    my ($self) = @_;
+
+    my $begin;
+    my $end;
+    if ( $self->{bky} ne $dbh->adm("bky") ) {
+	my ($b, $e, $c) = @{$dbh->do("SELECT bky_begin, bky_end, bky_closed".
+				     " FROM Boekjaren".
+				     " WHERE bky_code = ?", $self->{bky})};
+	if ( $c ) {
+	    warn("?".__x("Boekjaar {code} is gesloten, er kan niet meer in worden gewijzigd",
+		       code => $self->{bky})."\n");
+	    return;
+	}
+	$begin = $b;
+	$end = $e;
+    }
+    elsif ( $dbh->adm("closed") ) {
+	warn("?"._T("De administratie is gesloten en kan niet meer worden gewijzigd")."\n");
+	return;
+    }
+    $begin ||= $dbh->adm("begin");
+    return $begin unless wantarray;
+    $end ||= $dbh->adm("end");
+    ($begin, $end);
+}
+
+sub in_bky {
+    my ($self, $date, $begin, $end) = @_;
+    if ( $date lt $begin ) {
+	warn("?".__x("De boekingsdatum {date} valt vóór aanvang van dit boekjaar", date => $date)."\n");
+	return;
+    }
+    if ( $date gt $end ) {
+	warn("?".__x("De boekingsdatum {date} valt na het einde van dit boekjaar", date => $date)."\n");
+	return;
+    }
+    1;
+}
+
+1;
