@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.12 2005/09/26 20:18:43 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.13 2005/10/19 16:41:37 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep  4 15:46:07 2005
-# Update Count    : 273
+# Last Modified On: Wed Oct 19 12:13:19 2005
+# Update Count    : 276
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -102,6 +102,7 @@ sub sql_constants {
     foreach my $key ( sort(@EB::Globals::EXPORT) ) {
 	no strict;
 	next if ref($key->());
+	#next unless $key->() =~ /^\d+$/ || $key->() =~ /^\[.*\]$/;
 	$out .= "$key\t" . $key->() . "\n";
     }
     $out .= "\\.\n";
