@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.5 2005/10/19 16:34:37 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.6 2005/10/23 19:28:04 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 18 21:07:10 2005
-# Update Count    : 51
+# Last Modified On: Sat Oct 22 21:37:06 2005
+# Update Count    : 57
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -86,27 +86,42 @@ sub backend {
     $be->{fh}->format_lines_per_page($be->{page} = defined($opts->{page}) ? $opts->{page} : 999999);
 
     if ( $opts->{per} ) {
+	die(_T("--per sluit --periode uit")."\n") if $opts->{periode};
+	die(_T("--per sluit --boekjaar uit")."\n") if defined $opts->{boekjaar};
 	$be->{periode} = [$opts->{per},$opts->{per}];
+	$be->{per_end} = $opts->{per};
 	$be->{periodex} = 1;
     }
     elsif ( $opts->{periode} ) {
+	die(_T("--periode sluit --boekjaar uit")."\n") if defined $opts->{boekjaar};
 	$be->{periode} = $opts->{periode};
+	$be->{per_begin} = $opts->{periode}->[0];
+	$be->{per_end} = $opts->{periode}->[1];
 	$be->{periodex} = 2;
     }
-    elsif ( $opts->{boekjaar} ) {
+    elsif ( defined($opts->{boekjaar}) || defined($opts->{d_boekjaar}) ) {
 	my $bky = $opts->{boekjaar};
+	$bky = $opts->{d_boekjaar} unless defined $bky;
 	my $rr = $dbh->do("SELECT bky_begin, bky_end".
 			  " FROM Boekjaren".
 			  " WHERE bky_code = ?", $bky);
 	die("?",__x("Onbekend boekjaar: {bky}", bky => $bky)."\n"), return unless $rr;
 	my ($begin, $end) = @$rr;
 	$be->{periode} = [$begin, $end];
+	$be->{per_begin} = $begin;
+	$be->{per_end} = $end;
 	$be->{periodex} = 3;
     }
     else {
 	$be->{periode} = [ $dbh->adm("begin"),
 			   iso8601date() ];
+	$be->{per_begin} = $opts->{periode}->[0];
+	$be->{per_end} = $opts->{periode}->[1];
 	$be->{periodex} = 0;
+    }
+
+    if ( $be->{per_end} gt iso8601date() ) {
+	$be->{periode}->[1] = $be->{per_end} = iso8601date();
     }
 
     # Return instance.

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.14 2005/10/23 14:16:11 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.15 2005/10/23 19:28:04 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 23 16:14:48 2005
-# Update Count    : 147
+# Last Modified On: Sun Oct 23 21:26:10 2005
+# Update Count    : 189
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -34,8 +34,6 @@ sub new {
     return bless {};
 }
 
-my $did;
-
 sub perform {
     my ($self, $opts) = @_;
 
@@ -46,19 +44,19 @@ sub perform {
     my $per = $rep->{periode};
     my ($begin, $end) = @$per;
 
-    $per = undef;
-
     $rep->start(_T("Grootboek"),
 		__x("Periode: {from} t/m {to}",
 		    from => $begin, to => $end));
 
-    my $ah = $dbh->sql_exec("SELECT acc_id,acc_desc,acc_ibalance".
+    my $ah = $dbh->sql_exec("SELECT acc_id,acc_desc,acc_ibalance,acc_balres".
 			    " FROM Accounts".
 			    ($sel ?
 			     (" WHERE acc_id IN ($sel)") :
 			     (" WHERE acc_ibalance <> 0".
 			      " OR acc_id in".
 			      "  ( SELECT DISTINCT jnl_acc_id FROM Journal )".
+			      " OR acc_id in".
+			      "  ( SELECT DISTINCT bkb_acc_id FROM Boekjaarbalans )".
 			      " ORDER BY acc_id")));
 
     my $dgrand = 0;
@@ -68,10 +66,61 @@ sub perform {
     my $n0 = numfmt(0);
 
     my $t;
-    $did = 0;
+    my $did = 0;
+
+    # Real (absolute) beginning of admin data.
+    my $admbegin = parse_date($dbh->lookup(BKY_PREVIOUS, qw(Boekjaren bky_code bky_end)), undef, 1);
+
+    # Beginning of open admin data.
+    my $opnbegin = parse_date($dbh->do("SELECT bky_end".
+				       " FROM Boekjaren".
+				       " WHERE bky_closed IS NOT NULL".
+				       " AND bky_end < ?".
+				       " ORDER BY bky_begin DESC",
+				       $begin)->[0], undef, 1);
 
     while ( my $ar = $ah->fetchrow_arrayref ) {
-	my ($acc_id, $acc_desc, $acc_ibalance) = @$ar;
+	my ($acc_id, $acc_desc, $acc_ibalance, $acc_balres) = @$ar;
+
+	# Fix initial balance.
+	if ( $admbegin ne $begin ) {
+	    #warn("=> fixing acc $acc_id\n");
+	    if ( $opnbegin ne $admbegin ) {
+		if ( $acc_balres ) {
+		    my $t = $dbh->do("SELECT bkb_balance".
+				     " FROM Boekjaarbalans".
+				     " WHERE bkb_acc_id = ?".
+				     " AND bkb_end < ?".
+				     " ORDER BY bkb_end DESC",
+				     $acc_id, $begin);
+		    if ( $t ) {
+			#warn("=> balance for acc $acc_id adj ".numfmt($acc_ibalance)." to ".numfmt($acc_ibalance-$t->[0])."\n");
+			$acc_ibalance -= $t->[0];
+		    }
+		    $t = $dbh->do("SELECT SUM(jnl_amount)".
+				  " FROM Journal".
+				  " WHERE jnl_acc_id = ?".
+				  " AND jnl_date < ? AND jnl_date >= ?",
+				  $acc_id, $begin, $admbegin);
+		    if ( $t && $t->[0] ) {
+			#warn("=> balance for acc $acc_id adj ".numfmt($acc_ibalance)." to ".numfmt($acc_ibalance+$t->[0])."\n");
+			$acc_ibalance += $t->[0];
+		    }
+		}
+		else {
+		    $acc_ibalance = 0;
+		}
+	    }
+	    my $t = $dbh->do("SELECT SUM(jnl_amount)".
+			     " FROM Journal".
+			     " WHERE jnl_acc_id = ?".
+			     " AND jnl_date < ? AND jnl_date >= ?",
+			     $acc_id, $begin, $opnbegin);
+	    if ( $t && $t->[0] ) {
+		$acc_ibalance += $t->[0];
+		#warn("=> balance for acc $acc_id adj to ".numfmt($acc_ibalance)."\n");
+	    }
+	}
 
 	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_bsr_date,jnl_desc,jnl_rel".
 				 " FROM journal, Boekstukken, Dagboeken".
@@ -82,7 +131,7 @@ sub perform {
 				 " ORDER BY jnl_bsr_date, jnl_bsk_id, jnl_bsr_seq",
 				 $acc_id, $begin, $end);
 
-	if ( $per && !$sth->rows ) {
+	if ( !$acc_ibalance && !$sth->rows ) {
 	    $sth->finish;
 	    next;
 	}
@@ -93,7 +142,7 @@ sub perform {
 	$rep->outline('H1', $acc_id, $acc_desc) if $detail;
 
 	my @d = ($n0, $n0);
-	$acc_ibalance = 0 if $per;
+
 	if ( $acc_ibalance ) {
 	    if ( $acc_ibalance > 0 ) {
 		$d[0] = numfmt($acc_ibalance);
@@ -104,7 +153,7 @@ sub perform {
 	}
 
 	$rep->outline('H2', _T("Beginsaldo"), @d)
-	  if $detail > 0 && !$per;
+	  if $detail > 0;
 
 	my $dtot = 0;
 	my $ctot = 0;
@@ -251,37 +300,37 @@ sub finish {
 }
 
 format gbkfmt0 =
-@||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+@||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 $title
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $per
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $adm, $ident . ", " . $now . (" " x (10-length(_T("Relatie"))))
 
-@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @>>>  @<<<<<<<<<
-_T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"), _T("Datum"), _T("Debet"), _T("Credit"), _T("Dagboek"), _T("Nr"), _T("Relatie")
--------------------------------------------------------------------------------------------------@<<<<<<<<<
+@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @>>>  @<<<<<<<<<
+_T("GrBk"), _T("Grootboek/Boekstuk"), _T("Datum"), _T("Debet"), _T("Credit"), _T("Dagboek"), _T("Nr"), _T("Relatie")
+-------------------------------------------------------------------------------------------@<<<<<<<<<
 "-" x length(_T("Relatie"))
 .
 
 format gbkfmtl =
--------------------------------------------------------------------------------------------------@<<<<<<<<<
+-------------------------------------------------------------------------------------------@<<<<<<<<<
 "-" x length(_T("Relatie"))
 .
 
 format gbkfmt1 =
-@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @<<<  @<<<<<<<<<
-$gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel
+@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @<<<  @<<<<<<<<<
+$gbk, $desc, $date, $deb, $crd, $dbk, $nr, $rel
 .
 
 format gbkfmt2 =
-        @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<                  @>>>>>>>>> @>>>>>>>>>
+        @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<            @>>>>>>>>> @>>>>>>>>>
 $desc, $deb, $crd
 .
 
 format gbkfmt3 =
-         ^<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @<<<  @<<<<<<<<<
-$desc, $id, $date, $deb, $crd, $dbk, $nr, $rel
+         ^<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @<<<  @<<<<<<<<<
+$desc, $date, $deb, $crd, $dbk, $nr, $rel
 ~~       ^<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $desc
 .
