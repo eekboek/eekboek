@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.13 2005/10/15 18:45:40 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.14 2005/10/23 14:16:11 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 15 20:44:58 2005
-# Update Count    : 139
+# Last Modified On: Sun Oct 23 16:14:48 2005
+# Update Count    : 147
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -41,17 +41,16 @@ sub perform {
 
     my $detail = $opts->{detail};
     my $sel = $opts->{select};
-    my $per = $opts->{periode};
 
     my $rep = EB::Report::GenBase->backend($self, $opts);
-    $rep->start;
+    my $per = $rep->{periode};
+    my ($begin, $end) = @$per;
 
-    my $date = $dbh->adm("begin");
-    my $now = $ENV{EB_SQL_NOW} || iso8601date();
+    $per = undef;
 
-    print(_T("Grootboek"), " -- ",
-	  __x("Periode {from} - {to}",
-	      from => $date, to => substr($now,0,10)), "\n\n");
+    $rep->start(_T("Grootboek"),
+		__x("Periode: {from} t/m {to}",
+		    from => $begin, to => $end));
 
     my $ah = $dbh->sql_exec("SELECT acc_id,acc_desc,acc_ibalance".
 			    " FROM Accounts".
@@ -79,9 +78,9 @@ sub perform {
 				 " WHERE jnl_dbk_id = dbk_id".
 				 " AND jnl_bsk_id = bsk_id".
 				 " AND jnl_acc_id = ?".
-				 ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
+				 " AND jnl_date >= ? AND jnl_date <= ?".
 				 " ORDER BY jnl_bsr_date, jnl_bsk_id, jnl_bsr_seq",
-				 $acc_id, $per ? @$per : ());
+				 $acc_id, $begin, $end);
 
 	if ( $per && !$sth->rows ) {
 	    $sth->finish;
@@ -142,6 +141,7 @@ sub perform {
 	else {
 	    $dgrand += $dtot+$acc_ibalance - $ctot;
 	}
+	$did++;
     }
 
     if ( $did ) {
@@ -160,6 +160,7 @@ use strict;
 use EB;
 use base qw(EB::Report::GenBase);
 
+my ($title, $per, $adm, $ident, $now);
 my ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel);
 
 sub new {
@@ -169,7 +170,19 @@ sub new {
 }
 
 sub start {
-    my ($self) = @_;
+    my ($self, $t1, $t2) = @_;
+    $title = $t1;
+    $per = $t2;
+    if ( $self->{boekjaar} ) {
+	$adm = $dbh->lookup($self->{boekjaar},
+			    qw(Boekjaren bky_code bky_name));
+    }
+    else {
+	$adm = $dbh->adm("name");
+    }
+    $now = $ENV{EB_SQL_NOW} || iso8601date();
+    $ident = $EB::ident;
+    $ident = (split(' ', $ident))[0] if $ENV{EB_SQL_NOW};
     $self->{fh}->format_top_name('gbkfmt0');
     $self;
 }
@@ -178,7 +191,6 @@ sub outline {
     my ($self, $type, @args) = @_;
 
     ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = ('') x 9;
-    $did++;
 
     if ( $type eq 'H1' ) {
 	($gbk, $desc) = @args;
@@ -239,6 +251,13 @@ sub finish {
 }
 
 format gbkfmt0 =
+@||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+$title
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+$per
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+$adm, $ident . ", " . $now . (" " x (10-length(_T("Relatie"))))
+
 @>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @>>>  @<<<<<<<<<
 _T("GrBk"), _T("Grootboek/Boekstuk"), _T("Id"), _T("Datum"), _T("Debet"), _T("Credit"), _T("Dagboek"), _T("Nr"), _T("Relatie")
 -------------------------------------------------------------------------------------------------@<<<<<<<<<
