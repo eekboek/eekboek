@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.40 2005/10/19 16:44:50 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.41 2005/10/23 19:27:40 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 19 18:44:40 2005
-# Update Count    : 568
+# Last Modified On: Sat Oct 22 21:51:16 2005
+# Update Count    : 580
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -138,15 +138,28 @@ sub eb_complete {
     return ();
 }
 
+sub parseline {
+    my ($self, $line) = @_;
+    $line =~ s/;\s*$//;
+    my ($cmd, $env, @args) = $self->SUPER::parseline($line);
+
+    if ( $cmd =~ /^(.+):(\S+)$/ ) {
+	$cmd = $1;
+	unshift(@args, "--nr=$2");
+    }
+    ($cmd, $env, @args);
+}
+
 ################ Subroutines ################
 
 use EB;
-use EB::Finance;
 use EB::Tools::Opening;
 
+# Standard options for report generating backends.
 my @outopts;
-INIT { @outopts = qw(html csv text gen=s output=s page=i) }
+INIT { @outopts = qw(html csv text output=s page=i) }
 
+# Plug in some commands dynamically.
 sub _plug_cmds {
     my $sth = $dbh->sql_exec("SELECT dbk_id,dbk_desc,dbk_type FROM Dagboeken");
     my $rr;
@@ -211,13 +224,15 @@ EOS
 	  ) {
 	$text .= <<EOS;
   $cmd [ <datum> ] "Omschrijving"    gevolgd door een of meer:
-    std "Omschrijving" <bedrag> <rekening> -- gewone betaling
-    crd <code> <bedrag>                    -- betaling van crediteur
-    deb <code> <bedrag>                    -- betaling van debiteur
+    std [ <datum> ] "Omschrijving" <bedrag> <rekening> -- gewone betaling
+    crd [ <datum> ] <code> <bedrag>                    -- betaling van crediteur
+    deb [ <datum> ] <code> <bedrag>                    -- betaling van debiteur
 EOS
     }
     $text;
 }
+
+################ Global toggles ################
 
 sub _state {
     my ($cur, $state) = @_;
@@ -251,17 +266,31 @@ sub do_confirm {
     __x("Bevestiging: {state}", state => uc($self->{confirm} ? _T("aan") : _T("uit")));
 }
 
-sub parseline {
-    my ($self, $line) = @_;
-    $line =~ s/;\s*$//;
-    my ($cmd, $env, @args) = $self->SUPER::parseline($line);
-
-    if ( $cmd =~ /^(.+):(\S+)$/ ) {
-	$cmd = $1;
-	unshift(@args, "--nr=$2");
-    }
-    ($cmd, $env, @args);
+sub do_boekjaar {
+    my ($self, @args) = @_;
+    return unless argcnt(@args, 1);
+    my $b = $dbh->lookup($args[0], qw(Boekjaren bky_code bky_name));
+    warn("?".__x("Onbekend boekjaar: {code}", code => $args[0])."\n"), return unless defined $b;
+    $bky = $args[0];
+    bky_msg();
+    __x("Boekjaar voor deze sessie: {bky} ({desc})", bky => $bky, desc => $b);
 }
+
+sub help_boekjaar {
+    <<EOS;
+Gebruik voor navolgende opdrachten het opgegeven boekjaar.
+
+  boekjaar <code>
+EOS
+}
+
+sub do_database {
+    my ($self, @args) = @_;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
+    __x("Database: {db}", db => $ENV{EB_DB_NAME})
+}
+
+################ Service ################
 
 sub argcnt($$;$) {
     my ($cnt, $min, $max) = @_;
@@ -272,8 +301,7 @@ sub argcnt($$;$) {
     undef;
 }
 
-use EB::Finance;
-use EB::Report::Journal;
+################ Bookings ################
 
 my $bsk;			# current/last boekstuk
 
@@ -300,10 +328,10 @@ sub _add {
 
     my $opts = { dagboek      => $dagboek,
 		 dagboek_type => $dagboek_type,
-		 boekjaar     => $bky || $dbh->adm("bky"),
+		 d_boekjaar   => $bky || $dbh->adm("bky"),
 		 journal      => $self->{journal},
 		 totaal	      => undef,
-		 verbose      => $self->{verbose},
+		 confirm      => $self->{confirm},
 	       };
 
     my $args = \@args;
@@ -313,42 +341,25 @@ sub _add {
 		 'boekjaar=s',
 		 'journal!',
 		 'totaal=s',
-		 'verbose!',
 		 'confirm!',
 		 ( $dagboek_type == DBKTYPE_BANK
 		   || $dagboek_type == DBKTYPE_KAS ) ? ( 'saldo=s' ) : (),
-		 'trace!',
 	       ], $opts);
 
     $bsk = $action->perform($args, $opts);
     $bsk ? $bsk =~ /^\w+:\d+/ ? __x("Boekstuk: {bsk}", bsk => $bsk) : $bsk : "";
 }
 
-sub do_boekjaar {
-    my ($self, @args) = @_;
-    return unless argcnt(@args, 1);
-    my $b = $dbh->lookup($args[0], qw(Boekjaren bky_code bky_name));
-    warn("?".__x("Onbekend boekjaar: {code}", code => $args[0])."\n"), return unless defined $b;
-    $bky = $args[0];
-    bky_msg();
-    __x("Boekjaar voor deze sessie: {bky} ({desc})", bky => $bky, desc => $b);
-}
+################ Reports ################
 
-sub help_boekjaar {
-    <<EOS;
-Gebruik voor navolgende opdrachten het opgegeven boekjaar.
-
-  boekjaar <code>
-EOS
-}
 sub do_journaal {
     my ($self, @args) = @_;
     my $b = $bsk;
     my $opts = { detail       => 1,
-		 boekjaar     => $bky || $dbh->adm("bky"),
-		 verbose      => $self->{verbose},
-		 trace        => $self->{trace},
+		 d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
+
+    require EB::Report::Journal;
 
     return unless
     parse_args(\@args,
@@ -357,8 +368,6 @@ sub do_journaal {
 		 'boekjaar=s',
 		 'periode=s' => sub { periode_arg($opts, @_) },
 		 EB::Report::GenBase->backend_options(EB::Report::Journal::, $opts),
-		 'verbose!',
-		 'trace!',
 	       ], $opts);
 
     $b = shift(@args) if @args;
@@ -392,8 +401,7 @@ EOS
 sub do_balans {
     my ($self, @args) = @_;
     require EB::Report::Balres;
-    my $opts = { verbose      => $self->{verbose},
-		 boekjaar     => $bky || $dbh->adm("bky"),
+    my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
 
     return unless
@@ -401,9 +409,7 @@ sub do_balans {
 	       [ 'detail=i',
 		 'verdicht',
 		 'boekjaar=s',
-		 'verbose!',
 		 'per=s' => sub { date_arg($opts, @_) },
-		 'trace!',
 	       ], $opts);
     return unless argcnt(@args, 0);
     EB::Report::Balres->new->balans($opts);
@@ -426,8 +432,7 @@ EOS
 sub do_result {
     my ($self, @args) = @_;
     require EB::Report::Balres;
-    my $opts = { verbose      => $self->{verbose},
-		 boekjaar     => $bky || $dbh->adm("bky"),
+    my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
 
     return unless
@@ -436,8 +441,6 @@ sub do_result {
 		 'verdicht',
 		 'boekjaar=s',
 		 'periode=s' => sub { periode_arg($opts, @_) },
-		 'verbose!',
-		 'trace!',
 	       ], $opts);
     return unless argcnt(@args, 0);
     EB::Report::Balres->new->result($opts);
@@ -461,15 +464,13 @@ sub do_proefensaldibalans {
     my ($self, @args) = @_;
     require EB::Report::Proof;
 
-    my $opts = { verbose      => $self->{verbose},
+    my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
-		 'verbose!',
-		 'trace!',
 	       ], $opts);
     warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
     EB::Report::Proof->new->proefensaldibalans($opts);
@@ -492,17 +493,14 @@ sub do_grootboek {
     require EB::Report::Grootboek;
 
     my $opts = { detail       => 2,
-		 periode      => '',
-		 verbose      => $self->{verbose},
-		 trace        => $self->{trace},
+		 d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'detail=i',
 		 'periode=s' => sub { periode_arg($opts, @_) },
-		 'verbose!',
-		 'trace!',
+		 'boekjaar=s',
 	       ], $opts);
 
     my $fail;
@@ -556,56 +554,15 @@ sub do_dagboeken {
 
 sub help_dagboeken {
     <<EOS;
-Print een lijstje van gebruikte dagboeken.
+Print een lijstje van beschikbare dagboeken.
 EOS
-}
-
-sub do_relatie {
-    my ($self, @args) = @_;
-
-    my $opts = {
-	       };
-
-    return unless
-    parse_args(\@args,
-	       [ 'dagboek=s',
-		 'btw=s',
-	       ], $opts)
-      or goto &help_relatie;
-
-    if ( @args == 4 ) {
-	$opts->{btw} = pop(@args);
-    }
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 3;
-    warn("?"._T("Te weinig argumenten voor deze opdracht")."\n"), return if @args < 3;
-
-    use EB::Relation;
-    EB::Relation->new->add(@args, $opts);
-}
-
-sub help_relatie {
-    <<EOS;
-Aanmaken nieuwe relatie.
-
-  relatie <code> "Omschrijving" <rekening>
-
-Opties:
-
-  --dagboek=XXX  -- selecteer dagboek voor deze relatie
-  --btw=XXX      -- btw-type: normaal, verlegd, intra, extra
-EOS
-}
-
-sub do_database {
-    my ($self, @args) = @_;
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
-    __x("Database: {db}", db => $ENV{EB_DB_NAME})
 }
 
 sub do_btwaangifte {
     my ($self, @args) = @_;
     my $close = 0;
-    my $opts = {};
+    my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
+	       };
 
     use EB::Report::BTWAangifte;
 
@@ -635,9 +592,9 @@ Print de BTW aangifte.
 
 Aangifteperiode kan zijn:
 
-  j            het gehele jaar
+  j jaar       het gehele jaar
   k1 k2 k3 k4  1e/2e/3e/4e kwartaal (ook: q1, ...)
-  1 2 3 .. 12  maand
+  1 2 3 ... jan feb ... januari ...  maand
 
 Standaard is de eerstvolgende periode waarover nog geen aangifte is
 gedaan.
@@ -648,6 +605,38 @@ Opties:
                 in deze periode meer mogelijk.
                 Uit historische overwegingen kan dit ook door het
                 woord "definitief" achter de opdracht te plaatsen.
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
+EOS
+}
+
+sub do_openstaand {
+    my ($self, @args) = @_;
+    my $opts = { d_boekjaar => $bky || $dbh->adm("bky"),
+	       };
+
+    require EB::Report::Open;
+
+    return unless
+    parse_args(\@args,
+	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
+		 'per=s' => sub { date_arg($opts, @_) },
+	       ], $opts);
+
+    return unless argcnt(@args, 0);
+    EB::Report::Open->new->perform($opts);
+}
+
+sub help_openstaand {
+    <<EOS;
+Toont een overzicht van openstaande posten.
+
+  openstaand [ opties ]
+
+Opties:
+
+  --per XXX      t/m einddatum  ***WERKT NOG NIET***
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -692,6 +681,47 @@ De volgende periode-aanduidingen zijn mogelijk:
 EOS
 }
 
+################ Relations ################
+
+sub do_relatie {
+    my ($self, @args) = @_;
+
+    my $opts = {
+	       };
+
+    return unless
+    parse_args(\@args,
+	       [ 'dagboek=s',
+		 'btw=s',
+	       ], $opts)
+      or goto &help_relatie;
+
+    if ( @args == 4 ) {
+	$opts->{btw} = pop(@args);
+    }
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 3;
+    warn("?"._T("Te weinig argumenten voor deze opdracht")."\n"), return if @args < 3;
+
+    use EB::Relation;
+    EB::Relation->new->add(@args, $opts);
+}
+
+sub help_relatie {
+    <<EOS;
+Aanmaken nieuwe relatie.
+
+  relatie <code> "Omschrijving" <rekening>
+
+Opties:
+
+  --dagboek=XXX  -- selecteer dagboek voor deze relatie
+  --btw=XXX      -- BTW type: normaal, verlegd, intra, extra
+                    *** BTW type 'verlegd' wordt nog niet ondersteund ***
+EOS
+}
+
+################ Miscellaneous ################
+
 sub do_dump_schema {
     my ($self, @args) = @_;
 
@@ -727,13 +757,12 @@ EOS
 sub do_verwijder {
     my ($self, @args) = @_;
     my $b = $bsk;
-    my $opts = { verbose      => $self->{verbose},
+    my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
 
     return unless
     parse_args(\@args,
-	       [ 'verbose!',
-		 'trace!',
+	       [ 'boekjaar=s',
 	       ], $opts);
 
     use EB::Booking::Delete;
@@ -760,22 +789,27 @@ sub help_verwijder {
     <<EOS;
 Verwijdert een boekstuk. Het boekstuk mag niet in gebruik zijn.
 
-  verwijder <boekstuk>
+  verwijder [ <opties> ] <boekstuk>
+
+Opties:
+
+  --boekjaar XXX    selekteer boekjaar
 EOS
 }
 
 sub do_toon {
     my ($self, @args) = @_;
     my $b = $bsk;
-    my $opts = { verbose => 0,
-		 bsknr    => 1,
+    my $opts = { verbose      => 0,
+		 bsknr        => 1,
+		 d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'btw!',
 		 'bsknr!',
-		 'debcrd!',
+		 'boekjaar=s',
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -807,60 +841,22 @@ Toon een boekstuk in tekst- of commando-vorm.
 
 Opties:
 
-  --verbose      toon in uitgebreide vorm
-  --btw       vermeld altijd BTW codes
-  --debcrd    vermeld altijd Debet/Credit codes
-  --bsknr     vermeld altijd het boekstuknummer
-EOS
-}
-
-sub do_openstaand {
-    my ($self, @args) = @_;
-    my $opts = { verbose => !$self->{verbose},
-		 bsknr    => 1,
-	       };
-
-    require EB::Report::Open;
-
-    return unless
-    parse_args(\@args,
-	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
-		 'per=s' => sub { date_arg($opts, @_) },
-		 'verbose!',
-		 'trace!',
-	       ], $opts);
-
-    return unless argcnt(@args, 0);
-    EB::Report::Open->new->perform($opts);
-}
-
-sub help_openstaand {
-    <<EOS;
-Toont een overzicht van openstaande posten.
-
-  openstaand [ opties ]
-
-Opties:
-
-  --per XXX      t/m einddatum
-
-Zie verder "help rapporten" voor algemene informatie over aan te maken
-rapporten.
+  --boekjaar XXX  selekteer boekjaar
+  --verbose       toon in uitgebreide (tekst) vorm
+  --btw           vermeld altijd BTW codes
+  --bsknr         vermeld altijd het boekstuknummer (default)
 EOS
 }
 
 sub do_jaareinde {
     my ($self, @args) = @_;
-    my $opts = { verbose => !$self->{verbose},
-		 boekjaar  => $bky,
+    my $opts = { d_boekjaar => $bky,
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'boekjaar=s',
 		 'definitief',
-		 'verbose!',
-		 'trace!',
 	       ], $opts);
 
     return unless argcnt(@args, 0);
@@ -883,6 +879,8 @@ Opties:
                    boekingen meer mogelijk.
 EOS
 }
+
+################ Argument parsing ################
 
 use Getopt::Long;
 
