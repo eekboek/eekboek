@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Booking.pm,v 1.2 2005/11/12 15:47:49 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.3 2005/11/12 15:52:54 jv Exp $ ';
 
 package main;
 
@@ -10,12 +10,12 @@ our $config;
 package EB::Booking;
 
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.2 2005/11/12 15:47:49 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.3 2005/11/12 15:52:54 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 26 12:26:25 2005
-# Update Count    : 29
+# Last Modified On: Sat Nov 12 16:52:43 2005
+# Update Count    : 30
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -50,7 +50,9 @@ sub bsk_nr {
 #	  if $dbh->get_sequence("bsk_nr_${t}_seq", "noincr") < $bsk_nr;
     }
     elsif ( $prev ) {
-	$bsk_nr = $dbh->get_sequence("bsk_nr_0_seq");
+	warn("?"._T("Boekstukken in voorafgaande boekjaren moeten verplicht worden voorzien van een boekstuknummer")."\n");
+	return;
+	#$bsk_nr = $dbh->get_sequence("bsk_nr_0_seq");
     }
     else {
 	$bsk_nr = $dbh->get_sequence("bsk_nr_".$opts->{dagboek}."_seq");
