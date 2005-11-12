@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.19 2005/11/12 15:49:47 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.20 2005/11/12 19:03:15 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 23 21:36:10 2005
-# Update Count    : 234
+# Last Modified On: Sat Nov 12 20:00:30 2005
+# Update Count    : 236
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -60,7 +60,7 @@ sub journal {
 				    " AND jnl_bsk_id = bsk_id".
 				    " AND jnl_dbk_id = dbk_id".
 				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_amount DESC, jnl_bsr_seq",
 				    $2, $rr->[1], $per ? @$per : ());
 	    $pfx ||= __x("Boekstuk {nr}", nr => "$rr->[0]:$2");
 	}
@@ -80,7 +80,7 @@ sub journal {
 				    " AND jnl_bsk_id = bsk_id".
 				    " AND jnl_dbk_id = dbk_id".
 				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_amount DESC, jnl_bsr_seq",
 				    $rr->[1], $per ? @$per : ());
 	    $pfx ||= __x("Dagboek {nr}", nr => $rr->[0]);
 	}
@@ -91,7 +91,7 @@ sub journal {
 				    " WHERE jnl_bsk_id = ?".
 				    " AND jnl_bsk_id = bsk_id".
 				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_amount DESC, jnl_bsk_id, jnl_bsr_seq",
+				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_amount DESC, jnl_bsr_seq",
 				    $nr, $per ? @$per : ());
 	    $pfx ||= __x("Boekstuk {nr}", nr => $nr);
 	}
