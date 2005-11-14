@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.17 2005/10/19 16:33:21 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.18 2005/11/14 16:27:32 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 19 12:12:28 2005
-# Update Count    : 382
+# Last Modified On: Mon Nov 14 17:27:24 2005
+# Update Count    : 383
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -86,7 +86,7 @@ my $fail;			# any errors
 sub error { warn('?', @_); $fail++; }
 
 sub scan_dagboeken {
-    return 0 unless /^\s+(\d+)\s+(.*)/;
+    return 0 unless /^\s+(\d+)\s+(.*)/ && $1;
 
     my ($id, $desc) = ($1, $2);
     error(__x("Dubbel: dagboek {dbk}", dbk => $id)."\n") if defined($dbk[$id]);
