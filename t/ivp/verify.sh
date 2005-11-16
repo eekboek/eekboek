@@ -30,7 +30,6 @@ ebshell -c journaal | diff -c - journaal.txt
 ebshell -c journaal postbank | diff -c - journaal-postbank.txt
 # Verify: Journaal van boekstuk.
 ebshell -c journaal postbank:24 | diff -c - journaal-postbank24.txt
-ebshell -c journaal 48 | diff -c - journaal-48.txt
 
 # Verify: Proef- en Saldibalans in varianten.
 ebshell -c proefensaldibalans | diff -c - proef.txt
