@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.20 2005/11/12 19:03:15 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.21 2005/11/16 14:01:52 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 12 20:00:30 2005
-# Update Count    : 236
+# Last Modified On: Wed Nov 16 15:01:45 2005
+# Update Count    : 243
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -37,6 +37,7 @@ sub journal {
 
     my $rep = EB::Report::GenBase->backend($self, $opts);
     my $per = $rep->{periode};
+    $per->[1] = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $ENV{EB_SQL_NOW} lt $per->[1];
     $rep->start(_T("Journaal"),
 		__x("Periode: {from} t/m {to}",
 		    from => $per->[0], to => $per->[1]));
@@ -60,7 +61,7 @@ sub journal {
 				    " AND jnl_bsk_id = bsk_id".
 				    " AND jnl_dbk_id = dbk_id".
 				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_amount DESC, jnl_bsr_seq",
+				    " ORDER BY jnl_date, jnl_dbk_id, bsk_nr, jnl_amount DESC, jnl_bsr_seq",
 				    $2, $rr->[1], $per ? @$per : ());
 	    $pfx ||= __x("Boekstuk {nr}", nr => "$rr->[0]:$2");
 	}
@@ -80,7 +81,7 @@ sub journal {
 				    " AND jnl_bsk_id = bsk_id".
 				    " AND jnl_dbk_id = dbk_id".
 				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_amount DESC, jnl_bsr_seq",
+				    " ORDER BY jnl_date, jnl_dbk_id, bsk_nr, jnl_amount DESC, jnl_bsr_seq",
 				    $rr->[1], $per ? @$per : ());
 	    $pfx ||= __x("Dagboek {nr}", nr => $rr->[0]);
 	}
@@ -91,7 +92,7 @@ sub journal {
 				    " WHERE jnl_bsk_id = ?".
 				    " AND jnl_bsk_id = bsk_id".
 				    ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
-				    " ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_amount DESC, jnl_bsr_seq",
+				    " ORDER BY jnl_date, jnl_dbk_id, bsk_nr, jnl_amount DESC, jnl_bsr_seq",
 				    $nr, $per ? @$per : ());
 	    $pfx ||= __x("Boekstuk {nr}", nr => $nr);
 	}
@@ -102,7 +103,7 @@ sub journal {
 				" FROM Journal, Boekstukken".
 				" WHERE jnl_bsk_id = bsk_id".
 				($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
-				" ORDER BY jnl_date, jnl_dbk_id, jnl_bsk_id, sign(jnl_amount) DESC, jnl_acc_id, jnl_bsr_seq",
+				" ORDER BY jnl_date, jnl_dbk_id, bsk_nr, sign(jnl_amount) DESC, jnl_acc_id, jnl_bsr_seq",
 				$per ? @$per : ());
     }
     my $rr;
@@ -242,7 +243,7 @@ format jnlfmtl =
 .
 
 format jnlfmt1 =
-@<<<<<<<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>  @>>>>>>>>  @>>>>>>>>  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<
+@<<<<<<<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>  @>>>>>>>>  @>>>>>>>>  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @<<<<<<<<<
 $date, $loc, $acc, $deb, $crd, $desc, $rel
 ~~                                                                       ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $desc
