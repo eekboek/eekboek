@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.10 2005/10/19 16:36:42 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.11 2005/11/16 14:00:16 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 19 12:31:31 2005
-# Update Count    : 283
+# Last Modified On: Tue Nov 15 23:36:26 2005
+# Update Count    : 288
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,7 +24,7 @@ use warnings;
 ################ The Process ################
 
 use EB;
-use EB::Tools::Einde;
+use EB::Report;
 
 ################ Subroutines ################
 
@@ -93,16 +93,13 @@ sub perform {
 	my $date = $dbh->adm("begin");
 	$rep->start(_T("Openingsbalans"),
 		    __x("Datum: {date}", date => $now));
-	$dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,acc_ibalance,acc_balance".
-		       " INTO TEMP TAccounts".
-		       " FROM Accounts")->finish;
     }
     else {
-	if ( $balans && $now ne $dbh->adm("end") ) {
-	    $table = EB::Tools::Einde->GetTAccountsBal($begin, $now);
+	if ( $balans ) {
+	    $table = EB::Report->GetTAccountsBal($now);
 	}
 	elsif ( !$balans ) {
-	    $table = EB::Tools::Einde->GetTAccountsRes($begin, $now);
+	    $table = EB::Report->GetTAccountsRes($begin, $now);
 	}
 	$rep->start($balans ? _T("Balans") : _T("Verlies/Winst"),
 		    $balans ? __x("Periode: t/m {to}", to => $now) :
@@ -187,15 +184,15 @@ sub perform {
 
     }
     else {			# Op Grootboek
-	$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_debcrd, acc_balance".
+	$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_debcrd, acc_balance, acc_ibalance".
 			      " FROM ${table}".
 			      " WHERE".($balans ? "" : " NOT")." acc_balres".
 			      "  AND acc_balance <> 0".
 			      " ORDER BY acc_id");
 
 	while ( $rr = $sth->fetchrow_arrayref ) {
-	    my ($acc_id, $acc_desc, $acc_debcrd, $acc_balance) = @$rr;
-	    # $acc_balance = -$acc_balance unless $acc_debcrd;
+	    my ($acc_id, $acc_desc, $acc_debcrd, $acc_balance, $acc_ibalance) = @$rr;
+	    $acc_balance -= $acc_ibalance unless $opts->{balans};
 	    if ( $acc_balance >= 0 ) {
 		$dtot += $acc_balance;
 		$rep->addline('D', $acc_id, $acc_desc, $acc_balance, undef);
@@ -225,7 +222,6 @@ sub perform {
     $rep->finish;
 
     # Rollback temp table.
-    # $dbh->sql_exec("DROP TABLE ${table}")->finish;
     $dbh->rollback;
 }
 

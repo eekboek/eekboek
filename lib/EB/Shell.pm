@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.41 2005/10/23 19:27:40 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.42 2005/11/16 13:56:51 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 22 21:51:16 2005
-# Update Count    : 580
+# Last Modified On: Wed Nov 16 14:56:46 2005
+# Update Count    : 597
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -264,24 +264,6 @@ sub do_confirm {
     my ($self, $state) = @_;
     $self->{confirm} = _state($self->{confirm}, $state);
     __x("Bevestiging: {state}", state => uc($self->{confirm} ? _T("aan") : _T("uit")));
-}
-
-sub do_boekjaar {
-    my ($self, @args) = @_;
-    return unless argcnt(@args, 1);
-    my $b = $dbh->lookup($args[0], qw(Boekjaren bky_code bky_name));
-    warn("?".__x("Onbekend boekjaar: {code}", code => $args[0])."\n"), return unless defined $b;
-    $bky = $args[0];
-    bky_msg();
-    __x("Boekjaar voor deze sessie: {bky} ({desc})", bky => $bky, desc => $b);
-}
-
-sub help_boekjaar {
-    <<EOS;
-Gebruik voor navolgende opdrachten het opgegeven boekjaar.
-
-  boekjaar <code>
-EOS
 }
 
 sub do_database {
@@ -722,6 +704,24 @@ EOS
 
 ################ Miscellaneous ################
 
+sub do_boekjaar {
+    my ($self, @args) = @_;
+    return unless argcnt(@args, 1);
+    my $b = $dbh->lookup($args[0], qw(Boekjaren bky_code bky_name));
+    warn("?".__x("Onbekend boekjaar: {code}", code => $args[0])."\n"), return unless defined $b;
+    $bky = $args[0];
+    bky_msg();
+    __x("Boekjaar voor deze sessie: {bky} ({desc})", bky => $bky, desc => $b);
+}
+
+sub help_boekjaar {
+    <<EOS;
+Gebruik voor navolgende opdrachten het opgegeven boekjaar.
+
+  boekjaar <code>
+EOS
+}
+
 sub do_dump_schema {
     my ($self, @args) = @_;
 
@@ -851,17 +851,22 @@ EOS
 sub do_jaareinde {
     my ($self, @args) = @_;
     my $opts = { d_boekjaar => $bky,
+		 journal    => 1,
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'boekjaar=s',
 		 'definitief',
+		 'verwijder',
+		 'journal!',
 	       ], $opts);
 
+    return _T("Opties \"definitief\" en \"verwijder\" sluiten elkaar uit")
+      if $opts->{definitief} && $opts->{verwijder};
     return unless argcnt(@args, 0);
     require EB::Tools::Einde;
-    EB::Tools::Einde->new->perform($opts);
+    EB::Tools::Einde->new->perform(\@args, $opts);
 }
 
 sub help_jaareinde {
@@ -877,6 +882,7 @@ Opties:
   --boekjaar=XXX   Sluit het opgegeven boekjaar af
   --definitief     Sluit het boekjaar definitief af. Er zijn dan geen
                    boekingen meer mogelijk.
+  --verwijder      Verwijder een tentatieve jaarafsluiting.
 EOS
 }
 

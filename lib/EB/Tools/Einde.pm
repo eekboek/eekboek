@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Einde.pm,v 1.2 2005/10/19 16:34:09 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.3 2005/11/16 13:59:39 jv Exp $ ';
 
 package main;
 
@@ -7,12 +7,12 @@ our $dbh;
 package EB::Tools::Einde;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.2 2005/10/19 16:34:09 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.3 2005/11/16 13:59:39 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 19 14:16:09 2005
-# Update Count    : 58
+# Last Modified On: Wed Nov 16 14:48:19 2005
+# Update Count    : 151
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -20,6 +20,9 @@ use warnings;
 
 use EB;
 use EB::Finance;
+use EB::Report;
+use EB::Report::GenBase;
+use EB::Report::Journal;
 
 sub new {
     my ($class) = @_;
@@ -29,10 +32,8 @@ sub new {
 
 sub min($$) { $_[0] lt $_[1] ? $_[0] : $_[1] }
 
-my $trace = 0;
-
 sub perform {
-    my ($self, $opts) = @_;
+    my ($self, $args, $opts) = @_;
 
     # Akties:
     # Afboeken resultaatrekeningen -> Winstrekening
@@ -45,94 +46,151 @@ sub perform {
 
     my $sth;
     my $rr;
-    my $mem;
+    my $jnl = $opts->{journal};
+    my $bky = $opts->{boekjaar};
+    my $def = $opts->{definitief};
+
     my ($acc_id, $acc_desc, $acc_balance);
 
-    my $bky = $opts->{boekjaar};
     warn("?",_T("Geen boekjaar opgegeven")."\n"), return unless $bky;
 
-    $rr = $dbh->do("SELECT bky_name, bky_begin, bky_end, bky_closed".
+    $rr = $dbh->do("SELECT bky_begin, bky_end, bky_closed".
 		   " FROM Boekjaren".
 		   " WHERE bky_code = ?", $bky);
     warn("?",__x("Onbekend boekjaar: {bky}", bky => $bky)."\n"), return unless $rr;
 
-    my ($desc, $begin, $end, $closed) = @$rr;
-    warn("?",__x("Boekjaar {bky} is reeds afgesloten", bky => $bky)."\n"), return if $closed;
-
-    my $def = $opts->{definitief};
-
-    print("# ", __x("Afsluiting boekjaar {bky} ({desc})",
-		    bky => $bky, desc => $desc), "\n\n");
+    my ($begin, $end, $closed) = @$rr;
+    if ( $closed ) {
+	if ( $opts->{verwijder} ) {
+	    warn("?",__x("Boekjaar {bky} is definitief afgesloten", bky => $bky)."\n");
+	}
+	else {
+	    warn("?",__x("Boekjaar {bky} is reeds definitief afgesloten", bky => $bky)."\n");
+	}
+	return;
+    }
 
     $dbh->sql_exec("DELETE FROM Boekjaarbalans where bkb_bky = ?", $bky)->finish;
 
-    $self->GetTAccountsBal($date, $end);
+    $dbh->commit, return if $opts->{verwijder};
+
+    my $rep;
+    $rep = EB::Report::GenBase->backend(EB::Report::Journal::, $opts) if $jnl;
+
+    my $tbl = EB::Report::->GetTAccountsBal($end);
 
     $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balance".
-			  " FROM TAccounts".
+			  " FROM ${tbl}".
 			  " WHERE NOT acc_balres".
 			  " AND acc_balance <> 0".
 			  " ORDER BY acc_id");
 
+    my $edt = parse_date($end, undef, 1);
+    my $dtot = 0;
+    my $ctot = 0;
+    my $did;
+    my $desc;
     while ( $rr = $sth->fetchrow_arrayref ) {
 	($acc_id, $acc_desc, $acc_balance) = @$rr;
 	$tot += $acc_balance;
-	unless ( $mem ) {
-	    $mem = "memoriaal $date \"Afboeken resultaatrekeningen\" \\\n";
+	$dbh->sql_insert("Boekjaarbalans",
+			 [qw(bkb_bky bkb_acc_id bkb_balance bkb_end)],
+			 $bky, $acc_id, $acc_balance, $end);
+	$did++, next unless $jnl;
+
+	unless ( $did++ ) {
+	    $rep->start(_T("Journaal"),
+			__x("Afsluiting boekjaar {bky}", bky => $bky));
 	}
-	$acc_desc =~ s/(["\\])/\\$1/g;
-	$mem .= sprintf("\tstd %-30s %9s\@0 %5d \\\n",
-			"\"$acc_desc\"",
-			numfmt($acc_balance), $acc_id);
+	unless ( $desc ) {
+	    $rep->outline('H', $end, undef, 1, "<<"._T("Systeemdagboek").">>:$bky", "");
+	    $desc = "Afboeken Resultaatrekeningen";
+	}
+	$acc_balance = -$acc_balance;
+	$rep->outline('D', $end, $dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
+		      $acc_id, numdebcrd($acc_balance), $desc, '');
+	$dtot += $acc_balance if $acc_balance > 0;
+	$ctot -= $acc_balance if $acc_balance < 0;
     }
-    if ( $mem ) {
-	$mem .= sprintf("\tstd %-30s %9s   %5d\n",
-			'"<< ' . ($tot <= 0 ? _T("Winst") : _T("Verlies")) . ' >>"',
-			numfmt(-$tot), $dbh->std_acc("winst"));
-	print $mem, "\n";
+    if ( $did ) {
+	my $d = '<< ' . ($tot <= 0 ?
+			 __x("Winst boekjaar {bky}", bky => $bky) :
+			 __x("Verlies boekjaar {bky}", bky => $bky)) . ' >>';
+
 	$dbh->sql_insert("Boekjaarbalans",
 			 [qw(bkb_bky bkb_acc_id bkb_balance bkb_end)],
 			 $bky, $dbh->std_acc("winst"), -$tot, $end);
+
+	if ( $jnl ) {
+	    $tot = -$tot;
+	    $rep->outline('D', $end, $d, #$dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
+			  $dbh->std_acc("winst"), numdebcrd(-$tot), $desc, '');
+	    $ctot += $tot if $tot > 0;
+	    $dtot -= $tot if $tot < 0;
+	}
     }
 
     $tot = 0;
-    $mem = "";
+    $desc = "";
     for ( qw(ih il vh vl) ) {
 	($acc_id, $acc_desc, $acc_balance) =
 	  @{$dbh->do("SELECT acc_id,acc_desc,acc_balance".
-		     " FROM TAccounts".
+		     " FROM ${tbl}".
 		     " WHERE acc_id = ?",
 		     $dbh->std_acc("btw_$_"))};
 	next unless $acc_balance;
 	$tot += $acc_balance;
-	unless ( $mem ) {
-	    $mem = "memoriaal $date \"Afboeken BTW rekeningen\" \\\n";
-	}
-	$acc_desc =~ s/(["\\])/\\$1/g;
-	$mem .= sprintf("\tstd %-30s %9s   %5d \\\n",
-			"\"$acc_desc\"",
-			numfmt($acc_balance), $acc_id);
 	$dbh->sql_insert("Boekjaarbalans",
 			 [qw(bkb_bky bkb_acc_id bkb_balance bkb_end)],
 			 $bky, $acc_id, $acc_balance, $end);
+	$did++, next unless $jnl;
+
+	unless ( $did++ ) {
+	    $rep->start(_T("Journaal"),
+			__x("Afsluiting boekjaar {bky}", bky => $bky));
+	}
+	elsif ( !$desc ) {
+	    $rep->outline(' ');
+	}
+	unless ( $desc ) {
+	    $rep->outline('H', $end, undef, 2, "<<"._T("Systeemdagboek").">>:$bky", "");
+	    $desc = "Afboeken BTW rekeningen";
+	}
+
+	$acc_balance = -$acc_balance;
+	$rep->outline('D', $end, $dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
+		      $acc_id, numdebcrd($acc_balance), $desc, '');
+	$dtot += $acc_balance if $acc_balance > 0;
+	$ctot -= $acc_balance if $acc_balance < 0;
     }
-    if ( $mem ) {
+    if ( $did ) {
 	($acc_id, $acc_desc, $acc_balance) =
 	  @{$dbh->do("SELECT acc_id,acc_desc,acc_balance".
-		     " FROM TAccounts".
+		     " FROM ${tbl}".
 		     " WHERE acc_id = ?",
 		     $dbh->std_acc("btw_ok"))};
-	$acc_desc =~ s/(["\\])/\\$1/g;
-	$mem .= sprintf("\tstd %-30s %9s   %5d\n",
-			'"'.$acc_desc.'"',
-			numfmt(-$tot), $acc_id);
-	print $mem, "\n";
 	$dbh->sql_insert("Boekjaarbalans",
 			 [qw(bkb_bky bkb_acc_id bkb_balance bkb_end)],
 			 $bky, $acc_id, -$tot, $end);
+
+	if ( $jnl ) {
+	    $tot = -$tot;
+	    $rep->outline('D', $end, $acc_desc, $acc_id, numdebcrd(-$tot), $desc, '');
+	    $ctot += $tot if $tot > 0;
+	    $dtot -= $tot if $tot < 0;
+	}
     }
 
-    $dbh->sql_exec("DROP TABLE TAccounts")->finish;
+    if ( $jnl && $did ) {
+	$rep->outline('T', __x("Totaal {pfx}",
+			      pfx => __x("Afsluiting boekjaar {bky}", bky => $bky)),
+		      $dtot, $ctot);
+
+	$rep->finish;
+    }
+
+    $dbh->sql_exec("DROP TABLE ${tbl}")->finish
+      unless $tbl eq "Accounts";
 
     if ( $def ) {
 	$dbh->sql_exec("UPDATE Boekjaren".
@@ -144,75 +202,5 @@ sub perform {
     undef;
 }
 
-sub GetTAccountsBal {
-    shift;
-    my ($begin, $end) = @_;
-    $dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,".
-		   "acc_ibalance,acc_ibalance AS acc_balance,acc_struct".
-		   " INTO TEMP TAccounts".
-		   " FROM Accounts")->finish;
-    my $sth = $dbh->sql_exec("SELECT jnl_acc_id,acc_balance,SUM(jnl_amount)".
-			     " FROM Journal,TAccounts".
-			     " WHERE acc_id = jnl_acc_id".
-			     " AND jnl_date <= ?".
-			     " GROUP BY jnl_acc_id,acc_balance,acc_ibalance",
-			     $end);
-
-    while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($acc_id, $acc_balance, $sum) = @$rr;
-	my $corr = $dbh->do("SELECT bkb_balance".
-			    " FROM Boekjaarbalans".
-			    " WHERE bkb_acc_id = ?".
-			    " AND bkb_end < ?", $acc_id, $begin);
-	$sum -= $corr->[0] if $corr;
-	next unless $sum;
-	$sum += $acc_balance;
-	warn("!".__x("Grootboekrekening {acct}, saldo aangepast naar {exp}",
-		     acct => $acc_id, exp => numfmt($sum)) . "\n") if $trace;
-	$dbh->sql_exec("UPDATE TAccounts".
-		       " SET acc_balance = ?".
-		       " WHERE acc_id = ?",
-		       $sum, $acc_id)->finish;
-    }
-    "TAccounts";
-}
-
-sub GetTAccountsRes {
-    shift;
-    my ($begin, $end) = @_;
-
-    $dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,".
-		   "0 AS acc_ibalance,0 AS acc_balance,acc_struct".
-		   " INTO TEMP TAccounts".
-		   " FROM Accounts".
-		   " WHERE NOT acc_balres")->finish;
-    my $sth = $dbh->sql_exec("SELECT jnl_acc_id,SUM(jnl_amount)".
-			     " FROM Journal,TAccounts".
-			     " WHERE acc_id = jnl_acc_id".
-			     " AND jnl_date >= ?".
-			     " AND jnl_date <= ?".
-			     " GROUP BY jnl_acc_id",
-			     $begin, $end);
-
-    while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($acc_id, $sum) = @$rr;
-	next unless $sum;
-	warn("!".__x("Grootboekrekening {acct}, saldo aangepast naar {exp}",
-		     acct => $acc_id, exp => numfmt($sum)) . "\n") if $trace;
-	$dbh->sql_exec("UPDATE TAccounts".
-		       " SET acc_balance = ?".
-		       " WHERE acc_id = ?",
-		       $sum, $acc_id)->finish;
-    }
-    "TAccounts";
-}
-
-sub GetTAccountsCopy {
-    shift;
-    $dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,acc_ibalance,acc_balance,acc_struct".
-		   " INTO TEMP TAccounts".
-		   " FROM Accounts")->finish;
-    "TAccounts";
-}
 
 1;

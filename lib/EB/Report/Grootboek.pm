@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.15 2005/10/23 19:28:04 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.16 2005/11/16 14:00:59 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 23 21:26:10 2005
-# Update Count    : 189
+# Last Modified On: Mon Nov 14 21:48:02 2005
+# Update Count    : 204
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -27,6 +27,7 @@ use EB;
 use EB::DB;
 use EB::Finance;
 use EB::Report::GenBase;
+use EB::Report;
 
 ################ Subroutines ################
 
@@ -44,19 +45,23 @@ sub perform {
     my $per = $rep->{periode};
     my ($begin, $end) = @$per;
 
+    $end = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $end gt $ENV{EB_SQL_NOW};
+
     $rep->start(_T("Grootboek"),
 		__x("Periode: {from} t/m {to}",
 		    from => $begin, to => $end));
 
+    my $table = EB::Report->GetTAccountsAll($begin, $end);
+
     my $ah = $dbh->sql_exec("SELECT acc_id,acc_desc,acc_ibalance,acc_balres".
-			    " FROM Accounts".
+			    " FROM ${table}".
 			    ($sel ?
 			     (" WHERE acc_id IN ($sel)") :
 			     (" WHERE acc_ibalance <> 0".
 			      " OR acc_id in".
 			      "  ( SELECT DISTINCT jnl_acc_id FROM Journal )".
-			      " OR acc_id in".
-			      "  ( SELECT DISTINCT bkb_acc_id FROM Boekjaarbalans )".
+		#	      " OR acc_id in".
+		#	      "  ( SELECT DISTINCT bkb_acc_id FROM Boekjaarbalans )".
 			      " ORDER BY acc_id")));
 
     my $dgrand = 0;
@@ -67,6 +72,8 @@ sub perform {
 
     my $t;
     my $did = 0;
+
+=begin nono
 
     # Real (absolute) beginning of admin data.
     my $admbegin = parse_date($dbh->lookup(BKY_PREVIOUS, qw(Boekjaren bky_code bky_end)), undef, 1);
@@ -79,8 +86,12 @@ sub perform {
 				       " ORDER BY bky_begin DESC",
 				       $begin)->[0], undef, 1);
 
+=cut
+
     while ( my $ar = $ah->fetchrow_arrayref ) {
 	my ($acc_id, $acc_desc, $acc_ibalance, $acc_balres) = @$ar;
+
+=begin nono
 
 	# Fix initial balance.
 	if ( $admbegin ne $begin ) {
@@ -122,8 +133,10 @@ sub perform {
 	    }
 	}
 
+=cut
+
 	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_bsr_date,jnl_desc,jnl_rel".
-				 " FROM journal, Boekstukken, Dagboeken".
+				 " FROM Journal, Boekstukken, Dagboeken".
 				 " WHERE jnl_dbk_id = dbk_id".
 				 " AND jnl_bsk_id = bsk_id".
 				 " AND jnl_acc_id = ?".
@@ -173,6 +186,7 @@ sub perform {
 
 	$rep->outline('T2', _T("Totaal mutaties"),
 		      $ctot > $dtot ? ("", numfmt($ctot-$dtot)) : (numfmt($dtot-$ctot), ""))
+#		      numfmt($dtot), numfmt($ctot))
 	  if $detail && ($dtot || $ctot || $acc_ibalance);
 
 	if ( $dtot > $ctot ) {
@@ -201,6 +215,8 @@ sub perform {
 	print("?"._T("Geen informatie gevonden")."\n");
     }
 
+    # Rollback temp table.
+    $dbh->rollback;
 }
 
 package EB::Report::Grootboek::Text;
