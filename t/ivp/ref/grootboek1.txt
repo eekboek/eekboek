@@ -1,97 +1,99 @@
-Grootboek -- Periode 2004-01-01 - 2004-12-31
+                                              Grootboek
+Periode: 2004-01-01 t/m 2004-12-31
+EekBoek Demo Administratie 2004                                                EekBoek, 2004-12-31
 
- GrBk  Grootboek/Boekstuk                Id       Datum      Debet     Credit  Dagboek       Nr  Relatie
---------------------------------------------------------------------------------------------------------
+ GrBk  Grootboek/Boekstuk                   Datum      Debet     Credit  Dagboek       Nr  Relatie
+--------------------------------------------------------------------------------------------------
   230  Inventaris en inrichting
-        Beginsaldo                                         1344,37       0,00
-        Totaal mutaties                                       0,00
-  230  Totaal Inventaris en inrichtin                      1344,37
+        Beginsaldo                                   1344,37       0,00
+        Totaal mutaties                                 0,00
+  230  Totaal Inventaris en inrichtin                1344,37
 
   231  Afschrijving inventaris & inri
-        Beginsaldo                                            0,00    1304,81
-        Totaal mutaties                                                411,26
-  231  Totaal Afschrijving inventaris                                 1716,07
+        Beginsaldo                                      0,00    1304,81
+        Totaal mutaties                                          411,26
+  231  Totaal Afschrijving inventaris                           1716,07
 
   240  Computers
-        Beginsaldo                                        13378,48       0,00
-        Totaal mutaties                                       0,00
-  240  Totaal Computers                                   13378,48
+        Beginsaldo                                  13378,48       0,00
+        Totaal mutaties                                 0,00
+  240  Totaal Computers                             13378,48
 
   241  Afschrijving computers
-        Beginsaldo                                            0,00   12106,78
-        Totaal mutaties                                                396,82
-  241  Totaal Afschrijving computers                                 12503,60
+        Beginsaldo                                      0,00   12106,78
+        Totaal mutaties                                          396,82
+  241  Totaal Afschrijving computers                           12503,60
 
   500  Kapitaal
-        Beginsaldo                                            0,00    2443,18
-        Totaal mutaties                                       0,00
-  500  Totaal Kapitaal                                                2443,18
+        Beginsaldo                                      0,00    2443,18
+        Totaal mutaties                                 0,00
+  500  Totaal Kapitaal                                          2443,18
 
  1120  Postbank
-        Beginsaldo                                         1131,92       0,00
-        Totaal mutaties                                    9202,76
- 1120  Totaal Postbank                                    10334,68
+        Beginsaldo                                   1131,92       0,00
+        Totaal mutaties                              9202,76
+ 1120  Totaal Postbank                              10334,68
 
  1200  Debiteuren
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                       0,00
- 1200  Totaal Debiteuren                                      0,00
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                                 0,00
+ 1200  Totaal Debiteuren                                0,00
 
  1500  BTW Verkoop Hoog
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                               1463,00
- 1500  Totaal BTW Verkoop Hoog                                        1463,00
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                                         1463,00
+ 1500  Totaal BTW Verkoop Hoog                                  1463,00
 
  1520  BTW Inkoop Hoog
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                     148,14
- 1520  Totaal BTW Inkoop Hoog                               148,14
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                               148,14
+ 1520  Totaal BTW Inkoop Hoog                         148,14
 
  1600  Crediteuren
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                       0,00
- 1600  Totaal Crediteuren                                     0,00
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                                 0,00
+ 1600  Totaal Crediteuren                               0,00
 
  4330  Afschr. kosten inv. & inr
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                     411,26
- 4330  Totaal Afschr. kosten inv. & i                       411,26
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                               411,26
+ 4330  Totaal Afschr. kosten inv. & i                 411,26
 
  4340  Afschr. kosten computers
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                     396,82
- 4340  Totaal Afschr. kosten computer                       396,82
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                               396,82
+ 4340  Totaal Afschr. kosten computer                 396,82
 
  4900  Telefoon- en faxkosten
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                     530,62
- 4900  Totaal Telefoon- en faxkosten                        530,62
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                               530,62
+ 4900  Totaal Telefoon- en faxkosten                  530,62
 
  4905  Internetkosten
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                     249,08
- 4905  Totaal Internetkosten                                249,08
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                               249,08
+ 4905  Totaal Internetkosten                          249,08
 
  4980  Bankkosten
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                      32,40
- 4980  Totaal Bankkosten                                     32,40
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                                32,40
+ 4980  Totaal Bankkosten                               32,40
 
  8000  Omzet advisering BTW hoog
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                               1200,00
- 8000  Totaal Omzet advisering BTW ho                                 1200,00
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                                         1200,00
+ 8000  Totaal Omzet advisering BTW ho                           1200,00
 
  8200  Omzet editing
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                               1000,00
- 8200  Totaal Omzet editing                                           1000,00
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                                         1000,00
+ 8200  Totaal Omzet editing                                     1000,00
 
  8300  Omzet cursussen
-        Beginsaldo                                            0,00       0,00
-        Totaal mutaties                                               6500,00
- 8300  Totaal Omzet cursussen                                         6500,00
+        Beginsaldo                                      0,00       0,00
+        Totaal mutaties                                         6500,00
+ 8300  Totaal Omzet cursussen                                   6500,00
 
-       Totaal mutaties                                    10971,08   10971,08
---------------------------------------------------------------------------------------------------------
-       Totaal                                             26825,85   26825,85
+       Totaal mutaties                              10971,08   10971,08
+--------------------------------------------------------------------------------------------------
+       Totaal                                       26825,85   26825,85
