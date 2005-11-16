@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.15 2005/10/15 18:46:42 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.16 2005/11/16 14:14:20 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 13 21:31:00 2005
-# Update Count    : 317
+# Last Modified On: Wed Nov 16 15:13:48 2005
+# Update Count    : 318
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -149,7 +149,7 @@ sub parse_periode {
 sub collect {
     my ($self, $opts) = @_;
 
-    $self->{periode} = $opts->{periode};
+    $self->{periode} = delete($opts->{periode});
 
     $self->parse_periode($self->{periode}) if $self->{periode};
 
