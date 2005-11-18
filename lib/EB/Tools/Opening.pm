@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.11 2005/10/19 16:53:55 jv Exp $
+# $Id: Opening.pm,v 1.12 2005/11/18 17:51:06 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 19 18:52:41 2005
-# Update Count    : 111
+# Last Modified On: Fri Nov 18 18:50:35 2005
+# Update Count    : 114
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -305,9 +305,11 @@ sub open {
     }
     $dbh->commit;
     delete($self->{o});
+    $dbh->adm("");		# flush cache
 
     require EB::Report::Balres;
     my $opts = { verbose      => $self->{verbose},
+		 per	      => $dbh->adm("begin"),
 	       };
 
     EB::Report::Balres->new->openingsbalans($opts);
