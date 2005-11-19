@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.42 2005/11/16 13:56:51 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.43 2005/11/19 22:04:04 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov 16 14:56:46 2005
-# Update Count    : 597
+# Last Modified On: Sat Nov 19 22:30:59 2005
+# Update Count    : 602
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -392,6 +392,7 @@ sub do_balans {
 		 'verdicht',
 		 'boekjaar=s',
 		 'per=s' => sub { date_arg($opts, @_) },
+		 EB::Report::GenBase->backend_options(EB::Report::Balres::, $opts),
 	       ], $opts);
     return unless argcnt(@args, 0);
     EB::Report::Balres->new->balans($opts);
@@ -423,6 +424,7 @@ sub do_result {
 		 'verdicht',
 		 'boekjaar=s',
 		 'periode=s' => sub { periode_arg($opts, @_) },
+		 EB::Report::GenBase->backend_options(EB::Report::Balres::, $opts),
 	       ], $opts);
     return unless argcnt(@args, 0);
     EB::Report::Balres->new->result($opts);
@@ -453,6 +455,7 @@ sub do_proefensaldibalans {
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
+		 EB::Report::GenBase->backend_options(EB::Report::Proof::, $opts),
 	       ], $opts);
     warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
     EB::Report::Proof->new->proefensaldibalans($opts);
@@ -483,6 +486,7 @@ sub do_grootboek {
 	       [ 'detail=i',
 		 'periode=s' => sub { periode_arg($opts, @_) },
 		 'boekjaar=s',
+		 EB::Report::GenBase->backend_options(EB::Report::Grootboek::, $opts),
 	       ], $opts);
 
     my $fail;
