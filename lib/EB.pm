@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.17 2005/11/16 14:40:23 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.18 2005/11/19 22:13:51 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov 16 15:40:17 2005
-# Update Count    : 83
+# Last Modified On: Sat Nov 19 18:25:33 2005
+# Update Count    : 84
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -63,6 +63,7 @@ our @month_names;
 our @days;
 our @day_names;
 our $ident;
+our $url = "http://www.squirrel.nl/eekboek";
 
 INIT {
     # Banner. Wow! Static code!
