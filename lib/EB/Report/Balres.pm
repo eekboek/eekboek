@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.11 2005/11/16 14:00:16 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.12 2005/11/19 22:04:23 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov 15 23:36:26 2005
-# Update Count    : 288
+# Last Modified On: Sat Nov 19 20:53:55 2005
+# Update Count    : 293
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -209,15 +209,15 @@ sub perform {
     ($w, $v) = ($v, $w) unless $balans;
     if ( $dtot != $ctot ) {
 	if ( $dtot >= $ctot ) {
-	    $rep->addline('V', '', "<< $w >>", undef, $dtot - $ctot || "00");
+	    $rep->addline('V', $w, undef, $dtot - $ctot || "00");
 	    $ctot = $dtot;
 	}
 	else {
-	    $rep->addline('V', '', "<< $v >>", $ctot - $dtot || "00", undef);
+	    $rep->addline('V', $v, $ctot - $dtot || "00", undef);
 	    $dtot = $ctot;
 	}
     }
-    $rep->addline('T', '', __x("TOTAAL {rep}", rep => $balans ? _T("Balans") : _T("Resultaten")),
+    $rep->addline('T', __x("TOTAAL {rep}", rep => $balans ? _T("Balans") : _T("Resultaten")),
 		  $dtot, $ctot);
     $rep->finish;
 
@@ -265,8 +265,9 @@ sub start {
 my ($acc, $desc, $deb, $crd);
 
 sub addline {
-    my ($self, $type);
-    ($self, $type, $acc, $desc, $deb, $crd) = @_;
+    my ($self, $type) = (shift, shift);
+    $acc = $type eq 'V' || $type eq 'T' ? "" : shift;
+    ($desc, $deb, $crd) = @_;
 
     if ( $deb && $deb <= 0 && !$crd ) {
 	($deb, $crd) = ('', -$deb);
@@ -284,7 +285,9 @@ sub addline {
     elsif ( $type =~ /^[HT](\d+)/ ) {
 	$desc = (" " x ($1-1)) . $desc;
     }
-
+    elsif ( $type eq 'V' ) {
+	$desc = "<< $desc >>";
+    }
     if ( $type eq 'T' ) {
 	$self->{fh}->format_write(__PACKAGE__.'::rtl');
 	$self->{fh}->format_write(__PACKAGE__.'::rt01');

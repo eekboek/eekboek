@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.16 2005/11/16 14:14:20 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.17 2005/11/19 22:04:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov 16 15:13:48 2005
-# Update Count    : 318
+# Last Modified On: Sat Nov 19 22:48:27 2005
+# Update Count    : 321
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -379,7 +379,9 @@ sub report {
     my $data = $self->{data};
     my $rep = $self->{reporter};
 
-    $rep->start("BTW Aangifte $self->{periode} -- $self->{adm_name}");
+    $rep->start(_T("BTW Aangifte"),
+		__x("Periode: {per}",
+		    per => $self->{periode}));
 
     # Binnenland
     $rep->outline('H1', "Binnenland");
@@ -515,8 +517,8 @@ sub outline {
 }
 
 sub start {
-    my ($self, $text) = @_;
-    $self->{fh}->print($text, "\n");
+    my ($self, $text, $per) = @_;
+    $self->{fh}->print($text, "\n", $per, "\n");
 }
 
 sub finish {

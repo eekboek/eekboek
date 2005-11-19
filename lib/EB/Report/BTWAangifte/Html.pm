@@ -1,11 +1,15 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.7 2005/10/10 20:17:19 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.8 2005/11/19 22:04:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 10 22:09:06 2005
-# Update Count    : 20
+# Last Modified On: Sat Nov 19 22:59:33 2005
+# Update Count    : 24
 # Status          : Unknown, Use with caution!
+
+package main;
+
+our $dbh;
 
 package EB::Report::BTWAangifte::Html;
 
@@ -53,16 +57,30 @@ sub outline {
 }
 
 sub start {
-    my ($self, $text) = @_;
+    my ($self, $t1, $t2) = @_;
+    my $reptype = "btwaangifte";
+    my $adm;
+    if ( $self->{boekjaar} ) {
+	$adm = $dbh->lookup($self->{boekjaar},
+			    qw(Boekjaren bky_code bky_name));
+    }
+    else {
+	$adm = $dbh->adm("name");
+    }
+
     $self->{fh}->print
       ("<html>\n",
        "<head>\n",
-       "<title>", html($text), "</title>\n",
-       '<link rel="stylesheet" href="css/btwaangifte.css">', "\n",
+       "<title>", html($t1), "</title>\n",
+       '<link rel="stylesheet" href="css/', $self->{style} || $reptype, '.css">', "\n",
        "</head>\n",
        "<body>\n",
-       "<h1 class=\"btwaangifte\"><span class=\"title\">", html($text), "</span></h1>\n",
-       "<table class=\"btwaangifte\">\n");
+       "<p class=\"title\">", html($t1), "</p>\n",
+       "<p class=\"subtitle\">", html($adm), "</br>\n",
+       html($t2), "</p>\n",
+       "<table class=\"main\">\n");
+
+
 }
 
 sub finish {
@@ -72,6 +90,14 @@ sub finish {
     $self->{fh}->print
       ("<p class=\"btwaangifte\"><span class=\"notice\">",
        html($notice), "</span></p>\n") if $notice;
+
+    my $now = $ENV{EB_SQL_NOW} || iso8601date();
+    my $ident = $EB::ident;
+    $ident = (split(' ', $ident))[0] if $ENV{EB_SQL_NOW};
+
+    $self->{fh}->print("<p class=\"footer\">",
+		       __x("Overzicht aangemaakt op {date} door <a href=\"{url}\">{ident}</a>",
+			   ident => $ident, date => $now, url => $EB::url), "</p>\n");
 
     $self->{fh}->print("</body>\n",
 		       "</html>\n");

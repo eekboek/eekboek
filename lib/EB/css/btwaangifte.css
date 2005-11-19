@@ -1,4 +1,4 @@
-/* $Id: btwaangifte.css,v 1.1 2005/10/08 14:45:33 jv Exp $ */
+/* $Id: btwaangifte.css,v 1.2 2005/11/19 22:04:44 jv Exp $ */
 
 @import eekboek.css;
 
@@ -6,14 +6,34 @@
     font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 100%;
     font-weight: bold;
+    margin-top: 0pt;
+    margin-bottom: 0pt;
+}
+.subtitle {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 100%;
+    font-weight: bold;
+    margin-top: 0pt;
+}
+.footer {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 80%;
+    font-weight: normal;
 }
 
-.btwaangifte {
+body {
     font-family: Verdana, Arial, Helvetica, sans-serif;
     line-height: 150%;
     color: #000000;
     table-width: 100%;
 }
+
+table {
+     border-collapse: collapse;
+}
+
+th { vertical-align: top }
+tr { vertical-align: top }
 
 .heading {
     font-size: 120%;

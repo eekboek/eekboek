@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.6 2005/10/23 19:28:04 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.7 2005/11/19 22:04:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 22 21:37:06 2005
-# Update Count    : 57
+# Last Modified On: Sat Nov 19 18:46:28 2005
+# Update Count    : 63
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -159,6 +159,8 @@ sub backend_options {
     foreach ( qw(html csv text) ) {
 	push(@opts, $_) if $be{$_};
     }
+    push(@opts, "style=s", "design") if $be{html};
+
     # Explicit --gen-XXX for all backends.
     push(@opts, map { +"gen-$_"} keys %be);
     # Cache.
