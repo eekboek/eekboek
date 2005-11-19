@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.17 2005/11/19 22:04:23 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.18 2005/11/19 22:12:53 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 19 22:48:27 2005
-# Update Count    : 321
+# Last Modified On: Sat Nov 19 23:12:29 2005
+# Update Count    : 325
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -518,7 +518,16 @@ sub outline {
 
 sub start {
     my ($self, $text, $per) = @_;
-    $self->{fh}->print($text, "\n", $per, "\n");
+    my $adm;
+    if ( $self->{boekjaar} ) {
+	$adm = $dbh->lookup($self->{boekjaar},
+			    qw(Boekjaren bky_code bky_name));
+    }
+    else {
+	$adm = $dbh->adm("name");
+    }
+    $self->{fh}->print($text, "\n", $per, "\n",
+		       $adm, "\n");
 }
 
 sub finish {
