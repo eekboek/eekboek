@@ -14,7 +14,7 @@ setenv EB_LANG nl_NL
 setenv PERL5LIB ${EB_LIB}:$PERL5LIB
 
 # Append official scripts dir to PATH
-set path = ( $EB_LIB/script $path )
+set path = ( ../blib/script $path )
 
 # Some handy aliases.
 alias balans   "ebshell -c balans"
