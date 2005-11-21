@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.27 2005/10/19 16:38:43 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.28 2005/11/21 15:50:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 18 16:37:02 2005
-# Update Count    : 219
+# Last Modified On: Mon Nov 21 13:20:46 2005
+# Update Count    : 238
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -157,13 +157,16 @@ sub check_db {
     }
 
     die("?"._T("CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT")."\n") if $fail;
+
+    # Create temp table for account mangling.
+    $dbh->do("SELECT * INTO TEMP TAccounts FROM Accounts WHERE acc_id = 0");
+    # Make it semi-permanent (this connection only).
+    $dbh->commit;
 }
 
 sub upd_account {
     my ($self, $acc, $amt) = @_;
-#    my $acc_debcrd = $self->lookup($acc, qw(Accounts acc_id acc_debcrd =)) ? 1 : 0;
-#    $amt = -$amt unless $acc_debcrd;
-    my $op = '+';
+    my $op = '+';		# perfectionism
     if ( $amt < 0 ) {
 	$amt = -$amt;
 	$op = '-';
@@ -416,24 +419,26 @@ sub close {
     $self->adm("");
 }
 
+sub show_sql($$@) {
+    my ($self, $sql, @args) = @_;
+    my @a = map {
+	!defined($_) ? "NULL" :
+	  /^[0-9]+$/ ? $_ : $dbh->quote($_)
+      } @args;
+    $sql =~ s/\?/shift(@a)/eg;
+    warn("=> $sql;\n");
+}
+
 sub sql_exec {
     my ($self, $sql, @args) = @_;
-    if ( $trace ) {
-	$dbh ||= $self->connectdb();
-	my $s = $sql;
-	my @a = map {
-	    !defined($_) ? "NULL" :
-	      /^[0-9]+$/ ? $_ : $dbh->quote($_)
-	} @args;
-	$s =~ s/\?/shift(@a)/eg;
-	warn("=> $s;\n");
-    }
+    $dbh ||= $self->connectdb();
+    $self->show_sql($sql, @args) if $trace;
     my $sth = $self->sql_prep($sql);
     $sth->execute(@args);
     $sth;
 }
 
-sub lookup {
+sub lookup($$$$$;$) {
     my ($self, $value, $table, $arg, $res, $op) = @_;
     $op ||= "=";
     my $sth = $self->sql_exec("SELECT $res FROM $table".
@@ -490,21 +495,21 @@ sub errstr {
 
 sub rollback {
     my ($self) = @_;
-
+    warn("=> ROLLBACK WORK;", $dbh ? "" : " (ignored)", "\n") if $trace;
     return unless $dbh;
     $dbh->rollback
 }
 
 sub begin_work {
     my ($self) = @_;
-
+    warn("=> BEGIN WORK;", $dbh ? "" : " (ignored)", "\n") if $trace;
     return unless $dbh;
     $dbh->begin_work;
 }
 
 sub commit {
     my ($self) = @_;
-
+    warn("=> COMMIT WORK;", $dbh ? "" : " (ignored)", "\n") if $trace;
     return unless $dbh;
     $dbh->commit;
 }

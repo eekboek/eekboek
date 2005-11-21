@@ -1,10 +1,10 @@
 # Report.pm -- Report tools
-# RCS Info        : $Id: Report.pm,v 1.1 2005/11/16 13:59:14 jv Exp $
+# RCS Info        : $Id: Report.pm,v 1.2 2005/11/21 15:50:19 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Nov 14 21:46:04 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov 16 14:58:41 2005
-# Update Count    : 28
+# Last Modified On: Mon Nov 21 13:09:13 2005
+# Update Count    : 33
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -27,9 +27,12 @@ sub GetTAccountsBal {
     # balans(r, t) = balans(r, t0) + sum(journaal, r, t0..t) + sum(boekjaarbalans, r, t' < t)
 
     # balans(r, t0)
-    $dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,".
+    $dbh->sql_exec("DELETE FROM TAccounts");
+    $dbh->sql_exec("INSERT INTO TAccounts".
+		   " (acc_id,acc_desc,acc_balres,acc_debcrd,".
+		   "acc_ibalance,acc_balance,acc_struct)".
+		   " SELECT acc_id,acc_desc,acc_balres,acc_debcrd,".
 		   "acc_ibalance,acc_ibalance AS acc_balance,acc_struct".
-		   " INTO TEMP TAccounts".
 		   " FROM Accounts")->finish;
 
     # sum(journaal, r, t0..t)
@@ -83,16 +86,15 @@ sub GetTAccountsRes {
     # eindsaldo(r, t1, t2) = beginsaldo(r, t1, t2) + sum(journaal, r, t1..t2)
 
     # init
+    $dbh->sql_exec("DELETE FROM TAccounts");
     if ( $all ) {
-	$dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,".
-		       "acc_ibalance,acc_balance,acc_struct".
-		       " INTO TEMP TAccounts".
-		       " FROM Accounts")->finish;
+	$dbh->sql_exec("INSERT INTO TAccounts SELECT * FROM Accounts")->finish;
     }
     else {
-	$dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,".
-		       "0 AS acc_ibalance,0 AS acc_balance,acc_struct".
-		       " INTO TEMP TAccounts".
+	$dbh->sql_exec("INSERT INTO TAccounts".
+		       " (acc_id,acc_desc,acc_balres,acc_debcrd,".
+		       "acc_ibalance,acc_balance,acc_struct)".
+		       " SELECT acc_id,acc_desc,acc_balres,acc_debcrd,0,0,acc_struct".
 		       " FROM Accounts".
 		       " WHERE NOT acc_balres")->finish;
     }
@@ -156,9 +158,8 @@ sub GetTAccountsRes {
 
 sub GetTAccountsCopy {
     shift;
-    $dbh->sql_exec("SELECT acc_id,acc_desc,acc_balres,acc_debcrd,acc_ibalance,acc_balance,acc_struct".
-		   " INTO TEMP TAccounts".
-		   " FROM Accounts")->finish;
+    $dbh->sql_exec("DELETE FROM TAccounts");
+    $dbh->sql_exec("INSERT INTO TAccounts SELECT * FROM Accounts")->finish;
     "TAccounts";
 }
 
