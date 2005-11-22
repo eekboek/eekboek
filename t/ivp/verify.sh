@@ -5,10 +5,12 @@
 rm -f *.sql *.log
 
 echo "=== $EB_DB_NAME === newdb ==="
-rebuild > newdb.log 2>&1
+sh ./newdb.sh > newdb.log 2>&1 || exit 1
+egrep '^(\?|ERROR)' newdb.log >/dev/null && exit 1
 
 echo "=== $EB_DB_NAME === mutaties ==="
 ebshell --echo < mutaties.eb > mutaties.log 2>&1
+grep '^\?' mutaties.log >/dev/null && exit 1
 
 echo "=== $EB_DB_NAME === verificatie ==="
 

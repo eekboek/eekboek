@@ -18,7 +18,7 @@ createdb -E latin1 ${EB_DB_NAME} ||
   createdb -E latin1 ${EB_DB_NAME}
 
 # Vul de database met het schema.
-$EBSHELL --schema=sample -c
+$EBSHELL --schema=sample -c || exit 1
 
 # Voeg de relaties toe.
 $EBSHELL --echo < relaties.eb
