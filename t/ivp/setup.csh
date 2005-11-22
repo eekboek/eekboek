@@ -20,4 +20,4 @@ set path = ( ../blib/script $path )
 alias balans   "ebshell -c balans"
 alias result   "ebshell -c result"
 alias journaal "ebshell -c journaal"
-alias rebuild "sh newdb.sh ; sh $EB_LIB/relaties.sh ; sh $EB_LIB/opening.sh ; pg_dump -c $EB_DB_NAME > reset.sql"
+alias rebuild "sh newdb.sh ; pg_dump -c $EB_DB_NAME > reset.sql"
