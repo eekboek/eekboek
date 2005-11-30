@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.3 2005/09/27 08:30:52 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.4 2005/11/30 12:11:25 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 27 10:30:43 2005
-# Update Count    : 12
+# Last Modified On: Wed Nov 30 13:11:19 2005
+# Update Count    : 23
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -73,6 +73,50 @@ sub filelist {
 	     }
 	 }, $dir);
     $pm;
+}
+
+sub WriteSpecfile {
+    my $name    = shift;
+    my $version = shift;
+
+    my $fh;
+    if ( open ($fh, "$name.spec.in") ) {
+	print "Writing RPM spec file...\n";
+	my $newfh;
+	open ($newfh, ">$name.spec");
+	while ( <$fh> ) {
+	    s/%define modname \w+/%define modname $name/;
+	    s/%define modversion \d+\.\d+/%define modversion $version/;
+	    print $newfh $_;
+	}
+	close($newfh);
+    }
+}
+
+sub vcopy($$) {
+    warn("WARNING: vcopy is untested!\n");
+    my ($file, $vars) = @_;
+
+    my $pat = "(";
+    foreach ( keys(%$vars) ) {
+	$pat .= quotemeta($_) . "|";
+    }
+    chop($pat);
+    $pat .= ")";
+
+    $pat = qr/\b$pat\b/;
+
+    warn("=> $pat\n");
+
+    my $fin = $file . ".in";
+    open(my $fi, "<$fin") or die("Cannot open $fin: $!\n");
+    open(my $fo, ">$file") or die("Cannot create $file: $!\n");
+    while ( <$fi> ) {
+	s/$pat/$vars->{$1}/ge;
+	print;
+    }
+    close($fo);
+    close($fi);
 }
 
 1;
