@@ -1,16 +1,16 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.2 2005/09/20 19:30:42 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.3 2005/11/30 12:10:10 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 20 21:28:45 2005
-# Update Count    : 65
+# Last Modified On: Wed Nov 30 13:09:08 2005
+# Update Count    : 71
 # Status          : Unknown, Use with caution!
 
 use strict;
 
-use inc::Module::Install;
-#use ExtUtils::MakeMaker;
+#use inc::Module::Install;
+use ExtUtils::MakeMaker;
 
 our $data = {};
 
@@ -23,6 +23,7 @@ convenient location) to "make install".
 EOD
 
 # Write Makefile.
+my $x = 
 WriteMakefile(
 	      NAME       => $data->{name},
 	      ($] >= 5.005) ?
@@ -36,3 +37,6 @@ WriteMakefile(
 	      PREREQ_PM   => $data->{prereq_pm},
 	      PM          => filelist("lib", '$(INST_LIBDIR)'),
 	     );
+
+# Write .spec file.
+WriteSpecfile($data->{distname}, $x->{VERSION});
