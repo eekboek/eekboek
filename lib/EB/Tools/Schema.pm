@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.18 2005/11/14 16:27:32 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.19 2005/11/30 12:06:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Nov 14 17:27:24 2005
-# Update Count    : 383
+# Last Modified On: Wed Nov 30 12:58:53 2005
+# Update Count    : 392
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -203,11 +203,18 @@ sub scan_balres {
 	my ($id, $flags, $desc) = ($1, $2, $3);
 	error(__x("Dubbel: rekening {acct}", acct => $1)."\n") if exists($acc{$id});
 	error(__x("Rekening {id} heeft geen verdichting", id => $id)."\n") unless defined($cvdi);
-	error(__x("Rekening {id}: onherkenbare vlaggetjes {flags}",
-		  id => $id, flags => $flags)."\n")
-	  unless $flags =~ /^[dc][ko]$/i;
-	my $debcrd = $flags =~ /^d/i;
-	my $kstomz = $flags =~ /^.k/i;
+	my $debcrd;
+	my $kstomz;
+	if ( ($balres ? $flags =~ /^[dc]$/i : $flags =~ /^[ko]$/i)
+	     ||
+	     $flags =~ /^[dc][ko]$/i ) {
+	    $debcrd = $flags =~ /d/i;
+	    $kstomz = $flags =~ /k/i;
+	}
+	else {
+	    error(__x("Rekening {id}: onherkenbare vlaggetjes {flags}",
+		      id => $id, flags => $flags)."\n");
+	}
 
 	my $btw = 'g';
 	my $extra;
@@ -475,8 +482,8 @@ sub dump_schema {
 
     print <<EOD;
 
-# Dit bestand definiëert alle vaste gegevens van een administratie (of
-# groep administarties): het rekeningschema (balansrekeningen en
+# Dit bestand definiëert alle vaste gegevens van een administratie of
+# groep administraties: het rekeningschema (balansrekeningen en
 # resultaatrekeningen), de dagboeken en de BTW tarieven.
 #
 # Algemene syntaxregels:
@@ -498,42 +505,37 @@ EOD
 
 print <<EOD;
 # REKENINGSCHEMA
-# 
+#
 # Het rekeningschema is hiërarchisch opgezet volgende de beproefde
 # methode Bakker. De hoofdverdichtingen lopen van 1 t/m 9, de
 # verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
-# balansrekeningen en resultaatrekeningen. 
-# 
-# De omschrijving van de grootboekrekeningen wordt voorafgegaan door een
-# dubbel vlaggetje, twee letters die resp. Debet/Credit en Kosten/Omzet
-# aangeven. De omschrijving wordt indien nodig gevolgd door extra
+# balansrekeningen en resultaatrekeningen.
+#
+# De omschrijving van de grootboekrekeningen wordt voorafgegaan door
+# een vlaggetje, een letter die resp. Debet/Credit (voor
+# balansrekeningen) en Kosten/Omzet (voor resultaatrekeningen)
+# aangeeft. De omschrijving wordt indien nodig gevolgd door extra
 # informatie. Voor grootboekrekeningen kan op deze wijze de BTW
 # tariefstelling worden aangegeven die op deze rekening van toepassing
 # is:
-# 
+#
 #   :btw=hoog
 #   :btw=laag
-# 
+#
 # Ook is het mogelijk aan te geven dat een rekening een koppeling
 # (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
 # zijn mogelijk:
-# 
+#
 #   crd		de tegenrekening (Crediteuren) voor inkoopboekingen
 #   deb		de tegenrekening (Debiteuren) voor verkoopboekingen
 #   btw_ih	de rekening voor BTW boekingen voor inkopen, hoog tarief
 #   btw_il	idem, laag tarief
 #   btw_vh	idem, verkopen, hoog tarief
-#   btw_vl	idem. laag tarief
+#   btw_vl	idem, laag tarief
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
-# 
-# Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
 #
-# BELANGRIJK: Mutaties die middels de command line shell of de API
-# worden uitgevoerd maken gebruik van de Debet/Credit status en het
-# geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
-# hierin kunnen dus consequenties hebben voor de reeds in scripts
-# vastgelegde boekingen.
+# Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
 EOD
 
     dump_acc(1);		# Balansrekeningen
@@ -563,13 +565,12 @@ print <<EOD;
 # Voor elk tarief (behalve die van groep "geen") moet het percentage
 # worden opgegeven. Met de aanduiding :exclusief kan worden opgegeven
 # dat boekingen op rekeningen met deze tariefgroep standaard het
-# bedrag exclusief BTW aangeven. 
-# 
+# bedrag exclusief BTW aangeven.
+#
 # BELANGRIJK: Mutaties die middels de command line shell of de API
-# worden uitgevoerd maken gebruik van de Debet/Credit status en het
-# geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
-# hierin kunnen dus consequenties hebben voor de reeds in scripts
-# vastgelegde boekingen.
+# worden uitgevoerd maken gebruik van het geassocieerde BTW tarief van
+# de grootboekrekeningen. Wijzigingen hierin kunnen dus consequenties
+# hebben voor de reeds in scripts vastgelegde boekingen.
 EOD
 
     dump_btw();			# BTW tarieven
@@ -607,8 +608,8 @@ sub dump_acc {
 	    while ( my $rr = $sth->fetchrow_arrayref ) {
 		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_kstomz, $btw) = @$rr;
 		my $flags = "";
-		$flags .= $acc_debcrd ? "D" : "C";
-		$flags .= $acc_kstomz ? "K" : "O";
+		$flags .= $acc_debcrd ? "D" : "C" if $balres;
+		$flags .= $acc_kstomz ? "K" : "O" unless $balres;
 		my $extra = "";
 		$extra .= " :btw=hoog" if $btw == BTWTYPE_HOOG;
 		$extra .= " :btw=laag" if $btw == BTWTYPE_LAAG;

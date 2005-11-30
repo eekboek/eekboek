@@ -1,7 +1,7 @@
-# $Id: schema.dat,v 1.5 2005/09/02 11:48:46 jv Exp $
+# $Id: schema.dat,v 1.6 2005/11/30 12:06:55 jv Exp $
 #
-# Dit bestand definiëert alle vaste gegevens van een administratie (of
-# groep administarties): het rekeningschema (balansrekeningen en
+# Dit bestand definiëert alle vaste gegevens van een administratie of
+# groep administraties: het rekeningschema (balansrekeningen en
 # resultaatrekeningen), de dagboeken en de BTW tarieven.
 #
 # Algemene syntaxregels:
@@ -18,9 +18,10 @@
 # verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
 # balansrekeningen en resultaatrekeningen.
 #
-# De omschrijving van de grootboekrekeningen wordt voorafgegaan door een
-# dubbel vlaggetje, twee letters die resp. Debet/Credit en Kosten/Omzet
-# aangeven. De omschrijving wordt indien nodig gevolgd door extra
+# De omschrijving van de grootboekrekeningen wordt voorafgegaan door
+# een vlaggetje, een letter die resp. Debet/Credit (voor
+# balansrekeningen) en Kosten/Omzet (voor resultaatrekeningen)
+# aangeeft. De omschrijving wordt indien nodig gevolgd door extra
 # informatie. Voor grootboekrekeningen kan op deze wijze de BTW
 # tariefstelling worden aangegeven die op deze rekening van toepassing
 # is:
@@ -37,294 +38,288 @@
 #   btw_ih	de rekening voor BTW boekingen voor inkopen, hoog tarief
 #   btw_il	idem, laag tarief
 #   btw_vh	idem, verkopen, hoog tarief
-#   btw_vl	idem. laag tarief
+#   btw_vl	idem, laag tarief
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
 #
 # Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
-#
-# BELANGRIJK: Mutaties die middels de command line shell of de API
-# worden uitgevoerd maken gebruik van de Debet/Credit status en het
-# geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
-# hierin kunnen dus consequenties hebben voor de reeds in scripts
-# vastgelegde boekingen.
 
 Balansrekeningen
 
   1  Vaste Activa
      11  Immateriële vaste activa
-         110   DK  Aanloopkosten
-         111   CK  Afschrijving aanloopkst.
+         110   D   Aanloopkosten
+         111   C   Afschrijving aanloopkst.
      12  Materiële vaste activa
-         200   DK  Gebouwen en terreinen
-         201   CK  Afschrijving gebouwen
-         210   DK  Verbouwing
-         211   CK  Afschrijving verbouwingen
-         220   DK  Machines en installaties
-         221   CK  Afschrijving mach. & installaties
-         230   DK  Inventaris en inrichting                   :btw=hoog
-         231   CK  Afschrijving inventaris & inrichting
-         240   DK  Computers                                  :btw=hoog
-         241   CK  Afschrijving computers
+         200   D   Gebouwen en terreinen
+         201   C   Afschrijving gebouwen
+         210   D   Verbouwing
+         211   C   Afschrijving verbouwingen
+         220   D   Machines en installaties
+         221   C   Afschrijving mach. & installaties
+         230   D   Inventaris en inrichting                   :btw=hoog
+         231   C   Afschrijving inventaris & inrichting
+         240   D   Computers                                  :btw=hoog
+         241   C   Afschrijving computers
      13  Financiële vaste activa
-         320   DK  Lening u/g de heer A
+         320   D   Lening u/g de heer A
 
   2  Vlottende activa
      21  Handelsvoorraden
-         3000  DK  Voorraad
-         3900  CK  Voorziening incourante voorraad
+         3000  D   Voorraad
+         3900  C   Voorziening incourante voorraad
      22  Vorderingen
-         1200  DK  Debiteuren                                 :koppeling=deb
-         1210  CK  Factoring debiteuren
-         1220  DK  Debiteuren vorig boekjaar
-         1250  DK  Dubieuze debiteuren
-         1290  DK  Voorziening debiteuren
-         1300  DK  Waarborgsommen
-         1350  DK  Te factureren omzet
-         1360  DK  Te ontvangen rente
-         1370  DK  Te ontvangen ziekengeld
-         1380  DK  Te ontvangen provisie
-         1400  DK  Vooruitbet. huisvestingskosten
-         1410  DK  Vooruitbet. reclamekosten
-         1420  DK  Vooruitbet. verzekering
-         1430  DK  Vooruitbet. autokosten
-         1440  CK  Vooruitbet. kantoorartikelen
+         1200  D   Debiteuren                                 :koppeling=deb
+         1210  C   Factoring debiteuren
+         1220  D   Debiteuren vorig boekjaar
+         1250  D   Dubieuze debiteuren
+         1290  D   Voorziening debiteuren
+         1300  D   Waarborgsommen
+         1350  D   Te factureren omzet
+         1360  D   Te ontvangen rente
+         1370  D   Te ontvangen ziekengeld
+         1380  D   Te ontvangen provisie
+         1400  D   Vooruitbet. huisvestingskosten
+         1410  D   Vooruitbet. reclamekosten
+         1420  D   Vooruitbet. verzekering
+         1430  D   Vooruitbet. autokosten
+         1440  C   Vooruitbet. kantoorartikelen
      23  Effecten
-         900   DK  Aandelen
-         910   DK  Obligaties
+         900   D   Aandelen
+         910   D   Obligaties
      24  Liquide middelen
-         1000  DK  Kas
-         1120  DK  Postbank
-         1150  DK  Deposito
-         1190  DK  Kruisposten
-         1191  DK  Kruisposten Kas
-         1192  DK  Kruisposten overboekingen
+         1000  D   Kas
+         1120  D   Postbank
+         1150  D   Deposito
+         1190  D   Kruisposten
+         1191  D   Kruisposten Kas
+         1192  D   Kruisposten overboekingen
      25  Tussenrekeningen
-         2000  CK  Vraagposten
-         2200  DK  Kostenspreiding vorderingen
-         2210  CK  Kostenspreiding schulden
-         2400  CK  Onbekende betalingen
-         2900  DK  Correctierekening
+         2000  C   Vraagposten
+         2200  D   Kostenspreiding vorderingen
+         2210  C   Kostenspreiding schulden
+         2400  C   Onbekende betalingen
+         2900  D   Correctierekening
 
   3  Eigen vermogen
      31  Kapitaal
-         500   CK  Kapitaal                                   :koppeling=winst
-         510   CK  Privé stortingen
-         520   CK  Privé opnamen
-         530   CK  Privé rente
-         540   CK  Privé ziektekosten
-         550   CK  Privé belastingen
-         560   CK  Privé schenkingen
-         570   CK  Privé verzekeringen
-         580   CK  Privé buitengewone lasten
-         590   CK  Privé uitgaven overige
+         500   C   Kapitaal                                   :koppeling=winst
+         510   C   Privé stortingen
+         520   C   Privé opnamen
+         530   C   Privé rente
+         540   C   Privé ziektekosten
+         550   C   Privé belastingen
+         560   C   Privé schenkingen
+         570   C   Privé verzekeringen
+         580   C   Privé buitengewone lasten
+         590   C   Privé uitgaven overige
 
   4  Vreemd vermogen
      41  Kredietinstellingen lang
-         810   CK  Lening Bank
-         811   CK  Middellang krediet Bank
+         810   C   Lening Bank
+         811   C   Middellang krediet Bank
      44  Overige schulden lang
-         880   CK  Lening opgenomen
-         890   CK  Overige leningen
+         880   C   Lening opgenomen
+         890   C   Overige leningen
      46  Leveranciers kredieten
-         1600  CK  Crediteuren                                :koppeling=crd
-         1620  CK  Crediteuren vorig boekjaa
-         1650  CK  Nog te ontvangen fakturen
+         1600  C   Crediteuren                                :koppeling=crd
+         1620  C   Crediteuren vorig boekjaa
+         1650  C   Nog te ontvangen fakturen
      48  Belastingen & soc. lasten
-         1500  CK  BTW Verkoop Hoog                           :koppeling=btw_vh
-         1510  CK  BTW Verkoop Laag                           :koppeling=btw_vl
-         1520  DK  BTW Inkoop Hoog                            :koppeling=btw_ih
-         1530  DK  BTW Inkoop Laag                            :koppeling=btw_il
-         1540  CK  BTW autokostenverg. 12%
-         1550  CK  BTW Import
-         1560  CK  Omzetbelasting betaald                     :koppeling=btw_ok
-         1710  CK  Loonheffing betaald
-         1711  CK  Ingehouden loonheffing
-         1720  CK  Bedrijfsvereniging bet.
-         1721  CK  Berekende premie BVG
-         1730  CK  Pensioenpremie betaald
-         1731  CK  Berekende pesioenpremie
-         1740  CK  VUT premie betaald
-         1741  CK  Berekende VUT premie
-         1750  CK  Sociaal fonds betaald
-         1751  CK  Berekende premie S. Fonds
+         1500  C   BTW Verkoop Hoog                           :koppeling=btw_vh
+         1510  C   BTW Verkoop Laag                           :koppeling=btw_vl
+         1520  D   BTW Inkoop Hoog                            :koppeling=btw_ih
+         1530  D   BTW Inkoop Laag                            :koppeling=btw_il
+         1540  C   BTW autokostenverg. 12%
+         1550  C   BTW Import
+         1560  C   Omzetbelasting betaald                     :koppeling=btw_ok
+         1710  C   Loonheffing betaald
+         1711  C   Ingehouden loonheffing
+         1720  C   Bedrijfsvereniging bet.
+         1721  C   Berekende premie BVG
+         1730  C   Pensioenpremie betaald
+         1731  C   Berekende pesioenpremie
+         1740  C   VUT premie betaald
+         1741  C   Berekende VUT premie
+         1750  C   Sociaal fonds betaald
+         1751  C   Berekende premie S. Fonds
      49  Overige schulden kort
-         1900  CK  Aflossingsverplichtingen
-         1910  CK  Reservering vakantiegeld
-         1911  CK  Reservering vakantiedagen
-         1920  CK  Te betalen accountantskosten
-         1921  CK  Te betalen advieskosten
-         1922  CK  Te betalen autokosten
-         1923  CK  Te betalen algemene kosten
-         1924  CK  Te betalen personeelskosten
-         1925  CK  Te betalen rente
-         1926  CK  Te betalen huisvestingskosten
-         1929  CK  Te betalen overige kosten
-         1950  CK  Netto lonen en salarissen
-         1960  CK  Pensioen verzekeringsmij.
-         1990  CK  Diverse schulden kort
+         1900  C   Aflossingsverplichtingen
+         1910  C   Reservering vakantiegeld
+         1911  C   Reservering vakantiedagen
+         1920  C   Te betalen accountantskosten
+         1921  C   Te betalen advieskosten
+         1922  C   Te betalen autokosten
+         1923  C   Te betalen algemene kosten
+         1924  C   Te betalen personeelskosten
+         1925  C   Te betalen rente
+         1926  C   Te betalen huisvestingskosten
+         1929  C   Te betalen overige kosten
+         1950  C   Netto lonen en salarissen
+         1960  C   Pensioen verzekeringsmij.
+         1990  C   Diverse schulden kort
 
 Resultaatrekeningen
 
   5  Bedrijfsopbrengsten
      51  Netto omzet
-         8000  CO  Omzet advisering BTW hoog                  :btw=hoog
-         8010  CO  Omzet advisering BTW vrij
-         8100  CO  Omzet royalties
-         8200  CO  Omzet editing                              :btw=hoog
-         8300  CO  Omzet cursussen                            :btw=hoog
-         8310  CO  Omzet cursuslicenties                      :btw=hoog
-         8400  CO  Omzet boeken                               :btw=laag
-         8600  CO  Omzet diversen BTW hoog                    :btw=hoog
-         8610  CO  Omzet diversen BTW laag                    :btw=laag
-         8620  CO  Omzet diversen BTW vrij
-         8900  CK  Betalingskorting verkoop
-         8910  CK  Korting  verkoop
-         8920  CK  Prijsverschillen verkoop
+         8000  O   Omzet advisering BTW hoog                  :btw=hoog
+         8010  O   Omzet advisering BTW vrij
+         8100  O   Omzet royalties
+         8200  O   Omzet editing                              :btw=hoog
+         8300  O   Omzet cursussen                            :btw=hoog
+         8310  O   Omzet cursuslicenties                      :btw=hoog
+         8400  O   Omzet boeken                               :btw=laag
+         8600  O   Omzet diversen BTW hoog                    :btw=hoog
+         8610  O   Omzet diversen BTW laag                    :btw=laag
+         8620  O   Omzet diversen BTW vrij
+         8900  K   Betalingskorting verkoop
+         8910  K   Korting  verkoop
+         8920  K   Prijsverschillen verkoop
      52  Kostprijs van de omzet
-         7000  CK  Inkoop materiaal                           :btw=hoog
-         7800  DK  Mutatie eindvoorraad
-         7900  CK  Betalingskorting inkoop
-         7920  CK  Prijsverschillen inkoop
+         7000  K   Inkoop materiaal                           :btw=hoog
+         7800  K   Mutatie eindvoorraad
+         7900  K   Betalingskorting inkoop
+         7920  K   Prijsverschillen inkoop
      53  Overige bedrijfsopbrengst
-         8680  CO  Omzet naar kosten BTW hoo                  :btw=hoog
-         8690  DK  Doorbelaste omzet naar kosten
-         8700  CK  Kleine ondernemersregeling
-         8800  CK  Huuropbrengst
+         8680  O   Omzet naar kosten BTW hoo                  :btw=hoog
+         8690  K   Doorbelaste omzet naar kosten
+         8700  K   Kleine ondernemersregeling
+         8800  K   Huuropbrengst
      74  Incidentele baten en lasten
-         9300  CK  Winst verkoop boeken                       :btw=laag
+         9300  K   Winst verkoop boeken                       :btw=laag
 
   6  Personeelslasten
      60  Lonen en salarissen
-         4000  DK  Bruto lonen
-         4001  DK  Tantième
-         4002  DK  Gratificaties
-         4010  DK  Overhevelingstoeslag
-         4020  DK  Premiespaarregeling
-         4021  DK  Loonheffing spaarregeling
-         4070  DK  Mutatie vakantiegeld
-         4071  DK  Mutatie vakantiedagen
-         4080  DK  Ontvangen ziekengeld
-         4090  DK  Doorberekende salarissen
+         4000  K   Bruto lonen
+         4001  K   Tantième
+         4002  K   Gratificaties
+         4010  K   Overhevelingstoeslag
+         4020  K   Premiespaarregeling
+         4021  K   Loonheffing spaarregeling
+         4070  K   Mutatie vakantiegeld
+         4071  K   Mutatie vakantiedagen
+         4080  K   Ontvangen ziekengeld
+         4090  K   Doorberekende salarissen
      61  Sociale lasten
-         4100  DK  Bedrijfsvereniging  premies
-         4101  DK  Ingehouden pr. bedr. vereniging
-         4110  DK  VUT premie
-         4111  DK  Ingehouden VUT premie
-         4120  DK  Sociaal fonds
-         4121  DK  Ingehouden sociaal fonds
-         4130  DK  Pensioenpremie
-         4131  DK  Ingehouden pensioenpremies
-         4140  DK  Ziekteverzuimverzekering
-         4150  DK  Ziektekostenverzekering
-         4151  DK  Bijdrage ziektekostenverzekering
-         4170  DK  Soc. lasten vakantiegeld
-         4171  DK  Soc. lasten vakantiedagen
-         4180  DK  Soc. lasten ontv. ziekengeld
-         4190  DK  Doorberekende soc. lasten
+         4100  K   Bedrijfsvereniging  premies
+         4101  K   Ingehouden pr. bedr. vereniging
+         4110  K   VUT premie
+         4111  K   Ingehouden VUT premie
+         4120  K   Sociaal fonds
+         4121  K   Ingehouden sociaal fonds
+         4130  K   Pensioenpremie
+         4131  K   Ingehouden pensioenpremies
+         4140  K   Ziekteverzuimverzekering
+         4150  K   Ziektekostenverzekering
+         4151  K   Bijdrage ziektekostenverzekering
+         4170  K   Soc. lasten vakantiegeld
+         4171  K   Soc. lasten vakantiedagen
+         4180  K   Soc. lasten ontv. ziekengeld
+         4190  K   Doorberekende soc. lasten
      62  Overige personeelskosten
-         4200  DK  Reiskostenvergoedingen
-         4205  DK  Consultancy ingekocht
-         4210  DK  Vaste reiskostenverg.
-         4220  DK  Vrijgestelde vergoedingen
-         4230  DK  Studiekosten
-         4240  DK  Kostenvergoeding
-         4250  DK  Representatie vergoeding
-         4260  DK  Uitzendburo                                :btw=hoog
-         4270  DK  Kantine en consumptie
-         4280  DK  Bedrijfskleding personeel                  :btw=hoog
-         4290  DK  Overige personeelskosten
+         4200  K   Reiskostenvergoedingen
+         4205  K   Consultancy ingekocht
+         4210  K   Vaste reiskostenverg.
+         4220  K   Vrijgestelde vergoedingen
+         4230  K   Studiekosten
+         4240  K   Kostenvergoeding
+         4250  K   Representatie vergoeding
+         4260  K   Uitzendburo                                :btw=hoog
+         4270  K   Kantine en consumptie
+         4280  K   Bedrijfskleding personeel                  :btw=hoog
+         4290  K   Overige personeelskosten
      63  Afschrijving materiele vaste activa
-         4300  DK  Afschr. kosten gebouwen
-         4310  DK  Afschr. kosten verbouwing
-         4320  DK  Afschr. kosten mach & ins
-         4330  DK  Afschr. kosten inv. & inr
-         4340  DK  Afschr. kosten computers
-         4350  DK  Afschr. kosten auto's
-         4360  CK  Res verkoop mat vaste act
+         4300  K   Afschr. kosten gebouwen
+         4310  K   Afschr. kosten verbouwing
+         4320  K   Afschr. kosten mach & ins
+         4330  K   Afschr. kosten inv. & inr
+         4340  K   Afschr. kosten computers
+         4350  K   Afschr. kosten auto's
+         4360  K   Res verkoop mat vaste act
      65  Huisvestingskosten
-         4500  DK  Huur bedrijfspand                          :btw=hoog
-         4510  DK  Servicekosten                              :btw=hoog
-         4520  DK  Gas  water & electra
-         4530  DK  Vaste lasten
-         4540  DK  Onderhoud bedrijfspand                     :btw=hoog
-         4550  DK  Schoonmaakkosten                           :btw=hoog
-         4560  DK  Verzekering bedrijfspand
-         4590  DK  Overige huisvestingskosten                 :btw=hoog
+         4500  K   Huur bedrijfspand                          :btw=hoog
+         4510  K   Servicekosten                              :btw=hoog
+         4520  K   Gas  water & electra
+         4530  K   Vaste lasten
+         4540  K   Onderhoud bedrijfspand                     :btw=hoog
+         4550  K   Schoonmaakkosten                           :btw=hoog
+         4560  K   Verzekering bedrijfspand
+         4590  K   Overige huisvestingskosten                 :btw=hoog
      66  Autokosten
-         4600  DK  Leasekosten auto                           :btw=hoog
-         4610  DK  Brandstof auto                             :btw=hoog
-         4620  DK  Onderhoud auto                             :btw=hoog
-         4630  DK  Verzekering auto
-         4640  DK  Kilometervergoedingen
-         4650  DK  Huur auto                                  :btw=hoog
-         4670  DK  Boetes
-         4671  DK  Boetes 0% aftrekbaar
-         4680  DK  BTW privégebruik auto
-         4690  DK  Overige autokosten                         :btw=hoog
+         4600  K   Leasekosten auto                           :btw=hoog
+         4610  K   Brandstof auto                             :btw=hoog
+         4620  K   Onderhoud auto                             :btw=hoog
+         4630  K   Verzekering auto
+         4640  K   Kilometervergoedingen
+         4650  K   Huur auto                                  :btw=hoog
+         4670  K   Boetes
+         4671  K   Boetes 0% aftrekbaar
+         4680  K   BTW privégebruik auto
+         4690  K   Overige autokosten                         :btw=hoog
      67  Verkoopkosten
-         4700  DK  Reclamekosten                              :btw=hoog
-         4710  DK  Advertentiekosten                          :btw=hoog
-         4711  DK  Sponsoring
-         4720  DK  Beurskosten                                :btw=hoog
-         4730  DK  Relatiegeschenken
-         4740  DK  Reis- en verblijfkosten                    :btw=hoog
-         4741  DK  Reis- en verblijfk. 90%                    :btw=hoog
-         4742  DK  Voedsel en drank 90%
-         4750  DK  Representatiekosten                        :btw=hoog
-         4751  DK  Representatiekosten 90%
-         4760  DK  Credit-cardkosten
-         4770  DK  Factoringkosten
-         4790  DK  Overige verkoopkosten                      :btw=hoog
+         4700  K   Reclamekosten                              :btw=hoog
+         4710  K   Advertentiekosten                          :btw=hoog
+         4711  K   Sponsoring
+         4720  K   Beurskosten                                :btw=hoog
+         4730  K   Relatiegeschenken
+         4740  K   Reis- en verblijfkosten                    :btw=hoog
+         4741  K   Reis- en verblijfk. 90%                    :btw=hoog
+         4742  K   Voedsel en drank 90%
+         4750  K   Representatiekosten                        :btw=hoog
+         4751  K   Representatiekosten 90%
+         4760  K   Credit-cardkosten
+         4770  K   Factoringkosten
+         4790  K   Overige verkoopkosten                      :btw=hoog
      68  Distributiekosten
-         4810  DK  Vervoerskosten                             :btw=hoog
-         4890  DK  Overige distributiekosten                  :btw=hoog
+         4810  K   Vervoerskosten                             :btw=hoog
+         4890  K   Overige distributiekosten                  :btw=hoog
      69  Algemene kosten
-         4780  DK  Kasverschillen
-         4800  DK  Verzending portikosten
-         4900  DK  Telefoon- en faxkosten                     :btw=hoog
-         4905  DK  Internetkosten                             :btw=hoog
-         4910  DK  Contributies & abonnementen
-         4920  DK  Verzekering algemeen
-         4930  DK  Kantoorartikelen                           :btw=hoog
-         4931  DK  Computerbenodigdheden                      :btw=hoog
-         4932  DK  Vakliteratuur                              :btw=laag
-         4940  DK  Accountantskosten                          :btw=hoog
-         4941  DK  Administratiekosten                        :btw=hoog
-         4942  DK  Loonadministratiekosten                    :btw=hoog
-         4943  DK  Notaris & advocaatkosten                   :btw=hoog
-         4950  DK  Drukwerk & papier                          :btw=hoog
-         4960  DK  Branche-organisatiekosten
-         4970  DK  Postzegels
-         4980  DK  Bankkosten
-         4990  DK  Overige algemene kosten                    :btw=hoog
-         4991  DK  Bijzondere baten & lasten
+         4780  K   Kasverschillen
+         4800  K   Verzending portikosten
+         4900  K   Telefoon- en faxkosten                     :btw=hoog
+         4905  K   Internetkosten                             :btw=hoog
+         4910  K   Contributies & abonnementen
+         4920  K   Verzekering algemeen
+         4930  K   Kantoorartikelen                           :btw=hoog
+         4931  K   Computerbenodigdheden                      :btw=hoog
+         4932  K   Vakliteratuur                              :btw=laag
+         4940  K   Accountantskosten                          :btw=hoog
+         4941  K   Administratiekosten                        :btw=hoog
+         4942  K   Loonadministratiekosten                    :btw=hoog
+         4943  K   Notaris & advocaatkosten                   :btw=hoog
+         4950  K   Drukwerk & papier                          :btw=hoog
+         4960  K   Branche-organisatiekosten
+         4970  K   Postzegels
+         4980  K   Bankkosten
+         4990  K   Overige algemene kosten                    :btw=hoog
+         4991  K   Bijzondere baten & lasten
 
   7  Afschrijvingen
      64  Afschrijving immateriele vaste activa
-         4380  DK  Afschr. kosten goodwill
-         4390  DK  Afschr. kosten aanloopkosten
+         4380  K   Afschr. kosten goodwill
+         4390  K   Afschr. kosten aanloopkosten
 
   9  Financiële baten & lasten
      71  Rente baten
-         9000  CK  Rente bate deposito
-         9040  CK  Rente bate lening u/g
-         9052  CK  Rente bate Postbank
-         9080  CK  Rente bate belastingen
-         9090  CK  Rente bate overige
+         9000  K   Rente bate deposito
+         9040  K   Rente bate lening u/g
+         9052  K   Rente bate Postbank
+         9080  K   Rente bate belastingen
+         9090  K   Rente bate overige
      72  Rente- en overige financielelasten
-         9100  DK  Rente last hypotheek pand
-         9110  DK  Rente last lening bank
-         9111  DK  Rente last m.lang krediet
-         9120  DK  Rente last fin. lease auto
-         9140  CK  Rente last lening o/g
-         9152  CK  Rente last Postbank
-         9170  DK  Rente last factormaatschappij
-         9180  DK  Rente last belastingen
-         9190  DK  Rente last overige
+         9100  K   Rente last hypotheek pand
+         9110  K   Rente last lening bank
+         9111  K   Rente last m.lang krediet
+         9120  K   Rente last fin. lease auto
+         9140  K   Rente last lening o/g
+         9152  K   Rente last Postbank
+         9170  K   Rente last factormaatschappij
+         9180  K   Rente last belastingen
+         9190  K   Rente last overige
      73  Opbrengst overige activa
-         9200  CK  Opbrengst effecten
-         9210  CK  Mutatie effecten
+         9200  K   Opbrengst effecten
+         9210  K   Mutatie effecten
 
 # DAGBOEKEN
 #
@@ -354,10 +349,9 @@ Dagboeken
 # bedrag exclusief BTW aangeven.
 #
 # BELANGRIJK: Mutaties die middels de command line shell of de API
-# worden uitgevoerd maken gebruik van de Debet/Credit status en het
-# geassocieerde BTW tarief van de grootboekrekeningen. Wijzigingen
-# hierin kunnen dus consequenties hebben voor de reeds in scripts
-# vastgelegde boekingen.
+# worden uitgevoerd maken gebruik van het geassocieerde BTW tarief van
+# de grootboekrekeningen. Wijzigingen hierin kunnen dus consequenties
+# hebben voor de reeds in scripts vastgelegde boekingen.
 
 BTW Tarieven
 
