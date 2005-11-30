@@ -2,6 +2,9 @@
 
 . ./setup.sh
 
+# Fake current date (to compare reports).
+EB_SQL_NOW=2004-12-31 ; export EB_SQL_NOW
+
 rm -f *.sql *.log
 
 echo "=== $EB_DB_NAME === newdb ==="
