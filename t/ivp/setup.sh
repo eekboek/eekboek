@@ -1,27 +1,49 @@
-# The modules.
-EB_LIB=../blib/lib ; export EB_LIB
-
 # Name of the database.
-EB_DB_NAME=eekboek_sample ; export EB_DB_NAME
-
-# Fake current date (to compare reports).
-EB_SQL_NOW=2004-12-31 ; export EB_SQL_NOW
+if [ -z "$EB_DB_NAME" ]
+then
+    EB_DB_NAME=eekboek_sample
+fi
+export EB_DB_NAME
 
 # Language selection.
-EB_LANG=nl_NL ; export EB_LANG
-
-# Prepend EB lib to Perl PATH
-if [ -z "$PERL5LIB" ]
+if [ -z "$EB_LANG" ]
 then
-    PERL5LIB=${EB_LIB}
+    EB_LANG=nl_NL
+fi
+export EB_LANG
+
+if test -f ../blib/lib/EB.pm
+then
+    EB_LIB=../blib/lib
+    EB_PATH=../blib/script
+    echo "Using blib version"
+elif test -f ../lib/EB.pm
+then
+    EB_LIB=../lib
+    EB_PATH=../scripts
+    echo "Using development version"
 else
-    PERL5LIB=${EB_LIB}:$PERL5LIB
+    echo "Using installed version"
 fi
 
-# Append official scripts dir to PATH
-PATH=../blib/script:$PATH
+# Prepend EB lib to Perl PATH
+if [ -n "$EB_LIB" ]
+then
+    if [ -z "$PERL5LIB" ]
+    then
+	PERL5LIB=${EB_LIB}
+    else
+	PERL5LIB=${EB_LIB}:$PERL5LIB
+    fi
+fi
+export PERL5LIB
 
-export PERL5LIB PATH
+# Append official scripts dir to PATH
+if [ -n "$EB_PATH" ]
+then
+    PATH=$EB_PATH:$PATH
+fi
+export PATH
 
 rebuild() {
     sh newdb.sh

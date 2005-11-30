@@ -1,20 +1,38 @@
-# The modules.
-setenv EB_LIB ../blib/lib
-
 # Name of the database.
-setenv EB_DB_NAME eekboek_sample
-
-# Fake current date (to compare reports).
-setenv EB_SQL_NOW 2004-12-31
+if ( ! $?EB_DB_NAME ) then
+    setenv EB_DB_NAME eekboek_sample
+endif
 
 # Language selection.
-setenv EB_LANG nl_NL
+if ( ! $?EB_LANG ) then
+    setenv EB_LANG nl_NL
+endif
+
+if ( -f ../blib/lib/EB.pm ) then
+    set EB_LIB=../blib/lib
+    set EB_PATH=../blib/script
+    echo "Using blib version"
+else if ( -f ../lib/EB.pm ) then
+    set EB_LIB=../lib
+    set EB_PATH=../scripts
+    echo "Using development version"
+else
+    echo "Using installed version"
+endif
 
 # Prepend EB lib to Perl PATH
-setenv PERL5LIB ${EB_LIB}:$PERL5LIB
+if ( $?EB_LIB ) then
+    if ( ! $?PERL5LIB ) then
+	setenv PERL5LIB ${EB_LIB}
+    else
+	setenv PERL5LIB ${EB_LIB}:${PERL5LIB}
+    endif
+endif
 
 # Append official scripts dir to PATH
-set path = ( ../blib/script $path )
+if ( $?EB_PATH ) then
+    setenv PATH ${EB_PATH}:${PATH}
+endif
 
 # Some handy aliases.
 alias balans   "ebshell -c balans"
