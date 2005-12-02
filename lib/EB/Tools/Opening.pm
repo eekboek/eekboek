@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.12 2005/11/18 17:51:06 jv Exp $
+# $Id: Opening.pm,v 1.13 2005/12/02 09:31:02 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Nov 18 18:50:35 2005
-# Update Count    : 114
+# Last Modified On: Fri Dec  2 10:30:27 2005
+# Update Count    : 115
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -72,7 +72,7 @@ sub set_boekjaarcode {
     return __x("Ongeldige boekjaar-code: {year}", year => $code)."\n" unless $code =~ /^\w{1,4}$/;
     return __x("Boekjaar-code {year} bestaat al ({desc}",
 	       year => $code, desc => $t)."\n"
-      if $t = $dbh->lookup($code, qw(Boekjaren bky_code bky_desc));
+      if $t = $dbh->lookup($code, qw(Boekjaren bky_code bky_name));
     #$self->check_open(0);
     $self->{o}->{boekjaarcode} = $code;
     "";
