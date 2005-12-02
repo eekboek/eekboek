@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.18 2005/11/19 22:12:53 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.19 2005/12/02 15:36:59 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 19 23:12:29 2005
-# Update Count    : 325
+# Last Modified On: Fri Dec  2 16:36:41 2005
+# Update Count    : 334
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -232,6 +232,7 @@ sub collect {
     # 3b. Binnen de EU
 
     my $intra_deb = 0;
+    my $intra_deb_btw = 0;
 
     # 4. Aan mij verrichte leveringen
     # 4a. Van buiten de EU
@@ -241,6 +242,7 @@ sub collect {
     # 4b. Verwervingen van goederen uit de EU.
 
     my $intra_crd = 0;
+    my $intra_crd_btw = 0;
 
     # Totaaltellingen.
 
@@ -291,9 +293,11 @@ sub collect {
 	elsif ( $btw_status == BTW_INTRA ) {
 	    if ( $debcrd ) {
 		$intra_deb += $amt;
+		$intra_deb_btw += $btw;
 	    }
 	    else {
 		$intra_crd -= $amt;
+		$intra_crd_btw -= $btw;
 	    }
 	}
 	elsif ( $btw_status == BTW_EXTRA ) {
@@ -339,6 +343,7 @@ sub collect {
 
     # 3b. Binnen de EU
     $data{intra_deb} = rounddown($intra_deb);
+    $data{intra_deb_btw} = rounddown($intra_deb_btw); # TODO
 
     # 4. Aan mij verrichte leveringen
     # 4a. Van buiten de EU
@@ -346,6 +351,9 @@ sub collect {
 
     # 4b. Verwervingen van goederen uit de EU.
     $data{intra_crd} = rounddown($intra_crd);
+    $v = roundup($intra_crd_btw);
+    $data{intra_crd_btw} = $v;
+    $tot += $v;
 
     # 5 Berekening totaal
     # 5a. Subtotaal
@@ -358,7 +366,7 @@ sub collect {
 			    ($self->{periode} ? " AND jnl_bsr_date >= ? AND jnl_bsr_date <= ?" : ""),
 			    $dbh->std_acc("btw_ih"), $dbh->std_acc("btw_il"),
 			    $self->{periode} ? ( $self->{p_start}, $self->{p_end} ) : ())};
-    my $btw_delta = $vb - $crd_btw;
+    my $btw_delta = $vb - $crd_btw - $intra_crd_btw;
 
     $vb = roundup($vb);
     $data{vb} = $vb;
@@ -399,7 +407,7 @@ sub report {
     $rep->outline('', "1c", "Belast met ander tarief", $data->{deb_x}, $data->{deb_btw_x});
 
     # 1d. Belast met 0%/verlegd
-    $rep->outline('', "1c", "Belast met 0% / verlegd", $data->{deb_0}, undef);
+    $rep->outline('', "1d", "Belast met 0% / verlegd", $data->{deb_0}, undef);
 
     # Buitenland
     $rep->outline('H1', "Buitenland");
@@ -420,7 +428,8 @@ sub report {
     $rep->outline('', "4a", "Van buiten de EU", $data->{extra_crd}, 0);
 
     # 4b. Verwervingen van goederen uit de EU.
-    $rep->outline('', "4b", "Verwervingen van goederen uit de EU", $data->{intra_crd}, 0);
+    $rep->outline('', "4b", "Verwervingen van goederen uit de EU",
+		  $data->{intra_crd}, $data->{intra_crd_btw});
 
     # 5 Berekening totaal
     $rep->outline('H1', "Berekening");
