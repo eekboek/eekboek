@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.43 2005/11/19 22:04:04 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.44 2005/12/02 13:38:33 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 19 22:30:59 2005
-# Update Count    : 602
+# Last Modified On: Fri Dec  2 14:35:27 2005
+# Update Count    : 608
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -682,27 +682,29 @@ sub do_relatie {
 	       ], $opts)
       or goto &help_relatie;
 
-    if ( @args == 4 ) {
-	$opts->{btw} = pop(@args);
-    }
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 3;
-    warn("?"._T("Te weinig argumenten voor deze opdracht")."\n"), return if @args < 3;
+    warn("?"._T("Ongeldig aantal argumenten voor deze opdracht")."\n"), return if @args % 3;
 
     use EB::Relation;
-    EB::Relation->new->add(@args, $opts);
+
+    while ( @args ) {
+	my @a = splice(@args, 0, 3);
+	my $res = EB::Relation->new->add(@a, $opts);
+	warn("$res\n") if $res;
+    }
 }
 
 sub help_relatie {
     <<EOS;
-Aanmaken nieuwe relatie.
+Aanmaken een of meer nieuwe relaties.
 
-  relatie <code> "Omschrijving" <rekening>
+  relatie [ opties ] { <code> "Omschrijving" <rekening> } ...
 
 Opties:
 
   --dagboek=XXX  -- selecteer dagboek voor deze relatie
   --btw=XXX      -- BTW type: normaal, verlegd, intra, extra
                     *** BTW type 'verlegd' wordt nog niet ondersteund ***
+                    *** BTW type 'intra' wordt nog niet geheel ondersteund ***
 EOS
 }
 
