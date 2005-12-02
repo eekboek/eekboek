@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Einde.pm,v 1.3 2005/11/16 13:59:39 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.4 2005/12/02 15:33:04 jv Exp $ ';
 
 package main;
 
@@ -7,12 +7,12 @@ our $dbh;
 package EB::Tools::Einde;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.3 2005/11/16 13:59:39 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.4 2005/12/02 15:33:04 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov 16 14:48:19 2005
-# Update Count    : 151
+# Last Modified On: Thu Dec  1 19:16:11 2005
+# Update Count    : 152
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -188,9 +188,6 @@ sub perform {
 
 	$rep->finish;
     }
-
-    $dbh->sql_exec("DROP TABLE ${tbl}")->finish
-      unless $tbl eq "Accounts";
 
     if ( $def ) {
 	$dbh->sql_exec("UPDATE Boekjaren".
