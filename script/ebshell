@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.6 2005/12/03 13:13:19 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.7 2005/12/03 13:23:48 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec  3 14:13:00 2005
-# Update Count    : 173
+# Last Modified On: Sat Dec  3 14:23:45 2005
+# Update Count    : 176
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -38,6 +38,7 @@ my $schema;			# initialise w/ schema
 my $confirm = 0;
 my $journal = 0;
 my $verbose = 0;		# verbose processing
+my $bky;
 
 # Development options (not shown with -help).
 my $debug = 0;			# debugging
@@ -95,6 +96,7 @@ my $shell = EB::Shell->new
      journal	  => $journal,
      echo	  => $echo,
      prompt	  => lc($app),
+     boekjaar	  => $bky,
    });
 
 $| = 1;
@@ -120,6 +122,7 @@ sub app_options {
 		     'echo!'	=> \$echo,
 		     'ident'	=> \$ident,
 		     'journaal|journal'	=> \$journal,
+		     'boekjaar=s'	=> \$bky,
 		     'verbose'	=> \$verbose,
 		     'db|dataset=s' => \$dataset,
 		     'trace'	=> \$trace,
@@ -150,6 +153,7 @@ Gebruik: {prog} [options] [file ...]
     --journaal          toon de journaalregels na elke opdracht
     --dataset=DB        specificeer database
     --db=DB             specificeer database
+    --boekjaar=XXX	specificeer boekjaar
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
