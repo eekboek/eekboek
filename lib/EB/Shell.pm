@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.44 2005/12/02 13:38:33 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.45 2005/12/03 13:23:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec  2 14:35:27 2005
-# Update Count    : 608
+# Last Modified On: Sat Dec  3 14:21:54 2005
+# Update Count    : 612
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -34,6 +34,9 @@ sub new {
 
     if ( $self->{interactive} ) {
 	$self->term->Attribs->{completion_function} = sub { $self->eb_complete(@_) };
+    }
+    if ( defined $self->{boekjaar} ) {
+	$self->do_boekjaar($self->{boekjaar});
     }
     $self;
 }
