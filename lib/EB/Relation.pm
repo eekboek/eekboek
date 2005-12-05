@@ -37,6 +37,13 @@ sub add {
 	    warn("?".__x("Ongeldige waarde voor BTW status: {btw}", btw => $bstate)."\n");
 	    return;
 	}
+	if ( $bstate == BTW_VERLEGD ) {	#### TODO
+	    warn("?"._T("Relaties met verlegde BTW worden nog niet ondersteund")."\n");
+	    return;
+	}
+	if ( $bstate == BTW_INTRA ) { #### TODO
+	    warn("!"._T("Relaties met intra-communautaire BTW worden nog niet volledig ondersteund")."\n");
+	}
     }
     my $debiteur;
     my $ddesc;
