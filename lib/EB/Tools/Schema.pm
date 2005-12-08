@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.19 2005/11/30 12:06:55 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.20 2005/12/08 13:08:39 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov 30 12:58:53 2005
-# Update Count    : 392
+# Last Modified On: Thu Dec  8 13:54:23 2005
+# Update Count    : 408
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -77,6 +77,7 @@ my %acc;			# grootboekrekeningen
 my $chvdi;			# huidige hoofdverdichting
 my $cvdi;			# huidige verdichting
 my %std;			# standaardrekeningen
+my %dbk;			# dagboeken
 my @dbk;			# dagboeken
 my @btw;			# btw tarieven
 my %btwmap;			# btw type/incl -> code
@@ -85,11 +86,14 @@ my $fail;			# any errors
 
 sub error { warn('?', @_); $fail++; }
 
+my $dbkid;
+
 sub scan_dagboeken {
-    return 0 unless /^\s+(\d+)\s+(.*)/ && $1;
+    return 0 unless /^\s+(\w{1,4})\s+(.*)/ && $1;
+    $dbkid++;
 
     my ($id, $desc) = ($1, $2);
-    error(__x("Dubbel: dagboek {dbk}", dbk => $id)."\n") if defined($dbk[$id]);
+    error(__x("Dubbel: dagboek {dbk}", dbk => $id)."\n") if defined($dbk{$id});
 
     my $type;
     my $rek = 0;
@@ -122,7 +126,8 @@ sub scan_dagboeken {
     error(__x("Dagboek {id}: rekeningnummer enkel toegestaan voor Kas en Bankboeken", id => $id)."\n")
       if $rek && !($type == DBKTYPE_KAS || $type == DBKTYPE_BANK);
 
-    $dbk[$id] = [ $id, $desc, $type, $rek||undef ];
+    $dbk{$id} = $dbkid;
+    $dbk[$dbkid] = [ $id, $desc, $type, $rek||undef ];
 }
 
 sub scan_btw {
@@ -547,9 +552,11 @@ print <<EOD;
 #
 # EekBoek ondersteunt vijf soorten dagboeken: Kas, Bank, Inkoop,
 # Verkoop en Memoriaal. Er kunnen een in principe onbeperkt aantal
-# dagboeken worden aangemaakt. Voor elk dagboek moet opgegeven worden
-# van welk type het is. Voor rekeningen van het type Kas en Bank moet
-# bovendien een tegenrekening worden opgegeven.
+# dagboeken worden aangemaakt.
+# In de eerste kolom wordt de korte naam (code) voor het dagboek
+# opgegeven. Verder moet voor elk dagboek worden opgegeven van welk
+# type het is. Voor rekeningen van het type Kas en Bank moet bovendien
+# een tegenrekening worden opgegeven.
 EOD
 
     dump_dbk();			# Dagboeken
@@ -562,10 +569,12 @@ print <<EOD;
 # bepaalt het rekeningnummer waarop de betreffende boeking plaatsvindt.
 # Binnen elke tariefgroep zijn meerdere tarieven mogelijk, hoewel dit
 # in de praktijk niet snel zal voorkomen.
-# Voor elk tarief (behalve die van groep "geen") moet het percentage
-# worden opgegeven. Met de aanduiding :exclusief kan worden opgegeven
-# dat boekingen op rekeningen met deze tariefgroep standaard het
-# bedrag exclusief BTW aangeven.
+# In de eerste kolom wordt de (numerieke) code voor dit tarief
+# opgegeven. Deze kan o.m. worden gebruikt om expliciet een BTW tarief
+# op te geven bij het boeken. Voor elk tarief (behalve die van groep
+# "geen") moet het percentage worden opgegeven. Met de aanduiding
+# :exclusief kan worden opgegeven dat boekingen op rekeningen met deze
+# tariefgroep standaard het bedrag exclusief BTW aangeven.
 #
 # BELANGRIJK: Mutaties die middels de command line shell of de API
 # worden uitgevoerd maken gebruik van het geassocieerde BTW tarief van
@@ -658,7 +667,7 @@ sub dump_dbk {
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($id, $desc, $type, $acc_id) = @$rr;
 	$acc_id = 0 if $type == DBKTYPE_INKOOP || $type == DBKTYPE_VERKOOP;
-	my $t = sprintf(" %3d  %-20s  :type=%-10s %s",
+	my $t = sprintf("  %-4s  %-20s  :type=%-10s %s",
 			$id, $desc, lc(DBKTYPES->[$type]),
 			($acc_id ? ":rekening=$acc_id" : ""));
 	$t =~ s/\s+$//;
