@@ -1,6 +1,0 @@
-Datum        Id  Nr    Dag/Grootboek                     Rek      Debet     Credit  Boekstuk/regel                  Relatie
-2004-11-30   48  23    Postbank                                                     ADSL, Tel.
-2004-11-30               Crediteuren                    1600     109,67               *ADSL + Telefoon              KPN
-2004-11-30               Crediteuren                    1600      22,80               *ADSL                         XS4ALL
-2004-11-30               Postbank                       1120                132,47    ADSL, Tel.
-                       Totaal Boekstuk 48                        132,47     132,47
