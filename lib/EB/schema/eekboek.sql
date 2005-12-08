@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.20 2005/10/19 16:33:02 jv Exp $
+-- $Id: eekboek.sql,v 1.21 2005/12/08 13:08:16 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -67,7 +67,7 @@ ALTER TABLE ONLY Accounts
 
 -- Dagboeken
 CREATE TABLE Dagboeken (
-    dbk_id        int not null primary key,
+    dbk_id        varchar(4) primary key,
     dbk_desc      text not null,
     dbk_type      smallint not null, -- inkoop, verkoop, bank/giro, kas, memoriaal
     dbk_acc_id    int references Accounts,
@@ -90,7 +90,7 @@ CREATE TABLE Relaties (
     rel_desc 	  text not null,
     rel_debcrd    boolean,		     -- t: debiteur f: crediteur
     rel_btw_status smallint default 0, 	     -- BTW_NORMAAL, BTW_VERLEGD, BTW_INTRA, BTW_EXTRA.
-    rel_ledger    int references Dagboeken,  -- verkoop/inkoopdagboek
+    rel_ledger    varchar(4) references Dagboeken,  -- verkoop/inkoopdagboek
     rel_acc_id    int references Accounts,   -- standaard grootboekrekening
     CONSTRAINT "rel_btw_status"
 	CHECK (rel_btw_status >= 0 AND rel_btw_status <= 3)
@@ -120,7 +120,7 @@ CREATE TABLE Boekstukken (
     bsk_id       serial not null primary key,
     bsk_nr       int not null,	-- serienummer
     bsk_desc     text not null,
-    bsk_dbk_id   int references Dagboeken,
+    bsk_dbk_id   varchar(4) references Dagboeken,
     bsk_date     date,
     bsk_bky      VARCHAR(4) references Boekjaren,
     bsk_amount   int,		-- bedrag, negatief voor inkoop
@@ -163,7 +163,7 @@ CREATE TABLE Boekstukregels (
 -- Journal
 CREATE TABLE Journal (
     jnl_date	date not null,	--boekstukdatum
-    jnl_dbk_id	int references Dagboeken,
+    jnl_dbk_id	varchar(4) references Dagboeken,
     jnl_bsk_id	int not null references Boekstukken,
     jnl_bsr_date date not null,	--boekstukregeldatum
     jnl_bsr_seq	int not null,
@@ -192,6 +192,6 @@ CREATE TABLE Metadata (
 
 -- Harde waarden, moeten overeenkomen met de code.
 INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision)
-  VALUES (1, 0, 4);
+  VALUES (1, 0, 5);
 
 UPDATE Metadata SET adm_bky = '<<<<'; -- Voorgaand boekjaar
