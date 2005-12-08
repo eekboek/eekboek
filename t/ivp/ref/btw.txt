@@ -9,7 +9,7 @@ Binnenland
 1a   Belast met hoog tarief                        7700      1463
 1b   Belast met laag tarief                           0         0
 1c   Belast met ander tarief                          0          
-1c   Belast met 0% / verlegd                          0          
+1d   Belast met 0% / verlegd                          0          
 
 Buitenland
 
