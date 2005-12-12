@@ -41,7 +41,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc CHANGES README example doc/html TODO
+%doc CHANGES README INSTALL QUICKSTART example doc/html TODO
 
 %{_bindir}/ebshell
 %{_libdir}/perl5/site_perl/*/EB
