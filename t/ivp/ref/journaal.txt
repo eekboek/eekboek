@@ -53,14 +53,14 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2004-03-09    Bankkosten                     4980       2,70               Girotel
 2004-03-09    Postbank                       1120                  2,70    Girotel
 
-2004-03-18  Postbank:7                                                   ACME
-2004-03-18    Postbank                       1120    3570,00               ACME
-2004-03-18    Debiteuren                     1200               3570,00    *Perl Cursus 1e bet.          ACME
-
 2004-03-18  Inkoop:5                                                     ADSL + Telefoon
 2004-03-18    BTW Inkoop Hoog                1520      16,21               BTW ADSL + Telefoon
 2004-03-18    Telefoon- en faxkosten         4900      85,31               ADSL + Telefoon
 2004-03-18    Crediteuren                    1600                101,52    ADSL + Telefoon
+
+2004-03-18  Postbank:7                                                   ACME
+2004-03-18    Postbank                       1120    3570,00               ACME
+2004-03-18    Debiteuren                     1200               3570,00    *Perl Cursus 1e bet.          ACME
 
 2004-03-18  Verkoop:2                                                    Perl Cursus 2e bet.
 2004-03-18    Debiteuren                     1200    3570,00               Perl Cursus 2e bet.
@@ -226,15 +226,15 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2004-12-06    Internetkosten                 4905      19,16               ADSL
 2004-12-06    Crediteuren                    1600                 22,80    ADSL
 
-2004-12-07  Postbank:24                                                  Girotel, ADSL
-2004-12-07    Crediteuren                    1600      22,80               *ADSL                         XS4ALL
-2004-12-07    Bankkosten                     4980       2,70               Girotel
-2004-12-07    Postbank                       1120                 25,50    Girotel, ADSL
-
 2004-12-07  Inkoop:20                                                    ADSL
 2004-12-07    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2004-12-07    Internetkosten                 4905      19,16               ADSL
 2004-12-07    Crediteuren                    1600                 22,80    ADSL
+
+2004-12-07  Postbank:24                                                  Girotel, ADSL
+2004-12-07    Crediteuren                    1600      22,80               *ADSL                         XS4ALL
+2004-12-07    Bankkosten                     4980       2,70               Girotel
+2004-12-07    Postbank                       1120                 25,50    Girotel, ADSL
 
 2004-12-09  Postbank:25                                                  Eerste deel ADSL
 2004-12-09    Crediteuren                    1600      10,00               *ADSL                         XS4ALL
