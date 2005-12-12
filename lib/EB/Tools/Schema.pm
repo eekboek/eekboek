@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.20 2005/12/08 13:08:39 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.21 2005/12/12 16:29:30 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Dec  8 13:54:23 2005
-# Update Count    : 408
+# Last Modified On: Mon Dec 12 17:27:26 2005
+# Update Count    : 424
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -73,6 +73,8 @@ sub create {
 
 my @hvdi;			# hoofdverdichtingen
 my @vdi;			# verdichtingen
+my $max_hvd;			# hoogste waarde voor hoofdverdichting
+my $max_vrd;			# hoogste waarde voor verdichting
 my %acc;			# grootboekrekeningen
 my $chvdi;			# huidige hoofdverdichting
 my $cvdi;			# huidige verdichting
@@ -195,16 +197,16 @@ sub scan_btw {
 
 sub scan_balres {
     my ($balres) = shift;
-    if ( /^\s*(\d)\s+(.+)/ ) {
+    if ( /^\s*(\d+)\s+(.+)/ && $1 <= $max_hvd ) {
 	error(__x("Dubbel: hoofdverdichting {vrd}", vrd => $1)."\n") if exists($hvdi[$1]);
 	$hvdi[$chvdi = $1] = [ $2, $balres ];
     }
-    elsif ( /^\s*(\d\d)\s+(.+)/ ) {
+    elsif ( /^\s*(\d+)\s+(.+)/ && $1 <= $max_vrd ) {
 	error(__x("Dubbel: verdichting {vrd}", vrd => $1)."\n") if exists($vdi[$1]);
 	error(__x("Verdichting {vrd} heeft geen hoofdverdichting", vrd => $1)."\n") unless defined($chvdi);
 	$vdi[$cvdi = $1] = [ $2, $balres, $chvdi ];
     }
-    elsif ( /^\s*(\d\d\d+)\s+(\S+)\s+(.+)/ ) {
+    elsif ( /^\s*(\d+)\s+(\S+)\s+(.+)/ ) {
 	my ($id, $flags, $desc) = ($1, $2, $3);
 	error(__x("Dubbel: rekening {acct}", acct => $1)."\n") if exists($acc{$id});
 	error(__x("Rekening {id} heeft geen verdichting", id => $id)."\n") unless defined($cvdi);
@@ -260,6 +262,8 @@ sub scan_result {
 sub load_schema {
 
     my $scanner;		# current scanner
+    $max_hvd = 9;
+    $max_vrd = 99;
 
     %std = map { $_ => 0 } qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih);
     $fh ||= *ARGV;
@@ -281,6 +285,11 @@ sub load_schema {
 	}
 	if ( /^btw\s*tarieven/i ) {
 	    $scanner = \&scan_btw;
+	    next;
+	}
+	if ( /^verdichting\s+(\d+)\s+(\d+)/i && $1 < $2 ) {
+	    $max_hvd = $1;
+	    $max_vrd = $2;
 	    next;
 	}
 	if ( $scanner ) {
@@ -543,6 +552,20 @@ print <<EOD;
 # Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
 EOD
 
+$max_hvd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE vdi_struct IS NULL")->[0];
+$max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct IS NULL")->[0];
+
+    if ( $max_hvd > 9 || $max_vrd > 99 ) {
+	print <<EOD;
+
+# Normaal lopen hoofdverdichtingen van 1 t/m 9, en verdichtingen
+# van 10 t/m 99. Indien daarvan wordt afgeweken kan dit worden opgegeven
+# met de opdracht "Verdichting". De twee getallen geven het hoogste
+# nummer voor hoofdverdichtingen resp. verdichtingen.
+EOD
+	printf("\nVerdichting %d %d\n", $max_hvd, $max_vrd);
+    }
+
     dump_acc(1);		# Balansrekeningen
     dump_acc(0);		# Resultaatrekeningen
 
@@ -598,8 +621,9 @@ sub dump_acc {
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($id, $desc) = @$rr;
 	printf("\n  %d  %s\n", $id, $desc);
-	print("# "._T("HOOFDVERDICHTING MOET TUSSEN 1 EN 9 (INCL.) LIGGEN")."\n")
-	  if $id > 9;
+	print("# ".__x("HOOFDVERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
+		       min => 1, max => $max_hvd)."\n")
+	  if $id > $max_hvd;
 	my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
 				 " FROM Verdichtingen".
 				 " WHERE vdi_struct = ?".
@@ -607,7 +631,8 @@ sub dump_acc {
 	while ( my $rr = $sth->fetchrow_arrayref ) {
 	    my ($id, $desc) = @$rr;
 	    printf("     %-2d  %s\n", $id, $desc);
-	    print("# "._T("VERDICHTING MOET TUSSEN 10 EN 99 (INCL.) LIGGEN")."\n")
+	    print("# ".__x("VERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
+			   min => $max_hvd+1, max => $max_vrd)."\n")
 	      if $id < 10 || $id > 99;
 	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz, btw_tariefgroep".
 				     " FROM Accounts, BTWTabel ".
