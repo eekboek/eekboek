@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.45 2005/12/03 13:23:23 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.46 2005/12/12 10:53:01 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec  3 14:21:54 2005
-# Update Count    : 612
+# Last Modified On: Mon Dec 12 11:46:04 2005
+# Update Count    : 617
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -331,6 +331,7 @@ sub _add {
 		   || $dagboek_type == DBKTYPE_KAS ) ? ( 'saldo=s' ) : (),
 	       ], $opts);
 
+    $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
     $bsk = $action->perform($args, $opts);
     $bsk ? $bsk =~ /^\w+:\d+/ ? __x("Boekstuk: {bsk}", bsk => $bsk) : $bsk : "";
 }
@@ -773,6 +774,7 @@ sub do_verwijder {
     parse_args(\@args,
 	       [ 'boekjaar=s',
 	       ], $opts);
+    $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
 
     use EB::Booking::Delete;
     @args = ($bsk) if $bsk && !@args;
@@ -780,7 +782,7 @@ sub do_verwijder {
     my $cmd;
     my $id = shift(@args);
     if ( $self->{interactive} ) {
-	(my $xid, my $id, my $err) = $dbh->bskid($id);
+	(my $xid, my $id, my $err) = $dbh->bskid($id, $opts->{boekjaar});
 	unless ( defined($id) ) {
 	    warn("?".$err."\n");
 	    return;
@@ -824,11 +826,12 @@ sub do_toon {
 	       ], $opts);
 
     $opts->{trail} = !$opts->{verbose};
+    $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
 
     use EB::Booking::Decode;
     @args = ($bsk) if $bsk && !@args;
     return _T("Gaarne een boekstuk") unless @args == 1;
-    my ($id, $dbs, $err) = $dbh->bskid(shift(@args));
+    my ($id, $dbs, $err) = $dbh->bskid(shift(@args), $opts->{boekjaar});
     unless ( defined($id) ) {
 	warn("?".$err."\n");
 	return;
