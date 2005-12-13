@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.28 2005/10/19 16:37:18 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.29 2005/12/13 13:38:37 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 16 21:55:55 2005
-# Update Count    : 281
+# Last Modified On: Tue Dec 13 14:34:25 2005
+# Update Count    : 282
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -101,8 +101,11 @@ sub perform {
 	    }
 
 	    my ($desc, $amt, $acct) = splice(@$args, 0, 3);
-	    warn(" "._T("boekstuk").": std $desc $amt $acct\n")
-	      if $did++ || @$args || $opts->{verbose};
+	    if ( $did++ || @$args || $opts->{verbose} ) {
+		my $t = $desc;
+		$t = '"' . $desc . '"' if $t =~ /\s/;
+		warn(" "._T("boekstuk").": std $t $amt $acct\n");
+	    }
 
 	    my $dc = "acc_debcrd";
 	    my $explicit_dc;
