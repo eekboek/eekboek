@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.13 2005/12/02 09:31:02 jv Exp $
+# $Id: Opening.pm,v 1.14 2005/12/13 19:04:19 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec  2 10:30:27 2005
-# Update Count    : 115
+# Last Modified On: Tue Dec 13 16:17:31 2005
+# Update Count    : 132
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -114,7 +114,26 @@ sub set_balans {
 
 sub set_relatie {
     return shellhelp() unless @_ == 6;
-    my ($self, $date, $desc, $type, $code, $amt) = @_;
+    my $self = shift;
+    my ($date, $desc, $type, $code, $amt);
+    my ($dbk, $bky, $nr);
+
+    if ( $_[0] =~ /^(\w+):(\w+):(\d+)$/ ) {
+	($dbk, $bky, $nr) = ($1, $2, $3);
+	shift;
+	($date, $desc, $code, $amt) = @_;
+	my $t = $dbh->lookup($dbk, qw(Dagboeken dbk_desc dbk_type ILIKE));
+	return __x("Onbekend dagboek: {dbk}", dbk => $dbk)."\n"
+	  unless defined($t);
+	$type = $t == DBKTYPE_VERKOOP;
+    }
+    else {
+	($date, $desc, $type, $code, $amt) = @_;
+	return _T("Relatietype moet \"deb\" of \"crd\" zijn")."\n"
+	  unless $type =~ /^crd|deb$/;
+	$type = $type eq "deb";
+    }
+
     return __x("Ongeldige datum: {date}", date => $date)."\n"
       unless $date =~ /^(\d\d\d\d)-(\d\d?)-(\d\d?)$/
 	&& $1 >= 1990 && $1 < 2099
@@ -122,16 +141,16 @@ sub set_relatie {
 	    && $3 >= 1 && $3 <= 31; # TODO
     return __x("Datum {date} valt niet vóór het boekjaar", date => $date)."\n"
       if $self->{o}->{begindatum} && $self->{o}->{begindatum} <= $1;
-    return _T("Relatietype moet \"deb\" of \"crd\" zijn")."\n"
-      unless $type =~ /^crd|deb$/;
-    $type = $type eq "deb";
+
     my $debcrd = $dbh->lookup($code, qw(Relaties rel_code rel_debcrd));
     return __x("Onbekende relatie: {rel}", rel => $code)."\n" unless defined $debcrd;
     return __x("Ongeldige relatie: {rel}", rel => $code)."\n"
       if $type  ^ $debcrd;
+
     return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($amt = amount($amt));
+
     $self->check_open(0);
-    push(@{$self->{o}->{relatie}}, [$date, $desc, $type, $code, $amt]);
+    push(@{$self->{o}->{relatie}}, [$bky, $nr, $date, $desc, $type, $code, $amt]);
     "";
 }
 
@@ -209,12 +228,39 @@ sub open {
 	      if $o->{relatie} && !(defined($rdeb) || defined($rcrd));
 
 	    foreach my $r ( @{$o->{relatie}} ) {
-		my ($date, $desc, $debcrd, $code, $amt) = @$r;
+		my ($bky, $nr, $date, $desc, $debcrd, $code, $amt) = @$r;
 		if ( $debcrd ) {
 		    $rdeb -= $amt;
 		}
 		else {
 		    $rcrd += $amt;
+		}
+		if ( defined($bky) ) {
+		    my $sth = $dbh->sql_exec("SELECT bky_begin, bky_end".
+					     " FROM Boekjaren".
+					     " WHERE bky_code = ?", $bky);
+		    my $rr = $sth->fetchrow_arrayref;
+		    $sth->finish;
+		    if ( defined($rr) ) {
+			my ($begin, $end) = @$rr;
+			if ( $date < $begin || $date > $end ) {
+			    $fail++;
+			    warn(_T("Boekingsdatum valt niet binnen het boekjaar")."\n");
+			}
+		    }
+		    else {
+			my $begin = substr($date, 0, 4) . "-01-01";	# TODO
+			my $end   = substr($date, 0, 4) . "-12-31";	# TODO
+			$dbh->sql_insert("Boekjaren",
+					 [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened bky_closed)],
+					 $bky, "$begin - $end", $begin, $end, 0,
+					 scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
+					 scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
+					);
+		    }
+		}
+		else {
+		    $bky = BKY_PREVIOUS;
 		}
 	    }
 	    $fail++, warn(($rdeb >= 0 ?
@@ -266,7 +312,10 @@ sub open {
 	my $dbk_inkoop;
 	my $dbk_verkoop;
 	foreach my $r ( @{$o->{relatie}} ) {
-	    my ($date, $desc, $debcrd, $code, $amt) = @$r;
+	    my ($bky, $nr, $date, $desc, $debcrd, $code, $amt) = @$r;
+
+	    $nr = $dbh->get_sequence("bsk_nr_0_seq") unless defined $nr;
+
 	    my $dagboek;
 	    if ( $debcrd ) {
 		unless ( $dbk_verkoop ) {
@@ -288,8 +337,7 @@ sub open {
 
 	    $dbh->sql_insert("Boekstukken",
 			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky bsk_open bsk_amount)],
-			     $dbh->get_sequence("bsk_nr_0_seq"),
-			     $desc, $dagboek, $date, BKY_PREVIOUS, $amt, $amt);
+			     $nr, $desc, $dagboek, $date, $bky, $amt, $amt);
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_rel_code bsr_amount
 				 bsr_type)],
