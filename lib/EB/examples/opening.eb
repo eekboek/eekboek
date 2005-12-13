@@ -19,11 +19,11 @@ adm_balans  241 12106.78
 adm_balans 1120  1131.92
 adm_balans  500  2443.18
 
-# Openstaande posten als volgt:
+# Openstaande posten uit voorgaande boekjaren als volgt:
 # Eerst, indien nodig, de betreffende relatie toevoegen:
 #relatie KESTER "Repro van Kesteren" 4950
 # Dan het openstaande boekstuk:
-#adm_relatie 2003-12-31 "Printwerk" crd "KESTER" 48.79
+#adm_relatie inkoop:2003:67 2003-12-31 "Printwerk" "KESTER" 48.79
 
 # Open de administratie.
 
