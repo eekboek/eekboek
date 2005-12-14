@@ -48,11 +48,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/perl5/site_perl/*/EB
 %{_libdir}/perl5/site_perl/*/EB.pm
 %{_libdir}/perl5/site_perl/*/*/auto/eekboek
+%{_mandir}/man1/*
 %{_mandir}/man3/*
 
 %changelog
 * Wed Dec 12 2005 Johan Vromans <jvromans@squirrel.nl> 0.22
 - Change some wordings.
+- Add man1.
 * Tue Dec 11 2005 Johan Vromans <jvromans@squirrel.nl> 0.21
 - Add INSTALL QUICKSTART
 * Thu Dec 08 2005 Johan Vromans <jvromans@squirrel.nl> 0.20
