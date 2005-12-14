@@ -59,6 +59,8 @@ use vars qw/
 
 our $VERSION = "1.14";
 
+=end stripped
+
 =cut
 
 # Operator precedence, higher means evaluate first.
@@ -159,6 +161,8 @@ sub VarIsDefFun {
 	return exists($self->{VarHash}->{$name}) ? 1 : 0;
 }
 
+=end stripped
+
 =cut
 
 # Parse a string argument, return a tree that can be evaluated.
@@ -209,6 +213,8 @@ sub ParseString {
 			$self->{PrintErrFunc}("Unrecognised input in expression at '%s'", $expr);
 			return;
 		}
+
+=end original
 
 =cut
 
@@ -567,6 +573,8 @@ sub FuncValue {
 	return '';
 }
 
+=end stripped
+
 =cut
 
 # Create a new parse/evalutation object.
@@ -617,7 +625,7 @@ EB::Expression - Evaluate arithmetic/string expressions
   use strict;
   use EB::Expression;
 
-  my $ArithEnv = new Math::Expression;
+  my $ArithEnv = new EB::Expression;
 
   my $tree = $ArithEnv->Parse('( 1 + 2 ) *3');
   ...
@@ -626,297 +634,24 @@ EB::Expression - Evaluate arithmetic/string expressions
 
 =head1 DESCRIPTION
 
-This is stripped version of Math::Expression.
-
-Many things you read here do not work.
-
-=head1 DESCRIPTION
-
-An expression needs to be first compiled (parsed) and the resulting tree may be run (evaluated)
-many times.
-The result of an evaluation is an array.
-You might also want to take computation results from stored variables.
-
-For further examples of use please see the test program for the module.
-
-=head2 Package functions
-
-=over 4
-
-=item new
-
-This must be used before anything else to obtain a handle that can be used in calling other
-functions.
-
-=item SetOpt
-
-The items following may be set.
-In many cases you will want to set a function to extend what the standard one does.
-
-=over 4
-
-=item PrintErrFunc
-
-This is a printf style function that will be called in the event of an error,
-the error text will not have a trailing newline.
-The default is C<printf STDERR>.
-
-=item VarHash
-
-The argument is a hash that will be used to store variables.
-If this is called several times it is possible to manage distinct name spaces.
-The name C<EmptyList> should, by convention, exist and be an empty array; this may be
-used to assign an empty value to a variable.
-
-=item VarGetFun
-
-This specifies the that function returns the value of a variable as an array.
-The arguments are: 0 - the value returned by C<new>; 1 - the name of the variable
-wanted.
-If no value is available you may return the empty array.
-
-=item VarIsDefFun
-
-This should return C<1> if the variable is defined, C<0> if it is not defined.
-The arguments are the same as for C<VarGetFun>.
-
-=item VarSetFun
-
-This sets the value of a variable as an array.
-The arguments are: 0 - the value returned by C<new>; 1 - the name of the variable
-to be set; 2 - the value to set as an array.
-The return value should be the variable value.
-
-=item VarSetScalar
-
-This sets the value of a variable as a simple scalar (ie one value).
-The arguments are: 0 - the value returned by C<new>; 1 - the name of the variable
-to be set; 2 - the value to set as a scalar.
-The return value should be the variable value.
-
-=item FuncEval
-
-This will evaluate functions.
-The arguments are: 0 - the value returned by C<new>; 1 - the name of the function
-to be evaluated; 2... - an array of function arguments.
-This should return the value of the function: scalar or array.
-
-=item AutoInit
-
-If true automatically initialise undefined values, to the empty string or '0' depending on use.
-The default is that undefined values cause an error, except that concatentation (C<.>)
-always results in the empty string being assumed.
-
-Example:
-
-  my %Vars = (
-	EmptyList       =>      [()],
-  );
-
-  $ArithEnv->SetOpt('VarHash' => \%Vars,
-	'VarGetFun' => \&VarValue,
-	'VarIsDefFun' => \&VarIsDef,
-	'PrintErrFunc' => \&MyPrintError,
-	'AutoInit' => 1,
-	);
-
-=back
-
-=item ParseString
-
-This parses an expression string and returns a tree that may be evaluated later.
-The arguments are: 0 - the value returned by C<new>; 1 - the string to parse.
-If there is an error a complaint will be made via C<PrintErrFunc> and the
-undefined value returned.
-
-=item CheckTree
-
-This checks a parsed tree.
-The arguments are: 0 - the value returned by C<new>; 1 - the tree to check.
-The input tree is returned.
-If there is an error a complaint will be made via C<PrintErrFunc> and the
-undefined value returned.
-
-=item Parse
-
-This combines C<ParseString> and C<CheckTree>.
-
-=item VarSetFun
-
-This sets a variable, see the description in &SetOpt.
-
-=item VarSetScalar
-
-This sets a variable, see the description in &SetOpt.
-
-=item FuncValue
-
-This evaluates a function, see the description in &SetOpt.
-
-=item EvalTree
-
-Evaluate a tree. The result is an array, if you are expecting a single value it is the last (probably $#'th) element.
-The arguments are: 0 - the value returned by C<new>; 1 - tree to evaluate; 2 - true if
-a variable name is to be returned rather than it's value (don't set this).
-You should not use this, use &Eval or &EvalToScalar instead.
-
-=item Eval
-
-Evaluate a tree. The result is an array, if you are expecting a single value it is the last (probably $#'th) element.
-The arguments are: 0 - the value returned by C<new>; 1 - tree to evaluate.
-
-=item EvalToScalar
-
-Evaluate a tree. The result is a scalar (simple variable).
-The arguments are: 0 - the value returned by C<new>; 1 - tree to evaluate.
-
-=back
-
-=head2 Functions that may be used in expressions
-
-The following functions may be used in expressions, if you want more than this write your own
-function evaluator and set it with &SetOpt;
-The POSIX package is used to provide some of the functions.
-
-=over 4
-
-=item int
-
-Returns the integer part of an expression.
-
-=item round
-
-Adds 0.5 to input and returns the integer part.
-
-=item split
-
-Perl C<split>, the 0th argument is the RE to split on, the last argument what will be split.
-
-=item join
-
-Joins arguments 1..$#, separating elements with the 0th argument.
-
-=item printf
-
-The standard perl C<printf>, returns the formatted result.
-
-=item mktime
-
-Passes all the arguments to C<mktime>, returns the result.
-
-=item strftime
-
-Passes all the arguments to C<strftime>, returns the result.
-
-=item localtime
-
-Returns the result of applying C<localtime> to the last argument.
-
-=item defined
-
-Applies the C<VarIsDefFun> to the last argument.
-
-=item aindex
-
-Searches the arguments for the last argument and returns the index.
-Return -1 if it is not found.
-Eg the following will return 1:
-
-  months := 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  aindex(months, 'Feb')
-
-=back
-
-=head2 Variables
-
-Variables can 3 three forms, there is no difference in usage between any of them.
-A variable name is either alphanumeric (starting with alpha), numeric (with
-a leading C<$> or C<${>, or any non white space between C<{}> or one non
-white space after a C<$>:
-
-	Variable
-	$Variable
-	${Variable}
-	$123
-	${123}
-	$#
-	${###=##}
-
-=head2 Literals
-
-Literals may be: integers, floating point in the form nn.nn, strings bounded by
-matching singe or double quotes. Escapes are not looked for in literal strings.
-
-=head2 Operators and precedence
-
-The operators should not surprise any Perl/C programmer, with the exception that assignemnt
-is C<:=>. Operators associate left to right except for C<:=> which associates right to left.
-Precedence may be overridden with parenthesis.
-Unary C<+> and  C<-> do not exist.
-<> is the same as C<!=>.
-
-	* / %
-	+ -
-	.	String concatenation
-	> < >= <= == != <>
-	lt gt le ge eq ne
-	&&
-	||
-	? :
-	,
-	:=
-
-=head2 Arrays
-
-Variables are implemented as arrays, if a simple scalar value is wanted (eg you want to go C<+>)
-the last element of the array is used.
-Arrays may be built using the comma operator, arrays may be joined using C<,> eg:
-
-	a1 := (1, 2, 3, 4)
-	a2 := (9, 8, 7, 6)
-	a1 , a2
-
-yeilds:
-
-	1, 2, 3, 4, 9, 8, 7, 6
-
-And:
-
-	a2 + 10
-
-yeilds:
-
-	16
-
-Arrays may be used to assign multiple values, eg:
-
-	(v1, v2, v3) := (42, 44, 48)
-
-If there are too many values the last variable receives the remainder.
-If there are not enough values the last ones are unchanged.
-
-=head2 Conditions
-
-Conditional assignment may be done by use of the ternary operator:
-
-	a > b ? ( c := 3 ) : 0
-
-Variables may be the result of a conditional, so below one of C<aa> or C<bb>
-is assigned a value:
-
-	a > b ? aa : bb := 124
+This is stripped version of L<Math::Expression>.
 
 =head1 AUTHOR
 
-Alain D D Williams <addw@phcomp.co.uk>
+Alain D D Williams <addw@phcomp.co.uk> wrote L<Math::Expression>.
 
-=head2 Copyright and Version
+Johan Vromans <jvromans@squirrel.nl> stripped it for use by the
+EekBoek program, see L</http://www.squirrel.nl/eekboek>.
 
-Version "1.14", this is available as: $Math::Expression::Version.
+=head2 COPYRIGHT
 
-Copyright (c) 2003 Parliament Hill Computers Ltd/Alain D D Williams. All rights reserved.
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself. Please see the module source
+*** Original Copyright Notice ***
+
+Copyright (c) 2003 Parliament Hill Computers Ltd/Alain D D Williams.
+All rights reserved.
+
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. Please see the module source
 for the full copyright.
 
 =cut

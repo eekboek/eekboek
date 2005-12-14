@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.3 2005/08/29 10:12:14 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.4 2005/12/14 09:33:59 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Aug 29 12:12:03 2005
-# Update Count    : 164
+# Last Modified On: Wed Dec 14 10:33:11 2005
+# Update Count    : 165
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -86,13 +86,13 @@ __END__
 
 =head1 NAME
 
-Shell::DeLuxe - A generic class to build line-oriented command interpreters.
+EB::Shell::DeLuxe - A generic class to build line-oriented command interpreters.
 
 =head1 SYNOPSIS
 
   package My::Shell;
 
-  use base qw(Shell::DeLuxe);
+  use base qw(EB::Shell::DeLuxe);
 
   sub do_greeting {
       return "Hello!"
@@ -100,12 +100,12 @@ Shell::DeLuxe - A generic class to build line-oriented command interpreters.
 
 =head1 DESCRIPTION
 
-Shell::DeLuxe is a base class designed for building command line
-programs.  It is based on (inherits from) Shell::Base;
+EB::Shell::DeLuxe is a base class designed for building command line
+programs.  It inherits from L<EB::Shell::Base>.
 
 =head2 Features
 
-Shell::DeLuxe extends Shell::Base with the following features:
+EB::Shell::DeLuxe extends EB::Shell::Base with the following features:
 
 =over 4
 
@@ -136,9 +136,9 @@ reference to a hash of name => value parameters:
   my $opts = { OPTION_1 => $one,
 	       OPTION_2 => $two };
 
-  my $shell = Shell::DeLuxe->new($opts);
+  my $shell = EB::Shell::DeLuxe->new($opts);
 
-Shell::DeLuxe extends the options of Shell::Base with:
+EB::Shell::DeLuxe extends the options of EB::Shell::Base with:
 
 =over 4
 
@@ -155,7 +155,7 @@ Controls whether this instance executes a single command, that is
 contained as an array reference in the value of this option.
 
   my $opts = { command => [ "exec", "this", "command" ] };
-  my $shell = Shell::DeLuxe->new($opts);
+  my $shell = EB::Shell::DeLuxe->new($opts);
   $shell->run;
 
 =item prompt
