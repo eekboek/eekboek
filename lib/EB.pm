@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.23 2005/12/13 20:15:03 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.24 2005/12/14 16:20:54 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 13 21:14:57 2005
-# Update Count    : 89
+# Last Modified On: Wed Dec 14 17:14:05 2005
+# Update Count    : 93
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -87,3 +87,50 @@ INIT {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+EB - EekBoek * Bookkeeping software for small and medium-size businesses
+
+=head1 SYNOPSIS
+
+EekBoek is a bookkeeping package for small and medium-size businesses.
+Unlike other accounting software, EekBoek has both a command-line
+interface (CLI) and a graphical user-interface (GUI). Furthermore, it
+has a complete Perl API to create your own custom applications.
+
+EekBoek is designed for the Dutch/European market and currently
+available in Dutch only. An English translation is in the works (help
+appreciated).
+
+=head1 DESCRIPTION
+
+For a description how to use the program, see L<http://www.squirrel.nl/eekboek/docs/index.html>.
+
+=head1 BUGS AND PROBLEMS
+
+Please use the eekboek-users mailing list at SourceForge.
+
+=head1 AUTHOR AND CREDITS
+
+Johan Vromans (jvromans@squirrel.nl) wrote this module.
+
+Web site: L<http://www.squirrel.nl/eekboek>.
+
+=head1 COPYRIGHT AND DISCLAIMER
+
+This program is Copyright 2005 by Squirrel Consultancy. All
+rights reserved.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of either: a) the GNU General Public License as
+published by the Free Software Foundation; either version 1, or (at
+your option) any later version, or b) the "Artistic License" which
+comes with Perl.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See either the
+GNU General Public License or the Artistic License for more details.
