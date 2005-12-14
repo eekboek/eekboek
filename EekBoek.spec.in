@@ -11,17 +11,18 @@ URL: http://www.squirrel.nl/eekboek/
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
 Prefix: %{_prefix}
 
-Summary: Accounting software for small and medium-size businesses
+Summary: Bookkeeping software for small and medium-size businesses
 License: Artistic
 Group: Applications/Productivity
 
 %description
-EekBoek is a accounting package for small and medium-size businesses.
+EekBoek is a bookkeeping package for small and medium-size businesses.
 Unlike other accounting software, EekBoek has both a command-line
-interface (CLI) and a graphical user-interface (GUI). Furthermore,
-it has a complete Perl API to create your own custom applications.
-EekBoek is designed for the dutch/european market and currently
-available in dutch only.
+interface (CLI) and a graphical user-interface (GUI). Furthermore, it
+has a complete Perl API to create your own custom applications.
+EekBoek is designed for the Dutch/European market and currently
+available in Dutch only. An English translation is in the works (help
+appreciated).
 
 %prep
 %setup -q
@@ -50,6 +51,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/*
 
 %changelog
+* Wed Dec 12 2005 Johan Vromans <jvromans@squirrel.nl> 0.22
+- Change some wordings.
+* Tue Dec 11 2005 Johan Vromans <jvromans@squirrel.nl> 0.21
+- Add INSTALL QUICKSTART
 * Thu Dec 08 2005 Johan Vromans <jvromans@squirrel.nl> 0.20
 - Include doc/html.
 * Tue Nov 22 2005 Johan Vromans <jvromans@squirrel.nl> 0.19
