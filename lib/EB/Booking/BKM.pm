@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.29 2005/12/13 13:38:37 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.30 2005/12/20 19:41:55 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 13 14:34:25 2005
-# Update Count    : 282
+# Last Modified On: Tue Dec 20 20:41:12 2005
+# Update Count    : 283
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -232,7 +232,7 @@ sub perform {
 	}
 	elsif ( $type eq "deb" || $type eq "crd" ) {
 	    my $debcrd = $type eq "deb" ? 1 : 0;
-	    my $dd = parse_date($args->[0]);
+	    my $dd = parse_date($args->[0], substr($begin, 0, 4));
 	    if ( $dd ) {
 		shift(@$args);
 		return unless $self->in_bky($dd, $begin, $end);
