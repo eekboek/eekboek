@@ -1,9 +1,9 @@
-# RCS Info        : $Id: Html.pm,v 1.1 2005/11/19 22:05:47 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.2 2005/12/20 20:47:54 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Nov 19 22:03:38 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 19 23:00:26 2005
-# Update Count    : 17
+# Last Modified On: Sat Dec 17 16:27:55 2005
+# Update Count    : 18
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -28,7 +28,7 @@ sub new {
 sub outline {
     my ($self, $type, @args) = @_;
 
-    my ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = ('') x 9;
+    my ($gbk, $desc, $id, $date, $deb, $crd, $rel) = ('') x 7;
     my $bsk = '';
 
     my $cc = "c_gbk";
@@ -44,8 +44,7 @@ sub outline {
 	$cc = "c_bgn";
     }
     elsif ( $type eq 'D' ) {
-	($desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = @args;
-	$bsk = $dbk . ":" . $nr;
+	($desc, $id, $date, $deb, $crd, $bsk, $rel) = @args;
 	$cc = "c_desc";
     }
     elsif ( $type eq 'T2' ) {

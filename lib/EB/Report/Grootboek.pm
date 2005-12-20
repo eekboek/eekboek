@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.16 2005/11/16 14:00:59 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.17 2005/12/20 20:47:54 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Nov 14 21:48:02 2005
-# Update Count    : 204
+# Last Modified On: Sat Dec 17 16:24:12 2005
+# Update Count    : 207
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -181,7 +181,7 @@ sub perform {
 	    }
 	    $rep->outline('D', $desc, $bsk_id, $date,
 			  $amount >= 0 ? (numfmt($amount), $n0) : ($n0, numfmt(-$amount)),
-			  $dbk_desc, $bsk_nr, $rel||"") if $detail > 1;
+			  join(":", $dbk_desc, $bsk_nr), $rel||"") if $detail > 1;
 	}
 
 	$rep->outline('T2', _T("Totaal mutaties"),
@@ -226,7 +226,7 @@ use EB;
 use base qw(EB::Report::GenBase);
 
 my ($title, $per, $adm, $ident, $now);
-my ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel);
+my ($gbk, $desc, $id, $date, $deb, $crd, $nr, $rel);
 
 sub new {
     my ($class, $opts) = @_;
@@ -255,7 +255,7 @@ sub start {
 sub outline {
     my ($self, $type, @args) = @_;
 
-    ($gbk, $desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = ('') x 9;
+    ($gbk, $desc, $id, $date, $deb, $crd, $nr, $rel) = ('') x 8;
 
     if ( $type eq 'H1' ) {
 	($gbk, $desc) = @args;
@@ -270,7 +270,7 @@ sub outline {
     }
 
     if ( $type eq 'D' ) {
-	($desc, $id, $date, $deb, $crd, $dbk, $nr, $rel) = @args;
+	($desc, $id, $date, $deb, $crd, $nr, $rel) = @args;
 	$self->{fh}->format_write(__PACKAGE__.'::gbkfmt3');
 	return;
     }
@@ -316,27 +316,27 @@ sub finish {
 }
 
 format gbkfmt0 =
-@||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+@||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 $title
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $per
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $adm, $ident . ", " . $now . (" " x (10-length(_T("Relatie"))))
 
-@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @>>>  @<<<<<<<<<
-_T("GrBk"), _T("Grootboek/Boekstuk"), _T("Datum"), _T("Debet"), _T("Credit"), _T("Dagboek"), _T("Nr"), _T("Relatie")
--------------------------------------------------------------------------------------------@<<<<<<<<<
+@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<<<<<  @<<<<<<<<<
+_T("GrBk"), _T("Grootboek/Boekstuk"), _T("Datum"), _T("Debet"), _T("Credit"), _T("BoekstukNr"), _T("Relatie")
+-----------------------------------------------------------------------------------------@<<<<<<<<<
 "-" x length(_T("Relatie"))
 .
 
 format gbkfmtl =
--------------------------------------------------------------------------------------------@<<<<<<<<<
+-----------------------------------------------------------------------------------------@<<<<<<<<<
 "-" x length(_T("Relatie"))
 .
 
 format gbkfmt1 =
-@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @<<<  @<<<<<<<<<
-$gbk, $desc, $date, $deb, $crd, $dbk, $nr, $rel
+@>>>>  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<<<<<  @<<<<<<<<<
+$gbk, $desc, $date, $deb, $crd, $nr, $rel
 .
 
 format gbkfmt2 =
@@ -345,8 +345,8 @@ $desc, $deb, $crd
 .
 
 format gbkfmt3 =
-         ^<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<  @<<<  @<<<<<<<<<
-$desc, $date, $deb, $crd, $dbk, $nr, $rel
+         ^<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>> @>>>>>>>>> @>>>>>>>>>  @<<<<<<<<<<<<<  @<<<<<<<<<
+$desc, $date, $deb, $crd, $nr, $rel
 ~~       ^<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $desc
 .
