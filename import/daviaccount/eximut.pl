@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.10 2005/10/19 16:40:55 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.11 2005/12/20 20:46:44 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 15 20:09:51 2005
-# Update Count    : 216
+# Last Modified On: Tue Dec 20 20:50:59 2005
+# Update Count    : 219
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -126,7 +126,7 @@ sub flush {
 	foreach my $r ( @$mut ) {
 	    check_rel($r0->{crdnr}, $r->{reknr}, "C");
 	}
-	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}),
+	print($dagboeken[$dbk], ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
 	      ' "' . uc($r0->{crdnr}) . '"');
 	foreach my $r ( @$mut ) {
 	    print join(" ", "", '"' . $r->{oms25} . '"',
@@ -141,7 +141,7 @@ sub flush {
 	foreach my $r ( @$mut ) {
 	    check_rel($r0->{debnr}, $r->{reknr}, "D");
 	}
-	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}),
+	print($dagboeken[$dbk], ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
 	      ' "' . uc($r0->{debnr}) . '"');
 	foreach my $r ( @$mut ) {
 	    print join(" ", "", '"' . $r->{oms25} . '"',
@@ -175,7 +175,7 @@ sub flush {
 	    }
 	}
 
-	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
+	print($dagboeken[$dbk], ":", $r0->{bkstnr}, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
 	my $tot = 0;
 	foreach my $r ( @$mut ) {
 	    if ( $r->{crdnr} ) {
