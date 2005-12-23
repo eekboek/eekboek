@@ -1,9 +1,9 @@
-                                              Grootboek
+                                             Grootboek
 Periode: 2004-01-01 t/m 2004-12-31
-EekBoek Demo Administratie 2004                                                EekBoek, 2004-12-31
+EekBoek Demo Administratie 2004                                              EekBoek, 2004-12-31
 
- GrBk  Grootboek/Boekstuk                   Datum      Debet     Credit  Dagboek       Nr  Relatie
---------------------------------------------------------------------------------------------------
+ GrBk  Grootboek/Boekstuk                   Datum      Debet     Credit  BoekstukNr      Relatie
+------------------------------------------------------------------------------------------------
   230  Totaal Inventaris en inrichtin                1344,37
   231  Totaal Afschrijving inventaris                           1716,07
   240  Totaal Computers                             13378,48
@@ -24,5 +24,5 @@ EekBoek Demo Administratie 2004                                                E
  8300  Totaal Omzet cursussen                                   6500,00
 
        Totaal mutaties                              10971,08   10971,08
---------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
        Totaal                                       26825,85   26825,85
