@@ -36,6 +36,7 @@ rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 
 rm -f ${RPM_BUILD_ROOT}%{_libdir}/perl*/*/*/perllocal.pod
+rm -f ${RPM_BUILD_ROOT}%{_libdir}/perl*/*/*/*/auto/eekboek/.packlist
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -45,13 +46,15 @@ rm -rf $RPM_BUILD_ROOT
 %doc CHANGES README INSTALL QUICKSTART example doc/html TODO
 
 %{_bindir}/ebshell
-%{_libdir}/perl5/site_perl/*/EB
-%{_libdir}/perl5/site_perl/*/EB.pm
-%{_libdir}/perl5/site_perl/*/*/auto/eekboek
+%{perl_sitelib}/EB
+%{perl_sitelib}/EB.pm
+%{perl_sitelib}/EekBoek.pm
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 
 %changelog
+* Fri Dec 23 2005 Wytze van der Raay <wytze@nlnet.nl> 0.23
+- Fixes for x86_64 building problems.
 * Wed Dec 12 2005 Johan Vromans <jvromans@squirrel.nl> 0.22
 - Change some wordings.
 - Add man1.
