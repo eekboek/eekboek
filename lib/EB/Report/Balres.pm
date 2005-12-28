@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.12 2005/11/19 22:04:23 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.13 2005/12/28 22:11:26 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 19 20:53:55 2005
-# Update Count    : 293
+# Last Modified On: Sat Dec 24 21:52:38 2005
+# Update Count    : 294
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -65,22 +65,22 @@ sub perform {
     my $ctot = 0;
     my $rep = EB::Report::GenBase->backend($self, $opts);
 
-    my ($begin, $end);
-    if ( $opts->{periode} ) {
-	($begin,$end) = @{$opts->{periode}};
-    }
-    elsif ( $opts->{boekjaar} ) {
-	$begin = $dbh->lookup($opts->{boekjaar}, qw(Boekjaren bky_code bky_begin));
-	$end = $dbh->lookup($opts->{boekjaar}, qw(Boekjaren bky_code bky_end));
-	unless ( $end ) {
-	    warn("?".__x("Onbekend boekjaar: {code}", code => $opts->{boekjaar})."\n");
-	    return;
-	}
-    }
-    else {
-	$begin = $dbh->adm("begin");
-	$end = $dbh->adm("end");
-    }
+    my ($begin, $end) = @{$rep->{periode}};
+#    if ( $opts->{periode} ) {
+#	($begin,$end) = @{$opts->{periode}};
+#    }
+#    elsif ( $opts->{boekjaar} ) {
+#	$begin = $dbh->lookup($opts->{boekjaar}, qw(Boekjaren bky_code bky_begin));
+#	$end = $dbh->lookup($opts->{boekjaar}, qw(Boekjaren bky_code bky_end));
+#	unless ( $end ) {
+#	    warn("?".__x("Onbekend boekjaar: {code}", code => $opts->{boekjaar})."\n");
+#	    return;
+#	}
+#    }
+#    else {
+#	$begin = $dbh->adm("begin");
+#	$end = $dbh->adm("end");
+#    }
 
     my $now = $opts->{per} || $end;
     $now = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $ENV{EB_SQL_NOW} lt $now;
