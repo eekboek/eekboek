@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.29 2005/12/12 10:53:01 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.30 2005/12/28 20:16:29 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Dec 12 11:40:37 2005
-# Update Count    : 249
+# Last Modified On: Wed Dec 28 17:55:15 2005
+# Update Count    : 251
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -371,8 +371,13 @@ sub connectdb {
     $dbname ||= $ENV{EB_DB_NAME};
     $dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
     $dbname = "dbi:Pg:dbname=" . $dbname;
+    $dbname .= ";host=" . $ENV{EB_DB_HOST} if $ENV{EB_DB_HOST};
+    $dbname .= ";port=" . $ENV{EB_DB_PORT} if $ENV{EB_DB_PORT};
 
-    $dbh = DBI::->connect($dbname)
+    my $dbuser = $ENV{EB_DB_USER};
+    my $dbpass = $ENV{EB_DB_PASSWORD};
+
+    $dbh = DBI::->connect($dbname, $dbuser, $dbpass)
       or die("?".__x("Database verbindingsprobleem: {err}",
 		     err => $DBI::errstr)."\n");
     $dbh->{RaiseError} = 1;
