@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.46 2005/12/12 10:53:01 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.47 2005/12/28 22:12:32 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Dec 12 11:46:04 2005
-# Update Count    : 617
+# Last Modified On: Wed Dec 28 15:49:01 2005
+# Update Count    : 626
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -399,6 +399,7 @@ sub do_balans {
 		 EB::Report::GenBase->backend_options(EB::Report::Balres::, $opts),
 	       ], $opts);
     return unless argcnt(@args, 0);
+
     EB::Report::Balres->new->balans($opts);
     undef;
 }
@@ -431,6 +432,7 @@ sub do_result {
 		 EB::Report::GenBase->backend_options(EB::Report::Balres::, $opts),
 	       ], $opts);
     return unless argcnt(@args, 0);
+
     EB::Report::Balres->new->result($opts);
     undef;
 }
@@ -595,6 +597,68 @@ Opties:
                 in deze periode meer mogelijk.
                 Uit historische overwegingen kan dit ook door het
                 woord "definitief" achter de opdracht te plaatsen.
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
+EOS
+}
+
+sub do_debiteuren {
+    my ($self, @args) = @_;
+    my $opts = { d_boekjaar => $bky || $dbh->adm("bky"),
+	       };
+
+    require EB::Report::Debcrd;
+
+    return unless
+    parse_args(\@args,
+	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
+		 'periode=s' => sub { periode_arg($opts, @_) },
+	       ], $opts);
+
+    EB::Report::Debcrd->new->debiteuren(\@args, $opts);
+}
+
+sub help_debiteuren {
+    <<EOS;
+Toont een overzicht van debiteuren.
+
+  debiteuren [ opties ] [ relatie-codes ]
+
+Opties:
+
+  --periode XXX   periode
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
+EOS
+}
+
+sub do_crediteuren {
+    my ($self, @args) = @_;
+    my $opts = { d_boekjaar => $bky || $dbh->adm("bky"),
+	       };
+
+    require EB::Report::Debcrd;
+
+    return unless
+    parse_args(\@args,
+	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
+		 'periode=s' => sub { periode_arg($opts, @_) },
+	       ], $opts);
+
+    EB::Report::Debcrd->new->crediteuren(\@args, $opts);
+}
+
+sub help_crediteuren {
+    <<EOS;
+Toont een overzicht van crediteuren.
+
+  crediteuren [ opties ] [ relatie-codes ]
+
+Opties:
+
+  --periode XXX   periode
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
