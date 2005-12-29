@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.47 2005/12/28 22:12:32 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.48 2005/12/29 16:38:38 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 28 15:49:01 2005
-# Update Count    : 626
+# Last Modified On: Thu Dec 29 17:38:07 2005
+# Update Count    : 627
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -612,7 +612,7 @@ sub do_debiteuren {
 
     return unless
     parse_args(\@args,
-	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
+	       [ EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
 		 'periode=s' => sub { periode_arg($opts, @_) },
 	       ], $opts);
 
@@ -643,7 +643,7 @@ sub do_crediteuren {
 
     return unless
     parse_args(\@args,
-	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
+	       [ EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
 		 'periode=s' => sub { periode_arg($opts, @_) },
 	       ], $opts);
 
