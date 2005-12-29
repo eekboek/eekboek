@@ -168,7 +168,9 @@ sub add {
 		$more++;
 	    }
 	}
-	printf {$self->{fd}} ($self->{_format}, @v);
+	my $t = sprintf($self->{_format}, @v);
+	$t =~ s/ +$//;
+	print {$self->{fd}} ($t);
 	last unless $more;
     }
 
@@ -183,12 +185,14 @@ sub _checkhdr {
 
     $self->{_needhdr} = 0;
 
-    printf {$self->{fd}} ("%s\n%s\n%-" . ($self->{_width}-31) . "s%31s\n\n" .
-			  $self->{_format},
-			  _center($self->{_title1}, $self->{_width}),
-			  $self->{_title2},
-			  $self->{_title3l}, $self->{_title3r},
-			  map { $_->{title} } @{$self->{_fields}});
+    my $t = sprintf("%s\n%s\n%-" . ($self->{_width}-31) . "s%31s\n\n" .
+		    $self->{_format},
+		    _center($self->{_title1}, $self->{_width}),
+		    $self->{_title2},
+		    $self->{_title3l}, $self->{_title3r},
+		    map { $_->{title} } @{$self->{_fields}});
+    $t =~ s/ +$//m;
+    print {$self->{fd}} ($t);
     $self->line;
     $self->_checkskip(1);	# cancel skips.
 }
