@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.19 2005/12/02 15:36:59 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.20 2005/12/30 16:35:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec  2 16:36:41 2005
-# Update Count    : 334
+# Last Modified On: Fri Dec 30 17:35:11 2005
+# Update Count    : 347
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -446,15 +446,20 @@ sub report {
 
     $rep->outline('X', "xx", "Onbekend", undef, numfmt($data->{onbekend})) if $data->{onbekend};
 
+    my @msg;
     if ( $data->{btw_delta} ) {
-	$rep->finish(__x("Er is een verschil van {amount}".
-			 " tussen de berekende en werkelijk ingehouden BTW.".
-			 " Voor de aangifte is de werkelijk ingehouden BTW gebruikt.",
-			 amount => numfmt($data->{btw_delta})));
+	push(@msg,
+	     __x("Er is een verschil van {amount}".
+		 " tussen de berekende en werkelijk ingehouden BTW.".
+		 " Voor de aangifte is de werkelijk ingehouden BTW gebruikt.",
+		 amount => numfmt($data->{btw_delta})));
     }
-    else {
-	$rep->finish;
+    if ( $self->{periode} =~ /^\d\d\d\d$/ ) { # aangifte per jaar
+	if ( my $msg = kleine_ondernemers($self->{periode}, $data->{sub1}) ) {
+	    push(@msg, $msg);
+	}
     }
+    $rep->finish(@msg);
 
     if ( $opts->{close} ) {
 	$dbh->adm("btwbegin", $self->{p_next});	# implied commit
@@ -487,6 +492,26 @@ sub roundup {
 	$vb = -floor(abs($vb));
     }
     $vb;
+}
+
+sub kleine_ondernemers {
+    my ($year, $amount) = @_;
+
+    # Formule lijkt linds 1995 ongwijzigd, alleen de bedragen veranderen.
+    my %mmtab = ( 2005 => [ 1345, 1883 ] );
+
+    return "" unless exists $mmtab{$year};
+
+    my ($min, $max) = @{$mmtab{$year}};
+    if ( $amount <= $min ) {
+	return __x("Het te betalen bedrag is minder dan {ko} en hoeft niet te worden betaald (Regeling Kleine Ondernemers).", ko => $min)."\n";
+    }
+    elsif ( $amount > $min && $amount <= $max ) {
+	return __x("Het te betalen bedrag is minder dan {ko}. U hoeft slechts {amt} te betalen (Regeling Kleine Ondernemers).",
+		   ko => $max,
+		   amt => $amount - (2.5 * ($max - $amount)))."\n";
+    }
+    return "";
 }
 
 package EB::Report::BTWAangifte::Text;
@@ -540,8 +565,10 @@ sub start {
 }
 
 sub finish {
-    my ($self, $notice) = @_;
-    warn("!$notice\n") if $notice;
+    my ($self, @notice) = @_;
+    foreach my $notice ( @notice ) {
+	warn("!$notice\n");
+    }
     $self->{fh}->close;
 }
 
