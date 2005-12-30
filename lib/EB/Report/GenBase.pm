@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.7 2005/11/19 22:04:23 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.8 2005/12/30 17:09:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 19 18:46:28 2005
-# Update Count    : 63
+# Last Modified On: Thu Dec 29 18:00:14 2005
+# Update Count    : 74
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -66,10 +66,12 @@ sub backend {
     $pkg =~ s;::;/;g;;
     $pkg .= ".pm";
 
-    # Try to load backend.
-    eval { require $pkg } unless do { no strict 'refs'; exists ${$class."::"}{new} };
-    die("?".__x("Onbekend uitvoertype: {gen}\n{err}",
-		gen => $gen, err => $@)."\n") if $@;
+    # Try to load backend. Gives user the opportunity to override.
+    eval { require $pkg };
+    if ( ! _loaded($class) ) {
+	die("?".__x("Onbekend uitvoertype: {gen}\n{err}",
+		    gen => $gen, err => $@)."\n");
+    }
     my $be = $class->new($opts);
 
     # Handle output redirection.
@@ -133,12 +135,16 @@ my %bec;
 sub backend_options {
     my (undef, $self, $opts) = @_;
 
-    my $pkg = ref($self) || $self;
+    my $package = ref($self) || $self;
+    my $pkg = $package;
     $pkg =~ s;::;/;g;;
     return @{$bec{$pkg}} if $bec{$pkg};
 
-    # Always assume a text backend.
-    my %be = ( text => 1 );
+    # Some standard backends may be included in the coding ...
+    my %be;
+    foreach my $std ( qw(text html csv) ) {
+	$be{$std} = 1 if _loaded($package . "::" . ucfirst($std));
+    }
     my @opts = qw(output=s page=i);
 
     # Find files.
@@ -169,4 +175,11 @@ sub backend_options {
     @opts;			# better be list context
 }
 
+# Helper.
+
+sub _loaded {
+    my $class = shift;
+    no strict "refs";
+    %{$class . "::"} ? 1 : 0;
+}
 1;

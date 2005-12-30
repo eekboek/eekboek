@@ -1,5 +1,7 @@
 /* $Id */
 
+/* CSS for Debiteuren/Crediteuren reports */
+
 @import eekboek.css;
 
 .title {
@@ -30,6 +32,7 @@ body {
     table-width: 100%;
 }
 
+/* Table and borders */
 table {
     border: thin solid #000000;
     border-collapse: collapse;
@@ -44,27 +47,37 @@ table th {
     border-bottom: thin solid #000000;
 }
 
-th { vertical-align: top }
-tr { vertical-align: top }
+/* By default, align rows at top */
 
-.r_h1 {
-    color: #0000FF;
-    border-top: thin solid #000000;
+th {
+    vertical-align: top;
 }
 
-.r_h2 {
-    color: #0000FF;
+tr {
+    vertical-align: top;
 }
 
-.r_v {
-    color: #FF0000;
-    border-top: thin solid #000000;
-}
-.r_grand {
-    border-top: thin solid #000000;
+/* Row styles */
+
+.r_total {
+    padding-bottom: 10pt;
+    font-weight: bold;
+    border-bottom: thin solid #000000;
 }
 
-.c_acct, .h_acct {
+.r_bsk, .r_h1, .r_grand {
+    font-weight: bold;
+}
+
+/* Column styles */
+
+.c_debcrd, .h_debcrd {
+    padding-left: 10pt;
+    padding-right: 10pt;
+    text-align: left;
+}
+
+.c_date, .h_date {
     padding-left: 10pt;
     padding-right: 10pt;
     text-align: left;
@@ -76,24 +89,33 @@ tr { vertical-align: top }
     text-align: left;
 }
 
-.c_deb, .h_deb {
+.c_amount, .h_amount {
     padding-left: 10pt;
     padding-right: 10pt;
     text-align: right;
 }
 
-.c_crd, .h_crd {
+.c_open, .h_open {
     padding-left: 10pt;
     padding-right: 10pt;
     text-align: right;
 }
 
-.r_h2 .c_desc {
-    padding-left: 20pt;
+.c_paid, .h_paid {
+    padding-left: 10pt;
+    padding-right: 10pt;
+    text-align: right;
 }
-.r_t2 .c_desc {
-    padding-left: 20pt;
+
+.c_bsknr, .h_bsknr {
+    padding-left: 10pt;
+    padding-right: 10pt;
+    text-align: left;
 }
-.r_d2 .c_desc {
-    padding-left: 30pt;
+
+/* Special style */
+
+.r_paid .c_desc {
+    text-indent: 1em;
 }
+
