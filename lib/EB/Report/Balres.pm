@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.15 2005/12/30 18:48:27 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.16 2005/12/30 21:54:45 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 19:47:14 2005
-# Update Count    : 342
+# Last Modified On: Fri Dec 30 21:03:32 2005
+# Update Count    : 344
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -267,15 +267,13 @@ sub new {
     my ($class, $opts) = @_;
     my $self = $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
     $self->{detail} = $opts->{detail};
-    $self->{style}  = $opts->{STYLE};
     return $self;
 }
 
 # Style mods.
 
 sub style {
-    my ($self, $style, $row, $cell) = @_;
-    return unless $style eq "balans" || $style eq "result";
+    my ($self, $row, $cell) = @_;
 
     my $stylesheet = {
 	d2    => {
@@ -308,7 +306,6 @@ use base qw(EB::Report::Reporter::Html);
 sub new {
     my ($class, $opts) = @_;
     my $self = $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
-    $self->{detail} = $opts->{detail};
     return $self;
 }
 

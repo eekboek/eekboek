@@ -1,10 +1,10 @@
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.2 2005/12/30 18:48:27 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.3 2005/12/30 21:54:45 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 19:25:30 2005
-# Update Count    : 105
+# Last Modified On: Fri Dec 30 22:27:22 2005
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -113,8 +113,12 @@ sub add {
 sub style { return }
 
 sub _getstyle {
-    my $self = shift;
-    return $self->style($self->{_style}, @_);
+    my ($self, $row, $cell) = @_;
+    return $self->style($row) unless $cell;
+
+    my $a = $self->style("_any", $cell) || {};
+    my $b = $self->style($row, $cell) || {};
+    return { %$a, %$b };
 }
 
 sub _checkhdr {

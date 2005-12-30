@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.3 2005/12/30 18:48:27 jv Exp $ ';
+my $RCS_Id = '$Id: Debcrd.pm,v 1.4 2005/12/30 21:54:45 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 19:35:32 2005
-# Update Count    : 114
+# Last Modified On: Fri Dec 30 21:01:37 2005
+# Update Count    : 115
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -177,8 +177,7 @@ sub new {
 # Style mods.
 
 sub style {
-    my ($self, $style, $row, $cell) = @_;
-    return unless $style eq "debrept" || $style eq "crdrept";
+    my ($self, $row, $cell) = @_;
 
     my $stylesheet = {
 	paid  => {

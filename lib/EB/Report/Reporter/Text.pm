@@ -1,10 +1,10 @@
 # Text.pm -- 
-# RCS Info        : $Id: Text.pm,v 1.1 2005/12/30 17:09:35 jv Exp $
+# RCS Info        : $Id: Text.pm,v 1.2 2005/12/30 21:54:45 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:21:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 16:14:11 2005
-# Update Count    : 48
+# Last Modified On: Fri Dec 30 22:22:49 2005
+# Update Count    : 54
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -76,6 +76,9 @@ sub add {
 		if ( $t->{line_after} ) {
 		    $lineafter->{$fname} =
 		      ($t->{line_after} eq "1" ? "-" : $t->{line_after}) x $col->{width};
+		}
+		if ($t->{truncate} ) {
+		    $values[-1] = substr($values[-1], 0, $widths[-1] - $indents[-1]);
 		}
 	    }
 	}
