@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.14 2005/12/30 17:09:35 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.15 2005/12/30 18:48:27 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 18:05:13 2005
-# Update Count    : 337
+# Last Modified On: Fri Dec 30 19:47:14 2005
+# Update Count    : 342
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -65,9 +65,9 @@ sub perform {
     my $dtot = 0;
     my $ctot = 0;
 
+    $opts->{STYLE} = $opts->{balans} ? "balans" : "result";
     $opts->{LAYOUT} =
-      [ { style => $opts->{balans} ? "balans" : "result" },
-        { name => "acct", title => _T("RekNr"), width => 6 },
+      [ { name => "acct", title => _T("RekNr"), width => 6 },
 	{ name => "desc",
 	  title => $detail >= 0 ? _T("Verdichting/Grootboekrekening")
 				: _T("Grootboekrekening"),
@@ -265,28 +265,40 @@ use base qw(EB::Report::Reporter::Text);
 
 sub new {
     my ($class, $opts) = @_;
-    my $self = $class->SUPER::new($opts->{LAYOUT});
+    my $self = $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
     $self->{detail} = $opts->{detail};
+    $self->{style}  = $opts->{STYLE};
     return $self;
 }
 
 # Style mods.
-# Row styles  are STYLE__<form style>__<row style>.
-# Cell styles are STYLE__<form style>__<row style>__<cell style>.
 
-sub STYLE__balans__d2__desc    { { indent => 2 } }
-sub STYLE__balans__h2__desc    { { indent => 2 } }
-sub STYLE__balans__t2__desc    { { indent => 1 } }
-sub STYLE__balans__t1          { { skip_after => (1 <= shift->{detail}) } }
-sub STYLE__balans__t2          { { skip_after => (2 <= shift->{detail}) } }
-sub STYLE__balans__grand       { { line_before => 1 } }
+sub style {
+    my ($self, $style, $row, $cell) = @_;
+    return unless $style eq "balans" || $style eq "result";
 
-sub STYLE__result__d2__desc    { goto &STYLE__balans__d2__desc }
-sub STYLE__result__h2__desc    { goto &STYLE__balans__h2__desc }
-sub STYLE__result__t2__desc    { goto &STYLE__balans__t2__desc }
-sub STYLE__result__t1          { goto &STYLE__balans__t1       }
-sub STYLE__result__t2          { goto &STYLE__balans__t2       }
-sub STYLE__result__grand       { goto &STYLE__balans__grand    }
+    my $stylesheet = {
+	d2    => {
+	    desc   => { indent      => 2 },
+	},
+	h2    => {
+	    desc   => { indent      => 2 },
+	},
+	t1    => {
+	    _style => { skip_after  => (1 <= $self->{detail}) },
+	},
+	t2    => {
+	    _style => { skip_after  => (2 <= $self->{detail}) },
+	    desc   => { indent      => 1 },
+	},
+	grand => {
+	    _style => { line_before => 1 }
+	},
+    };
+
+    $cell = "_style" unless defined($cell);
+    return $stylesheet->{$row}->{$cell};
+}
 
 package EB::Report::Balres::Html;
 
@@ -295,7 +307,7 @@ use base qw(EB::Report::Reporter::Html);
 
 sub new {
     my ($class, $opts) = @_;
-    my $self = $class->SUPER::new($opts->{LAYOUT});
+    my $self = $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
     $self->{detail} = $opts->{detail};
     return $self;
 }

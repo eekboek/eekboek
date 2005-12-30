@@ -1,10 +1,10 @@
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.1 2005/12/30 17:09:35 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.2 2005/12/30 18:48:27 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 16:22:43 2005
-# Update Count    : 103
+# Last Modified On: Fri Dec 30 19:25:30 2005
+# Update Count    : 105
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -15,10 +15,11 @@ use warnings;
 use EB;
 
 sub new {
-    my ($class, $config) = @_;
+    my ($class, $style, $config) = @_;
     $class = ref($class) || $class;
     my $self = bless { _fields => [],
-		       _fdata => {},
+		       _fdata  => {},
+		       _style  => $style,
 		     }, $class;
 
     foreach my $col ( @$config ) {
@@ -31,9 +32,6 @@ sub new {
 		    };
 	    $self->{_fdata}->{$a->{name}} = $a;
 	    push(@{$self->{_fields}}, $a);
-	}
-	elsif ( $col->{style} ) {
-	    $self->{_style} = $col->{style};
 	}
 	else {
 	    die("?"._T("Ontbrekend \"name\" of \"style\""));
@@ -112,10 +110,11 @@ sub add {
 
 }
 
+sub style { return }
+
 sub _getstyle {
     my $self = shift;
-    my $t = $self->can(join("__", "STYLE", $self->{_style}, @_));
-    return $t ? $t->($self) : undef;
+    return $self->style($self->{_style}, @_);
 }
 
 sub _checkhdr {

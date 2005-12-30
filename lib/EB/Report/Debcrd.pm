@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.2 2005/12/30 17:09:35 jv Exp $ ';
+my $RCS_Id = '$Id: Debcrd.pm,v 1.3 2005/12/30 18:48:27 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Dec 29 18:29:16 2005
-# Update Count    : 100
+# Last Modified On: Fri Dec 30 19:35:32 2005
+# Update Count    : 114
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -28,18 +28,6 @@ use EB::Finance;
 use EB::Report::GenBase;
 
 ################ Subroutines ################
-
-# Can't use constant since we need to modify the style and debcrd title.
-my $LAYOUT =
-  [{ style => "crdrept" },
-   { name  => "debcrd", title => _T("Crediteur"),    width => 10 },
-   { name  => "date",   title => _T("Datum"),        width => 10 },
-   { name  => "desc",   title => _T("Omschrijving"), width => 25 },
-   { name  => "amount", title => _T("Bedrag"),       width => 10, align => ">" },
-   { name  => "open",   title => _T("Openstaand"),   width => 10, align => ">" },
-   { name  => "paid",   title => _T("Betaald"),      width => 10, align => ">" },
-   { name  => "bsknr",  title => _T("Boekstuk"),     width => 13 },
-  ];
 
 sub new {
     return bless {};
@@ -59,6 +47,19 @@ sub _perform {
     my ($self, $args, $opts, $debcrd) = @_;
 
     $args = uc(join("|", @$args)) if $args;
+
+    $opts->{STYLE} = "debrept";
+    $opts->{LAYOUT} =
+      [ { name  => "debcrd",
+	  title => $debcrd ? _T("Debiteur") : _T("Crediteur"),
+	  width => 10 },
+	{ name  => "date",   title => _T("Datum"),        width => 10 },
+	{ name  => "desc",   title => _T("Omschrijving"), width => 25 },
+	{ name  => "amount", title => _T("Bedrag"),       width => 10, align => ">" },
+	{ name  => "open",   title => _T("Openstaand"),   width => 10, align => ">" },
+	{ name  => "paid",   title => _T("Betaald"),      width => 10, align => ">" },
+	{ name  => "bsknr",  title => _T("Boekstuk"),     width => 13 },
+      ];
 
     my $rep = EB::Report::GenBase->backend($self, { %$opts, debcrd => $debcrd });
 
@@ -170,28 +171,32 @@ use base qw(EB::Report::Reporter::Text);
 
 sub new {
     my ($class, $opts) = @_;
-    if ( $opts->{debcrd} ) {
-	$LAYOUT->[0]->{style} = "debrept";
-	$LAYOUT->[1]->{title} = _T("Debiteur");
-    }
-    $class->SUPER::new($LAYOUT);
+    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
 }
 
 # Style mods.
-# Row styles  are STYLE__<form style>__<row style>.
-# Cell styles are STYLE__<form style>__<row style>__<cell style>.
 
-sub STYLE__debrept__paid__desc    { { indent => 2 } }
-sub STYLE__debrept__total         { { skip_after => 1 } }
-sub STYLE__debrept__total__amount { { line_before => "-" } }
-sub STYLE__debrept__total__open   { { line_before => "-" } }
-sub STYLE__debrept__grand         { { line_before => 1 } }
+sub style {
+    my ($self, $style, $row, $cell) = @_;
+    return unless $style eq "debrept" || $style eq "crdrept";
 
-sub STYLE__crdrept__paid__desc    { goto &STYLE__debrept__paid__desc    }
-sub STYLE__crdrept__total         { goto &STYLE__debrept__total         }
-sub STYLE__crdrept__total__amount { goto &STYLE__debrept__total__amount }
-sub STYLE__crdrept__total__open   { goto &STYLE__debrept__total__open   }
-sub STYLE__crdrept__grand         { goto &STYLE__debrept__grand         }
+    my $stylesheet = {
+	paid  => {
+	    desc   => { indent      => 2 },
+	},
+	total => {
+	    _style => { skip_after  => 1 },
+	    amount => { line_before => 1 },
+	    open   => { line_before => 1 },
+	},
+	grand => {
+	    _style => { line_before => 1 }
+	},
+    };
+
+    $cell = "_style" unless defined($cell);
+    return $stylesheet->{$row}->{$cell};
+}
 
 package EB::Report::Debcrd::Html;
 
@@ -200,11 +205,7 @@ use base qw(EB::Report::Reporter::Html);
 
 sub new {
     my ($class, $opts) = @_;
-    if ( $opts->{debcrd} ) {
-	$LAYOUT->[0]->{style} = "debrept";
-	$LAYOUT->[1]->{title} = _T("Debiteur");
-    }
-    $class->SUPER::new($LAYOUT);
+    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
 }
 
 1;
