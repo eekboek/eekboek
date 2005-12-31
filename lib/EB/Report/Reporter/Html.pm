@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.1 2005/12/30 17:09:35 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.2 2005/12/31 16:46:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Dec 29 16:26:41 2005
-# Update Count    : 23
+# Last Modified On: Sat Dec 31 17:45:59 2005
+# Update Count    : 24
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -46,6 +46,8 @@ sub add {
     my $style = delete($data->{_style});
 
     $self->SUPER::add($data);
+
+    return unless %$data;
 
     $self->_checkhdr;
 
