@@ -1,10 +1,10 @@
 # Text.pm -- 
-# RCS Info        : $Id: Text.pm,v 1.2 2005/12/30 21:54:45 jv Exp $
+# RCS Info        : $Id: Text.pm,v 1.3 2005/12/31 16:34:06 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:21:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 22:22:49 2005
-# Update Count    : 54
+# Last Modified On: Sat Dec 31 17:33:00 2005
+# Update Count    : 55
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -122,7 +122,7 @@ sub add {
 	}
 	my $t = sprintf($self->{_format}, @v);
 	$t =~ s/ +$//;
-	push(@lines, $t);
+	push(@lines, $t) if $t =~ /\S/;
 	last unless $more;
     }
 
