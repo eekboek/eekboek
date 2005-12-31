@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.8 2005/12/14 09:34:04 jv Exp $
+# $Id: Base.pm,v 1.9 2005/12/31 10:32:05 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -14,7 +14,7 @@ package EB::Shell::Base;
 
 use strict;
 use EB;
-use vars qw( $VERSION $REVISION $PROMPT
+use vars qw( $XXVERSION $REVISION $PROMPT
              $RE_QUIT $RE_HELP $RE_SHEBANG
             );
 
@@ -25,8 +25,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$VERSION      = 0.05;   # $Date: 2005/12/14 09:34:04 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/;
+$XXVERSION    = 0.05;   # $Date: 2005/12/31 10:32:05 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -555,7 +555,7 @@ sub prompt_no {
 # Returns the version number.
 # ----------------------------------------------------------------------
 sub version {
-    return $VERSION;
+    return $XXVERSION;
 }
 
 # ----------------------------------------------------------------------
@@ -1801,7 +1801,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.8 $.
+This documentation describes C<Shell::Base>, $Revision: 1.9 $.
 
 =head1 COPYRIGHT
 
