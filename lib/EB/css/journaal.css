@@ -45,32 +45,22 @@ table th {
 th { vertical-align: top }
 tr { vertical-align: top }
 
--- Odd/Even rows
-.r_o { background: #FFFFFF; }
-.r_e { background: #E0E0E0; }
-
-.r_bsk {
+.r_head {
     color: #0000FF;
     border-top: thin solid #000000;
 }
-.r_tot {
+.r_total {
     color: #FF0000;
     border-top: thin solid #000000;
 }
 
-.c_typ, .h_typ {
+.c_acct, .h_acct {
     padding-left: 10pt;
     padding-right: 10pt;
     text-align: left;
 }
 
-.c_acc, .h_acc {
-    padding-left: 10pt;
-    padding-right: 10pt;
-    text-align: left;
-}
-
-.c_dat, .h_dat {
+.c_date, .h_date {
     padding-left: 10pt;
     padding-right: 10pt;
     text-align: left;
@@ -82,13 +72,17 @@ tr { vertical-align: top }
     text-align: left;
 }
 
-.c_gbk, .h_gbk {
-    padding-left: 20pt;
+.c_desc, .h_desc {
+    padding-left: 10pt;
     padding-right: 10pt;
     text-align: left;
 }
 
-.c_bsr, .h_bsr {
+.r_data .c_desc, .r_data .c_bsk {
+    padding-left: 20pt;
+}
+
+.c_bsk, .h_bsk {
     padding-left: 10pt;
     padding-right: 10pt;
     text-align: left;
