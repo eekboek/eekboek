@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.22 2005/12/31 16:08:07 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.23 2006/01/02 11:38:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 31 16:35:07 2005
-# Update Count    : 260
+# Last Modified On: Mon Jan  2 12:37:20 2006
+# Update Count    : 261
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -53,7 +53,7 @@ sub journal {
 
     my $sth;
     if ( $nr ) {
-	if ( $nr =~ /^([[:alpha:]].+):(\d+)$/ ) {
+	if ( $nr =~ /^([[:alpha:]].*):(\d+)$/ ) {
 	    my $rr = $dbh->do("SELECT dbk_desc, dbk_id".
 			      " FROM Dagboeken".
 			      " WHERE dbk_desc ILIKE ?",
@@ -74,7 +74,7 @@ sub journal {
 				  $2, $rr->[1], $per ? @$per : ());
 	    $pfx ||= __x("Boekstuk {nr}", nr => "$rr->[0]:$2");
 	}
-	elsif ( $nr =~ /^([[:alpha:]].+)$/ ) {
+	elsif ( $nr =~ /^([[:alpha:]].*)$/ ) {
 	    my $rr = $dbh->do("SELECT dbk_desc, dbk_id".
 			      " FROM Dagboeken".
 			      " WHERE dbk_desc ILIKE ?",
