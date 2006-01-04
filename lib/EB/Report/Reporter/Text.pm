@@ -1,10 +1,10 @@
 # Text.pm -- 
-# RCS Info        : $Id: Text.pm,v 1.3 2005/12/31 16:34:06 jv Exp $
+# RCS Info        : $Id: Text.pm,v 1.4 2006/01/04 17:42:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:21:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 31 17:33:00 2005
-# Update Count    : 55
+# Last Modified On: Wed Jan  4 18:41:47 2006
+# Update Count    : 57
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -44,14 +44,16 @@ sub add {
 
     my $skip_after = 0;
     my $line_after = 0;
+    my $cancel_skip = 0;
     if ( $style and my $t = $self->_getstyle($style) ) {
 	$self->_skip if $t->{skip_before};
 	$skip_after   = $t->{skip_after};
 	$self->_line if $t->{line_before};
 	$line_after   = $t->{line_after};
+	$cancel_skip  = $t->{cancel_skip};
     }
 
-    $self->_checkskip;
+    $self->_checkskip($cancel_skip);
 
     my @values;
     my @widths;
