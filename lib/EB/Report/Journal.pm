@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.23 2006/01/02 11:38:19 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.24 2006/01/04 17:43:12 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan  2 12:37:20 2006
-# Update Count    : 261
+# Last Modified On: Wed Jan  4 18:43:00 2006
+# Update Count    : 263
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -184,10 +184,10 @@ sub style {
     my ($self, $row, $cell) = @_;
 
     my $stylesheet = {
-	head  => {
-	    _style => { skip_before => 1 },
-	},
 	data  => {
+	    _style => { skip_after  => 1,
+			cancel_skip => 1,
+		      },
 	    desc   => { indent      => 2 },
 	    bsk    => { indent      => 2 },
 	},
