@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.24 2006/01/04 17:43:12 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.25 2006/01/04 21:59:13 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  4 18:43:00 2006
-# Update Count    : 263
+# Last Modified On: Wed Jan  4 22:12:52 2006
+# Update Count    : 264
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -192,7 +192,8 @@ sub style {
 	    bsk    => { indent      => 2 },
 	},
 	total => {
-	    _style => { line_before => 1 }
+	    _style => { line_before => 1 },
+	    desc   => { excess      => 1 },
 	},
     };
 

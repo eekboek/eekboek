@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.8 2005/12/30 17:09:35 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.9 2006/01/04 21:59:13 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Dec 29 18:00:14 2005
-# Update Count    : 74
+# Last Modified On: Wed Jan  4 21:41:45 2006
+# Update Count    : 76
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -113,6 +113,7 @@ sub backend {
 	$be->{per_begin} = $begin;
 	$be->{per_end} = $end;
 	$be->{periodex} = 3;
+	$be->{boekjaar} = $bky;
     }
     else {
 	$be->{periode} = [ $dbh->adm("begin"),
@@ -124,6 +125,9 @@ sub backend {
 
     if ( $be->{per_end} gt iso8601date() ) {
 	$be->{periode}->[1] = $be->{per_end} = iso8601date();
+    }
+    if ( $ENV{EB_SQL_NOW} && $be->{per_end} gt $ENV{EB_SQL_NOW} ) {
+	$be->{periode}->[1] = $be->{per_end} = $ENV{EB_SQL_NOW};
     }
 
     # Return instance.

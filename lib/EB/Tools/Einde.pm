@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Einde.pm,v 1.4 2005/12/02 15:33:04 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.5 2006/01/04 21:59:13 jv Exp $ ';
 
 package main;
 
@@ -7,12 +7,12 @@ our $dbh;
 package EB::Tools::Einde;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.4 2005/12/02 15:33:04 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.5 2006/01/04 21:59:13 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Dec  1 19:16:11 2005
-# Update Count    : 152
+# Last Modified On: Wed Jan  4 21:57:40 2006
+# Update Count    : 164
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -74,6 +74,17 @@ sub perform {
 
     $dbh->commit, return if $opts->{verwijder};
 
+    $opts->{STYLE} = "journaal";
+    $opts->{LAYOUT} =
+      [ { name => "date", title => _T("Datum"),              width => 10, },
+	{ name => "desc", title => _T("Boekstuk/Grootboek"), width => 30, },
+	{ name => "acct", title => _T("Rek"),                width =>  5, align => ">", },
+	{ name => "deb",  title => _T("Debet"),              width =>  9, align => ">", },
+	{ name => "crd",  title => _T("Credit"),             width =>  9, align => ">", },
+	{ name => "bsk",  title => _T("Boekstuk/regel"),     width => 30, },
+	{ name => "rel",  title => _T("Relatie"),            width => 10, },
+      ];
+
     my $rep;
     $rep = EB::Report::GenBase->backend(EB::Report::Journal::, $opts) if $jnl;
 
@@ -103,12 +114,21 @@ sub perform {
 			__x("Afsluiting boekjaar {bky}", bky => $bky));
 	}
 	unless ( $desc ) {
-	    $rep->outline('H', $end, undef, 1, "<<"._T("Systeemdagboek").">>:$bky", "");
+	    $rep->add({ _style => 'head',
+			date => $end,
+			desc => join(":", "<<"._T("Systeemdagboek").">>", $bky, 1),
+		      });
 	    $desc = "Afboeken Resultaatrekeningen";
 	}
 	$acc_balance = -$acc_balance;
-	$rep->outline('D', $end, $dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
-		      $acc_id, numdebcrd($acc_balance), $desc, '');
+	$rep->add({ _style => 'data',
+		    date => $end,
+		    desc => $dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
+		    acct => $acc_id,
+		    $acc_balance >= 0 ? ( deb => numfmt($acc_balance) )
+				      : ( crd => numfmt(-$acc_balance) ),
+		    bsk  => $desc,
+		  });
 	$dtot += $acc_balance if $acc_balance > 0;
 	$ctot -= $acc_balance if $acc_balance < 0;
     }
@@ -123,8 +143,14 @@ sub perform {
 
 	if ( $jnl ) {
 	    $tot = -$tot;
-	    $rep->outline('D', $end, $d, #$dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
-			  $dbh->std_acc("winst"), numdebcrd(-$tot), $desc, '');
+	    $rep->add({ _style => 'data',
+			date => $end,
+			desc => $d,
+			acct => $dbh->std_acc("winst"),
+			$tot >= 0 ? ( crd => numfmt($tot) )
+				  : ( deb => numfmt(-$tot) ),
+		    bsk  => $desc,
+		  });
 	    $ctot += $tot if $tot > 0;
 	    $dtot -= $tot if $tot < 0;
 	}
@@ -150,16 +176,25 @@ sub perform {
 			__x("Afsluiting boekjaar {bky}", bky => $bky));
 	}
 	elsif ( !$desc ) {
-	    $rep->outline(' ');
+#	    $rep->outline(' ');
 	}
 	unless ( $desc ) {
-	    $rep->outline('H', $end, undef, 2, "<<"._T("Systeemdagboek").">>:$bky", "");
+	    $rep->add({ _style => 'head',
+			date => $end,
+			desc => join(":", "<<"._T("Systeemdagboek").">>", $bky, 2),
+		      });
 	    $desc = "Afboeken BTW rekeningen";
 	}
 
 	$acc_balance = -$acc_balance;
-	$rep->outline('D', $end, $dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
-		      $acc_id, numdebcrd($acc_balance), $desc, '');
+	$rep->add({ _style => 'data',
+		    date => $end,
+		    desc => $dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
+		    acct => $acc_id,
+		    $acc_balance >= 0 ? ( deb => numfmt($acc_balance) )
+				      : ( crd => numfmt(-$acc_balance) ),
+		    bsk  => $desc,
+		  });
 	$dtot += $acc_balance if $acc_balance > 0;
 	$ctot -= $acc_balance if $acc_balance < 0;
     }
@@ -175,17 +210,25 @@ sub perform {
 
 	if ( $jnl ) {
 	    $tot = -$tot;
-	    $rep->outline('D', $end, $acc_desc, $acc_id, numdebcrd(-$tot), $desc, '');
+	    $rep->add({ _style => 'data',
+			date => $end,
+			desc => $acc_desc,
+			acct => $acc_id,
+			$tot >= 0 ? ( crd => numfmt($acc_balance) )
+				  : ( deb => numfmt(-$acc_balance) ),
+		    bsk  => $desc,
+		  });
 	    $ctot += $tot if $tot > 0;
 	    $dtot -= $tot if $tot < 0;
 	}
     }
 
     if ( $jnl && $did ) {
-	$rep->outline('T', __x("Totaal {pfx}",
-			      pfx => __x("Afsluiting boekjaar {bky}", bky => $bky)),
-		      $dtot, $ctot);
-
+	$rep->add({ _style => 'total',
+		    desc => __x("Totaal {pfx}", pfx => __x("Afsluiting boekjaar {bky}", bky => $bky)),
+		    deb  => numfmt($dtot),
+		    crd  => numfmt($ctot),
+	      });
 	$rep->finish;
     }
 
@@ -198,6 +241,5 @@ sub perform {
     $dbh->commit;
     undef;
 }
-
 
 1;

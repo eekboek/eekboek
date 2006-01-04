@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.11 2005/10/19 16:36:00 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.12 2006/01/04 21:59:13 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 19 12:32:40 2005
-# Update Count    : 251
+# Last Modified On: Sat Dec 31 21:59:29 2005
+# Update Count    : 284
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,6 +24,7 @@ use warnings;
 ################ The Process ################
 
 use EB;
+use EB::Finance;
 
 ################ Subroutines ################
 
@@ -48,14 +49,27 @@ sub perform {
     $opts->{detail} = $detail;
 
     my @grand = (0) x 4;	# grand total
+
+    $opts->{STYLE} = "proef";
+    $opts->{LAYOUT} =
+      [ { name => "acct", title => _T("RekNr"),    width => 6, },
+	{ name => "desc",
+	  title => $detail >= 0 ? _T("Verdichting/Grootboekrekening")
+				: _T("Grootboekrekening"),
+	  width => 40, },
+	{ name => "deb",  title => _T("Debet"),    width => 9, align => ">", },
+	{ name => "crd",  title => _T("Credit"),   width => 9, align => ">", },
+	{ name => "sdeb", title => _T("Saldo Db"), width => 9, align => ">" },
+	{ name => "scrd", title => _T("Saldo Cr"), width => 9, align => ">" },
+      ];
+
     my $rep = EB::Report::GenBase->backend($self, $opts);
 
     my $rr;
     my $date = $dbh->adm("begin");
     my $now = $ENV{EB_SQL_NOW} || iso8601date();
-    $rep->start(_T("Proef- en Saldibalans"),
-		__x("Periode: {from} t/m {to}",
-		    from => $date, to => substr($now,0,10)));
+
+    $rep->start(_T("Proef- en Saldibalans"));
 
     my $sth;
 
@@ -115,9 +129,29 @@ sub perform {
 	    next if "@t" eq "0 0 0 0";
 	    $tot[$_] += $t[$_] foreach 0..$#tot;
 	    next unless $detail > 1;
-	    $rep->addline('H1', @$hvd_hdr), undef $hvd_hdr if $hvd_hdr;
-	    $rep->addline('H2', @$vd_hdr), undef $vd_hdr if $vd_hdr;
-	    $rep->addline('D2', $acc_id, $acc_desc, @t);
+
+	    if ( $hvd_hdr ) {
+		$rep->add({ acct => $hvd_hdr->[0],
+			    desc => $hvd_hdr->[1],
+			    _style => 'h1',
+			  });
+		undef $hvd_hdr;
+	    }
+	    if ( $vd_hdr ) {
+		$rep->add({ acct => $vd_hdr->[0],
+			    desc => $vd_hdr->[1],
+			    _style => 'h2',
+			  });
+		undef $vd_hdr;
+	    }
+	    $rep->add({ _style => 'd2',
+			acct => $acc_id,
+			desc => $acc_desc,
+			deb  => numfmt($t[0]),
+			crd  => numfmt($t[1]),
+			$t[2] ? ( sdeb => numfmt($t[2]) ) : (),
+			$t[3] ? ( scrd => numfmt($t[3]) ) : (),
+		      });
 	}
 	if ( $tot[0] >= $tot[1] ) {
 	    $tot[2] = $tot[0] - $tot[1]; $tot[3] = 0;
@@ -138,8 +172,21 @@ sub perform {
 	    next if "@t" eq "0 0 0 0";
 	    $tot[$_] += $t[$_] foreach 0..$#tot;
 	    next unless $detail > 0;
-	    $rep->addline('H1', @$hvd_hdr), undef $hvd_hdr if $hvd_hdr;
-	    $rep->addline('T2', $vd->[0], __x("Totaal {vrd}", vrd => $vd->[1]), @t);
+	    if ( $hvd_hdr ) {
+		$rep->add({ acct => $hvd_hdr->[0],
+			    desc => $hvd_hdr->[1],
+			    _style => 'h1',
+			  });
+		undef $hvd_hdr;
+	    }
+	    $rep->add({ _style => 't2',
+			acct => $vd->[0],
+			desc => __x("Totaal {vrd}", vrd => $vd->[1]),
+			$t[0] ? ( deb  => numfmt($t[0]) ) : (),
+			$t[1] ? ( crd  => numfmt($t[1]) ) : (),
+			$t[2] ? ( sdeb => numfmt($t[2]) ) : (),
+			$t[3] ? ( scrd => numfmt($t[3]) ) : (),
+		      });
 	}
 	if ( $tot[0] >= $tot[1] ) {
 	    $tot[2] = $tot[0] - $tot[1]; $tot[3] = 0;
@@ -157,8 +204,21 @@ sub perform {
 	    $hvd_hdr = [ $hvd->[0], $hvd->[1] ];
 	    my @t = $verdichtingen->($hvd);
 	    next if "@t" eq "0 0 0 0";
-	    $rep->addline('H1', @$hvd_hdr), undef $hvd_hdr if $detail && $hvd_hdr;
-	    $rep->addline('T1', $hvd->[0], __x("Totaal {vrd}", vrd => $hvd->[1]), @t);
+	    if ( $detail && $hvd_hdr ) {
+		$rep->add({ acct => $hvd_hdr->[0],
+			    desc => $hvd_hdr->[1],
+			    _style => 'h1',
+			  });
+		undef $hvd_hdr;
+	    }
+	    $rep->add({ _style => 't1',
+			acct => $hvd->[0],
+			desc => __x("Totaal {vrd}", vrd => $hvd->[1]),
+			$t[0] ? ( deb  => numfmt($t[0]) ) : (),
+			$t[1] ? ( crd  => numfmt($t[1]) ) : (),
+			$t[2] ? ( sdeb => numfmt($t[2]) ) : (),
+			$t[3] ? ( scrd => numfmt($t[3]) ) : (),
+		      });
 	    $tot[$_] += $t[$_] foreach 0..$#tot;
 	}
 	@tot;
@@ -186,7 +246,13 @@ sub perform {
 	}
 
 	my @tot = $hoofdverdichtingen->(@hvd);
-	$rep->addline('T', '', _T("TOTAAL"), @tot);
+	$rep->add({ _style => 't',
+		    desc => _T("TOTAAL"),
+		    $tot[0] ? ( deb  => numfmt($tot[0]) ) : (),
+		    $tot[1] ? ( crd  => numfmt($tot[1]) ) : (),
+		    $tot[2] ? ( sdeb => numfmt($tot[2]) ) : (),
+		    $tot[3] ? ( scrd => numfmt($tot[3]) ) : (),
+		  });
     }
 
     else {			# Op Grootboek
@@ -203,14 +269,69 @@ sub perform {
 	    my @t = $journaal->($acc_id, $acc_desc, $acc_ibalance);
 	    next if "@t" eq "0 0 0 0";
 	    $tot[$_] += $t[$_] foreach 0..$#tot;
-	    $rep->addline('D', $acc_id, $acc_desc, @t);
+	    $rep->add({ _style => 'd',
+			acct => $acc_id,
+			desc => $acc_desc,
+			deb  => numfmt($t[0]),
+			crd  => numfmt($t[1]),
+			$t[2] ? ( sdeb => numfmt($t[2]) ) : (),
+			$t[3] ? ( scrd => numfmt($t[3]) ) : (),
+		      });
 	}
-	$rep->addline('T', '', _T("TOTAAL"), @tot);
+	$rep->add({ _style => 't',
+		    desc => _T("TOTAAL"),
+		    deb  => numfmt($tot[0]),
+		    crd  => numfmt($tot[1]),
+		    $tot[2] ? ( sdeb => numfmt($tot[2]) ) : (),
+		    $tot[3] ? ( scrd => numfmt($tot[3]) ) : (),
+		  });
     }
     $rep->finish;
 }
 
 package EB::Report::Proof::Text;
+
+use EB;
+use base qw(EB::Report::Reporter::Text);
+
+sub new {
+    my ($class, $opts) = @_;
+    my $self = $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
+    $self->{detail} = $opts->{detail};
+    $self;
+}
+
+# Style mods.
+
+sub style {
+    my ($self, $row, $cell) = @_;
+
+    my $stylesheet = {
+	d2  => {
+	    desc   => { indent      => 2 },
+	},
+	t2  => {
+	    _style => { skip_after  => $self->{detail} > 1, },
+	    desc   => { indent      => 1 },
+	},
+	h2  => {
+	    desc   => { indent      => 1 },
+	},
+	t1 => {
+	    _style => { skip_after  => $self->{detail} > 0,
+			skip_before => $self->{detail} > 1,
+		      },
+	},
+	t => {
+	    _style => { line_before => 1 }
+	},
+    };
+
+    $cell = "_style" unless defined($cell);
+    return $stylesheet->{$row}->{$cell};
+}
+
+package EB::Report::Proof::XXXText;
 
 use strict;
 use warnings;

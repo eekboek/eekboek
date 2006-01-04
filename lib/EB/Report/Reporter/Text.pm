@@ -1,10 +1,10 @@
 # Text.pm -- 
-# RCS Info        : $Id: Text.pm,v 1.4 2006/01/04 17:42:23 jv Exp $
+# RCS Info        : $Id: Text.pm,v 1.5 2006/01/04 21:59:13 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:21:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  4 18:41:47 2006
-# Update Count    : 57
+# Last Modified On: Wed Jan  4 22:12:24 2006
+# Update Count    : 60
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -68,6 +68,7 @@ sub add {
 
 	# Examine style mods.
 	my $indent = 0;
+	my $excess = 0;
 	if ( $style ) {
 	    if ( my $t = $self->_getstyle($style, $fname) ) {
 		$indent = $t->{indent} || 0;
@@ -79,8 +80,11 @@ sub add {
 		    $lineafter->{$fname} =
 		      ($t->{line_after} eq "1" ? "-" : $t->{line_after}) x $col->{width};
 		}
+		if ( $t->{excess} ) {
+		    $widths[-1] += 2;
+		}
 		if ($t->{truncate} ) {
-		    $values[-1] = substr($values[-1], 0, $widths[-1] - $indents[-1]);
+		    $values[-1] = substr($values[-1], 0, $widths[-1] - $indent);
 		}
 	    }
 	}
@@ -184,10 +188,16 @@ sub _make_format {
 
 	# Never mind the trailing blanks -- we'll trim anyway.
 	$width += $a->{width} + 2;
-	$format .= "%".
-	  ( $a->{align} eq "<" ? "-" : "" ) .
-	  join(".", ($a->{width}) x 2) .
-	  "s  ";
+	if ( $a->{align} eq "<" ) {
+	    $format .= "%-".
+	      join(".", ($a->{width}+2) x 2) .
+		"s";
+	}
+	else {
+	    $format .= "%".
+	      join(".", ($a->{width}) x 2) .
+		"s  ";
+	}
     }
 
     # Store format and width in object.
