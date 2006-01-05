@@ -1,9 +1,9 @@
                                                      Journaal
 Periode: 2004-01-01 t/m 2004-12-31
-EekBoek Demo Administratie 2004                                                              EekBoek, 2004-12-31
+EekBoek Demo Administratie 2004                                                                 EekBoek, 2004-12-31
 
 Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstuk/regel                  Relatie
-----------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
 2004-01-05  Inkoop:1                                                     ADSL
 2004-01-05    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2004-01-05    Internetkosten                 4905      19,16               ADSL
@@ -246,10 +246,11 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 
 2004-12-31  Memoriaal:1                                                  Afschrijving inventaris
 2004-12-31    Afschr. kosten inv. & inr      4330     411,26               Afschrijving
-2004-12-31    Afschrijving inventaris & in    231                411,26    Afschrijving
+2004-12-31    Afschrijving inventaris &       231                411,26    Afschrijving
+              inrichting
 
 2004-12-31  Memoriaal:2                                                  Afschrijving computers
 2004-12-31    Afschr. kosten computers       4340     396,82               Afschrijving
 2004-12-31    Afschrijving computers          241                396,82    Afschrijving
-----------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
             Totaal                                  22868,94   22868,94

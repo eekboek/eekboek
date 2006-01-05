@@ -17,7 +17,8 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 63        Afschrijving materiele vaste activa
 4330      Afschr. kosten inv. & inr                  411,26
 4340      Afschr. kosten computers                   396,82
-63       Totaal Afschrijving materiele vaste act     808,08
+63       Totaal Afschrijving materiele vaste         808,08
+         activa
 
 69        Algemene kosten
 4900      Telefoon- en faxkosten                     530,62

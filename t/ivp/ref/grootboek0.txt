@@ -1,11 +1,13 @@
                                              Grootboek
 Periode: 2004-01-01 t/m 2004-12-31
-EekBoek Demo Administratie 2004                                              EekBoek, 2004-12-31
+EekBoek Demo Administratie 2004                                                 EekBoek, 2004-12-31
 
  GrBk  Grootboek/Boekstuk                   Datum      Debet     Credit  BoekstukNr      Relatie
-------------------------------------------------------------------------------------------------
-  230  Totaal Inventaris en inrichtin                1344,37
+---------------------------------------------------------------------------------------------------
+  230  Totaal Inventaris en                          1344,37
+       inrichting
   231  Totaal Afschrijving inventaris                           1716,07
+       & inrichting
   240  Totaal Computers                             13378,48
   241  Totaal Afschrijving computers                           12503,60
   500  Totaal Kapitaal                                          2443,18
@@ -14,15 +16,18 @@ EekBoek Demo Administratie 2004                                              Eek
  1500  Totaal BTW Verkoop Hoog                                  1463,00
  1520  Totaal BTW Inkoop Hoog                         148,14
  1600  Totaal Crediteuren                               0,00
- 4330  Totaal Afschr. kosten inv. & i                 411,26
- 4340  Totaal Afschr. kosten computer                 396,82
+ 4330  Totaal Afschr. kosten inv. &                   411,26
+       inr
+ 4340  Totaal Afschr. kosten                          396,82
+       computers
  4900  Totaal Telefoon- en faxkosten                  530,62
  4905  Totaal Internetkosten                          249,08
  4980  Totaal Bankkosten                               32,40
- 8000  Totaal Omzet advisering BTW ho                           1200,00
+ 8000  Totaal Omzet advisering BTW                              1200,00
+       hoog
  8200  Totaal Omzet editing                                     1000,00
  8300  Totaal Omzet cursussen                                   6500,00
 
        Totaal mutaties                              10971,08   10971,08
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
        Totaal                                       26825,85   26825,85

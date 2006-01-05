@@ -1,9 +1,9 @@
                                                      Journaal
 Periode: 2004-01-01 t/m 2004-12-31
-EekBoek Demo Administratie 2004                                                              EekBoek, 2004-12-31
+EekBoek Demo Administratie 2004                                                                 EekBoek, 2004-12-31
 
 Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstuk/regel                  Relatie
-----------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
 2004-01-06  Postbank:1                                                   Girotel
 2004-01-06    Bankkosten                     4980       2,70               Girotel
 2004-01-06    Postbank                       1120                  2,70    Girotel
@@ -119,5 +119,5 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2004-12-10  Postbank:26                                                  Tweede deel ADSL
 2004-12-10    Crediteuren                    1600      12,80               *ADSL                         XS4ALL
 2004-12-10    Postbank                       1120                 12,80    Tweede deel ADSL
-----------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
             Totaal Dagboek Postbank                 10970,02   10970,02

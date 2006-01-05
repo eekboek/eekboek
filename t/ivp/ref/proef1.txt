@@ -27,9 +27,9 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit   Saldo D
 5       Totaal Bedrijfsopbrengsten                             8700,00               8700,00
 
 6       Personeelslasten
-63       Totaal Afschrijving materiele vaste act     808,08                808,08
+63       Totaal Afschrijving materiele vaste         808,08                808,08
+         activa
 69       Totaal Algemene kosten                      812,10                812,10
 6       Totaal Personeelslasten                     1620,18               1620,18
-
 --------------------------------------------------------------------------------------------
         TOTAAL                                     38723,71   38723,71   12458,04   12458,04
