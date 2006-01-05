@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.18 2005/12/30 21:54:45 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.19 2006/01/05 09:10:34 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 22:51:56 2005
-# Update Count    : 233
+# Last Modified On: Thu Jan  5 09:39:14 2006
+# Update Count    : 234
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -211,7 +211,7 @@ sub style {
 
     my $stylesheet = {
 	_any => {
-	    desc   => { truncate    => 1 },
+	#    desc   => { truncate    => 1 },
 	},
 	h2  => {
 	    desc   => { indent      => 1 },
