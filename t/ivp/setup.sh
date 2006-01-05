@@ -1,8 +1,5 @@
 # Name of the database.
-if [ -z "$EB_DB_NAME" ]
-then
-    EB_DB_NAME=eekboek_sample
-fi
+EB_DB_NAME=eekboek_sample
 export EB_DB_NAME
 
 # Language selection.

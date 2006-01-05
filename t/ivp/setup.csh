@@ -1,7 +1,5 @@
 # Name of the database.
-if ( ! $?EB_DB_NAME ) then
-    setenv EB_DB_NAME eekboek_sample
-endif
+setenv EB_DB_NAME eekboek_sample
 
 # Language selection.
 if ( ! $?EB_LANG ) then
