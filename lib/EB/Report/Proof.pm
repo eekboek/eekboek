@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.12 2006/01/04 21:59:13 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.13 2006/01/05 17:59:53 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 31 21:59:29 2005
-# Update Count    : 284
+# Last Modified On: Thu Jan  5 18:52:58 2006
+# Update Count    : 286
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -329,6 +329,27 @@ sub style {
 
     $cell = "_style" unless defined($cell);
     return $stylesheet->{$row}->{$cell};
+}
+
+package EB::Report::Proof::Csv;
+
+use EB;
+use base qw(EB::Report::Reporter::Csv);
+
+sub new {
+    my ($class, $opts) = @_;
+    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
+}
+
+package EB::Report::Proof::Html;
+
+use EB;
+use base qw(EB::Report::Reporter::Html);
+use strict;
+
+sub new {
+    my ($class, $opts) = @_;
+    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
 }
 
 package EB::Report::Proof::XXXText;

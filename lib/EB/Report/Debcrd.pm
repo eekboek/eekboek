@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.5 2006/01/05 16:58:31 jv Exp $ ';
+my $RCS_Id = '$Id: Debcrd.pm,v 1.6 2006/01/05 17:59:53 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan  5 17:57:40 2006
-# Update Count    : 117
+# Last Modified On: Thu Jan  5 18:40:47 2006
+# Update Count    : 118
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -202,6 +202,16 @@ package EB::Report::Debcrd::Html;
 
 use EB;
 use base qw(EB::Report::Reporter::Html);
+
+sub new {
+    my ($class, $opts) = @_;
+    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
+}
+
+package EB::Report::Debcrd::Csv;
+
+use EB;
+use base qw(EB::Report::Reporter::Csv);
 
 sub new {
     my ($class, $opts) = @_;

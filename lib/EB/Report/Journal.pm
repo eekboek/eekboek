@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.25 2006/01/04 21:59:13 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.26 2006/01/05 17:59:53 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  4 22:12:52 2006
-# Update Count    : 264
+# Last Modified On: Thu Jan  5 18:53:18 2006
+# Update Count    : 266
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -206,6 +206,16 @@ package EB::Report::Journal::Html;
 use EB;
 use base qw(EB::Report::Reporter::Html);
 use strict;
+
+sub new {
+    my ($class, $opts) = @_;
+    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
+}
+
+package EB::Report::Journal::Csv;
+
+use EB;
+use base qw(EB::Report::Reporter::Csv);
 
 sub new {
     my ($class, $opts) = @_;

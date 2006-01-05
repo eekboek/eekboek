@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.19 2006/01/05 09:10:34 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.20 2006/01/05 17:59:53 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan  5 09:39:14 2006
-# Update Count    : 234
+# Last Modified On: Thu Jan  5 18:52:27 2006
+# Update Count    : 236
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -246,5 +246,17 @@ sub new {
     my ($class, $opts) = @_;
     $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
 }
+
+package EB::Report::Grootboek::Csv;
+
+use EB;
+use base qw(EB::Report::Reporter::Csv);
+use strict;
+
+sub new {
+    my ($class, $opts) = @_;
+    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
+}
+
 
 1;

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.8 2005/12/31 16:57:27 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.9 2006/01/05 17:59:53 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 31 17:56:21 2005
-# Update Count    : 108
+# Last Modified On: Thu Jan  5 18:53:08 2006
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -122,6 +122,16 @@ package EB::Report::Open::Html;
 use EB;
 use base qw(EB::Report::Reporter::Html);
 use strict;
+
+sub new {
+    my ($class, $opts) = @_;
+    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
+}
+
+package EB::Report::Open::Csv;
+
+use EB;
+use base qw(EB::Report::Reporter::Csv);
 
 sub new {
     my ($class, $opts) = @_;
