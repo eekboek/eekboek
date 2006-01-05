@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.4 2005/12/30 21:54:45 jv Exp $ ';
+my $RCS_Id = '$Id: Debcrd.pm,v 1.5 2006/01/05 16:58:31 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 21:01:37 2005
-# Update Count    : 115
+# Last Modified On: Thu Jan  5 17:57:40 2006
+# Update Count    : 117
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -112,6 +112,7 @@ sub _perform {
 	    my ($bsk_id, $bsk_desc, $bsk_date,
 		$bsr_amount, $bsr_open, $dbk_desc, $bsk_nr) = @$rr;
 	    $bsr_amount = 0-$bsr_amount unless $debcrd;
+	    $bsr_open = 0-$bsr_open unless $debcrd;
 
 	    $rep->add({ desc   => $bsk_desc,
 			date   => $bsk_date,
@@ -133,7 +134,7 @@ sub _perform {
 	    while ( my $rr = $sth->fetchrow_arrayref ) {
 		my ($x_bsr_date, $x_bsr_desc, $x_bsr_amount,
 		    $x_dbk_desc, $x_bsk_nr) = @$rr;
-		$x_bsr_amount = 0-$bsr_amount unless $debcrd;
+		$x_bsr_amount = 0-$x_bsr_amount unless $debcrd;
 		$rep->add({ desc    => $x_bsr_desc,
 			    date    => $x_bsr_date,
 			    paid    => numfmt(0-$x_bsr_amount),
