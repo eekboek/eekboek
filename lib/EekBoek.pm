@@ -1,6 +1,6 @@
 package EekBoek;
 
-$VERSION = '0.26';
+$VERSION = '0.27';
 
 # NOTE: This is a documentation-only module.
 
@@ -55,4 +55,4 @@ GNU General Public License or the Artistic License for more details.
 
 1;
 
-# $Id: EekBoek.pm,v 1.3 2006/01/05 16:58:56 jv Exp $
+# $Id: EekBoek.pm,v 1.4 2006/01/08 21:07:21 jv Exp $
