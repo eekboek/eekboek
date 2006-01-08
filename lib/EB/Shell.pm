@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.48 2005/12/29 16:38:38 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.49 2006/01/08 18:16:14 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Dec 29 17:38:07 2005
-# Update Count    : 627
+# Last Modified On: Sat Jan  7 15:16:05 2006
+# Update Count    : 641
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -461,6 +461,8 @@ sub do_proefensaldibalans {
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
+		 'boekjaar=s',
+		 'per=s' => sub { date_arg($opts, @_) },
 		 EB::Report::GenBase->backend_options(EB::Report::Proof::, $opts),
 	       ], $opts);
     warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
@@ -473,9 +475,11 @@ sub help_proefensaldibalans {
 Print de Proef- en Saldibalans.
 
 Opties:
-  <geen>        Proef- en Saldibalans op grootboekrekening
-  --verdicht    verdicht, gedetailleerd
-  --detail=N    verdicht, mate van detail N = 0, 1 of 2
+  <geen>          Proef- en Saldibalans op grootboekrekening
+  --verdicht      Verdicht, gedetailleerd (zelfde als --detail=2)
+  --detail=N      Verdicht, mate van detail N = 0, 1 of 2
+  --per=XXX       Selecteer einddatum
+  --boekjaar=XX   Selecteer boekjaar
 EOS
 }
 
@@ -552,26 +556,28 @@ EOS
 
 sub do_btwaangifte {
     my ($self, @args) = @_;
-    my $close = 0;
     my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
+		 close	      => 0,
 	       };
 
     use EB::Report::BTWAangifte;
 
     return unless
     parse_args(\@args,
-	       [ EB::Report::GenBase->backend_options(EB::Report::BTWAangifte::, $opts),
-		 "definitief" => sub { $close = 1 },
+	       [ "boekjaar=s",
+		 'periode=s'  => sub { periode_arg($opts, @_) },
+		 "definitief" => sub { $opts->{close} = 1 },
+		 EB::Report::GenBase->backend_options(EB::Report::BTWAangifte::, $opts),
 	       ], $opts)
       or goto &help_btwaangifte;
 
     if ( lc($args[-1]) eq "definitief" ) {
-	$close = 1;
+	$opts->{close} = 1;
 	pop(@args);
     }
-    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args > 1;
-    $opts->{close} = $close;
-    $opts->{periode} = $args[0] if @args;
+    warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return
+      if @args > ($opts->{periode} ? 0 : 1);
+    $opts->{compat_periode} = $args[0] if @args;
     EB::Report::BTWAangifte->new($opts)->perform($opts);
     undef;
 }
@@ -593,10 +599,14 @@ gedaan.
 
 Opties:
 
-  --definitief  de BTW periode wordt afgesloten. Er zijn geen boekingen
-                in deze periode meer mogelijk.
-                Uit historische overwegingen kan dit ook door het
-                woord "definitief" achter de opdracht te plaatsen.
+  --definitief    De BTW periode wordt afgesloten. Er zijn geen boekingen
+                  in deze periode meer mogelijk.
+                  Uit historische overwegingen kan dit ook door het
+                  woord "definitief" achter de opdracht te plaatsen.
+  --periode=XXX   Selecteer aangifteperiode. Dit kan niet samen met
+		  --boekjaar, en evenmin met de bovenvermelde methode
+		  van periode-specificatie.
+  --boekjaar=XX   Selecteer boekjaar
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
