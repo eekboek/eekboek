@@ -1,10 +1,10 @@
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.4 2006/01/04 21:59:13 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.5 2006/01/08 18:17:09 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  4 21:55:34 2006
-# Update Count    : 120
+# Last Modified On: Fri Jan  6 14:52:10 2006
+# Update Count    : 126
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -62,41 +62,52 @@ sub fields {
 sub start {
     my $self = shift;
     my ($t1, $t2, $t3l, $t3r) = @_;
-    if ( !$t2 && exists($self->{periodex}) ) {
-	if ( $self->{periodex} == 1 ) {
-	    $t2 = __x("Periode: t/m {to}",
-		      to   => $self->{periode}->[1]);
-	}
-	else {
-	    $t2 = __x("Periode: {from} t/m {to}",
-		      from => $self->{periode}->[0],
-		      to   => $self->{periode}->[1]);
+
+    # Top title.
+    if ( !$t1 ) {
+	# This one really should be filled in with something distinguishing.
+	$t1 = _T("Rapportage");
+    }
+
+    # Report date / period.
+    if ( !$t2 ) {
+	$t2 = "Periode: ****";
+	if ( exists($self->{periodex}) ) {
+	    if ( $self->{periodex} == 1 ) {
+		$t2 = __x("Periode: t/m {to}",
+			  to   => $self->{periode}->[1]);
+	    }
+	    else {
+		$t2 = __x("Periode: {from} t/m {to}",
+			  from => $self->{periode}->[0],
+			  to   => $self->{periode}->[1]);
+	    }
 	}
     }
+
+    # Administration name.
     if ( !$t3l ) {
-	if ( defined($self->{boekjaar}) ) {
-	    my $bky = $self->{boekjaar};
-	    $t3l = $::dbh->lookup($bky, qw(Boekjaren bky_code bky_name));
-	}
-	else {
-	    $t3l = $::dbh->adm("name");
-	}
+	$t3l = $::dbh->adm("name");
     }
+
+    # Creation date + program version
     if ( !$t3r ) {
-	my ($begin, $end) = @{$self->{periode}};
 	if ( $ENV{EB_SQL_NOW} ) {
-	    $t3r = (split(' ', $EB::ident))[0];
-	    $end = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} lt $end;
-	    $t3r .= ", " . $ENV{EB_SQL_NOW};
+	    # Fixed date. Strip program version. Makes it easier to compare reports.
+	    $t3r = (split(' ', $EB::ident))[0] . ", " . $ENV{EB_SQL_NOW};
 	}
 	else {
+	    # Use current date.
 	    $t3r = $EB::ident . ", " . iso8601date();
 	}
     }
-    $self->{_title1} = $t1;
-    $self->{_title2} = $t2;
+
+    # Move to self.
+    $self->{_title1}  = $t1;
+    $self->{_title2}  = $t2;
     $self->{_title3l} = $t3l;
     $self->{_title3r} = $t3r;
+
     $self->{_needhdr} = 1;
     $self->{_needskip} = 0;
     $self->{fd} ||= *STDOUT;
