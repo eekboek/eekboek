@@ -1,10 +1,10 @@
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.5 2006/01/08 18:17:09 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.6 2006/01/08 21:20:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan  6 14:52:10 2006
-# Update Count    : 126
+# Last Modified On: Sun Jan  8 22:17:54 2006
+# Update Count    : 128
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -54,6 +54,19 @@ sub fields {
 	push(@nf, $a);
     }
     $self->{_fields} = \@nf;
+
+    # PBP: Return nothing sensible.
+    return;
+}
+
+sub widths {
+    my ($self, $w) = @_;
+
+    while ( my($fld,$width) = each(%$w) ) {
+	die("?".__x("Onbekend veld: {fld}", fld => $fld)."\n")
+	  unless defined($self->{_fdata}->{$fld});
+	$self->{_fdata}->{$fld}->{width} = $w;
+    }
 
     # PBP: Return nothing sensible.
     return;
