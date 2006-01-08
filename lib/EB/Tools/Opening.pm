@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.14 2005/12/13 19:04:19 jv Exp $
+# $Id: Opening.pm,v 1.15 2006/01/08 18:18:37 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 13 16:17:31 2005
-# Update Count    : 132
+# Last Modified On: Fri Jan  6 14:40:37 2006
+# Update Count    : 133
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -37,7 +37,7 @@ sub new {
 sub set_naam {
     return shellhelp() unless @_ == 2;
     my ($self, $naam) = @_;
-    #$self->check_open(0);
+    $self->check_open(0);
     $self->{o}->{naam} = $naam;
     "";
 }
@@ -439,7 +439,6 @@ administratie ongewijzigd.
 
 Mogelijke opdrachten voor openen van een boekjaar:
 
-  adm_naam "Naam van de administratie"
   adm_btwperiode [ jaar | kwartaal | maand ]
   adm_boekjaarcode <code>
                 Een code van max 4 letters en/of cijfers waarmee het
