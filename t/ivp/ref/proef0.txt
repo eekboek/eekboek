@@ -1,5 +1,5 @@
                                    Proef- en Saldibalans
-Periode: 2004-01-01 t/m 2004-12-31
+Periode: t/m 2004-12-31
 EekBoek Demo Administratie 2004                                          EekBoek, 2004-12-31
 
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit   Saldo Db   Saldo Cr
