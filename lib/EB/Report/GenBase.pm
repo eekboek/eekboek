@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.9 2006/01/04 21:59:13 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.10 2006/01/08 18:18:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  4 21:41:45 2006
-# Update Count    : 76
+# Last Modified On: Fri Jan  6 15:51:43 2006
+# Update Count    : 82
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -117,17 +117,24 @@ sub backend {
     }
     else {
 	$be->{periode} = [ $dbh->adm("begin"),
-			   iso8601date() ];
+			   $dbh->adm("end") ];
 	$be->{per_begin} = $opts->{periode}->[0];
 	$be->{per_end} = $opts->{periode}->[1];
 	$be->{periodex} = 0;
     }
 
-    if ( $be->{per_end} gt iso8601date() ) {
-	$be->{periode}->[1] = $be->{per_end} = iso8601date();
+    # Get real (or fake) current date, and adjust periode end if needed.
+    $be->{now} = iso8601date();
+    $be->{now} = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $be->{now} gt $ENV{EB_SQL_NOW};
+    if ( $be->{per_end} gt $be->{now} ) {
+	$be->{periode}->[1] = $be->{per_end} = $be->{now};
     }
-    if ( $ENV{EB_SQL_NOW} && $be->{per_end} gt $ENV{EB_SQL_NOW} ) {
-	$be->{periode}->[1] = $be->{per_end} = $ENV{EB_SQL_NOW};
+
+    # Sanity.
+    if ( $be->{per_begin} gt $be->{now} ) {
+	die("?".__x("Periode begint {from}, dit is na de huidige datum {now}",
+		    from => $be->{per_begin},
+		    now => $be->{now})."\n");
     }
 
     # Return instance.
