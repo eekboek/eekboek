@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.20 2005/12/30 16:35:23 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.21 2006/01/08 18:15:00 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 30 17:35:11 2005
-# Update Count    : 347
+# Last Modified On: Sun Jan  8 12:59:02 2006
+# Update Count    : 401
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -31,12 +31,18 @@ sub new {
     my $self = {};
     bless $self, $class;
     $self->{"adm_$_"} = $dbh->adm($_)
-      for qw(begin name btwperiod);
-    $self->{adm_btwperiod} ||= 4;
+      for qw(begin btwperiod);
+    $self->{adm_btwperiod} ||= 1;
 
     unless ( $self->{adm_begin} ) {
 	die("?"._T("De administratie is nog niet geopend")."\n");
     }
+
+    $self;
+}
+
+sub periodetabel {
+    my ($self) = (@_);
 
     unless ( @periodetabel ) {
 	@periodetabel = ( [] ) x 13;
@@ -53,10 +59,6 @@ sub new {
 			      [$m[6][0], $m[8][1]], [$m[9][0], $m[11][1]]];
     }
 
-    $self;
-}
-
-sub periodetabel {
     \@periodetabel;
 }
 
@@ -64,10 +66,117 @@ use EB::Report::GenBase;
 
 sub perform {
     my ($self, $opts) = @_;
-    $self->collect($opts);
 
-    $self->{reporter} = EB::Report::GenBase->backend($self, $opts);
-    $self->report($opts);
+    # Determine the period to be used.
+
+    # BTW report is slightly awkward. It takes the boekjaar into
+    # account, also an explicitly specified period. But it can also
+    # process a form of symbolic period, like "k1" or "m4".
+
+    # Order of precedence:
+    # 1. --period,
+    # 2. symbolic period, depending on boekjaar,
+    # 3. (default) next (or first) period in boekjaar.
+
+    # Note that a possible --period / symbolic period conflict has
+    # already been trapped in the shell.
+
+    my $year = substr($dbh->adm("begin"), 0, 4); # default for now
+    my $btwperiod = $self->{adm_btwperiod};
+
+    # Check symbolic period (excludes --period).
+    if ( $opts->{compat_periode} ) {
+	# Adjust current year, if applicable.
+	if ( defined($opts->{boekjaar}) || defined($opts->{d_boekjaar}) ) {
+	    my $bky = $opts->{boekjaar};
+	    $bky = $opts->{d_boekjaar} unless defined $bky;
+	    my $rr = $dbh->do("SELECT bky_begin".
+			      " FROM Boekjaren".
+			      " WHERE bky_code = ?", $bky);
+	    die("?",__x("Onbekend boekjaar: {bky}", bky => $bky)."\n"), return unless $rr;
+	    $year = substr($rr->[0], 0, 4);
+	}
+
+	# Parse the symbolic period.
+	$self->parse_periode($opts->{compat_periode}, $year);
+
+	# Store in --period.
+	$opts->{periode} = [ $self->{p_start}, $self->{p_end} ];
+
+	# GenBase backend will disallow --period with boekjaar...
+	delete($opts->{boekjaar});
+    }
+
+    # No symbolic. So we have either a --period, or nothing.
+    # The latter includes a possible --boekjaar ;-).
+    elsif ( !defined($opts->{periode}) ) {
+	# We have nothing. Adjust year to --boekjaar if applicable.
+	if ( defined($opts->{boekjaar}) || defined($opts->{d_boekjaar}) ) {
+	    my $bky = $opts->{boekjaar};
+	    $bky = $opts->{d_boekjaar} unless defined $bky;
+	    my $rr = $dbh->do("SELECT bky_begin".
+			      " FROM Boekjaren".
+			      " WHERE bky_code = ?", $bky);
+	    die("?",__x("Onbekend boekjaar: {bky}", bky => $bky)."\n"), return unless $rr;
+	    $year = substr($rr->[0], 0, 4);
+	}
+	my $tbl = $self->periodetabel->[$btwperiod];
+
+	if ( $btwperiod == 1 ) { # aangifteperiode => jaar
+	    $opts->{periode} = [ $year . "-" . $tbl->[1]->[0],
+				 $year . "-" . $tbl->[1]->[1] ];
+	    $self->{compat_periode} = $self->periode(1, $year);
+	}
+	elsif ( 0 ) {		# determine period depending on current date.
+	    my @tm = localtime(time);
+	    $tm[5] += 1900;
+	    my $m;
+	    if ( $year < 1900+$tm[5] ) {
+		$m = $btwperiod;
+	    }
+	    else {
+		$m = 1 + int($tm[4] / (12/$btwperiod));
+	    }
+	    $opts->{periode} = [ $year . "-" . $tbl->[$m]->[0],
+				 $year . "-" . $tbl->[$m]->[1] ];
+	    $self->{compat_periode} = $self->periode($btwperiod, $year, $m);
+	}
+	else {			# determine period depending on previous aangifte
+	    my $next = $dbh->adm("btwbegin");
+	    my $m;
+	    if ( substr($next, 0, 4) gt $year ) {
+		$m = $btwperiod;
+	    }
+	    elsif ( substr($next, 0, 4) lt $year ) {
+		$m = 1;
+	    }
+	    else {
+		for ( $m = 1; $m <= 12; $m++ ) {
+		    last if substr($next, 5) eq $tbl->[$m]->[0];
+		}
+	    }
+	    $opts->{periode} = [ $year . "-" . $tbl->[$m]->[0],
+				 $year . "-" . $tbl->[$m]->[1] ];
+	    $self->{compat_periode} = $self->periode($btwperiod, $year, $m);
+	}
+	delete($opts->{boekjaar});
+    }
+    # else: we have an explicit --period. Nothing here to do.
+
+    my $rep = EB::Report::GenBase->backend($self, $opts);
+
+    unless ( $rep->{per_begin} eq $dbh->adm("btwbegin") ) {
+	my $msg = _T("BTW aangifte periode sluit niet aan bij de vorige aangifte");
+	$opts->{close} ? die("?$msg\n") : warn("!$msg\n");
+    }
+
+    my $data = $self->collect($rep->{per_begin}, $rep->{per_end});
+
+    $self->report($rep, $data);
+
+    if ( $opts->{close} ) {
+	$dbh->adm("btwbegin", scalar parse_date($rep->{per_end}, undef, 1));	# implied commit
+    }
 }
 
 sub periode {
@@ -92,8 +201,7 @@ sub periode {
 }
 
 sub parse_periode {
-    my ($self, $v) = @_;
-    my $year = substr($self->{adm_begin}, 0, 4);
+    my ($self, $v, $year) = @_;
 
     my $pp = sub {
 	my ($per, $n) = @_;
@@ -101,15 +209,15 @@ sub parse_periode {
 	    warn($self->{close} ? "?" :"!".
 		 __x("Aangifte {per} komt niet overeen met de BTW instelling".
 		     " van de administratie ({admper})",
-		     per => $periodetabel[$per][0],
-		     admper => $periodetabel[$self->{adm_btwperiod}][0],
+		     per => $self->periodetabel->[$per][0],
+		     admper => $self->periodetabel->[$self->{adm_btwperiod}][0],
 		    )."\n")
 	}
 	$self->{adm_btwperiod} = $per;
-	my $tbl = $periodetabel[$self->{adm_btwperiod}];
+	my $tbl = $self->periodetabel->[$self->{adm_btwperiod}];
 	$self->{p_start} = $year . "-" . $tbl->[$n]->[0];
 	$self->{p_end}   = $year . "-" . $tbl->[$n]->[1];
-	$self->{periode} = $self->periode($per, $year, $n);
+	$self->{compat_periode} = $self->periode($per, $year, $n);
 	if ( $per == $n ) {
 	    $self->{p_next}  = ($year+1) . "-" . $tbl->[1]->[0];
 	}
@@ -147,57 +255,16 @@ sub parse_periode {
 }
 
 sub collect {
-    my ($self, $opts) = @_;
-
-    $self->{periode} = delete($opts->{periode});
-
-    $self->parse_periode($self->{periode}) if $self->{periode};
-
-    unless ( $self->{periode} ) {
-	my $year = substr($self->{adm_begin}, 0, 4);
-	my $tbl = $self->periodetabel->[$self->{adm_btwperiod}];
-	if ( $self->{adm_btwperiod} == 1 ) {
-	    $self->{p_start} = $year . "-" . $tbl->[1]->[0];
-	    $self->{p_end}   = $year . "-" . $tbl->[1]->[1];
-	    $self->{periode} = $self->periode(1, $year);
-	}
-	else {
-	    my @tm = localtime(time);
-	    $tm[5] += 1900;
-	    my $m;
-	    if ( $year < 1900+$tm[5] ) {
-		$m = $self->{adm_btwperiod};
-	    }
-	    else {
-		$m = 1 + int($tm[4] / (12/$self->{adm_btwperiod}));
-	    }
-	    $self->{p_start} = $year . "-" . $tbl->[$m]->[0];
-	    $self->{p_end}   = $year . "-" . $tbl->[$m]->[1];
-	    $self->{periode} = $self->periode($self->{adm_btwperiod}, $year, $m);
-	}
-    }
-
-    unless ( $self->{p_start} eq $dbh->adm("btwbegin") ) {
-	my $msg = _T("BTW aangifte periode sluit niet aan bij de vorige aangifte");
-	$opts->{close} ? die("?$msg\n") : warn("!$msg\n");
-    }
+    my ($self, $begin, $end) = @_;
 
     # Target: alle boekstukken van type 0 (inkoop/verkoop).
-    my $sth = $::dbh->sql_exec
+    my $sth = $dbh->sql_exec
       ("SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,rel_debcrd,rel_btw_status".
        " FROM Boekstukregels, Relaties".
        " WHERE bsr_rel_code = rel_code".
-       ($self->{periode} ? " AND bsr_date >= ? AND bsr_date <= ?" : "").
-       " AND bsr_type = 0".
-#       " UNION ".
-#       "SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,NOT acc_debcrd,0".
-#       " FROM Boekstukregels, Accounts, Boekstukken".
-#       " WHERE bsr_bsk_id = bsk_id".
-#       " AND bsr_rel_code IS NULL".
-#       " AND bsr_acc_id = acc_id".
-#       " AND bsr_type = 0 and bsk_dbk_id = 3 AND bsr_btw_id <> 0",
-       "",
-       $self->{periode} ? ( $self->{p_start}, $self->{p_end} ) : ());
+       " AND bsr_date >= ? AND bsr_date <= ?".
+       " AND bsr_type = 0",
+       $begin, $end);
 
     my $v;
 
@@ -257,7 +324,7 @@ sub collect {
 	$amt = -$amt;
 	if ( $btw_id && $btw_acc ) {
 	    # Bepaal tariefgroep en splits bedrag uit.
-	    $btg_id = $::dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+	    $btg_id = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
 	    my $a = EB::Finance::norm_btw($amt, $btw_id);
 	    $amt = $a->[0] - ($btw = $a->[1]); # ex BTW
 	}
@@ -360,12 +427,12 @@ sub collect {
     $data{sub0} = $tot;
 
     # 5b. Voorbelasting
-    my ($vb) = @{$::dbh->do("SELECT SUM(jnl_amount)".
-			    " FROM Journal".
-			    " WHERE ( jnl_acc_id = ? OR jnl_acc_id = ? )".
-			    ($self->{periode} ? " AND jnl_bsr_date >= ? AND jnl_bsr_date <= ?" : ""),
-			    $dbh->std_acc("btw_ih"), $dbh->std_acc("btw_il"),
-			    $self->{periode} ? ( $self->{p_start}, $self->{p_end} ) : ())};
+    my ($vb) = @{$dbh->do("SELECT SUM(jnl_amount)".
+			  " FROM Journal".
+			  " WHERE ( jnl_acc_id = ? OR jnl_acc_id = ? )".
+			  " AND jnl_bsr_date >= ? AND jnl_bsr_date <= ?",
+			  $dbh->std_acc("btw_ih"), $dbh->std_acc("btw_il"),
+			  $begin, $end)};
     my $btw_delta = $vb - $crd_btw - $intra_crd_btw;
 
     $vb = roundup($vb);
@@ -378,18 +445,18 @@ sub collect {
 
     $data{btw_delta} = $btw_delta if $btw_delta;
 
-    $self->{data} = \%data;
+    return \%data;
 }
 
 sub report {
-    my ($self, $opts) = @_;
-
-    my $data = $self->{data};
-    my $rep = $self->{reporter};
+    my ($self, $rep, $data) = @_;
 
     $rep->start(_T("BTW Aangifte"),
-		__x("Periode: {per}",
-		    per => $self->{periode}));
+		$self->{compat_periode} ? __x("Periode: {per}",
+					      per => $self->{compat_periode})
+					: __x("Periode: {from} t/m {to}",
+					      from => $rep->{per_begin},
+					      to   => $rep->{per_end}));
 
     # Binnenland
     $rep->outline('H1', "Binnenland");
@@ -454,16 +521,13 @@ sub report {
 		 " Voor de aangifte is de werkelijk ingehouden BTW gebruikt.",
 		 amount => numfmt($data->{btw_delta})));
     }
-    if ( $self->{periode} =~ /^\d\d\d\d$/ ) { # aangifte per jaar
-	if ( my $msg = kleine_ondernemers($self->{periode}, $data->{sub1}) ) {
+    if ( $self->{compat_periode} =~ /^\d\d\d\d$/ ) { # aangifte per jaar
+	if ( my $msg = kleine_ondernemers($self->{compat_periode}, $data->{sub1}) ) {
 	    push(@msg, $msg);
 	}
     }
     $rep->finish(@msg);
 
-    if ( $opts->{close} ) {
-	$dbh->adm("btwbegin", $self->{p_next});	# implied commit
-    }
 }
 
 ################ Subroutines ################
@@ -552,16 +616,8 @@ sub outline {
 
 sub start {
     my ($self, $text, $per) = @_;
-    my $adm;
-    if ( $self->{boekjaar} ) {
-	$adm = $dbh->lookup($self->{boekjaar},
-			    qw(Boekjaren bky_code bky_name));
-    }
-    else {
-	$adm = $dbh->adm("name");
-    }
     $self->{fh}->print($text, "\n", $per, "\n",
-		       $adm, "\n");
+		       $dbh->adm("name"), "\n");
 }
 
 sub finish {
