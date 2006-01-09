@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.21 2006/01/08 18:15:00 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.22 2006/01/09 11:52:49 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan  8 12:59:02 2006
-# Update Count    : 401
+# Last Modified On: Mon Jan  9 12:52:11 2006
+# Update Count    : 402
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -560,6 +560,8 @@ sub roundup {
 
 sub kleine_ondernemers {
     my ($year, $amount) = @_;
+
+    return if $amount < 0;
 
     # Formule lijkt linds 1995 ongwijzigd, alleen de bedragen veranderen.
     my %mmtab = ( 2005 => [ 1345, 1883 ] );
