@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.15 2006/01/08 18:18:37 jv Exp $
+# $Id: Opening.pm,v 1.16 2006/01/09 16:32:48 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan  6 14:40:37 2006
-# Update Count    : 133
+# Last Modified On: Mon Jan  9 17:32:35 2006
+# Update Count    : 134
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -385,8 +385,6 @@ sub reopen {
 
     $o->{begindatum} = $y;
 
-    warn(_T("Er is geen nieuwe naam van de administratie opgegeven, deze blijft ongewijzigd")."\n")
-      unless $o->{naam};
     warn(_T("Er is geen nieuwe BTW periode opgegeven, deze blijft ongewijzigd")."\n")
       unless $o->{btwperiode};
 
