@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Einde.pm,v 1.5 2006/01/04 21:59:13 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.6 2006/01/09 17:44:09 jv Exp $ ';
 
 package main;
 
@@ -7,12 +7,12 @@ our $dbh;
 package EB::Tools::Einde;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.5 2006/01/04 21:59:13 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.6 2006/01/09 17:44:09 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  4 21:57:40 2006
-# Update Count    : 164
+# Last Modified On: Mon Jan  9 18:29:39 2006
+# Update Count    : 207
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -23,6 +23,7 @@ use EB::Finance;
 use EB::Report;
 use EB::Report::GenBase;
 use EB::Report::Journal;
+use EB::Report::Open;
 
 sub new {
     my ($class) = @_;
@@ -46,9 +47,13 @@ sub perform {
 
     my $sth;
     my $rr;
-    my $jnl = $opts->{journal};
     my $bky = $opts->{boekjaar};
     my $def = $opts->{definitief};
+    my $eb;
+    if ( $opts->{eb} ) {
+	open($eb, '>', $opts->{eb});
+	$opts->{eb_handle} = $eb;
+    }
 
     my ($acc_id, $acc_desc, $acc_balance);
 
@@ -86,7 +91,7 @@ sub perform {
       ];
 
     my $rep;
-    $rep = EB::Report::GenBase->backend(EB::Report::Journal::, $opts) if $jnl;
+    $rep = EB::Report::GenBase->backend(EB::Report::Journal::, $opts);
 
     my $tbl = EB::Report::->GetTAccountsBal($end);
 
@@ -107,7 +112,6 @@ sub perform {
 	$dbh->sql_insert("Boekjaarbalans",
 			 [qw(bkb_bky bkb_acc_id bkb_balance bkb_end)],
 			 $bky, $acc_id, $acc_balance, $end);
-	$did++, next unless $jnl;
 
 	unless ( $did++ ) {
 	    $rep->start(_T("Journaal"),
@@ -141,19 +145,17 @@ sub perform {
 			 [qw(bkb_bky bkb_acc_id bkb_balance bkb_end)],
 			 $bky, $dbh->std_acc("winst"), -$tot, $end);
 
-	if ( $jnl ) {
-	    $tot = -$tot;
-	    $rep->add({ _style => 'data',
-			date => $end,
-			desc => $d,
-			acct => $dbh->std_acc("winst"),
-			$tot >= 0 ? ( crd => numfmt($tot) )
-				  : ( deb => numfmt(-$tot) ),
+	$tot = -$tot;
+	$rep->add({ _style => 'data',
+		    date => $end,
+		    desc => $d,
+		    acct => $dbh->std_acc("winst"),
+		    $tot >= 0 ? ( crd => numfmt($tot) )
+		    : ( deb => numfmt(-$tot) ),
 		    bsk  => $desc,
 		  });
-	    $ctot += $tot if $tot > 0;
-	    $dtot -= $tot if $tot < 0;
-	}
+	$ctot += $tot if $tot > 0;
+	$dtot -= $tot if $tot < 0;
     }
 
     $tot = 0;
@@ -169,7 +171,6 @@ sub perform {
 	$dbh->sql_insert("Boekjaarbalans",
 			 [qw(bkb_bky bkb_acc_id bkb_balance bkb_end)],
 			 $bky, $acc_id, $acc_balance, $end);
-	$did++, next unless $jnl;
 
 	unless ( $did++ ) {
 	    $rep->start(_T("Journaal"),
@@ -208,28 +209,91 @@ sub perform {
 			 [qw(bkb_bky bkb_acc_id bkb_balance bkb_end)],
 			 $bky, $acc_id, -$tot, $end);
 
-	if ( $jnl ) {
-	    $tot = -$tot;
-	    $rep->add({ _style => 'data',
-			date => $end,
-			desc => $acc_desc,
-			acct => $acc_id,
-			$tot >= 0 ? ( crd => numfmt($acc_balance) )
-				  : ( deb => numfmt(-$acc_balance) ),
+	$tot = -$tot;
+	$rep->add({ _style => 'data',
+		    date => $end,
+		    desc => $acc_desc,
+		    acct => $acc_id,
+		    $tot >= 0 ? ( crd => numfmt($tot) )
+		    : ( deb => numfmt(-$tot) ),
 		    bsk  => $desc,
 		  });
-	    $ctot += $tot if $tot > 0;
-	    $dtot -= $tot if $tot < 0;
-	}
+	$ctot += $tot if $tot > 0;
+	$dtot -= $tot if $tot < 0;
     }
 
-    if ( $jnl && $did ) {
+    if ( $did ) {
 	$rep->add({ _style => 'total',
 		    desc => __x("Totaal {pfx}", pfx => __x("Afsluiting boekjaar {bky}", bky => $bky)),
 		    deb  => numfmt($dtot),
 		    crd  => numfmt($ctot),
 	      });
 	$rep->finish;
+    }
+
+    if ( $eb ) {
+
+	print {$eb} ("\n# ",
+		     __x("Eindbalans bij afsluiting boekjaar {bky}",
+			 bky => $bky),
+		     "\n");
+
+
+	$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balance, acc_ibalance, acc_debcrd".
+			      " FROM ${tbl}".
+			      " WHERE acc_balres".
+			      " ORDER BY acc_debcrd DESC, acc_id");
+
+	my ($dt, $ct);
+	my $debcrd;
+	while ( $rr = $sth->fetchrow_arrayref ) {
+	    my ($acc_id, $acc_desc, $acc_balance, $acc_ibalance, $acc_debcrd) = @$rr;
+#	    warn("=> acc $acc_id bal = $acc_balance ibal = $acc_ibalance\n");
+	    if ( my $t = $dbh->do("SELECT bkb_balance".
+				  " FROM Boekjaarbalans".
+				  " WHERE bkb_bky = ?".
+				  " AND bkb_acc_id = ?",
+				  $bky, $acc_id) ) {
+		$acc_balance -= $t->[0];
+#		warn("=> acc $acc_id bal = $acc_balance (fixed with $t->[0])\n");
+	    }
+	    next unless $acc_balance;
+#	    warn("=> acc $acc_id bal = $acc_balance final\n");
+	    if ( $acc_balance >= 0 ) {
+		$dt += $acc_balance;
+	    }
+	    else {
+		$ct -= $acc_balance;
+	    }
+	    $acc_balance = 0 - $acc_balance unless $acc_debcrd;
+	    if ( !defined($debcrd) || $acc_debcrd != $debcrd ) {
+		print {$eb} ("\n# ",
+			     $acc_debcrd ? _T("Debet") : _T("Credit"),
+			     "\n");
+	    }
+	    printf {$eb} ("adm_balans %-5s %10s   # %s\n",
+			  $acc_id, numfmt($acc_balance),
+			  $acc_desc);
+	    $debcrd = $acc_debcrd;
+	}
+
+	die("?".__x("Internal error -- unbalance {arg1} <> {arg2}",
+		    arg1 => numfmt($dt),
+		    arg2 => numfmt($ct))."\n")
+	  unless $dt == $ct;
+	print {$eb} ("\n# ", _T("Totaal"), "\n",
+		     "adm_balanstotaal   ", numfmt($dt), "\n");
+
+
+	print {$eb} ("\n# ",
+		     __x("Openstaande posten bij afsluiting boekjaar {bky}",
+			 bky => $bky),
+		     "\n\n");
+	my $t = EB::Report::Open->new->perform($opts);
+	if ( $t ) {
+	    $t =~ s/^./# /;
+	    print {$eb} ($t, "\n");
+	}
     }
 
     if ( $def ) {
@@ -239,6 +303,7 @@ sub perform {
     }
 
     $dbh->commit;
+    close($eb) if $eb;
     undef;
 }
 
