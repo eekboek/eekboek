@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.9 2006/01/05 17:59:53 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.10 2006/01/09 17:43:00 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan  5 18:53:08 2006
-# Update Count    : 110
+# Last Modified On: Mon Jan  9 16:51:28 2006
+# Update Count    : 158
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -37,19 +37,25 @@ sub perform {
 
     $opts->{STYLE} = "openstaand";
     $opts->{LAYOUT} =
-      [ { name => "date", title => _T("Datum"),        width => 10, },
-	{ name => "bsk",  title => _T("Boekstuk"),     width => 16, },
-	{ name => "desc", title => _T("Omschrijving"), width => 30, },
+      [
 	{ name => "rel",  title => _T("Relatie"),      width => 10, },
+        { name => "date", title => _T("Datum"),        width => 10, },
+	{ name => "desc", title => _T("Omschrijving"), width => 30, },
 	{ name => "amt",  title => _T("Bedrag"),       width =>  9, align => ">", },
+	{ name => "bsk",  title => _T("Boekstuk"),     width => 16, },
       ];
 
     my $rep = EB::Report::GenBase->backend($self, $opts);
     my $per = $rep->{per} = $rep->{periode}->[1];
     $rep->{periodex} = 1;	# force 'per'.
 
+    my $eb = $opts->{eb_handle};
+
+    my $gtot = 0;		# grand total deb/crd
+    my $rtot = 0;		# relation total
+
     my $sth = $dbh->sql_exec("SELECT bsk_id, dbk_id, dbk_desc, bsk_nr, bsk_desc, bsk_date,".
-			     " bsk_open, dbk_type, bsr_rel_code".
+			     " bsk_open, dbk_type, dbk_acc_id, bsr_rel_code, bsk_bky".
 			     " FROM Boekstukken, Dagboeken, Boekstukregels".
 			     " WHERE bsk_dbk_id = dbk_id".
 			     " AND bsr_bsk_id = bsk_id AND bsr_nr = 1".
@@ -57,7 +63,7 @@ sub perform {
 			     " AND bsk_open != 0".
 			     " AND dbk_type in (@{[DBKTYPE_INKOOP]},@{[DBKTYPE_VERKOOP]})".
 			     ($per ? " AND bsk_date <= ?" : "").
-			     " ORDER BY dbk_id, bsk_date",
+			     " ORDER BY dbk_acc_id, bsr_rel_code, bsk_date",
 			     $per ? $per : ());
     unless ( $sth->rows ) {
 	$sth->finish;
@@ -66,20 +72,66 @@ sub perform {
 
     $rep->start(_T("Openstaande posten"));
 
-    my $cur;
+    my $cur_rel;
+    my $cur_cat;
+    my $did;
     while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($bsk_id, $dbk_id, $dbk_desc, $bsk_nr, $bsk_desc, $bsk_date, $bsk_amount, $dbk_type, $bsr_rel) = @$rr;
-	my $style = "data";
-	if ( defined($cur) && $cur != $dbk_id ) {
-	    $style = "first";
+	my ($bsk_id, $dbk_id, $dbk_desc, $bsk_nr, $bsk_desc, $bsk_date,
+	    $bsk_amount, $dbk_type, $dbk_acc_id, $bsr_rel, $bsk_bky) = @$rr;
+	if ( defined($cur_rel) && $bsr_rel ne $cur_rel ) {
+	    $rep->add({ _style => "trelatie",
+			desc => __x("Totaal {rel}", rel  => $cur_rel),
+			amt  => numfmt($rtot),
+		      });
+	    $rtot = 0;
 	}
-	$cur = $dbk_id;
-	$rep->add({ _style => $style,
+
+	if ( defined($cur_cat) && $dbk_acc_id ne $cur_cat ) {
+	    $rep->add({ _style => "tdebcrd",
+			desc => __x("Totaal {debcrd}",
+				    debcrd => $dbh->lookup($cur_cat, qw(Accounts acc_id acc_desc))),
+			amt  => numfmt($gtot),
+		      });
+	    $gtot = 0;
+	}
+
+	$bsk_amount = 0-$bsk_amount if $dbk_type == DBKTYPE_INKOOP;
+
+	if ( $eb ) {
+	    my $t = lc($dbk_desc);
+	    $t =~ s/\s+/_/g;
+	    print {$eb} ("adm_relatie ",
+			 join(":", $t, $bsk_bky, $bsk_nr), " ",
+			 $bsk_date, " \"", $bsk_desc, "\" \"", $bsr_rel, "\" ",
+			 numfmt($bsk_amount), "\n");
+	}
+
+	$rep->add({ _style => "data",
 		    date => $bsk_date,
 		    bsk  => join(":", $dbk_desc, $bsk_nr),
 		    desc => $bsk_desc,
 		    rel  => $bsr_rel,
-		    amt  => numfmt($dbk_type == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount),
+		    amt  => numfmt($bsk_amount),
+		  });
+	$gtot += $bsk_amount;
+	$rtot += $bsk_amount;
+	$cur_rel = $bsr_rel;
+	$cur_cat = $dbk_acc_id;
+    }
+
+    if ( defined($cur_rel) ) {
+	$rep->add({ _style => "trelatie",
+		    desc => __x("Totaal {rel}", rel  => $cur_rel),
+		    amt  => numfmt($rtot),
+		  });
+	$rtot = 0;
+    }
+
+    if ( defined($cur_cat) ) {
+	$rep->add({ _style => "tdebcrd",
+		    desc => __x("Totaal {debcrd}",
+				debcrd => $dbh->lookup($cur_cat, qw(Accounts acc_id acc_desc))),
+		    amt  => numfmt($gtot),
 		  });
     }
 
@@ -105,8 +157,13 @@ sub style {
     my ($self, $row, $cell) = @_;
 
     my $stylesheet = {
-	first  => {
-	    _style => { skip_before => 1 },
+	trelatie  => {
+	    _style => { skip_after => 1 },
+	},
+	tdebcrd  => {
+	    _style => { cancel_skip => 1,
+			skip_after => 1 },
+	    amt    => { line_before => 1 },
 	},
 	last   => {
 	    _style => { line_before => 1 },
