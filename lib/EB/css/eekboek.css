@@ -1,7 +1,20 @@
-/* $Id: eekboek.css,v 1.1 2005/10/08 14:45:33 jv Exp $ */
+/* $Id: eekboek.css,v 1.2 2006/01/09 17:44:28 jv Exp $ */
 
 body {
     font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 12px;
 }
 
+th { vertical-align: top }
+tr { vertical-align: top }
+
+.i_row {
+}
+
+.i_cell {
+    padding-left: 10pt;
+    padding-right: 10pt;
+    text-align: left;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}

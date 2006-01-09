@@ -45,8 +45,14 @@ table th {
 th { vertical-align: top }
 tr { vertical-align: top }
 
-.r_first {
+.r_trelatie {
+    color: #0000FF;
+}
+
+.r_tdebcrd {
     border-top: thin solid #000000;
+    color: #FF0000;
+    border-bottom: thin solid #000000;
 }
 
 .c_date, .h_date {
@@ -78,3 +84,16 @@ tr { vertical-align: top }
     padding-right: 10pt;
     text-align: right;
 }
+
+.r_trelatie .c_desc {
+    border-bottom: thin solid #000000;
+}
+
+.r_trelatie .c_bsk {
+    border-bottom: thin solid #000000;
+}
+
+.r_trelatie .c_amt {
+    border-bottom: thin solid #000000;
+}
+
