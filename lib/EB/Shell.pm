@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.49 2006/01/08 18:16:14 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.50 2006/01/09 17:41:14 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jan  7 15:16:05 2006
-# Update Count    : 641
+# Last Modified On: Mon Jan  9 18:32:28 2006
+# Update Count    : 644
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -937,7 +937,6 @@ EOS
 sub do_jaareinde {
     my ($self, @args) = @_;
     my $opts = { d_boekjaar => $bky,
-		 journal    => 1,
 	       };
 
     return unless
@@ -945,7 +944,7 @@ sub do_jaareinde {
 	       [ 'boekjaar=s',
 		 'definitief',
 		 'verwijder',
-		 'journal!',
+		 'eb=s',
 	       ], $opts);
 
     return _T("Opties \"definitief\" en \"verwijder\" sluiten elkaar uit")
@@ -961,6 +960,11 @@ Sluit het boekjaar af. De BTW rekeningen worden afgeboekt, en de
 winst/verlies wordt verrekend met de daartoe aangewezen
 balansrekening.
 
+Deze opdracht genereert twee rapporten: een journaal van de
+afboekingen en een overzicht van eventuele openstaande posten. Indien
+gewenst kan een bestand worden aangemaakt met openingsopdrachten voor
+het volgende boekjaar.
+
   jaareinde [ opties ]
 
 Opties:
@@ -969,6 +973,7 @@ Opties:
   --definitief     Sluit het boekjaar definitief af. Er zijn dan geen
                    boekingen meer mogelijk.
   --verwijder      Verwijder een tentatieve jaarafsluiting.
+  --eb=XXXX        Schrijf openingsopdrachten in dit bestand.
 EOS
 }
 
