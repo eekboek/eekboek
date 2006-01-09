@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.4 2005/12/14 09:33:59 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.5 2006/01/09 17:43:32 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 14 10:33:11 2005
-# Update Count    : 165
+# Last Modified On: Mon Jan  9 17:44:42 2006
+# Update Count    : 166
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -61,6 +61,7 @@ sub new {
 		next unless $line =~ /\S/;
 		next if $line =~ /^\s*#/;
 		chomp($line);
+		$line =~ s/\s+#.+$//;
 		if ( $line =~ /(^.*)\\$/ ) {
 		    $line = $1;
 		    $line =~ s/\s+$/ /;
