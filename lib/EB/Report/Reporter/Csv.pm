@@ -1,10 +1,10 @@
 # Csv.pm -- 
-# RCS Info        : $Id: Csv.pm,v 1.1 2006/01/05 17:59:53 jv Exp $
+# RCS Info        : $Id: Csv.pm,v 1.2 2006/01/09 14:18:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jan  5 18:47:37 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan  5 18:56:49 2006
-# Update Count    : 7
+# Last Modified On: Mon Jan  9 15:17:58 2006
+# Update Count    : 8
 # Status          : Unknown, Use with caution!
 #!/usr/bin/perl -w
 
@@ -44,12 +44,12 @@ sub add {
 
     $self->_checkhdr;
 
-    my $line = "";
+    my $line;
 
     foreach my $col ( @{$self->{_fields}} ) {
 	my $fname = $col->{name};
 	my $value = defined($data->{$fname}) ? _csv($data->{$fname}) : "";
-	$line .= $sep if $line;
+	$line .= $sep if defined($line);
 	$line .= $value;
     }
 
