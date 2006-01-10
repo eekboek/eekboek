@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.20 2006/01/05 17:59:53 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.21 2006/01/10 19:58:05 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan  5 18:52:27 2006
-# Update Count    : 236
+# Last Modified On: Tue Jan 10 20:56:43 2006
+# Update Count    : 237
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -188,6 +188,7 @@ sub perform {
 	print("?"._T("Geen informatie gevonden")."\n");
     }
 
+    $rep->finish;
     # Rollback temp table.
     $dbh->rollback;
 }
