@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.10 2006/01/08 18:18:01 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.11 2006/01/10 21:39:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan  6 15:51:43 2006
-# Update Count    : 82
+# Last Modified On: Tue Jan 10 22:38:25 2006
+# Update Count    : 95
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -87,11 +87,17 @@ sub backend {
     # Handle pagesize.
     $be->{fh}->format_lines_per_page($be->{page} = defined($opts->{page}) ? $opts->{page} : 999999);
 
+    # Get real (or fake) current date, and adjust periode end if needed.
+    $be->{now} = iso8601date();
+    $be->{now} = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $be->{now} gt $ENV{EB_SQL_NOW};
+
+    # Date/Per.
     if ( $opts->{per} ) {
 	die(_T("--per sluit --periode uit")."\n") if $opts->{periode};
 	die(_T("--per sluit --boekjaar uit")."\n") if defined $opts->{boekjaar};
 	$be->{periode} = [$opts->{per},$opts->{per}];
 	$be->{per_end} = $opts->{per};
+	$be->{per_begin} = $opts->{per};
 	$be->{periodex} = 1;
     }
     elsif ( $opts->{periode} ) {
@@ -123,19 +129,31 @@ sub backend {
 	$be->{periodex} = 0;
     }
 
-    # Get real (or fake) current date, and adjust periode end if needed.
-    $be->{now} = iso8601date();
-    $be->{now} = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $be->{now} gt $ENV{EB_SQL_NOW};
     if ( $be->{per_end} gt $be->{now} ) {
+	warn("!".__x("Datum {per} valt na de huidige datum {now}",
+		     per => $be->{per_end}, now => $be->{now})."\n");
 	$be->{periode}->[1] = $be->{per_end} = $be->{now};
     }
 
     # Sanity.
+    my $opendate = $dbh->do("SELECT min(bky_begin) FROM boekjaren WHERE NOT bky_code = ?",
+			    BKY_PREVIOUS)->[0];
+
     if ( $be->{per_begin} gt $be->{now} ) {
 	die("?".__x("Periode begint {from}, dit is na de huidige datum {now}",
 		    from => $be->{per_begin},
 		    now => $be->{now})."\n");
     }
+    if ( $be->{per_begin} lt $opendate ) {
+	die("?".__x("Datum {per} valt vóór het begin van de administratie {begin}",
+		    per => $be->{per_begin}, begin => $opendate)."\n");
+    }
+    if ( $be->{per_end} lt $opendate ) {
+	die("?".__x("Datum {per} valt vóór het begin van de administratie {begin}",
+		    per => $be->{per_end}, begin => $opendate)."\n");
+    }
+
+    $be->{_style} = $opts->{style};
 
     # Return instance.
     $be;
@@ -176,7 +194,7 @@ sub backend_options {
     foreach ( qw(html csv text) ) {
 	push(@opts, $_) if $be{$_};
     }
-    push(@opts, "style=s", "design") if $be{html};
+    push(@opts, "style=s") if $be{html};
 
     # Explicit --gen-XXX for all backends.
     push(@opts, map { +"gen-$_"} keys %be);
