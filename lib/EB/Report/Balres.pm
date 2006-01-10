@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.17 2006/01/05 17:59:53 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.18 2006/01/10 14:59:23 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan  5 18:53:30 2006
-# Update Count    : 346
+# Last Modified On: Tue Jan 10 15:58:13 2006
+# Update Count    : 347
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -280,7 +280,7 @@ sub style {
 	    desc   => { indent      => 2 },
 	},
 	h2    => {
-	    desc   => { indent      => 2 },
+	    desc   => { indent      => 1 },
 	},
 	t1    => {
 	    _style => { skip_after  => (1 <= $self->{detail}) },
