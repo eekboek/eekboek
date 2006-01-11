@@ -5,7 +5,7 @@ EekBoek Demo Administratie 2004                    EekBoek, 2004-12-31
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 ----------------------------------------------------------------------
 1       Vaste Activa
-12        Materiële vaste activa
+12       Materiële vaste activa
 230       Inventaris en inrichting                  1344,37
 231       Afschrijving inventaris & inrichting                 1716,07
 240       Computers                                13378,48
@@ -15,21 +15,21 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 1       Totaal Vaste Activa                          503,18
 
 2       Vlottende activa
-24        Liquide middelen
+24       Liquide middelen
 1120      Postbank                                 10334,68
 24       Totaal Liquide middelen                   10334,68
 
 2       Totaal Vlottende activa                    10334,68
 
 3       Eigen vermogen
-31        Kapitaal
+31       Kapitaal
 500       Kapitaal                                             2443,18
 31       Totaal Kapitaal                                       2443,18
 
 3       Totaal Eigen vermogen                                  2443,18
 
 4       Vreemd vermogen
-48        Belastingen & soc. lasten
+48       Belastingen & soc. lasten
 1500      BTW Verkoop Hoog                                     1463,00
 1520      BTW Inkoop Hoog                            148,14
 48       Totaal Belastingen & soc. lasten                      1314,86

@@ -5,7 +5,7 @@ EekBoek Demo Administratie 2004                    EekBoek, 2004-12-31
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 ----------------------------------------------------------------------
 5       Bedrijfsopbrengsten
-51        Netto omzet
+51       Netto omzet
 8000      Omzet advisering BTW hoog                            1200,00
 8200      Omzet editing                                        1000,00
 8300      Omzet cursussen                                      6500,00
@@ -14,13 +14,13 @@ RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 5       Totaal Bedrijfsopbrengsten                             8700,00
 
 6       Personeelslasten
-63        Afschrijving materiele vaste activa
+63       Afschrijving materiele vaste activa
 4330      Afschr. kosten inv. & inr                  411,26
 4340      Afschr. kosten computers                   396,82
 63       Totaal Afschrijving materiele vaste         808,08
          activa
 
-69        Algemene kosten
+69       Algemene kosten
 4900      Telefoon- en faxkosten                     530,62
 4905      Internetkosten                             249,08
 4980      Bankkosten                                  32,40
