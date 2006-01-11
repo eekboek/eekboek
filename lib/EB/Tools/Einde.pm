@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Einde.pm,v 1.6 2006/01/09 17:44:09 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.7 2006/01/11 15:28:19 jv Exp $ ';
 
 package main;
 
@@ -7,12 +7,12 @@ our $dbh;
 package EB::Tools::Einde;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.6 2006/01/09 17:44:09 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.7 2006/01/11 15:28:19 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan  9 18:29:39 2006
-# Update Count    : 207
+# Last Modified On: Wed Jan 11 16:25:31 2006
+# Update Count    : 209
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -284,7 +284,6 @@ sub perform {
 	print {$eb} ("\n# ", _T("Totaal"), "\n",
 		     "adm_balanstotaal   ", numfmt($dt), "\n");
 
-
 	print {$eb} ("\n# ",
 		     __x("Openstaande posten bij afsluiting boekjaar {bky}",
 			 bky => $bky),
@@ -294,6 +293,9 @@ sub perform {
 	    $t =~ s/^./# /;
 	    print {$eb} ($t, "\n");
 	}
+    }
+    else {
+	EB::Report::Open->new->perform($opts);
     }
 
     if ( $def ) {
