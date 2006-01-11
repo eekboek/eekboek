@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.30 2006/01/09 18:06:25 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.31 2006/01/11 21:57:34 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan  9 19:06:08 2006
-# Update Count    : 100
+# Last Modified On: Wed Jan 11 21:36:42 2006
+# Update Count    : 102
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -34,6 +34,7 @@ sub EB_LIB() { $lib }
 
 # Some standard modules.
 use EB::Globals;
+use Carp;
 
 BEGIN {
     # The core and GUI use a different EB::Locale module.
@@ -55,6 +56,7 @@ BEGIN {
 		@EB::Globals::EXPORT,
 		@EB::Utils::EXPORT,
 		@EB::Locale::EXPORT,
+		qw(carp croak),
 	      );
 }
 
