@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.21 2005/12/12 16:29:30 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.22 2006/01/11 21:57:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Dec 12 17:27:26 2005
-# Update Count    : 424
+# Last Modified On: Wed Jan 11 22:20:07 2006
+# Update Count    : 435
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -192,6 +192,7 @@ sub scan_btw {
 	    $btwmap{l} = $id;
 	}
     }
+    $btwmap{$id} = $id;
     1;
 }
 
@@ -230,6 +231,9 @@ sub scan_balres {
 	    $extra = $2;
 	    if ( $extra =~ m/^btw=(hoog|laag)$/i ) {
 		$btw = lc(substr($1,0,1));
+	    }
+	    elsif ( $extra =~ m/^btw=(\d+)$/i ) {
+		$btw = $1;
 	    }
 	    elsif ( $extra =~ m/koppeling=(\S+)/i ) {
 		error(__x("Rekening {id}: onbekende koppeling \"{std}\"",
@@ -393,6 +397,8 @@ ESQL
 
     for my $i ( sort { $a <=> $b } keys(%acc) ) {
 	my $g = $acc{$i};
+	croak(__x("Geen BTW tariefgroep voor code {code}",
+		  code => $g->[5])) unless defined $btwmap{$g->[5]};
 	$out .= join("\t", $i, $g->[0], $g->[1],
 		     _tf($g->[2]),
 		     _tf($g->[3]),
@@ -634,19 +640,27 @@ sub dump_acc {
 	    print("# ".__x("VERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
 			   min => $max_hvd+1, max => $max_vrd)."\n")
 	      if $id < 10 || $id > 99;
-	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz, btw_tariefgroep".
+	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz,".
+				     " acc_btw, btw_tariefgroep, btw_incl".
 				     " FROM Accounts, BTWTabel ".
 				     " WHERE acc_struct = ?".
 				     " AND btw_id = acc_btw".
 				     " ORDER BY acc_id", $id);
 	    while ( my $rr = $sth->fetchrow_arrayref ) {
-		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_kstomz, $btw) = @$rr;
+		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_kstomz, $btw_id, $btw, $btwincl) = @$rr;
 		my $flags = "";
 		$flags .= $acc_debcrd ? "D" : "C" if $balres;
 		$flags .= $acc_kstomz ? "K" : "O" unless $balres;
 		my $extra = "";
-		$extra .= " :btw=hoog" if $btw == BTWTYPE_HOOG;
-		$extra .= " :btw=laag" if $btw == BTWTYPE_LAAG;
+		if ( $btw == BTWTYPE_HOOG && $btwincl ) {
+		    $extra .= " :btw=hoog";
+		}
+		elsif ( $btw == BTWTYPE_LAAG && $btwincl ) {
+		    $extra .= " :btw=laag";
+		}
+		elsif ( $btw != BTWTYPE_GEEN ) {
+		    $extra .= " :btw=$btw_id";
+		}
 		$extra .= " :koppeling=".$kopp{$id} if exists($kopp{$id});
 		$desc =~ s/^\s+//;
 		$desc =~ s/\s+$//;
