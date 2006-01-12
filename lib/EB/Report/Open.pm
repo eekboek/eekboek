@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.10 2006/01/09 17:43:00 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.11 2006/01/12 21:20:00 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan  9 16:51:28 2006
-# Update Count    : 158
+# Last Modified On: Thu Jan 12 21:58:54 2006
+# Update Count    : 174
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -46,6 +46,7 @@ sub perform {
       ];
 
     my $rep = EB::Report::GenBase->backend($self, $opts);
+
     my $per = $rep->{per} = $rep->{periode}->[1];
     $rep->{periodex} = 1;	# force 'per'.
 
@@ -59,16 +60,10 @@ sub perform {
 			     " FROM Boekstukken, Dagboeken, Boekstukregels".
 			     " WHERE bsk_dbk_id = dbk_id".
 			     " AND bsr_bsk_id = bsk_id AND bsr_nr = 1".
-			     " AND bsk_open IS NOT NULL".
-			     " AND bsk_open != 0".
 			     " AND dbk_type in (@{[DBKTYPE_INKOOP]},@{[DBKTYPE_VERKOOP]})".
-			     ($per ? " AND bsk_date <= ?" : "").
+			     " AND bsk_date <= ?".
 			     " ORDER BY dbk_acc_id, bsr_rel_code, bsk_date",
-			     $per ? $per : ());
-    unless ( $sth->rows ) {
-	$sth->finish;
-	return "!"._T("Geen openstaande posten gevonden");
-    }
+			     $per);
 
     $rep->start(_T("Openstaande posten"));
 
@@ -78,6 +73,22 @@ sub perform {
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($bsk_id, $dbk_id, $dbk_desc, $bsk_nr, $bsk_desc, $bsk_date,
 	    $bsk_amount, $dbk_type, $dbk_acc_id, $bsr_rel, $bsk_bky) = @$rr;
+
+
+	# Correct for future payments.
+	my $rop = $dbh->do("SELECT sum(bsr_amount)".
+			   " FROM Boekstukregels".
+			   " WHERE bsr_type IN (1,2)".
+			   " AND bsr_date > ?".
+			   " AND bsr_paid = ?",
+			   $per, $bsk_id);
+
+	if ( $rop && $rop->[0] ) {
+	    $bsk_amount -= $rop->[0];
+	}
+
+	next unless $bsk_amount;
+
 	if ( defined($cur_rel) && $bsr_rel ne $cur_rel ) {
 	    $rep->add({ _style => "trelatie",
 			desc => __x("Totaal {rel}", rel  => $cur_rel),
@@ -117,6 +128,7 @@ sub perform {
 	$rtot += $bsk_amount;
 	$cur_rel = $bsr_rel;
 	$cur_cat = $dbk_acc_id;
+	$did++;
     }
 
     if ( defined($cur_rel) ) {
@@ -135,8 +147,13 @@ sub perform {
 		  });
     }
 
-    $rep->add({ _style => "last" });
-    $rep->finish;
+    if ( $did ) {
+	$rep->add({ _style => "last" });
+	$rep->finish;
+    }
+    else {
+	return "!"._T("Geen openstaande posten gevonden");
+    }
     return;
 }
 
