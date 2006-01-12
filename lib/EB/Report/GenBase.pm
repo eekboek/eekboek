@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.13 2006/01/12 11:35:38 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.14 2006/01/12 14:13:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 12 12:29:13 2006
-# Update Count    : 99
+# Last Modified On: Thu Jan 12 15:12:51 2006
+# Update Count    : 100
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -132,7 +132,7 @@ sub backend {
     if ( $be->{per_end} gt $be->{now} ) {
 	warn("!".__x("Datum {per} valt na de huidige datum {now}",
 		     per => $be->{per_end}, now => $be->{now})."\n")
-	  if $be->{periodex} == 1 || $be->{periodex} == 2;
+	  if 0;
 	$be->{periode}->[1] = $be->{per_end} = $be->{now};
     }
 
