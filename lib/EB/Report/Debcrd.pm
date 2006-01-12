@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.7 2006/01/12 21:16:52 jv Exp $ ';
+my $RCS_Id = '$Id: Debcrd.pm,v 1.8 2006/01/12 21:38:09 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 12 18:44:20 2006
-# Update Count    : 167
+# Last Modified On: Thu Jan 12 22:38:03 2006
+# Update Count    : 168
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -99,9 +99,6 @@ sub _perform {
     }
     $sth->finish;
     return "!"._T("Geen boekingen gevonden") unless %rels;
-
-    use Data::Dumper;
-    warn(Dumper(\%rels),"\n");
 
     $rep->start($debcrd ? _T("Debiteurenadministratie")
 	                : _T("Crediteurenadministratie"));
