@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.50 2006/01/09 17:41:14 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.51 2006/01/12 21:21:10 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan  9 18:32:28 2006
-# Update Count    : 644
+# Last Modified On: Thu Jan 12 21:21:02 2006
+# Update Count    : 647
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -622,7 +622,8 @@ sub do_debiteuren {
 
     return unless
     parse_args(\@args,
-	       [ EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
+	       [ "boekjaar=s",
+		 EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
 		 'periode=s' => sub { periode_arg($opts, @_) },
 	       ], $opts);
 
@@ -638,6 +639,7 @@ Toont een overzicht van debiteuren.
 Opties:
 
   --periode XXX   periode
+  --boekjaar=XX   Selecteer boekjaar
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -653,7 +655,8 @@ sub do_crediteuren {
 
     return unless
     parse_args(\@args,
-	       [ EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
+	       [ "boekjaar=s",
+		 EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
 		 'periode=s' => sub { periode_arg($opts, @_) },
 	       ], $opts);
 
@@ -669,6 +672,7 @@ Toont een overzicht van crediteuren.
 Opties:
 
   --periode XXX   periode
+  --boekjaar=XX   Selecteer boekjaar
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -684,7 +688,8 @@ sub do_openstaand {
 
     return unless
     parse_args(\@args,
-	       [ EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
+	       [ "boekjaar=s",
+		 EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
 		 'per=s' => sub { date_arg($opts, @_) },
 	       ], $opts);
 
@@ -700,7 +705,8 @@ Toont een overzicht van openstaande posten.
 
 Opties:
 
-  --per XXX      t/m einddatum  ***WERKT NOG NIET***
+  --per XXX       t/m einddatum
+  --boekjaar=XX   Selecteer boekjaar
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
