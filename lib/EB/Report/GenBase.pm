@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.14 2006/01/12 14:13:05 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.15 2006/01/12 21:18:08 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 12 15:12:51 2006
-# Update Count    : 100
+# Last Modified On: Thu Jan 12 21:51:00 2006
+# Update Count    : 101
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -97,7 +97,7 @@ sub backend {
 	die(_T("--per sluit --boekjaar uit")."\n") if defined $opts->{boekjaar};
 	$be->{per_begin} = $dbh->adm("begin");
 	$be->{per_end} = $opts->{per};
-	$be->{periode} = [$opts->{per_begin},$opts->{per_end}];
+	$be->{periode} = [$be->{per_begin},$be->{per_end}];
 	$be->{periodex} = 1;
     }
     elsif ( $opts->{periode} ) {
