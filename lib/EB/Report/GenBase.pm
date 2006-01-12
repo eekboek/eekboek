@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.11 2006/01/10 21:39:17 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.12 2006/01/12 11:22:04 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 10 22:38:25 2006
-# Update Count    : 95
+# Last Modified On: Thu Jan 12 12:20:18 2006
+# Update Count    : 96
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -153,7 +153,7 @@ sub backend {
 		    per => $be->{per_end}, begin => $opendate)."\n");
     }
 
-    $be->{_style} = $opts->{style};
+    $be->{_style} = $opts->{style} if $opts->{style};
 
     # Return instance.
     $be;
