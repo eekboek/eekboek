@@ -119,3 +119,10 @@ tr {
     text-indent: 1em;
 }
 
+.r_bskprv .c_date {
+    color: #0000FF;
+}
+
+.r_bskprv .c_bsknr {
+    color: #0000FF;
+}
