@@ -46,7 +46,7 @@ th { vertical-align: top }
 tr { vertical-align: top }
 
 .r_trelatie {
-    color: #0000FF;
+    font-weight: bold;
 }
 
 .r_tdebcrd {
@@ -95,5 +95,13 @@ tr { vertical-align: top }
 
 .r_trelatie .c_amt {
     border-bottom: thin solid #000000;
+}
+
+.r_prevdata .c_date {
+    color: #0000FF;
+}
+
+.r_prevdata .c_bsk {
+    color: #0000FF;
 }
 
