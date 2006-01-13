@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.23 2006/01/13 13:14:19 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.24 2006/01/13 13:54:46 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 13 14:12:34 2006
-# Update Count    : 440
+# Last Modified On: Fri Jan 13 14:53:10 2006
+# Update Count    : 446
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -337,6 +337,20 @@ sub create_schema {
     $dbh->commit;
 }
 
+sub _trim {
+    my ($t) = @_;
+    for ( $t ) {
+	s/\s+/ /g;
+	s/^\s+//;
+	s/\s+$//;
+	return $_;
+    }
+}
+
+sub _tsv {
+    join("\t", map { _trim($_) } @_) . "\n";
+}
+
 sub sql_eekboek {
     my $f = findlib("schema/eekboek.sql");
     open (my $fh, '<', $f)
@@ -368,7 +382,7 @@ ESQL
     for ( my $i = 0; $i < @hvdi; $i++ ) {
 	next unless exists $hvdi[$i];
 	my $v = $hvdi[$i];
-	$out .= join("\t", $i, $v->[0], _tf($v->[1]), "\\N", "\\N") . "\n";
+	$out .= _tsv($i, $v->[0], _tf($v->[1]), "\\N", "\\N");
     }
     $out .= "\\.\n";
 
@@ -381,7 +395,7 @@ ESQL
     for ( my $i = 0; $i < @vdi; $i++ ) {
 	next unless exists $vdi[$i];
 	my $v = $vdi[$i];
-	$out .= join("\t", $i, $v->[0], _tf($v->[1]), "\\N", $v->[2]) . "\n";
+	$out .= _tsv($i, $v->[0], _tf($v->[1]), "\\N", $v->[2]);
     }
     $out . "\\.\n";
 }
@@ -399,12 +413,12 @@ ESQL
 	my $g = $acc{$i};
 	croak(__x("Geen BTW tariefgroep voor code {code}",
 		  code => $g->[5])) unless defined $btwmap{$g->[5]};
-	$out .= join("\t", $i, $g->[0], $g->[1],
+	$out .= _tsv($i, $g->[0], $g->[1],
 		     _tf($g->[2]),
 		     _tf($g->[3]),
 		     _tf($g->[4]),
 		     $btwmap{$g->[5]},
-		     0, 0) . "\n";
+		     0, 0);
     }
     $out . "\\.\n";
 }
@@ -435,7 +449,7 @@ ESQL
 	else {
 	    $_->[4] = _tf($_->[4]);
 	}
-	$out .= join("\t", @$_) . "\n";
+	$out .= _tsv(@$_);
     }
     $out . "\\.\n";
 }
