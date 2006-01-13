@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.11 2006/01/12 21:20:00 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.12 2006/01/13 12:41:00 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 12 21:58:54 2006
-# Update Count    : 174
+# Last Modified On: Fri Jan 13 13:38:41 2006
+# Update Count    : 184
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -117,9 +117,19 @@ sub perform {
 			 numfmt($bsk_amount), "\n");
 	}
 
-	$rep->add({ _style => "data",
+	my $bsk;
+	my $style = "data";
+	if ( $bsk_date lt $rep->{per_begin} ) {
+	    $bsk = join(":", $dbk_desc, $bsk_bky, $bsk_nr);
+	    $style = "prevdata";
+	}
+	else {
+	    $bsk = join(":", $dbk_desc, $bsk_nr);
+	}
+
+	$rep->add({ _style => $style,
 		    date => $bsk_date,
-		    bsk  => join(":", $dbk_desc, $bsk_nr),
+		    bsk  => $bsk,
 		    desc => $bsk_desc,
 		    rel  => $bsr_rel,
 		    amt  => numfmt($bsk_amount),
