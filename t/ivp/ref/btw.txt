@@ -16,7 +16,7 @@ Buitenland
 3. Door mij verrichte leveringen
 
 3a   Buiten de EU                                  1000          
-3a   Binnen de EU                                     0          
+3b   Binnen de EU                                     0          
 
 4. Aan mij verrichte leveringen
 
