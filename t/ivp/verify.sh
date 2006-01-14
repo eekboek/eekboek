@@ -51,6 +51,13 @@ ebshell -c grootboek --detail=2 | diff -c - grootboek2.txt
 # Verify: BTW aangifte.
 ebshell -c btwaangifte j | diff -c - btw.txt
 
+# Verify: HTML generatie.
+ebshell -c balans --detail=2 --gen-html | diff -c - balans2.html
+ebshell -c balans --detail=2 --gen-html --style=xxx | diff -c - balans2xxx.html
+
+# Verify: CSV generatie.
+ebshell -c balans --detail=2 --gen-csv | diff -c - balans2.csv
+
 # Aanmaken HTML documentatie van database schema (optioneel).
 if test -x /usr/local/bin/postgresql_autodoc
 then
