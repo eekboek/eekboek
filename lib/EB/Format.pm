@@ -216,7 +216,7 @@ sub journalise {
 
     push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
 		 -$tot, $bsk_desc, undef])
-      unless $dbktype == DBKTYPE_MEMORIAAL;
+      if $dbk_acc_id;
 
     unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsk_date, 0, undef,
 		    undef, $bsk_desc, undef]);
