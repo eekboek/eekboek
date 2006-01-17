@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.30 2005/12/20 19:41:55 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.31 2006/01/17 15:47:21 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 20 20:41:12 2005
-# Update Count    : 283
+# Last Modified On: Tue Jan 17 16:47:09 2006
+# Update Count    : 284
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -270,8 +270,8 @@ sub perform {
 		$rr = $dbh->do($sql, @sql_args);
 		unless ( defined($rr) ) {
 		    warn("?"._T("Geen bijbehorende open post gevonden")."\n");
-		    warn("DEBUG: SQL: $sql\n");
-		    warn("DEBUG: args: @sql_args\n");
+		    #warn("DEBUG: SQL: $sql\n");
+		    #warn("DEBUG: args: @sql_args\n");
 		    $fail++;
 		    next;
 		}
@@ -309,8 +309,8 @@ sub perform {
 		$rr = $dbh->do($sql, @sql_args);
 		unless ( defined($rr) ) {
 		    warn("?"._T("Geen bijbehorende open post gevonden")."\n");
-		    warn("DEBUG: SQL: $sql\n");
-		    warn("DEBUG: args: @sql_args\n");
+		    #warn("DEBUG: SQL: $sql\n");
+		    #warn("DEBUG: args: @sql_args\n");
 		    $fail++;
 		    next;
 		}
