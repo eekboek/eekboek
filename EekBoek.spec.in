@@ -28,7 +28,8 @@ appreciated).
 
 %build
 perl Makefile.PL
-make all test
+make all
+env EB_SKIPDBTESTS=1 make test
 
 %install
 rm -rf $RPM_BUILD_ROOT
