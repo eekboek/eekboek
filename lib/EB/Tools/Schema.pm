@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.24 2006/01/13 13:54:46 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.25 2006/01/17 21:10:45 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 13 14:53:10 2006
-# Update Count    : 446
+# Last Modified On: Mon Jan 16 22:29:17 2006
+# Update Count    : 452
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -504,17 +504,18 @@ sub dump_sql {
 my %kopp;
 
 sub dump_schema {
-    my ($self) = @_;
+    my ($self, $fh) = @_;
+    $fh ||= *STDOUT;
 
     $dbh = EB::DB->new(trace => $trace);
     $dbh->connectdb;		# can't wait...
 
-    print("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
+    print {$fh} ("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
 	  "# Aangemaakt door ", __PACKAGE__, " $my_version");
     my @t = localtime(time);
-    printf("op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
+    printf {$fh} ("op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
 
-    print <<EOD;
+    print {$fh}  <<EOD;
 
 # Dit bestand definiëert alle vaste gegevens van een administratie of
 # groep administraties: het rekeningschema (balansrekeningen en
@@ -537,7 +538,7 @@ EOD
 	$kopp{$v} = $k;
     }
 
-print <<EOD;
+print {$fh}  <<EOD;
 # REKENINGSCHEMA
 #
 # Het rekeningschema is hiërarchisch opgezet volgende de beproefde
@@ -575,7 +576,7 @@ EOD
 $max_hvd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE vdi_struct IS NULL")->[0];
 $max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct IS NULL")->[0];
 
-    print <<EOD;
+    print {$fh}  <<EOD;
 
 # Normaal lopen hoofdverdichtingen van 1 t/m 9, en verdichtingen
 # van 10 t/m 99. Indien daarvan wordt afgeweken kan dit worden opgegeven
@@ -584,10 +585,10 @@ $max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct 
 EOD
 
     if ( $max_hvd > 9 || $max_vrd > 99 ) {
-	printf("\nVerdichting %d %d\n", $max_hvd, $max_vrd);
+	printf {$fh} ("\nVerdichting %d %d\n", $max_hvd, $max_vrd);
     }
 
-    print <<EOD;
+    print {$fh}  <<EOD;
 # De nummers van de grootboekrekeningen worden geacht groter te zijn
 # dan de maximale verdichting. Daarvan kan worden afgeweken door
 # middels voorloopnullen de _lengte_ van het nummer groter te maken
@@ -596,10 +597,10 @@ EOD
 # nummer 1 aan.
 EOD
 
-    dump_acc(1);		# Balansrekeningen
-    dump_acc(0);		# Resultaatrekeningen
+    dump_acc(1, $fh);		# Balansrekeningen
+    dump_acc(0, $fh);		# Resultaatrekeningen
 
-print <<EOD;
+print {$fh}  <<EOD;
 
 # DAGBOEKEN
 #
@@ -612,9 +613,9 @@ print <<EOD;
 # een tegenrekening worden opgegeven.
 EOD
 
-    dump_dbk();			# Dagboeken
+    dump_dbk($fh);			# Dagboeken
 
-print <<EOD;
+print {$fh}  <<EOD;
 
 # BTW TARIEVEN
 #
@@ -635,13 +636,18 @@ print <<EOD;
 # hebben voor de reeds in scripts vastgelegde boekingen.
 EOD
 
-    dump_btw();			# BTW tarieven
+    dump_btw($fh);			# BTW tarieven
+
+print {$fh}  <<EOD;
+
+# Einde EekBoek schema
+EOD
 }
 
 sub dump_acc {
-    my ($balres) = @_;
+    my ($balres, $fh) = @_;
 
-    print("\n", $balres ? "Balans" : "Resultaat", "rekeningen\n");
+    print {$fh} ("\n", $balres ? "Balans" : "Resultaat", "rekeningen\n");
 
     my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
 			     " FROM Verdichtingen".
@@ -650,8 +656,8 @@ sub dump_acc {
 			     " ORDER BY vdi_id");
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($id, $desc) = @$rr;
-	printf("\n  %d  %s\n", $id, $desc);
-	print("# ".__x("HOOFDVERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
+	printf {$fh} ("\n  %d  %s\n", $id, $desc);
+	print {$fh} ("# ".__x("HOOFDVERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
 		       min => 1, max => $max_hvd)."\n")
 	  if $id > $max_hvd;
 	my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
@@ -660,8 +666,8 @@ sub dump_acc {
 				 " ORDER BY vdi_id", $id);
 	while ( my $rr = $sth->fetchrow_arrayref ) {
 	    my ($id, $desc) = @$rr;
-	    printf("     %-2d  %s\n", $id, $desc);
-	    print("# ".__x("VERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
+	    printf {$fh} ("     %-2d  %s\n", $id, $desc);
+	    print {$fh} ("# ".__x("VERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
 			   min => $max_hvd+1, max => $max_vrd)."\n")
 	      if $id < 10 || $id > 99;
 	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz,".
@@ -692,10 +698,10 @@ sub dump_acc {
 				$id < $max_vrd ? (("0" x (length($max_vrd)-length($id)+1)) . $id) : $id,
 				$flags, $desc, $extra);
 		$t =~ s/\s+$//;
-		print($t, "\n");
-		print("# ".__x("{id} ZOU EEN BALANSREKENING MOETEN ZIJN", id => $id)."\n")
+		print {$fh} ($t, "\n");
+		print {$fh} ("# ".__x("{id} ZOU EEN BALANSREKENING MOETEN ZIJN", id => $id)."\n")
 		  if $acc_balres && !$balres;
-		print("# ".__x("{id} ZOU EEN RESULTAATREKENING MOETEN ZIJN", id => $id)."\n")
+		print {$fh} ("# ".__x("{id} ZOU EEN RESULTAATREKENING MOETEN ZIJN", id => $id)."\n")
 		  if !$acc_balres && $balres;
 	    }
 	}
@@ -703,7 +709,8 @@ sub dump_acc {
 }
 
 sub dump_btw {
-    print("\nBTW Tarieven\n\n");
+    my $fh = shift;
+    print {$fh} ("\nBTW Tarieven\n\n");
     my $sth = $dbh->sql_exec("SELECT btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
 			     " FROM BTWTabel".
 			     " ORDER BY btw_id");
@@ -718,12 +725,13 @@ sub dump_btw {
 	my $t = sprintf(" %3d  %-20s  %s",
 			$id, $desc, $extra);
 	$t =~ s/\s+$//;
-	print($t, "\n");
+	print {$fh} ($t, "\n");
     }
 }
 
 sub dump_dbk {
-    print("\nDagboeken\n\n");
+    my $fh = shift;
+    print {$fh} ("\nDagboeken\n\n");
     my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_desc, dbk_type, dbk_acc_id".
 			     " FROM Dagboeken".
 			     " ORDER BY dbk_id");
@@ -734,7 +742,7 @@ sub dump_dbk {
 			$id, $desc, lc(DBKTYPES->[$type]),
 			($acc_id ? ":rekening=$acc_id" : ""));
 	$t =~ s/\s+$//;
-	print($t, "\n");
+	print {$fh} ($t, "\n");
     }
 }
 
