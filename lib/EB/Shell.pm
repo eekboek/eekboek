@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.51 2006/01/12 21:21:10 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.52 2006/01/17 21:11:04 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 12 21:21:02 2006
-# Update Count    : 647
+# Last Modified On: Tue Jan 17 15:31:51 2006
+# Update Count    : 656
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -789,6 +789,56 @@ Opties:
   --btw=XXX      -- BTW type: normaal, verlegd, intra, extra
                     *** BTW type 'verlegd' wordt nog niet ondersteund ***
                     *** BTW type 'intra' wordt nog niet geheel ondersteund ***
+EOS
+}
+
+################ Im/export ################
+
+sub do_export {
+    my ($self, @args) = @_;
+
+    my $opts = {
+	       };
+
+    return unless
+    parse_args(\@args,
+	       [ 'dir=s',
+		 'output=s',
+		 'boekjaar=s',
+	       ], $opts)
+      or goto &help_export;
+
+    if ( defined($opts->{dir}) && defined($opts->{output}) ) {
+	warn("?"._T("Opties --dir en --output sluiten elkaar uit")."\n");
+	return;
+    }
+    if ( !defined($opts->{dir}) && !defined($opts->{output}) ) {
+	warn("?"._T("Specifieer --dir of --output")."\n");
+	return;
+    }
+
+    return unless argcnt(@args, 0);
+
+    use EB::Export;
+    EB::Export->export($opts);
+
+    return;
+}
+
+sub help_export {
+    <<EOS;
+Exporteert de complete administratie.
+
+  export [ opties ]
+
+Opties:
+
+  --output=XXX    Selecteer uitvoerbestand
+  --dir=XXX       Selecteer uitvoerdirectory
+  --boekjaar=XX   Selecteer boekjaar
+
+Er moet of een --output of een --dir optie worden opgegeven.
+Zonder --boekjaar selectie wordt de gehele administratie geëxporteerd.
 EOS
 }
 
