@@ -1,4 +1,4 @@
-# $Id: 80_db_postgresql.t,v 1.1 2006/01/16 11:07:02 jv Exp $  -*-perl-*-
+# $Id: 80_db_postgresql.t,v 1.2 2006/01/18 20:42:52 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More tests => 4;
@@ -15,8 +15,9 @@ SKIP: {
     skip("DBI PostgreSQL driver (DBD::Pg) not installed", 3) if $@;
 
     # Check minimal Pg interface version.
-    ok($DBD::Pg::VERSION >= 1.41,
-       "DBD::PG version = $DBD::Pg::VERSION, should be at east 1.41");
+    my $minpg = 1.31;
+    ok($DBD::Pg::VERSION >= $minpg,
+       "DBD::PG version = $DBD::Pg::VERSION, should be at east $minpg");
 
     SKIP: {
 	skip("Database tests skipped on request", 2)
