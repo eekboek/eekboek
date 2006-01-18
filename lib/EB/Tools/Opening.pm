@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.16 2006/01/09 16:32:48 jv Exp $
+# $Id: Opening.pm,v 1.17 2006/01/18 20:45:26 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan  9 17:32:35 2006
-# Update Count    : 134
+# Last Modified On: Wed Jan 18 18:35:31 2006
+# Update Count    : 146
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -121,7 +121,7 @@ sub set_relatie {
     if ( $_[0] =~ /^(\w+):(\w+):(\d+)$/ ) {
 	($dbk, $bky, $nr) = ($1, $2, $3);
 	shift;
-	($date, $desc, $code, $amt) = @_;
+	($date, $code, $desc, $amt) = @_;
 	my $t = $dbh->lookup($dbk, qw(Dagboeken dbk_desc dbk_type ILIKE));
 	return __x("Onbekend dagboek: {dbk}", dbk => $dbk)."\n"
 	  unless defined($t);
@@ -134,13 +134,22 @@ sub set_relatie {
 	$type = $type eq "deb";
     }
 
+    my $t = parse_date($date);
     return __x("Ongeldige datum: {date}", date => $date)."\n"
-      unless $date =~ /^(\d\d\d\d)-(\d\d?)-(\d\d?)$/
-	&& $1 >= 1990 && $1 < 2099
-	  && $2 >= 1 && $2 <= 12
-	    && $3 >= 1 && $3 <= 31; # TODO
+      unless $t;
+    $date = $t;
     return __x("Datum {date} valt niet vóór het boekjaar", date => $date)."\n"
       if $self->{o}->{begindatum} && $self->{o}->{begindatum} <= $1;
+    $bky = substr($date, 0, 4) unless defined $bky;
+
+    unless ( defined($dbk) ) {
+	my $sth = $dbh->sql_exec("SELECT min(dbk_id)".
+				 " FROM Dagboeken".
+				 " WHERE dbk_type = ?",
+				 $type ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP);
+	$dbk = $sth->fetchrow_arrayref->[0];
+	$sth->finish;
+    }
 
     my $debcrd = $dbh->lookup($code, qw(Relaties rel_code rel_debcrd));
     return __x("Onbekende relatie: {rel}", rel => $code)."\n" unless defined $debcrd;
@@ -343,7 +352,7 @@ sub open {
 				 bsr_type)],
 			     1, $date,
 			     $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr"),
-			     $desc, $code, $amt, 9);
+			     $desc, $code, 0-$amt, 9);
 	}
 #	my $highest = $dbh->get_sequence("bsk_nr_0_seq") + 1;
 #	$dbh->set_sequence("bsk_nr_${dbk_inkoop}_seq", $highest)
