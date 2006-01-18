@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.1 2006/01/17 21:11:04 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.2 2006/01/18 20:52:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 17 18:28:59 2006
-# Update Count    : 89
+# Last Modified On: Wed Jan 18 21:15:15 2006
+# Update Count    : 109
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -63,6 +63,12 @@ sub _schema {
     EB::Tools::Schema->dump_schema($fh);
 }
 
+sub _quote {
+    my ($t) = @_;
+    $t =~ s/(\\")/\\$1/g;
+    '"'.$t.'"';
+}
+
 sub _relaties {
     my ($self) = @_;
 
@@ -93,9 +99,7 @@ sub _relaties {
 	    $out .= " --btw=extra"   if $btw == BTW_EXTRA;
 	}
 	$out .= " \\\n        ";
-	$code =~ s/(\\")/\\$1/g;
-	$desc =~ s/(\\")/\\$1/g;
-	$out .= sprintf("%-10s %s %d", '"'.$code.'"', '"'.$desc.'"', $acct);
+	$out .= sprintf("%-10s %s %d", _quote($code), _quote($desc), $acct);
     }
 
     $out .= "\n\n# " . __x("Einde {what}", what => _T("Relaties")) . "\n";
@@ -111,11 +115,16 @@ sub _opening {
 		    __x("# Aangemaakt door {id} op {date}",
 			id => $EB::ident, date => iso8601date() . "\n\n");
 
-    my $t = $dbh->adm("name");
-    $t =~ s/(\\")/\\$1/g;
-    $out .= "adm_naam         \"$t\"\n";
-    $out .= "adm_begindatum   " . substr($dbh->adm("begin"), 0, 4) . "\n";
-    $out .= "adm_boekjaarcode " . substr($dbh->adm("begin"), 0, 4) . "\n";
+    $out .= "adm_naam         " . _quote($dbh->adm("name")) . "\n";
+
+    my $begin = $dbh->do("SELECT min(bky_begin)".
+			 " FROM Boekjaren".
+			 " WHERE bky_begin > ( SELECT bky_end FROM Boekjaren WHERE bky_code = ? )",
+			 BKY_PREVIOUS);
+    $begin = $begin->[0];
+
+    $out .= "adm_begindatum   " . substr($begin, 0, 4) . "\n";
+    $out .= "adm_boekjaarcode " . _quote($dbh->lookup($begin, qw(Boekjaren bky_begin bky_code))) . "\n";
     $out .= "adm_btwperiode   " .
       (qw(geen jaar x x kwartaal x x x x x x x maand)[$dbh->adm("btwperiod")]).
 	"\n";
@@ -154,7 +163,9 @@ sub _opening {
 		arg1 => numfmt($dt),
 		arg2 => numfmt($ct))."\n")
       unless $dt == $ct;
-    $out .= "\n# " .  _T("Totaal") . "\n" . "adm_balanstotaal   " . numfmt($dt) . "\n";
+    $out .= "\n# " .  _T("Totaal") . "\n" . "adm_balanstotaal " . numfmt($dt) . "\n";
+
+=begin wrong
 
     $sth = $dbh->sql_exec("SELECT dbk_desc, bsk_nr, bsr_rel_code, bsk_desc, bsk_amount, bsk_date, dbk_type".
 			  " FROM Boekstukken, Dagboeken, Boekstukregels".
@@ -172,14 +183,38 @@ sub _opening {
 	my ($dbk_desc, $bsk_nr, $bsr_rel_code, $bsk_desc, $bsk_amount, $bsk_date, $dbk_type) = @$rr;
 	$dbk_desc = lc($dbk_desc);
 	$dbk_desc =~ s/[^[:alnum:]]/_/g;
-	$bsr_rel_code =~ s/(\\")/\\$1/g;
-	$bsk_desc =~ s/(\\")/\\$1/g;
 	$bsk_amount = 0-$bsk_amount if $dbk_type == DBKTYPE_INKOOP;
 	$out .= join(" ",
 		     "adm_relatie",
 		     $dbk_desc . ":" . $bsk_nr,
-		     $bsk_date, '"'.$bsk_desc.'"', '"'.$bsr_rel_code.'"',
+		     $bsk_date, _quote($bsk_desc), _quote($bsr_rel_code),
 		     numfmt($bsk_amount)). "\n";
+    }
+
+=cut
+
+    $sth = $dbh->sql_exec("SELECT bsk_id".
+			  " FROM Boekstukken".
+			  " WHERE bsk_date <= ( SELECT bky_end FROM Boekjaren WHERE bky_code = ? )".
+			  " ORDER BY bsk_dbk_id, bsk_nr, bsk_date",
+			  BKY_PREVIOUS);
+
+    if ( $sth->rows ) {
+	$out .= "\n# "._T("Openstaande posten")."\n\n";
+    }
+
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	my ($bsk_id) = @$rr;
+	$out .= "adm_relatie " .
+	  EB::Booking::Decode->decode
+	      ($bsk_id,
+	       { trail  => 1,
+		 single => 0,
+		 btw    => 0,
+		 bsknr  => 1,
+		 bky    => 1,
+		 total  => 0,
+		 debcrd => 0 }) . "\n";
     }
 
     $out .= "\n# "._T("Openen van de administratie")."\n\nadm_open\n";
@@ -198,14 +233,20 @@ sub _mutaties {
     my @bky;
     my $sth = $dbh->sql_exec("SELECT bky_code".
 			     " FROM Boekjaren".
-			     " ORDER BY bky_code");
+			     " WHERE bky_begin > ( SELECT bky_end FROM Boekjaren WHERE bky_code = ? )".
+			     " ORDER BY bky_code",
+			    BKY_PREVIOUS);
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	push(@bky, $rr->[0]);
     }
 
+    my $cur_bky = $bky[0];
     foreach my $bky ( @bky ) {
 	next if $bky eq BKY_PREVIOUS;
-
+	if ( $cur_bky ne $bky ) {
+	    $out .= "adm_open\n";
+	    $cur_bky = $bky;
+	}
 	$out .= "boekjaar $bky\n";
 
 	$sth = $dbh->sql_exec("SELECT bsk_id, dbk_id".
@@ -224,9 +265,11 @@ sub _mutaties {
 	    $out .= EB::Booking::Decode->decode
 	      ($bsk_id,
 	       { trail  => 1,
+		 d_boekjaar => $bky,
 		 single => 0,
 		 btw    => 0,
 		 bsknr  => 1,
+		 total  => 1,
 		 debcrd => 0 }) . "\n";
 	}
 	$out .= "\n";
