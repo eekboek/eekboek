@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.52 2006/01/17 21:11:04 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.53 2006/01/18 20:46:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 17 15:31:51 2006
-# Update Count    : 656
+# Last Modified On: Wed Jan 18 15:35:52 2006
+# Update Count    : 658
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -950,6 +950,8 @@ sub do_toon {
     parse_args(\@args,
 	       [ 'btw!',
 		 'bsknr!',
+		 'bky!',
+		 'totaal!',
 		 'boekjaar=s',
 		 'verbose!',
 		 'trace!',
