@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.7 2006/01/17 21:10:01 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.8 2006/01/18 20:49:47 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 17 16:52:01 2006
-# Update Count    : 84
+# Last Modified On: Wed Jan 18 21:17:53 2006
+# Update Count    : 106
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -44,14 +44,16 @@ sub decode {
     my $single	   = $opts->{single};
     my $ex_btw	   = $opts->{btw};
     my $ex_bsknr   = $opts->{bsknr};
+    my $ex_bky     = $opts->{bky};
     my $ex_debcrd  = $opts->{debcrd};
+    my $ex_tot     = $opts->{totaal} || $opts->{total};
     my $dbver = sprintf("%03d%03d%03d", $dbh->adm("scm_majversion"),
 			$dbh->adm("scm_minversion")||0, $dbh->adm("scm_revision"));
 
     $bsk = $dbh->bskid($bsk);
 
     my $rr = $dbh->do("SELECT bsk_id, bsk_nr, bsk_desc, ".
-		      "bsk_dbk_id, bsk_date, bsk_amount ".
+		      "bsk_dbk_id, bsk_date, bsk_amount, bsk_saldo, bsk_bky ".
 		      ($dbver lt "001000002" ? ", bsk_paid" : ", bsk_open").
 		      " FROM Boekstukken".
 		      " WHERE bsk_id = ?", $bsk);
@@ -62,7 +64,7 @@ sub decode {
     }
 
     my ($bsk_id, $bsk_nr, $bsk_desc, $bsk_dbk_id,
-	$bsk_date, $bsk_amount, $bsk_open) = @$rr;
+	$bsk_date, $bsk_amount, $bsk_saldo, $bsk_bky, $bsk_open) = @$rr;
 
     my $tot = 0;
     my ($dbktype, $acct, $dbk_desc) = @{$dbh->do("SELECT dbk_type, dbk_acc_id, dbk_desc".
@@ -75,14 +77,19 @@ sub decode {
 	if ( $trail ) {
 	    $cmd = lc($dbk_desc);
 	    $cmd =~ s/[^[:alnum:]]/_/g;
+	    $cmd .= ":$bsk_bky" if $ex_bky;
 	    $cmd .= ":$bsk_nr" if $ex_bsknr;
 	    $cmd .= " $bsk_date ";
 	    $cmd .= "\"$rel_code\""
 	      if $dbktype == DBKTYPE_VERKOOP || $dbktype == DBKTYPE_INKOOP;
-	    $cmd .= "\"$bsk_desc\""
-	      if $dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS || $dbktype == DBKTYPE_MEMORIAAL;
-	    $cmd .= " --totaal=" . numfmt($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
-	      unless $dbktype == DBKTYPE_MEMORIAAL;
+	    if ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS || $dbktype == DBKTYPE_MEMORIAAL) {
+		$cmd .= "\"$bsk_desc\"";
+	    }
+	    else {
+		$cmd .= " --totaal=" . numfmt($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
+		  if $ex_tot && $acct;
+	    }
+	    $cmd .= " --saldo=" . numfmt($bsk_saldo) if defined $bsk_saldo;
 	}
 	else {
 	    $cmd = "Boekstuk $bsk_id, nr $bsk_nr, dagboek " .
@@ -111,7 +118,7 @@ sub decode {
 
     my $sth = $dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
 			     "bsr_desc, bsr_amount, bsr_btw_id, ".
-			     "bsr_type, bsr_acc_id, bsr_rel_code ".
+			     "bsr_type, bsr_acc_id, bsr_rel_code, bsr_paid ".
 			     " FROM Boekstukregels".
 			     " WHERE bsr_bsk_id = ?".
 			     " ORDER BY bsr_nr", $bsk);
@@ -124,7 +131,7 @@ sub decode {
 
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
-	    $bsr_btw_id, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
+	    $bsr_btw_id, $bsr_type, $bsr_acc_id, $bsr_rel_code, $bsr_paid) = @$rr;
 	if ( $bsr_nr == 1) {
 	    $setup->($bsr_rel_code);
 	}
@@ -157,15 +164,12 @@ sub decode {
 
 	next unless $trail;
 
-	warn("?INTERNAL ERROR at $cmd") unless $bsr_acc_id;
-	my $btw = ($ex_btw
-		   || ( $bsr_type==0 && ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS
-			|| $dbktype == DBKTYPE_MEMORIAAL))
-		   || btw_code($bsr_acc_id) != $bsr_btw_id) ? '@'.$bsr_btw_id : "";
-
-	if ( $bsr_amount < 0 ) {
-#	    $bsr_amount = -$bsr_amount;
-	}
+	$bsr_acc_id ||= "";
+	my $btw = $bsr_acc_id ?
+	  (($ex_btw
+	    || ( $bsr_type==0 && ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS
+				  || $dbktype == DBKTYPE_MEMORIAAL))
+	    || btw_code($bsr_acc_id) != $bsr_btw_id) ? '@'.$bsr_btw_id : "") : "";
 
 	if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 	    $bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_VERKOOP;
@@ -185,15 +189,30 @@ sub decode {
 		  numfmt($bsr_amount) . $btw . " " .
 		    $bsr_acc_id;
 	    }
-	    elsif ( $bsr_type == 1 ) {
+	    elsif ( $bsr_type == 1 || $bsr_type == 2 ) {
+		my $type = $bsr_type == 1 ? "deb" : "crd";
 		$cmd .= $single ? " " : " \\\n\t";
-		$cmd .= "deb$dd \"$bsr_rel_code\" " .
-		  numfmt($bsr_amount);
-	    }
-	    elsif ( $bsr_type == 2 ) {
-		$cmd .= $single ? " " : " \\\n\t";
-		$cmd .= "crd$dd \"$bsr_rel_code\" " .
-		  numfmt($bsr_amount);
+
+		# Check for a full payment.
+		my $sth = $dbh->sql_exec("SELECT bsk_amount, dbk_desc, bsk_nr, bsk_bky".
+					 " FROM Boekstukken, Dagboeken".
+					 " WHERE bsk_dbk_id = dbk_id".
+					 " AND bsk_id = ?", $bsr_paid);
+		my ($paid, $dbk, $nr, $bky) = @{$sth->fetchrow_arrayref};
+		$sth->finish;
+		if ( $paid == $bsr_amount) {
+		    # Matches -> Full payment
+		    $cmd .= "$type$dd \"$bsr_rel_code\" " .
+		      numfmt($bsr_amount);
+		}
+		else {
+		    # Partial payment. Use boekstuknummer.
+		    $dbk = lc($dbk);
+		    $dbk =~ s/[^[:alnum:]]/_/g;
+		    $cmd .= "$type$dd $dbk";
+		    $cmd .= ":$bky" if ($opts->{boekjaar}||$opts->{d_boekjaar}) ne $bky;
+		    $cmd .= ":$nr " . numfmt($bsr_amount);
+		}
 	    }
 	}
 
