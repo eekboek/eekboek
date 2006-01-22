@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.4 2005/11/30 12:11:25 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.5 2006/01/22 16:51:08 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov 30 13:11:19 2005
-# Update Count    : 23
+# Last Modified On: Fri Jan 20 15:05:30 2006
+# Update Count    : 24
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -27,6 +27,7 @@ $data->{prereq_pm} = {
 		      'Term::ReadLine::Gnu' => 0,
 		      'DBI' => 1.40,
 		      'DBD::Pg' => 1.41,
+		      'Config::IniFiles' => 2.38,
 #		      'Text::CSV_XS' => 0,
 #		      'Locale::gettext' => 1.05,
 	       };
