@@ -1,13 +1,6 @@
-# Name of the database.
-EB_DB_NAME=eekboek_sample
-export EB_DB_NAME
+#!/bin/sh
 
-# Language selection.
-if [ -z "$EB_LANG" ]
-then
-    EB_LANG=nl_NL
-fi
-export EB_LANG
+EB_DB_NAME=eekboek_sample
 
 if test -f ../blib/lib/EB.pm
 then

@@ -3,6 +3,7 @@
 . ./setup.sh
 
 EBSHELL="ebshell -X -f ivp.conf"
+EB_DB_NAME=eekboek_sample
 
 rm -f *.sql *.log
 

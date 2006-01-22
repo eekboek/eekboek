@@ -1,10 +1,6 @@
-# Name of the database.
-setenv EB_DB_NAME eekboek_sample
+#!/bin/csh
 
-# Language selection.
-if ( ! $?EB_LANG ) then
-    setenv EB_LANG nl_NL
-endif
+set EB_DB_NAME = eekboek_sample
 
 if ( -f ../blib/lib/EB.pm ) then
     set EB_LIB=../blib/lib
