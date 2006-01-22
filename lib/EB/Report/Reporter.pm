@@ -1,12 +1,16 @@
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.6 2006/01/08 21:20:57 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.7 2006/01/22 16:43:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan  8 22:17:54 2006
-# Update Count    : 128
+# Last Modified On: Fri Jan 20 21:59:56 2006
+# Update Count    : 130
 # Status          : Unknown, Use with caution!
-#!/usr/bin/perl -w
+
+
+package main;
+
+our $cfg;
 
 package EB::Report::Reporter;
 
@@ -105,9 +109,9 @@ sub start {
 
     # Creation date + program version
     if ( !$t3r ) {
-	if ( $ENV{EB_SQL_NOW} ) {
+	if ( my $t = $cfg->val(qw(internal now), 0) ) {
 	    # Fixed date. Strip program version. Makes it easier to compare reports.
-	    $t3r = (split(' ', $EB::ident))[0] . ", " . $ENV{EB_SQL_NOW};
+	    $t3r = (split(' ', $EB::ident))[0] . ", " . $t;
 	}
 	else {
 	    # Use current date.

@@ -1,8 +1,9 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.18 2006/01/10 14:59:23 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.19 2006/01/22 16:40:56 jv Exp $ ';
 
 package main;
 
+our $cfg;
 our $config;
 our $app;
 our $dbh;
@@ -12,8 +13,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 10 15:58:13 2006
-# Update Count    : 347
+# Last Modified On: Sun Jan 22 17:40:49 2006
+# Update Count    : 351
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -79,8 +80,10 @@ sub perform {
     my $rep = EB::Report::GenBase->backend($self, $opts);
 
     my ($begin, $end) = @{$rep->{periode}};
-    my $now = $opts->{per} || $end;
-    $now = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $ENV{EB_SQL_NOW} lt $now;
+    my $now = $opts->{per} || $end; #### CHECK: $end is already always $opt->{per}
+    if ( my $t = $cfg->val(qw(internal now), 0) ) {
+	$now = $t if $t lt $now;
+    }
     $now = iso8601date() if $now gt iso8601date();
     $rep->{periodex} = 1 if $rep->{periodex} == 3 && $opts->{balans};
 

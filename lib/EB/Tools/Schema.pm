@@ -1,17 +1,18 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.25 2006/01/17 21:10:45 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.26 2006/01/22 16:47:53 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 16 22:29:17 2006
-# Update Count    : 452
+# Last Modified On: Fri Jan 20 21:53:37 2006
+# Update Count    : 454
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 package main;
 
+our $cfg;
 our $config;
 our $app;
 our $dbh;
@@ -21,7 +22,7 @@ package EB::Tools::Schema;
 use strict;
 
 our $sql = 0;			# load schema into SQL files
-my $trace = $ENV{EB_SQL_TRACE} || 0;
+my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
 # Package name.
 my $my_package = 'EekBoek';

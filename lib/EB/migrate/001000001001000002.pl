@@ -1,7 +1,10 @@
 #!/usr/bin/perl
 
+# -- Migratie EekBoek database van versie 1.0.1 (EB 0.10) naar 1.0.2 (EB 0.14).
+
 package main;
 
+our $cfg;
 our $dbh;
 
 package EB::DatabaseMigrator;
@@ -13,12 +16,11 @@ use EB::DB;
 use EB::Tools::SQLEngine;
 
 unless ( $dbh ) {
-    $dbh = EB::DB->new(trace => $ENV{EB_SQL_TRACE});
-    $dbh->connectdb(undef, 1);
+    $dbh = EB::DB->new(trace => $cfg->val(qw(internal trace_migration), 0);
+    $dbh->connectdb(1);
 }
 
-my $en = EB::Tools::SQLEngine->new(dbh => $dbh, trace => $ENV{EB_SQL_TRACE});
-# -- Migratie EekBoek database van versie 1.0.1 (EB 0.10) naar 1.0.2 (EB 0.14).
+my $en = EB::Tools::SQLEngine->new(dbh => $dbh, trace => $cfg->val(qw(internal trace_migration), 0));
 
 $en->process(<<EOS);
 BEGIN WORK;

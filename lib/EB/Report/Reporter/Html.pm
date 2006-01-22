@@ -1,12 +1,15 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.2 2005/12/31 16:46:31 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.3 2006/01/22 16:46:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 31 17:45:59 2005
-# Update Count    : 24
+# Last Modified On: Fri Jan 20 21:58:44 2006
+# Update Count    : 28
 # Status          : Unknown, Use with caution!
-#!/usr/bin/perl -w
+
+package main;
+
+our $cfg;
 
 package EB::Report::Reporter::Html;
 
@@ -28,9 +31,9 @@ sub finish {
     $self->SUPER::finish();
     print {$self->{fh}} ("</table>\n");
 
-    my $now = $ENV{EB_SQL_NOW} || iso8601date();
+    my $now = $cfg->val(qw(internal now), iso8601date());
     my $ident = $EB::ident;
-    $ident = (split(' ', $ident))[0] if $ENV{EB_SQL_NOW};
+    $ident = (split(' ', $ident))[0] if $cfg->val(qw(internal now), 0);
 
     $self->{fh}->print("<p class=\"footer\">",
 		       __x("Overzicht aangemaakt op {date} door <a href=\"{url}\">{ident}</a>",

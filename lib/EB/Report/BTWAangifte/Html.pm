@@ -1,14 +1,15 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.8 2005/11/19 22:04:23 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.9 2006/01/22 16:43:44 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 19 22:59:33 2005
-# Update Count    : 24
+# Last Modified On: Fri Jan 20 21:59:45 2006
+# Update Count    : 28
 # Status          : Unknown, Use with caution!
 
 package main;
 
+our $cfg;
 our $dbh;
 
 package EB::Report::BTWAangifte::Html;
@@ -91,9 +92,9 @@ sub finish {
       ("<p class=\"btwaangifte\"><span class=\"notice\">",
        html($notice), "</span></p>\n") if $notice;
 
-    my $now = $ENV{EB_SQL_NOW} || iso8601date();
+    my $now = $cfg->val(qw(internal now), iso8601date());
     my $ident = $EB::ident;
-    $ident = (split(' ', $ident))[0] if $ENV{EB_SQL_NOW};
+    $ident = (split(' ', $ident))[0] if $cfg->val(qw(internal now), 0);
 
     $self->{fh}->print("<p class=\"footer\">",
 		       __x("Overzicht aangemaakt op {date} door <a href=\"{url}\">{ident}</a>",

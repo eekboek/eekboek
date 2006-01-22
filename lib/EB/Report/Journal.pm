@@ -1,17 +1,18 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.26 2006/01/05 17:59:53 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.27 2006/01/22 16:42:24 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan  5 18:53:18 2006
-# Update Count    : 266
+# Last Modified On: Sun Jan 22 15:52:30 2006
+# Update Count    : 270
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 package main;
 
+our $cfg;
 our $dbh;
 
 package EB::Report::Journal;
@@ -48,7 +49,9 @@ sub journal {
 
     my $rep = EB::Report::GenBase->backend($self, $opts);
     my $per = $rep->{periode};
-    $per->[1] = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $ENV{EB_SQL_NOW} lt $per->[1];
+    if ( my $t = $cfg->val(qw(internal now), 0) ) {
+	$per->[1] = $t if $t lt $per->[1];
+    }
     $rep->start(_T("Journaal"));
 
     my $sth;

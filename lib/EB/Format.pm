@@ -2,6 +2,7 @@
 
 package main;
 
+our $cfg;
 our $dbh;
 our $config;
 our $app;
@@ -36,7 +37,7 @@ my $decimalpt;
 BEGIN {
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
     $btwpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[BTWPRECISION-2]}})?$/;
-    $decimalpt = _T(",");
+    $decimalpt = $cfg->val(qw(locale decimalpt), _T(","));
 }
 
 sub amount {

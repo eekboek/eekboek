@@ -1,19 +1,20 @@
-my $RCS_Id = '$Id: Einde.pm,v 1.7 2006/01/11 15:28:19 jv Exp $ ';
-
-package main;
-
-our $dbh;
-
-package EB::Tools::Einde;
-
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.7 2006/01/11 15:28:19 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.8 2006/01/22 16:47:38 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 11 16:25:31 2006
-# Update Count    : 209
+# Last Modified On: Fri Jan 20 21:54:52 2006
+# Update Count    : 211
 # Status          : Unknown, Use with caution!
+
+my $RCS_Id = '$Id: Einde.pm,v 1.8 2006/01/22 16:47:38 jv Exp $ ';
+
+package main;
+
+our $cfg;
+our $dbh;
+
+package EB::Tools::Einde;
 
 use strict;
 use warnings;
@@ -42,7 +43,7 @@ sub perform {
 
     my $tot = 0;
 
-    my $date = $ENV{EB_SQL_NOW} || iso8601date();
+    my $date = $cfg->val(qw(internal now), iso8601date());
     $date = $dbh->adm("end") unless $date lt $dbh->adm("end");
 
     my $sth;

@@ -1,8 +1,9 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.21 2006/01/10 19:58:05 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.22 2006/01/22 16:42:11 jv Exp $ ';
 
 package main;
 
+our $cfg;
 our $config;
 our $dbh;
 our $app;
@@ -12,8 +13,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 10 20:56:43 2006
-# Update Count    : 237
+# Last Modified On: Fri Jan 20 21:59:31 2006
+# Update Count    : 240
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -56,7 +57,9 @@ sub perform {
     my $per = $rep->{periode};
     my ($begin, $end) = @$per;
 
-    $end = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $end gt $ENV{EB_SQL_NOW};
+    if ( my $t = $cfg->val(qw(internal now), 0) ) {
+	$end = $t if $t lt $end;
+    }
 
     $rep->start(_T("Grootboek"));
 

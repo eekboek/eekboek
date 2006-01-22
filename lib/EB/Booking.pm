@@ -1,29 +1,27 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: Booking.pm,v 1.3 2005/11/12 15:52:54 jv Exp $ ';
+# Booking.pm -- Base class for Bookings.
+# RCS Info        : $Id: Booking.pm,v 1.4 2006/01/22 16:32:30 jv Exp $
+# Author          : Johan Vromans
+# Created On      : Sat Oct 15 23:36:51 2005
+# Last Modified By: Johan Vromans
+# Last Modified On: Sun Jan 22 15:14:51 2006
+# Update Count    : 33
+# Status          : Unknown, Use with caution!
+
+my $RCS_Id = '$Id: Booking.pm,v 1.4 2006/01/22 16:32:30 jv Exp $ ';
 
 package main;
 
+our $cfg;
 our $dbh;
 our $spp;
 our $config;
 
 package EB::Booking;
 
-# Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.3 2005/11/12 15:52:54 jv Exp $
-# Author          : Johan Vromans
-# Created On      : Sat Oct 15 23:36:51 2005
-# Last Modified By: Johan Vromans
-# Last Modified On: Sat Nov 12 16:52:43 2005
-# Update Count    : 30
-# Status          : Unknown, Use with caution!
-
 use strict;
 use warnings;
 
 use EB;
-
-my $trace_updates = $ENV{EB_TRACE_UPDATES};		# for debugging
 
 sub new {
     my ($class) = @_;

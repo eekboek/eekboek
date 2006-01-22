@@ -1,12 +1,15 @@
 # Text.pm -- 
-# RCS Info        : $Id: Text.pm,v 1.5 2006/01/04 21:59:13 jv Exp $
+# RCS Info        : $Id: Text.pm,v 1.6 2006/01/22 16:47:21 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:21:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  4 22:12:24 2006
-# Update Count    : 60
+# Last Modified On: Fri Jan 20 22:08:19 2006
+# Update Count    : 68
 # Status          : Unknown, Use with caution!
-#!/usr/bin/perl -w
+
+package main;
+
+our $cfg;
 
 package EB::Report::Reporter::Text;
 
@@ -60,7 +63,7 @@ sub add {
     my @indents;
     my $linebefore;
     my $lineafter;
-    push(@values, $style||"") if $ENV{EB_REP_LAYOUT};
+    push(@values, $style||"") if $cfg->val(__PACKAGE__, "layout", 0);
     foreach my $col ( @{$self->{_fields}} ) {
 	my $fname = $col->{name};
 	push(@values, defined($data->{$fname}) ? $data->{$fname} : "");
@@ -182,7 +185,7 @@ sub _make_format {
     my $width = 0;		# new width
     my $format = "";		# new format
 
-    $format = "%6s  " if $ENV{EB_REP_LAYOUT};
+    $format = "%6s  " if $cfg->val(__PACKAGE__, "layout", 0);
 
     foreach my $a ( @{$self->{_fields}} ) {
 

@@ -1,18 +1,19 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.53 2006/01/18 20:46:23 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.54 2006/01/22 16:33:49 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 18 15:35:52 2006
-# Update Count    : 658
+# Last Modified On: Fri Jan 20 22:08:52 2006
+# Update Count    : 661
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 package main;
 
+our $cfg;
 our $dbh;
 
 package EB::Shell;
@@ -42,7 +43,7 @@ sub new {
 }
 
 sub prompt {
-    my $t = $ENV{EB_DB_NAME};
+    my $t = $cfg->val(qw(database name));
     $t =~ s/^eekboek_//;
     $t = shift->{prompt} . " [$t";
     $t .= ":$bky" if defined $bky;
@@ -272,7 +273,7 @@ sub do_confirm {
 sub do_database {
     my ($self, @args) = @_;
     warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return if @args;
-    __x("Database: {db}", db => $ENV{EB_DB_NAME})
+    __x("Database: {db}", db => $cfg->val(qw(database name)));
 }
 
 ################ Service ################
