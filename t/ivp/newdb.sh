@@ -6,7 +6,7 @@ then
     exit 1
 fi
 
-: ${EBSHELL:=ebshell}
+: ${EBSHELL:=ebshell -X}
 
 # Verwijder enige bestaande database voor deze administratie.
 dropdb ${EB_DB_NAME}
