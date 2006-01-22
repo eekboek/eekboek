@@ -1,10 +1,10 @@
 # Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.2 2006/01/22 20:13:07 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.3 2006/01/22 20:16:14 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 21:12:56 2006
-# Update Count    : 58
+# Last Modified On: Sun Jan 22 21:16:02 2006
+# Update Count    : 59
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -94,7 +94,7 @@ sub init_config {
     $cfg->_plug("internal sql", qw(prepstats EB_SQL_PREP_STATS));
     $cfg->_plug("internal sql", qw(replayout EB_SQL_REP_LAYOUT));
 
-    if ( $cfg->val(__PACKAGE__, "showfiles") ) {
+    if ( $cfg->val(__PACKAGE__, "showfiles", 0) ) {
 	warn("Config files:\n  ",
 	     $cfg->{imported}
 	     ? join("\n  ", @{$cfg->{imported}}, $cfg->{cf})
