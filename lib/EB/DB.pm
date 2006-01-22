@@ -1,14 +1,18 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.30 2005/12/28 20:16:29 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.31 2006/01/22 16:33:12 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 28 17:55:15 2005
-# Update Count    : 251
+# Last Modified On: Sun Jan 22 15:19:01 2006
+# Update Count    : 258
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
+
+package main;
+
+our $cfg;
 
 package EB::DB;
 
@@ -364,18 +368,21 @@ sub adm_busy {
 }
 
 sub connectdb {
-    my ($self, $dbname, $nocheck) = @_;
+    my ($self, $nocheck) = @_;
 
     return $dbh if $dbh;
 
-    $dbname ||= $ENV{EB_DB_NAME};
+    my $dbname = $cfg->val(qw(database name));
+    croak("?INTERNAL ERROR: No database name") unless defined $dbname;;
     $dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
     $dbname = "dbi:Pg:dbname=" . $dbname;
-    $dbname .= ";host=" . $ENV{EB_DB_HOST} if $ENV{EB_DB_HOST};
-    $dbname .= ";port=" . $ENV{EB_DB_PORT} if $ENV{EB_DB_PORT};
 
-    my $dbuser = $ENV{EB_DB_USER};
-    my $dbpass = $ENV{EB_DB_PASSWORD};
+    my $t;
+    $dbname .= ";host=" . $t if $t = $cfg->val(qw(database host), undef);
+    $dbname .= ";port=" . $t if $t = $cfg->val(qw(database port), undef);
+
+    my $dbuser = $cfg->val(qw(database user), undef);
+    my $dbpass = $cfg->val(qw(database password), undef);
 
     $dbh = DBI::->connect($dbname, $dbuser, $dbpass)
       or die("?".__x("Database verbindingsprobleem: {err}",
@@ -421,7 +428,7 @@ END {
     warn("SQL Prep Cache: number of hits = ",
 	 $sql_prep_cache_hits || 0, ", misses = ",
 	 $sql_prep_cache_miss || 0, "\n")
-      if %sth && $ENV{EB_SQL_PREP_STATS};
+      if %sth && $cfg->val("internal sql", qw(prepstats), 0);
 }
 
 sub close {
