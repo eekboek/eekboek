@@ -1,8 +1,9 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.14 2006/01/08 18:52:16 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.15 2006/01/22 16:43:00 jv Exp $ ';
 
 package main;
 
+our $cfg;
 our $config;
 our $dbh;
 our $app;
@@ -12,8 +13,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan  8 19:35:03 2006
-# Update Count    : 297
+# Last Modified On: Fri Jan 20 21:57:35 2006
+# Update Count    : 301
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -359,101 +360,5 @@ sub new {
     my ($class, $opts) = @_;
     $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
 }
-
-package EB::Report::Proof::XXXText;
-
-use strict;
-use warnings;
-
-use EB;
-use EB::Finance;
-use base qw(EB::Report::GenBase);
-
-sub new {
-    my ($class, $opts) = @_;
-    my $self = $class->SUPER::new($opts);
-    $self;
-}
-
-my ($title, $period, $tag3, $adm, $now, $ident);
-
-sub start {
-    my ($self, $t1, $t2) = @_;
-    $title = $t1;
-    $period = $t2;
-    $tag3 = $self->{detail} >= 0 ? _T("Verdichting/Grootboekrekening") : _T("Grootboekrekening");
-    if ( $self->{boekjaar} ) {
-	$adm = $dbh->lookup($self->{boekjaar},
-			    qw(Boekjaren bky_code bky_name));
-    }
-    else {
-	$adm = $dbh->adm("name");
-    }
-    $now = $ENV{EB_SQL_NOW} || iso8601date();
-    $ident = $EB::ident;
-    $ident = (split(' ', $ident))[0] if $ENV{EB_SQL_NOW};
-    $self->{fh}->format_top_name('rt00');
-}
-
-my ($acc, $desc, $deb, $crd, $sdeb, $scrd);
-
-sub addline {
-    my ($self, $type);
-    ($self, $type, $acc, $desc, $deb, $crd, $sdeb, $scrd) = @_;
-
-    if ( $deb && $deb <= 0 && !$crd ) {
-	($deb, $crd) = ('', -$deb);
-    }
-    elsif ( $crd && $crd <= 0 && !$deb ) {
-	($deb, $crd) = (-$crd, '');
-    }
-    for ( $deb, $crd, $sdeb, $scrd ) {
-	$_ = $_ ? numfmt($_) : '';
-    }
-
-    if ( $type =~ /^D(\d+)/ ) {
-	$desc = (" " x $1) . $desc;
-    }
-    elsif ( $type =~ /^[HT](\d+)/ ) {
-	$desc = (" " x ($1-1)) . $desc;
-    }
-
-    if ( $type eq 'T' ) {
-	$self->{fh}->format_write(__PACKAGE__.'::rtl');
-	$self->{fh}->format_write(__PACKAGE__.'::rt01');
-	return;
-    }
-
-    $self->{fh}->format_write(__PACKAGE__.'::rt01');
-    if ( $type =~ /^T(\d+)$/ && $1 <= $self->{detail} ) {
-	($acc, $desc, $deb, $crd, $sdeb, $scrd) = ('') x 6;
-	$self->{fh}->format_write(__PACKAGE__.'::rt01');
-    }
-}
-
-sub finish {
-}
-
-format rt00 =
-@|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-$title
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-$period
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< @>>>>>>>>>>>>>>>>>>>>>>>>>>
-$adm, $ident . ", " . $now
-
-@<<<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>  @>>>>>>>>  @>>>>>>>>  @>>>>>>>>
-_T("RekNr"), $tag3, _T("Debet"), _T("Credit"), _T("Saldo Db"), _T("Saldo Cr")
---------------------------------------------------------------------------------------------
-.
-
-format rtl =
---------------------------------------------------------------------------------------------
-.
-
-format rt01 =
-@<<<<<  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  @>>>>>>>>  @>>>>>>>>  @>>>>>>>>  @>>>>>>>>
-$acc, $desc, $deb, $crd, $sdeb, $scrd
-.
 
 1;
