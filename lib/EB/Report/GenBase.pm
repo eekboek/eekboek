@@ -1,13 +1,14 @@
-# RCS Info        : $Id: GenBase.pm,v 1.15 2006/01/12 21:18:08 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.16 2006/01/22 16:41:56 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 12 21:51:00 2006
-# Update Count    : 101
+# Last Modified On: Sun Jan 22 15:50:34 2006
+# Update Count    : 112
 # Status          : Unknown, Use with caution!
 
 package main;
 
+our $cfg;
 our $dbh;
 
 package EB::Report::GenBase;
@@ -89,23 +90,24 @@ sub backend {
 
     # Get real (or fake) current date, and adjust periode end if needed.
     $be->{now} = iso8601date();
-    $be->{now} = $ENV{EB_SQL_NOW} if $ENV{EB_SQL_NOW} && $be->{now} gt $ENV{EB_SQL_NOW};
+    if ( my $t = $cfg->val(qw(internal now), 0) ) {
+	$be->{now} = $t if $be->{now} gt $t;
+    }
 
     # Date/Per.
     if ( $opts->{per} ) {
 	die(_T("--per sluit --periode uit")."\n") if $opts->{periode};
 	die(_T("--per sluit --boekjaar uit")."\n") if defined $opts->{boekjaar};
-	$be->{per_begin} = $dbh->adm("begin");
-	$be->{per_end} = $opts->{per};
-	$be->{periode} = [$be->{per_begin},$be->{per_end}];
+	$be->{periode} = [ $be->{per_begin} = $dbh->adm("begin"),
+			   $be->{per_end}   = $opts->{per} ];
 	$be->{periodex} = 1;
     }
     elsif ( $opts->{periode} ) {
 	die(_T("--periode sluit --boekjaar uit")."\n") if defined $opts->{boekjaar};
-	$be->{periode} = $opts->{periode};
+	$be->{periode}   = $opts->{periode};
 	$be->{per_begin} = $opts->{periode}->[0];
-	$be->{per_end} = $opts->{periode}->[1];
-	$be->{periodex} = 2;
+	$be->{per_end}   = $opts->{periode}->[1];
+	$be->{periodex}  = 2;
     }
     elsif ( defined($opts->{boekjaar}) || defined($opts->{d_boekjaar}) ) {
 	my $bky = $opts->{boekjaar};
@@ -115,17 +117,14 @@ sub backend {
 			  " WHERE bky_code = ?", $bky);
 	die("?",__x("Onbekend boekjaar: {bky}", bky => $bky)."\n"), return unless $rr;
 	my ($begin, $end) = @$rr;
-	$be->{periode} = [$begin, $end];
-	$be->{per_begin} = $begin;
-	$be->{per_end} = $end;
+	$be->{periode}  = [ $be->{per_begin} = $begin,
+			    $be->{per_end}   = $end ];
 	$be->{periodex} = 3;
 	$be->{boekjaar} = $bky;
     }
     else {
-	$be->{periode} = [ $dbh->adm("begin"),
-			   $dbh->adm("end") ];
-	$be->{per_begin} = $opts->{periode}->[0];
-	$be->{per_end} = $opts->{periode}->[1];
+	$be->{periode}  = [ $be->{per_begin} = $dbh->adm("begin"),
+			    $be->{per_end}   = $dbh->adm("end") ];
 	$be->{periodex} = 0;
     }
 
@@ -133,7 +132,8 @@ sub backend {
 	warn("!".__x("Datum {per} valt na de huidige datum {now}",
 		     per => $be->{per_end}, now => $be->{now})."\n")
 	  if 0;
-	$be->{periode}->[1] = $be->{per_end} = $be->{now};
+	$be->{periode}->[1] = $be->{per_end} = $be->{now}
+	  if 0;
     }
 
     # Sanity.
