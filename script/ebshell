@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.8 2005/12/14 16:21:07 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.9 2006/01/22 16:50:41 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 14 17:14:09 2005
-# Update Count    : 179
+# Last Modified On: Sun Jan 22 15:19:09 2006
+# Update Count    : 247
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,11 +19,19 @@ use strict;
 # require 'common.pl';
 
 # Package name.
-my $my_package = 'EekBoek';
+my $my_package; BEGIN { $my_package = 'EekBoek' }
+
 # Program name and version.
 my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
 # Tack '*' if it is not checked in into RCS.
 $my_version .= '*' if length('$Locker:  $ ') > 12;
+
+################ Configuration ################
+
+our $cfg;
+
+# This will set up the config at 'use' time.
+use EB::Config $my_package;
 
 ################ Command line parameters ################
 
@@ -34,6 +42,7 @@ my $interactive = -t;
 my $command;
 my $echo;
 my $dataset;
+my $createdb;			# create database
 my $schema;			# initialise w/ schema
 my $confirm = 0;
 my $journal = 0;
@@ -63,19 +72,62 @@ use base qw(EB::Shell);
 my $app = $my_package;
 my $userdir = glob("~/.".lc($app));
 mkdir($userdir) unless -d $userdir;
+
 $echo = "eb> " if $echo;
 
-if ( $dataset ) {
-    $ENV{EB_DB_NAME} = $dataset;
-    $ENV{EB_DB} = "dbi:Pg:dbname=$dataset";
-}
+$dataset ||= $cfg->val(qw(database name));
 
-unless ( $ENV{EB_DB_NAME} ) {
+unless ( $dataset ) {
     die("?"._T("Geen dataset opgegeven.".
-	       " Gebruik de environment variabele EB_DB_NAME om".
-	       " een database te selecteren, of geef een database".
+	       " Specificeer een dataset in de configuratiefile,".
+	       " of geef een dataset".
 	       " naam mee op de command line met \"--dataset=...\".").
 	"\n");
+}
+
+$cfg->newval(qw(database name), $dataset);
+
+if ( $createdb ) {
+    $dataset =~ s/^(?!=eekboek_)/eekboek_/;
+    my $cmd;
+    my @cmd;
+
+    my @ds = DBI->data_sources("Pg");
+    if ( grep { lc($_) =~ /=\Q$dataset\E$/ } @ds ) {
+	$cmd = "psql";
+	@cmd = ( $cmd, "-X",
+		 "-f", EB_LIB . "EB/schema/cleanup.sql" );
+    }
+    else {
+	$cmd = "createdb";
+	@cmd = ( $cmd, qw(-E latin1) );
+	for ( $cfg->val("database", "user") ) {
+	    next unless $_;
+	    push(@cmd, "-O", $_);
+	}
+    }
+
+    for ( $cfg->val("database", "user") ) {
+	next unless $_;
+	push(@cmd, "-U", $_);
+    }
+    for ( $cfg->val("database", "password") ) {
+	next unless $_;
+	push(@cmd, "--password");
+    }
+    for ( $cfg->val("database", "host") ) {
+	next unless $_;
+	push(@cmd, "-h", $_);
+    }
+    for ( $cfg->val("database", "port") ) {
+	next unless $_;
+	push(@cmd, "-p", $_);
+    }
+    push(@cmd, $dataset);
+    warn("+ @cmd\n") if $trace;
+    my $res = system { $cmd } @cmd;
+    # warn(sprintf("=> ret = %02x", $res)."\n") if $res;
+    die("?"._T("Aanmaken database mislukt")."\n") if $res;
 }
 
 use EB::DB;
@@ -83,7 +135,7 @@ our $dbh = EB::DB->new(trace => $trace);
 
 if ( $schema ) {
     require EB::Tools::Schema;
-    $dbh->connectdb(undef, 1);
+    $dbh->connectdb(1);
     EB::Tools::Schema->create($schema);
 }
 
@@ -114,10 +166,11 @@ sub app_options {
     return unless @ARGV > 0;
 
     if ( !GetOptions(
-		     'command'	=> sub {
+		     'command|c' => sub {
 			 $command = 1;
 			 die("!FINISH\n");
 		     },
+		     'createdb' => \$createdb,
 		     'schema=s' => \$schema,
 		     'echo!'	=> \$echo,
 		     'ident'	=> \$ident,
@@ -132,6 +185,7 @@ sub app_options {
     {
 	app_usage(2);
     }
+    app_usage(2) if @ARGV && !$command;
     app_ident() if $ident;
 }
 
@@ -154,6 +208,8 @@ Gebruik: {prog} [options] [file ...]
     --dataset=DB        specificeer database
     --db=DB             specificeer database
     --boekjaar=XXX	specificeer boekjaar
+    --createdb		maak nieuwe database aan
+    --schema=XXX        initialisser database met schema
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
@@ -192,7 +248,7 @@ Web site: L<http://www.squirrel.nl/eekboek>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005 by Squirrel Consultancy. All
+This program is Copyright 2005,2006 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify
