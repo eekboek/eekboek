@@ -1,10 +1,10 @@
 # Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.1 2006/01/22 17:47:08 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.2 2006/01/22 20:13:07 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 18:31:12 2006
-# Update Count    : 50
+# Last Modified On: Sun Jan 22 21:12:56 2006
+# Update Count    : 58
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -61,6 +61,7 @@ sub init_config {
 	    die("$file: $!\n") unless -f $file;
 	}
 	else {
+	    next if $skipconfig;
 	    $file = $dir . "$app.conf";
 	}
 	next unless -s $file;
@@ -85,12 +86,20 @@ sub init_config {
     $cfg->_plug(qw(database     user         EB_DB_USER));
     $cfg->_plug(qw(database     password     EB_DB_PASSWORD));
 
-    $cfg->_plug("output csv",   qw(separator EB_CSV_SEPARATOR));
+    $cfg->_plug(qw(csv          separator    EB_CSV_SEPARATOR));
 
-    $cfg->_plug("internal",     qw(now       EB_SQL_NOW));
+    $cfg->_plug(qw(internal     now          EB_SQL_NOW));
+
     $cfg->_plug("internal sql", qw(trace     EB_SQL_TRACE));
     $cfg->_plug("internal sql", qw(prepstats EB_SQL_PREP_STATS));
     $cfg->_plug("internal sql", qw(replayout EB_SQL_REP_LAYOUT));
+
+    if ( $cfg->val(__PACKAGE__, "showfiles") ) {
+	warn("Config files:\n  ",
+	     $cfg->{imported}
+	     ? join("\n  ", @{$cfg->{imported}}, $cfg->{cf})
+	     : $cfg->{cf}, "\n");
+    }
 
     return $cfg || EB::Config::IniFiles->new;
 }
