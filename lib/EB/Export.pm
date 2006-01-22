@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.2 2006/01/18 20:52:59 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.3 2006/01/22 15:55:42 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 18 21:15:15 2006
-# Update Count    : 109
+# Last Modified On: Sun Jan 22 16:54:06 2006
+# Update Count    : 119
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -240,14 +240,33 @@ sub _mutaties {
 	push(@bky, $rr->[0]);
     }
 
+    my $check_je = sub {
+	my ($bky) = @_;
+	if ( $dbh->lookup($bky, qw(Boekjaren bky_code bky_closed)) ) {
+	    $out .= "jaareinde --boekjaar=" . _quote($bky) . " --definitief\n";
+	}
+	else {
+	    $sth = $dbh->sql_exec("SELECT COUNT(*)".
+				  " FROM Boekjaarbalans".
+				  " WHERE bkb_bky = ?", $bky);
+	    my $rr;
+	    if ( ($rr = $sth->fetchrow_arrayref) && $rr->[0] ) {
+		$out .= "jaareinde --boekjaar=" . _quote($bky) . "\n";
+	    }
+	    $sth->finish;
+	}
+    };
+
     my $cur_bky = $bky[0];
     foreach my $bky ( @bky ) {
 	next if $bky eq BKY_PREVIOUS;
 	if ( $cur_bky ne $bky ) {
+	    $check_je->($cur_bky);
+	    $out .= "adm_boekjaarcode " . _quote($bky) . "\n";
 	    $out .= "adm_open\n";
 	    $cur_bky = $bky;
 	}
-	$out .= "boekjaar $bky\n";
+	$out .= "boekjaar " . _quote($bky) . "\n";
 
 	$sth = $dbh->sql_exec("SELECT bsk_id, dbk_id".
 			      " FROM Boekstukken, Dagboeken".
@@ -274,6 +293,7 @@ sub _mutaties {
 	}
 	$out .= "\n";
     }
+    $check_je->($cur_bky);
     $out .= "# " . __x("Einde {what}", what => _T("Boekingen")) . "\n";
     $out;
 }
