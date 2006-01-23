@@ -1,10 +1,10 @@
 # Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.3 2006/01/22 20:16:14 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.4 2006/01/23 10:30:29 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 21:16:02 2006
-# Update Count    : 59
+# Last Modified On: Mon Jan 23 11:29:10 2006
+# Update Count    : 60
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -76,6 +76,9 @@ sub init_config {
 	}
     }
 
+    # Make sure we have an object, even if no config files.
+    $cfg ||= EB::Config::IniFiles->new;
+
     $ENV{EB_LANG} = $cfg->val('locale','lang', $ENV{EB_LANG}||"nl_NL");
 
     $cfg->_plug(qw(locale       lang         EB_LANG));
@@ -101,7 +104,7 @@ sub init_config {
 	     : $cfg->{cf}, "\n");
     }
 
-    return $cfg || EB::Config::IniFiles->new;
+    return $cfg;
 }
 
 sub import {
