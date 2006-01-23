@@ -1,4 +1,4 @@
-# $Id: 10_basic.t,v 1.2 2006/01/22 17:07:21 jv Exp $  -*-perl-*-
+# $Id: 10_basic.t,v 1.3 2006/01/23 10:31:14 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More tests => 7;
@@ -6,6 +6,7 @@ use Test::More tests => 7;
 # Some basic tests.
 
 BEGIN {
+    @ARGV = qw(-X);
     use_ok("EB::Config", "EekBoek");
     use_ok("EB");
     use_ok("EB::Shell");
