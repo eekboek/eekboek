@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.19 2006/01/22 16:40:56 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.20 2006/01/23 20:45:34 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 17:40:49 2006
-# Update Count    : 351
+# Last Modified On: Mon Jan 23 21:45:13 2006
+# Update Count    : 352
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -97,10 +97,10 @@ sub perform {
     }
     else {
 	if ( $balans ) {
-	    $table = EB::Report->GetTAccountsBal($now);
+	    $table = EB::Report->GetTAccountsBal($end);
 	}
 	elsif ( !$balans ) {
-	    $table = EB::Report->GetTAccountsRes($begin, $now);
+	    $table = EB::Report->GetTAccountsRes($begin, $end);
 	}
 	$rep->start($balans ? _T("Balans") : _T("Verlies/Winst"));
     }
