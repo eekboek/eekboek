@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.31 2006/01/22 16:39:21 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.32 2006/01/23 10:30:51 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 17:38:20 2006
-# Update Count    : 184
+# Last Modified On: Mon Jan 23 11:21:57 2006
+# Update Count    : 194
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -58,8 +58,14 @@ sub perform {
 	shift(@$args);
     }
     else {
+	return "?".__x("Onherkenbare datum: {date}",
+		       date => $args->[0])."\n"
+	  if ($args->[0]||"") =~ /^[[:digit:]]/;
 	$date = iso8601date();
     }
+
+    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
+      unless @$args >= 3;
 
     return unless $self->in_bky($date, $begin, $end);
 
@@ -103,6 +109,8 @@ sub perform {
     my $did = 0;
 
     while ( @$args ) {
+	return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
+	  unless @$args >= 2;
 	my ($desc, $amt, $acct) = splice(@$args, 0, 3);
 	$acct ||= $rel_acc_id;
 	if ( $did++ || @$args || $opts->{verbose} ) {
@@ -118,6 +126,10 @@ sub perform {
 	    return;
 #	    $acct = $1 || $rel_acc_id;
 #	    $explicit_dc = $dc = lc($2) eq 'd' ? 1 : 0;
+	}
+	elsif  ( $acct !~ /^\d+$/ ) {
+	    warn("?".__x("Ongeldig grootboekrekeningnummer: {acct}", acct => $acct )."\n");
+	    return;
 	}
 	my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
 			  " FROM Accounts".
@@ -153,7 +165,12 @@ sub perform {
 	#   n         \N          extra/verlegd
 
 	# Amount can override BTW id with @X postfix.
+	my $oamt = $amt;
 	($amt, $btw_id) = amount($amt, $btw_id);
+	unless ( defined($amt) ) {
+	    warn("?".__x("Ongeldig bedrag: {amt}", amt => $oamt)."\n");
+	    return;
+	}
 
 	# DC Phase out -- Ignore DC status of account.
 	# $amt = -$amt unless $debcrd;

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.34 2006/01/22 16:39:15 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.35 2006/01/23 10:30:51 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 17:38:30 2006
-# Update Count    : 291
+# Last Modified On: Mon Jan 23 11:17:58 2006
+# Update Count    : 302
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -59,9 +59,14 @@ sub perform {
 	shift(@$args);
     }
     else {
-	my @tm = localtime(time);
+	return "?".__x("Onherkenbare datum: {date}",
+		       date => $args->[0])."\n"
+	  if ($args->[0]||"") =~ /^[[:digit:]]/;
 	$date = iso8601date();
     }
+
+    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
+      unless @$args;
 
     return unless $self->in_bky($date, $begin, $end);
 
@@ -88,6 +93,8 @@ sub perform {
 	my $type = shift(@$args);
 
 	if ( $type eq "std" ) {
+	    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
+	      unless @$args >= 3;
 	    my $dd = parse_date($args->[0], substr($begin, 0, 4));
 	    if ( $dd ) {
 		shift(@$args);
@@ -98,8 +105,13 @@ sub perform {
 		}
 	    }
 	    else {
+		return "?".__x("Onherkenbare datum: {date}",
+			       date => $args->[0])."\n"
+		  if ($args->[0]||"") =~ /^[[:digit:]]/;
 		$dd = $date;
 	    }
+	    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
+	      unless @$args >= 3;
 
 	    my ($desc, $amt, $acct) = splice(@$args, 0, 3);
 	    if ( $did++ || @$args || $opts->{verbose} ) {
@@ -114,6 +126,11 @@ sub perform {
 #		$acct = $1;
 #		$explicit_dc = $dc = lc($2) eq 'd' ? 1 : 0;
 		warn("?"._T("De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet toegestaan")."\n");
+		$fail++;
+		next;
+	    }
+	    elsif  ( $acct !~ /^\d+$/ ) {
+		warn("?".__x("Ongeldig grootboekrekeningnummer: {acct}", acct => $acct )."\n");
 		$fail++;
 		next;
 	    }
@@ -137,7 +154,13 @@ sub perform {
 	    }
 
 	    my $bid;
+	    my $oamt = $amt;
 	    ($amt, $bid) = amount($amt, undef);
+	    unless ( defined($amt) ) {
+		warn("?".__x("Ongeldig bedrag: {amt}", amt => $oamt)."\n");
+		$fail++;
+		next;
+	    }
 	    $btw_id = 0, undef($bid) if defined($bid) && !$bid; # override: @0
 
 	    # If there's BTW associated, it must be explicitly confirmed.
@@ -233,6 +256,8 @@ sub perform {
 	}
 	elsif ( $type eq "deb" || $type eq "crd" ) {
 	    my $debcrd = $type eq "deb" ? 1 : 0;
+	    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
+	      unless @$args >= 2;
 	    my $dd = parse_date($args->[0], substr($begin, 0, 4));
 	    if ( $dd ) {
 		shift(@$args);
@@ -243,14 +268,25 @@ sub perform {
 		}
 	    }
 	    else {
+		return "?".__x("Onherkenbare datum: {date}",
+			       date => $args->[0])."\n"
+		  if ($args->[0]||"") =~ /^[[:digit:]]/;
 		$dd = $date;
 	    }
+	    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
+	      unless @$args >= 2;
 
 	    my ($rel, $amt) = splice(@$args, 0, 2);
 	    warn(" "._T("boekstuk").": $type $rel $amt\n")
 	      if $did++ || @$args || $opts->{verbose};
 
+	    my $oamt = $amt;
 	    $amt = amount($amt);
+	    unless ( defined($amt) ) {
+		warn("?".__x("Ongeldig bedrag: {amt}", amt => $oamt)."\n");
+		$fail++;
+		next;
+	    }
 
 	    my ($rr, $sql, @sql_args);
 	    if ( $rel =~ /:/ ) {
