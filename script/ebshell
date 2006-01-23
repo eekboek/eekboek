@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.9 2006/01/22 16:50:41 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.10 2006/01/23 13:00:27 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 15:19:09 2006
-# Update Count    : 247
+# Last Modified On: Mon Jan 23 13:57:44 2006
+# Update Count    : 248
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -75,7 +75,7 @@ mkdir($userdir) unless -d $userdir;
 
 $echo = "eb> " if $echo;
 
-$dataset ||= $cfg->val(qw(database name));
+$dataset ||= $cfg->val(qw(database name), undef);
 
 unless ( $dataset ) {
     die("?"._T("Geen dataset opgegeven.".
@@ -101,25 +101,25 @@ if ( $createdb ) {
     else {
 	$cmd = "createdb";
 	@cmd = ( $cmd, qw(-E latin1) );
-	for ( $cfg->val("database", "user") ) {
+	for ( $cfg->val("database", "user", undef) ) {
 	    next unless $_;
 	    push(@cmd, "-O", $_);
 	}
     }
 
-    for ( $cfg->val("database", "user") ) {
+    for ( $cfg->val("database", "user", undef) ) {
 	next unless $_;
 	push(@cmd, "-U", $_);
     }
-    for ( $cfg->val("database", "password") ) {
+    for ( $cfg->val("database", "password", undef) ) {
 	next unless $_;
 	push(@cmd, "--password");
     }
-    for ( $cfg->val("database", "host") ) {
+    for ( $cfg->val("database", "host", undef) ) {
 	next unless $_;
 	push(@cmd, "-h", $_);
     }
-    for ( $cfg->val("database", "port") ) {
+    for ( $cfg->val("database", "port", undef) ) {
 	next unless $_;
 	push(@cmd, "-p", $_);
     }
