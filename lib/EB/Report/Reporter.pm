@@ -1,10 +1,10 @@
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.7 2006/01/22 16:43:23 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.8 2006/01/24 14:59:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 20 21:59:56 2006
-# Update Count    : 130
+# Last Modified On: Tue Jan 24 15:26:51 2006
+# Update Count    : 138
 # Status          : Unknown, Use with caution!
 
 
@@ -36,10 +36,17 @@ sub new {
 		    };
 	    $self->{_fdata}->{$a->{name}} = $a;
 	    push(@{$self->{_fields}}, $a);
+	    if ( my $t = $cfg->val("layout $style", $col->{name}."_width", undef) ) {
+		$self->widths({$col->{name} => $t});
+	    }
 	}
 	else {
 	    die("?"._T("Ontbrekend \"name\" of \"style\""));
 	}
+    }
+
+    if ( my $t = $cfg->val("layout $style", "fields", undef) ) {
+	$self->fields(split(' ', $t));
     }
 
     # Return object.
@@ -69,7 +76,25 @@ sub widths {
     while ( my($fld,$width) = each(%$w) ) {
 	die("?".__x("Onbekend veld: {fld}", fld => $fld)."\n")
 	  unless defined($self->{_fdata}->{$fld});
-	$self->{_fdata}->{$fld}->{width} = $w;
+	my $ow = $self->{_fdata}->{$fld}->{width};
+	if ( $width =~ /^\+(\d+)$/ ) {
+	    $ow += $1;
+	}
+	elsif ( $width =~ /^-(\d+)$/ ) {
+	    $ow -= $1;
+	}
+	elsif ( $width =~ /^(\d+)\%$/ ) {
+	    $ow *= $1;
+	    $ow = int($ow/100);
+	}
+	elsif ( $width =~ /^\d+$/ ) {
+	    $ow = $width;
+	}
+	else {
+	    die("?".__x("Ongeldige breedte {w} voor veld {fld}",
+			fld => $fld, w => $width)."\n");
+	}
+	$self->{_fdata}->{$fld}->{width} = $ow;
     }
 
     # PBP: Return nothing sensible.
