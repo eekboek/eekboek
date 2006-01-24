@@ -2,9 +2,6 @@
 
 : ${EBSHELL:=ebshell -X -f ivp.conf}
 
-# Verwijder enige bestaande database voor deze administratie.
-dropdb ${EB_DB_NAME}
-
 # Creeer een nieuwe database en vul de database met het schema.
 $EBSHELL --createdb --schema=sample -c || exit 1
 
@@ -15,5 +12,5 @@ $EBSHELL --echo < relaties.eb
 $EBSHELL --echo < opening.eb
 
 # Aanmaken restore set.
-pg_dump -c $EB_DB_NAME > reset.sql
+pg_dump -c eekboek_sample > reset.sql
 
