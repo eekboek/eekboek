@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.1 2006/01/24 13:26:36 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.2 2006/01/24 13:36:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 24 14:23:28 2006
-# Update Count    : 51
+# Last Modified On: Tue Jan 24 14:36:23 2006
+# Update Count    : 55
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -123,7 +123,7 @@ sub clear {
 				      ' AND relname LIKE \'bsk_%_seq\'');
     foreach my $seq ( @$rr ) {
 	warn("+ DROP SEQUENCE $seq->[0]\n") if $trace;
-	$dbh->do("DROP SEQUENCE '$seq->[0]'");
+	$dbh->do("DROP SEQUENCE $seq->[0]");
     }
     $dbh->commit unless $dbh->{AutoCommit};
 }
