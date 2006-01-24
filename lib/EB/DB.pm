@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.32 2006/01/24 13:26:25 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.33 2006/01/24 17:15:15 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 24 14:25:19 2006
-# Update Count    : 280
+# Last Modified On: Tue Jan 24 18:13:07 2006
+# Update Count    : 297
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -367,19 +367,22 @@ sub adm_busy {
 
 ################ API calls for database backend ################
 
+my $dbpkg;
+
 sub connectdb {
     my ($self, $nocheck) = @_;
 
     return $dbh if $dbh;
-    my $pkg = $self->_loaddbbackend;
+    my $pkg = $dbpkg || $self->_loaddbbackend;
     my $dbname = $cfg->val(qw(database name));
-    croak("?INTERNAL ERROR: No database name") unless defined $dbname;;
+    croak("?INTERNAL ERROR: No database name") unless defined $dbname;
     eval {
 	$dbh = $pkg->connect($dbname)
 	  or die("?".__x("Database verbindingsprobleem: {err}",
 			 err => $DBI::errstr)."\n");
     };
-    $self->{_dbpkg} = $pkg;
+    die($@) if $@;
+    $dbpkg = $pkg;
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
     $dbh->{ChopBlanks} = 1;
@@ -387,40 +390,49 @@ sub connectdb {
     $dbh;
 }
 
-sub disconnectdb {
+sub disconnect {
     my ($self) = shift;
-    $self->_loaddbbackend->disconnect;
+    $dbpkg ||= $self->_loaddbbackend;
+    $dbpkg->disconnect;
     undef $dbh;
 }
 
 sub listdb {
     my ($self) = shift;
-    $self->_loaddbbackend->list;
+    $dbpkg ||= $self->_loaddbbackend;
+    $dbpkg->list;
 }
 
 sub cleardb {
     my ($self) = shift;
-    $self->_loaddbbackend->clear;
+    $dbpkg ||= $self->_loaddbbackend;
+    $dbpkg->clear;
 }
 
 sub createdb {
     my ($self, $dbname) = @_;
-    $self->_loaddbbackend->create($dbname);
+    $dbpkg ||= $self->_loaddbbackend;
+    Carp::confess("OOPS") unless $dbpkg;
+    $dbpkg->create($dbname);
 }
 
 sub typedb {
     my ($self) = shift;
-    $self->_loaddbbackend->type;
+    $dbpkg ||= $self->_loaddbbackend;
+    $dbpkg->type;
 }
 
 sub get_sequence {
     my ($self) = shift;
-    $self->{_dbpkg}->get_sequence(@_);
+    $self->connectdb;
+    Carp::confess("OOPS") unless $dbpkg;
+    $dbpkg->get_sequence(@_);
 }
 
 sub set_sequence {
     my ($self) = shift;
-    $self->{_dbpkg}->set_sequence(@_);
+    $self->connectdb;
+    $dbpkg->set_sequence(@_);
 }
 
 sub _loaddbbackend {
@@ -432,6 +444,7 @@ sub _loaddbbackend {
     eval { require $pkgfile };
     die("?".__x("Geen ondersteuning voor database type {db}",
 		db => $dbtype)."\n$@") if $@;
+    #Carp::cluck("Returning: $pkg");
     return $pkg;
 }
 

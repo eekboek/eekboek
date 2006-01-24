@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.2 2006/01/24 13:36:37 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.3 2006/01/24 17:15:25 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 24 14:36:23 2006
-# Update Count    : 55
+# Last Modified On: Tue Jan 24 16:16:51 2006
+# Update Count    : 56
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -141,9 +141,9 @@ sub get_sequence {
     my ($self, $seq, $noinc) = @_;
     croak("?INTERNAL ERROR: get sequence while not connected") unless $dbh;
 
-    my $rr = $dbh->fetchall_arrayref("SELECT ".
-				     ($noinc ? "currval" : "nextval").
-				     "('$seq')");
+    my $rr = $dbh->selectall_arrayref("SELECT ".
+				      ($noinc ? "currval" : "nextval").
+				      "('$seq')");
     return ($rr && defined($rr->[0]) && defined($rr->[0]->[0])? $rr->[0]->[0] : undef);
 }
 
