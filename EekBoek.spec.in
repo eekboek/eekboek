@@ -38,13 +38,17 @@ make DESTDIR=$RPM_BUILD_ROOT install
 rm -f ${RPM_BUILD_ROOT}%{_libdir}/perl*/*/*/perllocal.pod
 rm -f ${RPM_BUILD_ROOT}%{_libdir}/perl*/*/*/*/auto/eekboek/.packlist
 
+mkdir -p ${RPM_BUILD_ROOT}%{_sysconfdir}/eekboek
+install -m 0644 example/eekboek.conf ${RPM_BUILD_ROOT}%{_sysconfdir}/eekboek
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
 %doc CHANGES README INSTALL QUICKSTART example doc/html TODO
-
+%dir %{_sysconfdir}/eekboek
+%config %{_sysconfdir}/eekboek/eekboek.conf
 %{_bindir}/ebshell
 %{perl_sitelib}/EB
 %{perl_sitelib}/EB.pm
