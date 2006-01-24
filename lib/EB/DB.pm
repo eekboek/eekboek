@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.31 2006/01/22 16:33:12 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.32 2006/01/24 13:26:25 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 15:19:01 2006
-# Update Count    : 258
+# Last Modified On: Tue Jan 24 14:25:19 2006
+# Update Count    : 280
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,8 +20,6 @@ use strict;
 
 use EB;
 use DBI;
-
-my $postgres = 1;		# PostgreSQL
 
 my $dbh;			# singleton for DB
 my $db;				# singleton for EBDB
@@ -367,32 +365,77 @@ sub adm_busy {
     $self->do("SELECT COUNT(*) FROM Journal")->[0];
 }
 
+################ API calls for database backend ################
+
 sub connectdb {
     my ($self, $nocheck) = @_;
 
     return $dbh if $dbh;
-
+    my $pkg = $self->_loaddbbackend;
     my $dbname = $cfg->val(qw(database name));
     croak("?INTERNAL ERROR: No database name") unless defined $dbname;;
-    $dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
-    $dbname = "dbi:Pg:dbname=" . $dbname;
-
-    my $t;
-    $dbname .= ";host=" . $t if $t = $cfg->val(qw(database host), undef);
-    $dbname .= ";port=" . $t if $t = $cfg->val(qw(database port), undef);
-
-    my $dbuser = $cfg->val(qw(database user), undef);
-    my $dbpass = $cfg->val(qw(database password), undef);
-
-    $dbh = DBI::->connect($dbname, $dbuser, $dbpass)
-      or die("?".__x("Database verbindingsprobleem: {err}",
-		     err => $DBI::errstr)."\n");
+    eval {
+	$dbh = $pkg->connect($dbname)
+	  or die("?".__x("Database verbindingsprobleem: {err}",
+			 err => $DBI::errstr)."\n");
+    };
+    $self->{_dbpkg} = $pkg;
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
     $dbh->{ChopBlanks} = 1;
     $self->check_db unless $nocheck;
     $dbh;
 }
+
+sub disconnectdb {
+    my ($self) = shift;
+    $self->_loaddbbackend->disconnect;
+    undef $dbh;
+}
+
+sub listdb {
+    my ($self) = shift;
+    $self->_loaddbbackend->list;
+}
+
+sub cleardb {
+    my ($self) = shift;
+    $self->_loaddbbackend->clear;
+}
+
+sub createdb {
+    my ($self, $dbname) = @_;
+    $self->_loaddbbackend->create($dbname);
+}
+
+sub typedb {
+    my ($self) = shift;
+    $self->_loaddbbackend->type;
+}
+
+sub get_sequence {
+    my ($self) = shift;
+    $self->{_dbpkg}->get_sequence(@_);
+}
+
+sub set_sequence {
+    my ($self) = shift;
+    $self->{_dbpkg}->set_sequence(@_);
+}
+
+sub _loaddbbackend {
+    my ($self) = @_;
+    my $dbtype = $cfg->val(qw(database type), "postgres");
+    my $pkg = __PACKAGE__ . "::" . ucfirst(lc($dbtype));
+    my $pkgfile = __PACKAGE__ . "::" . ucfirst(lc($dbtype)) . ".pm";
+    $pkgfile =~ s/::/\//g;
+    eval { require $pkgfile };
+    die("?".__x("Geen ondersteuning voor database type {db}",
+		db => $dbtype)."\n$@") if $@;
+    return $pkg;
+}
+
+################ End API calls for database backend ################
 
 sub trace {
     my ($self, $value) = @_;
@@ -433,8 +476,7 @@ END {
 
 sub close {
     my ($self) = @_;
-    $dbh->disconnect;
-    undef $dbh;
+    $self->disconnectdb;
     %sth = ();
     $self->std_acc("");
     $self->adm("");
@@ -478,25 +520,6 @@ sub get_value {
     $sth->finish;
 
     return ($rr && defined($rr->[0]) ? $rr->[0] : undef);
-}
-
-sub get_sequence {
-    my ($self, $seq, $noinc) = @_;
-    my $sth = $self->sql_exec("SELECT ".
-			      ($noinc ? "currval" : "nextval").
-			      "('$seq')");
-    my $rr = $sth->fetchrow_arrayref;
-    $sth->finish;
-
-    return ($rr && defined($rr->[0]) ? $rr->[0] : undef);
-}
-
-sub set_sequence {
-    my ($self, $seq, $value) = @_;
-    # Init a sequence to value.
-    # The next call to get_sequence will return this value.
-    $self->sql_exec("SELECT setval('$seq', $value, false)")->finish;
-    $value;
 }
 
 sub do {
