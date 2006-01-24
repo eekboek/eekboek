@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.10 2006/01/23 13:00:27 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.11 2006/01/24 13:37:41 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 23 13:57:44 2006
-# Update Count    : 248
+# Last Modified On: Tue Jan 24 14:29:51 2006
+# Update Count    : 253
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -87,57 +87,21 @@ unless ( $dataset ) {
 
 $cfg->newval(qw(database name), $dataset);
 
-if ( $createdb ) {
-    $dataset =~ s/^(?!=eekboek_)/eekboek_/;
-    my $cmd;
-    my @cmd;
-
-    my @ds = DBI->data_sources("Pg");
-    if ( grep { lc($_) =~ /=\Q$dataset\E$/ } @ds ) {
-	$cmd = "psql";
-	@cmd = ( $cmd, "-X",
-		 "-f", EB_LIB . "EB/schema/cleanup.sql" );
-    }
-    else {
-	$cmd = "createdb";
-	@cmd = ( $cmd, qw(-E latin1) );
-	for ( $cfg->val("database", "user", undef) ) {
-	    next unless $_;
-	    push(@cmd, "-O", $_);
-	}
-    }
-
-    for ( $cfg->val("database", "user", undef) ) {
-	next unless $_;
-	push(@cmd, "-U", $_);
-    }
-    for ( $cfg->val("database", "password", undef) ) {
-	next unless $_;
-	push(@cmd, "--password");
-    }
-    for ( $cfg->val("database", "host", undef) ) {
-	next unless $_;
-	push(@cmd, "-h", $_);
-    }
-    for ( $cfg->val("database", "port", undef) ) {
-	next unless $_;
-	push(@cmd, "-p", $_);
-    }
-    push(@cmd, $dataset);
-    warn("+ @cmd\n") if $trace;
-    my $res = system { $cmd } @cmd;
-    # warn(sprintf("=> ret = %02x", $res)."\n") if $res;
-    die("?"._T("Aanmaken database mislukt")."\n") if $res;
-}
-
 use EB::DB;
 our $dbh = EB::DB->new(trace => $trace);
+
+if ( $createdb ) {
+    $dbh->createdb($dataset);
+    warn("%".__x("Lege dataset {db} is aangemaakt", db => $dataset)."\n");
+}
 
 if ( $schema ) {
     require EB::Tools::Schema;
     $dbh->connectdb(1);
     EB::Tools::Schema->create($schema);
 }
+
+exit(0) if $command && !@ARGV;
 
 my $shell = EB::Shell->new
   ({ HISTFILE	  => $userdir."/history",
