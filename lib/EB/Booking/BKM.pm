@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.35 2006/01/23 10:30:51 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.36 2006/01/25 21:20:30 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 23 11:17:58 2006
-# Update Count    : 302
+# Last Modified On: Wed Jan 25 21:01:43 2006
+# Update Count    : 305
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -135,7 +135,7 @@ sub perform {
 		next;
 	    }
 	    $dc = 1;		# ####
-	    my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
+	    my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_kstomz,acc_btw".
 			      " FROM Accounts".
 			      " WHERE acc_id = ?", $acct);
 	    unless ( $rr ) {
@@ -144,7 +144,7 @@ sub perform {
 		$fail++;
 		next;
 	    }
-	    my ($adesc, $balres, $debcrd, $btw_id) = @$rr;
+	    my ($adesc, $balres, $debcrd, $kstomz, $btw_id) = @$rr;
 
 	    if ( $balres && $dagboek_type != DBKTYPE_MEMORIAAL ) {
 		warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
@@ -164,7 +164,7 @@ sub perform {
 	    $btw_id = 0, undef($bid) if defined($bid) && !$bid; # override: @0
 
 	    # If there's BTW associated, it must be explicitly confirmed.
-	    if ( $btw_id && !defined($bid) ) {
+	    if ( $btw_id && !defined($bid) && !$dbh->adm_ko ) {
 		warn("?".__x("Boekingen met BTW zijn niet mogelijk in een {dbk}.".
 			     " De BTW is op nul gesteld.",
 			     dbk => $dagboek_type == DBKTYPE_BANK ? "bankboek" :
@@ -214,6 +214,13 @@ sub perform {
 		    $fail++;
 		    next;
 		}
+	    }
+	    elsif ( $btw_id ) {	# implies KO_OK
+		my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+		croak("INTERNAL ERROR: btw code $btw_id heeft tariefgroep $tg")
+		  unless $tg;
+		my $t = qw(i v)[$kstomz] . qw(x h l)[$tg];
+		$btw_acc = $dbh->std_acc("btw_$t");
 	    }
 
 #	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));

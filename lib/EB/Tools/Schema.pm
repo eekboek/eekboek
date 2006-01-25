@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.26 2006/01/22 16:47:53 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.27 2006/01/25 21:20:30 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 20 21:53:37 2006
-# Update Count    : 454
+# Last Modified On: Wed Jan 25 22:12:22 2006
+# Update Count    : 464
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -84,7 +84,7 @@ my %dbk;			# dagboeken
 my @dbk;			# dagboeken
 my @btw;			# btw tarieven
 my %btwmap;			# btw type/incl -> code
-
+my $ko_ok;			# K/O codes bruikbaar
 my $fail;			# any errors
 
 sub error { warn('?', @_); $fail++; }
@@ -127,7 +127,7 @@ sub scan_dagboeken {
     error(__x("Dagboek {id}: het :rekening nummer ontbreekt", id => $id)."\n")
       if ( $type == DBKTYPE_KAS || $type == DBKTYPE_BANK ) and !$type;
     error(__x("Dagboek {id}: rekeningnummer enkel toegestaan voor Kas en Bankboeken", id => $id)."\n")
-      if $rek && !($type == DBKTYPE_KAS || $type == DBKTYPE_BANK);
+      if $rek && !($type == DBKTYPE_KAS || $type == DBKTYPE_BANK || $type == DBKTYPE_MEMORIAAL);
 
     $dbk{$id} = $dbkid;
     $dbk[$dbkid] = [ $id, $desc, $type, $rek||undef ];
@@ -276,6 +276,7 @@ sub load_schema {
 	next if /^\s*#/;
 	next unless /\S/;
 
+	# Scanner selectie.
 	if ( /^balans/i ) {
 	    $scanner = \&scan_balans;
 	    next;
@@ -292,11 +293,19 @@ sub load_schema {
 	    $scanner = \&scan_btw;
 	    next;
 	}
+
+	# Overige settings.
 	if ( /^verdichting\s+(\d+)\s+(\d+)/i && $1 < $2 ) {
 	    $max_hvd = $1;
 	    $max_vrd = $2;
 	    next;
 	}
+	if ( /^kosten-omzet\s+ok$/i ) {
+	    $ko_ok = 1;
+	    next;
+	}
+
+	# Anders: Scan.
 	if ( $scanner ) {
 	    chomp;
 	    $scanner->() or
@@ -371,6 +380,7 @@ sub sql_constants {
 	next if ref($key->());
 	$out .= "$key\t" . $key->() . "\n";
     }
+    $out .= "KO_OK\t" . ($ko_ok ? "1" : "0") . "\n";
     $out . "\\.\n";
 }
 
@@ -572,7 +582,15 @@ print {$fh}  <<EOD;
 #   winst	rekening waarop de winst wordt geboekt
 #
 # Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
+
+# Uit historische overwegingen wordt de classificatie Kosten/Omzet
+# voor resultaatrekeningen onbetrouwbaar geacht. Met de aanduiding
+# "Kosten-Omzet OK" kan worden aangegeven dat de classificatie
+# betrouwbaar is en door EekBoek gebruikt mag worden.
+
 EOD
+
+    print {$fh} ($dbh->adm_ko ? "" : "# ", "Kosten-Omzet OK\n");
 
 $max_hvd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE vdi_struct IS NULL")->[0];
 $max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct IS NULL")->[0];

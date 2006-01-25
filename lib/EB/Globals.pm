@@ -20,14 +20,14 @@ sub N__($) { $_[0] }
 BEGIN {
     _newconst("SCM_MAJVERSION", 1);
     _newconst("SCM_MINVERSION", 0);
-    _newconst("SCM_REVISION", 6);
+    _newconst("SCM_REVISION",   7);
 
-    _newconst("AMTPRECISION", 2);
-    _newconst("AMTWIDTH", 9);
-    _newconst("BTWPRECISION", 4);
-    _newconst("BTWWIDTH", 5);
-    _newconst("AMTSCALE", 100);
-    _newconst("BTWSCALE", 10000);
+    _newconst("AMTPRECISION",   2);
+    _newconst("AMTWIDTH",       9);
+    _newconst("BTWPRECISION",   4);
+    _newconst("BTWWIDTH",       5);
+    _newconst("AMTSCALE",     100);
+    _newconst("BTWSCALE",   10000);
 
     _newconst("BKY_PREVIOUS", "<<<<");
 
