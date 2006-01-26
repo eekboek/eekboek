@@ -11,7 +11,7 @@ our @EXPORT;
 sub _newconst($$) {
     my $t = $_[1];
     $t = "'$t'" unless $t =~ /^\d+$/ || $t =~ /^\[.*\]$/;
-    warn("sub $_[0](){$t}\n");
+    #warn("sub $_[0](){$t}\n");
     eval("sub $_[0](){$t}");
     push(@EXPORT, $_[0]);
 }
