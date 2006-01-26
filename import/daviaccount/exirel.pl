@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.9 2005/10/04 10:22:31 jv Exp $ ';
+my $RCS_Id = '$Id: exirel.pl,v 1.10 2006/01/26 11:46:17 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  4 11:48:06 2005
-# Update Count    : 89
+# Last Modified On: Tue Jan 24 16:24:36 2006
+# Update Count    : 99
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -31,6 +31,7 @@ use Getopt::Long 2.13;
 # Command line options.
 my $all = 0;		# all
 my $verbose = 0;		# verbose processing
+my $ac5 = 0;			# DaviDOS compatibility
 
 # Development options (not shown with -help).
 my $debug = 0;			# debugging
@@ -50,6 +51,7 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 ################ The Process ################
 
 use Text::CSV_XS;
+use EB::Config qw(EekBoek);
 use EB::Globals;
 
 unless ( @ARGV ) {
@@ -86,6 +88,7 @@ my $db;
 if ( open($db, "fmuta6.csv") || open($db, "FMUTA6.CSV") ) {
     my $mut;
     while ( <$db> ) {
+	s/0""/0,""/g;
 	$csv->parse($_);
 	my @a = $csv->fields();
 	$used{uc($a[9]||$a[10])}++;
@@ -95,6 +98,7 @@ if ( open($db, "fmuta6.csv") || open($db, "FMUTA6.CSV") ) {
 
 $csv = new Text::CSV_XS ({binary => 1});
 while ( <> ) {
+    s/0""/0,""/g;
     unless ( $csv->parse($_) ) {
 	warn("Geen geldige invoer op regel $., file $ARGV\n");
 	next;
@@ -104,6 +108,7 @@ while ( <> ) {
     my @a = $csv->fields();
     if ( @a == @debfieldnames ) {	# debiteur
 	@a{@debfieldnames} = @a;
+	$a{debzk} ||= $a{debnr} if $ac5;
 	if ( $a{debzk} ) {
 	    next unless $all || $used{$a{debzk}};
 	}
@@ -116,7 +121,7 @@ while ( <> ) {
 	    next;
 	}
 	print("relatie ",
-	      $a{btw_nummer} ne "" ? "--btw=extra " : "",
+	      ($a{btw_nummer} ne "" && $a{btw_nummer} eq "0") ? "--btw=extra " : "",
 	      '"', $a{debzk}, '"', " ",
 	      '"', $a{naam}, '"', " ",
 	      "8000C",
@@ -125,6 +130,7 @@ while ( <> ) {
     }
     if ( @a == @crdfieldnames ) {	# crediteur
 	@a{@crdfieldnames} = @a;
+	$a{crdzk} ||= $a{crdnr} if $ac5;
 	if ( $a{crdzk} ) {
 	    next unless $all || $used{$a{crdzk}};
 	}
@@ -137,10 +143,10 @@ while ( <> ) {
 	    next;
 	}
 	print("relatie ",
-	      $a{btw_nummer} ne "" ? "--btw=extra " : "",
+	      ($a{btw_nummer} ne "" && $a{btw_nummer} eq "0") ? "--btw=extra " : "",
 	      '"', $a{crdzk}, '"', " ",
 	      '"', $a{naam}, '"', " ",
-	      "4000D",
+	      "4990D",
 	      "\n");
 	next;
     }
@@ -163,6 +169,7 @@ sub app_options {
     return unless @ARGV > 0;
 
     if ( !GetOptions(
+		     'ac5'	=> \$ac5,
 		     'all'	=> \$all,
 		     'ident'	=> \$ident,
 		     'verbose'	=> \$verbose,
