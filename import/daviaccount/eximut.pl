@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.11 2005/12/20 20:46:44 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.12 2006/01/26 11:45:26 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 20 20:50:59 2005
-# Update Count    : 219
+# Last Modified On: Tue Jan 24 16:24:25 2006
+# Update Count    : 239
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -30,6 +30,7 @@ use Getopt::Long 2.13;
 
 # Command line options.
 my $verbose = 0;		# verbose processing
+my $ac5 = 0;			# DaviDOS compatible
 my $auto = 0;			# auto gen missing relations
 
 # Development options (not shown with -help).
@@ -45,6 +46,7 @@ $trace |= ($debug || $test);
 
 ################ Presets ################
 
+use EB::Config qw(EekBoek);
 use EB::DB;
 
 our $trace = $ENV{EB_SQL_TRACE};
@@ -122,15 +124,19 @@ sub flush {
     my $dbk = $r0->{dagbknr};
     my $dbktype = $r0->{dagb_type};
 
+    my $cmd = $dagboeken[$dbk];
+    $cmd =~ s/\s+/_/g if $cmd;		# you won't believe it
+
     if ( $dbktype eq 'I' ) {	# Inkoop
+	$cmd ||= "Onbekend_InkoopDagboek";
 	foreach my $r ( @$mut ) {
-	    check_rel($r0->{crdnr}, $r->{reknr}, "C");
+	    check_rel($r0->{crdnr}, $r->{reknr}, "D");
 	}
-	print($dagboeken[$dbk], ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
+	print($cmd, ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
 	      ' "' . uc($r0->{crdnr}) . '"');
 	foreach my $r ( @$mut ) {
 	    print join(" ", "", '"' . $r->{oms25} . '"',
-#		       (debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+		       # ($ac5 ? 0-$r->{bedrag} : $r->{bedrag}). ?????
 		       $r->{bedrag}.
 		       fixbtw($r),
 		       $r->{reknr});
@@ -138,15 +144,15 @@ sub flush {
 	print("\n");
     }
     elsif ( $dbktype eq 'V' ) {	# Verkoop
+	$cmd ||= "Onbekend_VerkoopDagboek";
 	foreach my $r ( @$mut ) {
-	    check_rel($r0->{debnr}, $r->{reknr}, "D");
+	    check_rel($r0->{debnr}, $r->{reknr}, "C");
 	}
-	print($dagboeken[$dbk], ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
+	print($cmd, ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
 	      ' "' . uc($r0->{debnr}) . '"');
 	foreach my $r ( @$mut ) {
 	    print join(" ", "", '"' . $r->{oms25} . '"',
-#		       (debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
-		       0-$r->{bedrag}.
+		       ($ac5 ? $r->{bedrag} : 0-$r->{bedrag}).
 		       fixbtw($r),
 		       $r->{reknr});
 	}
@@ -154,7 +160,7 @@ sub flush {
     }
 #    elsif ( $dbktype eq 'M' ) {	# Memoriaal
 #	return unless @$mut;
-#	print($dagboeken[$dbk], " ", dd($mut->[0]->{Date}));
+#	print($cmd, " ", dd($mut->[0]->{Date}));
 #	foreach my $r ( @$mut ) {
 #	    print join(" ", "",
 #		       '"' . $r->{oms25} . '"',
@@ -163,33 +169,34 @@ sub flush {
 #	}
 #	print("\n");
 #    }
-    elsif ( $dbktype =~ /^[GBKM]$/ ) {	# Bank/Giro/Kas/Memoriaal;
+    elsif ( $dbktype =~ /^[GB]$/ ) {	# Bank/Giro
 	return unless @$mut;
+	$cmd ||= "Onbekend_BankDagboek";
 
 	foreach my $r ( @$mut ) {
 	    if ( $r->{crdnr} ) {
-		check_rel($r->{crdnr}, 4000, "C");
+		check_rel($r->{crdnr}, 4990, "D");
 	    }
 	    elsif ( $r->{debnr} ) {
 		check_rel($r->{debnr}, 8000, "C");
 	    }
 	}
 
-	print($dagboeken[$dbk], ":", $r0->{bkstnr}, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
+	print($cmd, ":", $r0->{bkstnr}, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
 	my $tot = 0;
 	foreach my $r ( @$mut ) {
 	    if ( $r->{crdnr} ) {
 		print join(" ", " crd",
 			   '"'.uc($r->{crdnr}).'"',
-#			   sprintf("%.2f", $r->{bedrag}),
-			   sprintf("%.2f", 0-$r->{bedrag}),
+			   sprintf("%.2f", $ac5 ? $r->{bedrag} : 0-$r->{bedrag}),
+#			   sprintf("%.2f", 0-$r->{bedrag}),
 			  );
 		$tot += $r->{bedrag};
 	    }
 	    elsif ( $r->{debnr} ) {
 		print join(" ", " deb",
 			   '"'.uc($r->{debnr}).'"',
-			   sprintf("%.2f", 0-$r->{bedrag}),
+			   sprintf("%.2f", $ac5 ? $r->{bedrag} : 0-$r->{bedrag}),
 			  );
 		$tot += $r->{bedrag};
 	    }
@@ -198,6 +205,107 @@ sub flush {
 			   '"'.$r->{oms25}.'"',
 			   sprintf("%.2f",
 #				   debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+				   $ac5 ? $r->{bedrag} : 0-$r->{bedrag}).
+#				   0-$r->{bedrag}).
+			   fixbtw($r, 1),
+			   $r->{reknr}# . (debcrd($r->{reknr}) ? 'D' : 'C'),
+			  );
+		$tot += $r->{bedrag};
+
+	    }
+	}
+	print("\n");
+	warn("!!BOEKSTUK ".$r0->{bkstnr}.
+	     " IS NIET IN BALANS ($tot)\n")
+	  if $dbktype eq "M" && abs($tot) >= 0.01;
+    }
+    elsif ( $dbktype =~ /^[K]$/ ) {	# Kas
+	return unless @$mut;
+	$cmd ||= "Onbekend_BankDagboek";
+
+	foreach my $r ( @$mut ) {
+	    if ( $r->{crdnr} ) {
+		check_rel($r->{crdnr}, 4990, "D");
+	    }
+	    elsif ( $r->{debnr} ) {
+		check_rel($r->{debnr}, 8000, "C");
+	    }
+	}
+
+	print($cmd, ":", $r0->{bkstnr}, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
+	my $tot = 0;
+	foreach my $r ( @$mut ) {
+	    if ( $r->{crdnr} ) {
+		print join(" ", " crd",
+			   '"'.uc($r->{crdnr}).'"',
+			   sprintf("%.2f", $ac5 ? $r->{bedrag} : 0-$r->{bedrag}),
+#			   sprintf("%.2f", 0-$r->{bedrag}),
+			  );
+		$tot += $r->{bedrag};
+	    }
+	    elsif ( $r->{debnr} ) {
+		print join(" ", " deb",
+			   '"'.uc($r->{debnr}).'"',
+			   sprintf("%.2f", $ac5 ? $r->{bedrag} : 0-$r->{bedrag}),
+			  );
+		$tot += $r->{bedrag};
+	    }
+	    else {
+		print join(" ", " std",
+			   '"'.$r->{oms25}.'"',
+			   sprintf("%.2f",
+#				   debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+				   $ac5 ? $r->{bedrag} : 0-$r->{bedrag}).
+#				   0-$r->{bedrag}).
+			   fixbtw($r, 1),
+			   $r->{reknr}# . (debcrd($r->{reknr}) ? 'D' : 'C'),
+			  );
+		$tot += $r->{bedrag};
+
+	    }
+	}
+	print("\n");
+	warn("!!BOEKSTUK ".$r0->{bkstnr}.
+	     " IS NIET IN BALANS ($tot)\n")
+	  if $dbktype eq "M" && abs($tot) >= 0.01;
+    }
+    elsif ( $dbktype =~ /^[M]$/ ) {	# Memoriaal;
+	return unless @$mut;
+	$cmd ||= "Onbekend_Memoriaal";
+
+	foreach my $r ( @$mut ) {
+	    if ( $r->{crdnr} ) {
+		check_rel($r->{crdnr}, 4990, "D");
+	    }
+	    elsif ( $r->{debnr} ) {
+		check_rel($r->{debnr}, 8000, "C");
+	    }
+	}
+
+	print($cmd, ":", $r0->{bkstnr}, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
+	my $tot = 0;
+	foreach my $r ( @$mut ) {
+	    if ( $r->{crdnr} ) {
+		print join(" ", " crd",
+			   '"'.uc($r->{crdnr}).'"',
+#			   sprintf("%.2f", $ac5 ? $r->{bedrag} : 0-$r->{bedrag}),
+			   sprintf("%.2f", 0-$r->{bedrag}),
+			  );
+		$tot += $r->{bedrag};
+	    }
+	    elsif ( $r->{debnr} ) {
+		print join(" ", " deb",
+			   '"'.uc($r->{debnr}).'"',
+			   sprintf("%.2f", $ac5 ? $r->{bedrag} : 0-$r->{bedrag}),
+			  );
+		$tot += $r->{bedrag};
+	    }
+	    else {
+		print join(" ", " std",
+			   '"'.$r->{oms25}.'"',
+			   sprintf("%.2f",
+#				   debcrd($r->{reknr}) ? $r->{bedrag} : 0-$r->{bedrag}).
+#				   $ac5 ? $r->{bedrag} : 0-$r->{bedrag}).
 				   0-$r->{bedrag}).
 			   fixbtw($r, 1),
 			   $r->{reknr}# . (debcrd($r->{reknr}) ? 'D' : 'C'),
@@ -211,6 +319,7 @@ sub flush {
 	     " IS NIET IN BALANS ($tot)\n")
 	  if $dbktype eq "M" && abs($tot) >= 0.01;
     }
+
 
     #use Data::Dumper;
     #print Dumper($mut);
@@ -231,7 +340,7 @@ sub fixbtw {
     return "" if $b eq "";
 
     # FMUTA6.CSV heeft alle bedragen altijd inclusief BTW.
-    $b = btwmap($b);
+    $b = btwmap($b) unless $ac5;
 
     my $br = btw_code($r->{reknr});
     return "" if $b == $br && !$must;
@@ -243,9 +352,10 @@ sub dd {
     my ($date) = @_;
 
     # Kantelpunt is willekeurig gekozen.
+    # 
     sprintf("%04d-%02d-%02d",
 	    $3 < 90 ? 2000 + $3 : 1900 + $3, $2, $1)
-      if $date =~ /^(\d\d)(\d\d)(\d\d)$/;
+      if $date =~ /^(\d\d)(\d\d)(\d\d\d?)$/;
 }
 exit 0;
 
@@ -330,6 +440,7 @@ sub app_options {
 
     if ( !GetOptions(
 		     'ident'	=> \$ident,
+		     'ac5'	=> \$ac5,
 		     'auto'	=> \$auto,
 		     'verbose'	=> \$verbose,
 		     'trace'	=> \$trace,
