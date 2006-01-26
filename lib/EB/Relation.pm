@@ -26,22 +26,22 @@ sub add {
 
     if ( defined($bstate) ) {
 	$bstate = lc($bstate);
-	if ( $bstate =~ /^\d+$/ && $bstate >= 0 && $bstate <= 3 ) { #### TODO
+	if ( $bstate =~ /^\d+$/ && $bstate >= 0 && $bstate < @{BTWTYPES} ) {
 	    # Ok.
 	}
-	elsif ( $bstate eq "normaal" ) { $bstate = BTW_NORMAAL }
-	elsif ( $bstate eq "verlegd" ) { $bstate = BTW_VERLEGD }
-	elsif ( $bstate eq "intra" )   { $bstate = BTW_INTRA   }
-	elsif ( $bstate eq "extra" )   { $bstate = BTW_EXTRA   }
+	elsif ( $bstate eq lc(BTWTYPES->[BTWTYPE_NORMAAL]) ) { $bstate = BTWTYPE_NORMAAL }
+	elsif ( $bstate eq lc(BTWTYPES->[BTWTYPE_VERLEGD]) ) { $bstate = BTWTYPE_VERLEGD }
+	elsif ( $bstate eq lc(BTWTYPES->[BTWTYPE_INTRA]  ) ) { $bstate = BTWTYPE_INTRA   }
+	elsif ( $bstate eq lc(BTWTYPES->[BTWTYPE_EXTRA]  ) ) { $bstate = BTWTYPE_EXTRA   }
 	else {
 	    warn("?".__x("Ongeldige waarde voor BTW status: {btw}", btw => $bstate)."\n");
 	    return;
 	}
-	if ( $bstate == BTW_VERLEGD ) {	#### TODO
+	if ( $bstate == BTWTYPE_VERLEGD ) {	#### TODO
 	    warn("?"._T("Relaties met verlegde BTW worden nog niet ondersteund")."\n");
 	    return;
 	}
-	if ( $bstate == BTW_INTRA ) { #### TODO
+	if ( $bstate == BTWTYPE_INTRA ) { #### TODO
 	    warn("!"._T("Relaties met intra-communautaire BTW worden nog niet volledig ondersteund")."\n");
 	}
     }

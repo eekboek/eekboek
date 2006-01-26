@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.36 2006/01/25 21:20:30 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.37 2006/01/26 11:38:29 jv Exp $ ';
 
 package main;
 
@@ -188,7 +188,7 @@ sub perform {
 				       " FROM BTWTabel".
 				       " WHERE btw_tariefgroep = ?".
 				       " AND btw_incl",
-				       $bid =~ /h/ ? BTWTYPE_HOOG : BTWTYPE_LAAG)->[0];
+				       $bid =~ /h/ ? BTWTARIEF_HOOG : BTWTARIEF_LAAG)->[0];
 		}
 		elsif ( $bid =~ /^\d+|\d+[iv]|[iv]\d+$/i ) {
 		    my $t = $btw_id = $1 if $bid =~ /(\d+)/;
@@ -205,7 +205,7 @@ sub perform {
 		    else {
 			$t = $amt < 0 ? "i" : "v";
 		    }
-		    $t .= $group == BTWTYPE_HOOG ? "h" : "l";
+		    $t .= $group == BTWTARIEF_HOOG ? "h" : "l";
 		    $btw_acc = $dbh->std_acc("btw_$t");
 		}
 		else {
@@ -226,8 +226,8 @@ sub perform {
 #	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
 ##	    my $btw_acc = $debcrd ?
 #	    my $btw_acc = (defined($explicit_dc) ? !$explicit_dc : ($amt < 0))  ?
-#	      $dbh->std_acc($group == BTWTYPE_HOOG ? "btw_ih" : "btw_il") :
-#		$dbh->std_acc($group == BTWTYPE_HOOG ? "btw_vh" : "btw_vl");
+#	      $dbh->std_acc($group == BTWTARIEF_HOOG ? "btw_ih" : "btw_il") :
+#		$dbh->std_acc($group == BTWTARIEF_HOOG ? "btw_vh" : "btw_vl");
 
 	    my $btw = 0;
 	    my $bsr_amount = $amt;

@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.23 2006/01/25 21:20:30 jv Exp $
+-- $Id: eekboek.sql,v 1.24 2006/01/26 11:39:23 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -89,7 +89,7 @@ CREATE TABLE Relaties (
     rel_code      char(10) not null primary key,
     rel_desc 	  text not null,
     rel_debcrd    boolean,		     -- t: debiteur f: crediteur
-    rel_btw_status smallint default 0, 	     -- BTW_NORMAAL, BTW_VERLEGD, BTW_INTRA, BTW_EXTRA.
+    rel_btw_status smallint default 0, 	     -- BTWTYPE NORMAAL, VERLEGD, INTRA, EXTRA.
     rel_ledger    varchar(4) references Dagboeken,  -- verkoop/inkoopdagboek
     rel_acc_id    int references Accounts,   -- standaard grootboekrekening
     CONSTRAINT "rel_btw_status"

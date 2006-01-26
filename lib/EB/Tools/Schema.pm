@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.27 2006/01/25 21:20:30 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.28 2006/01/26 11:36:03 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
@@ -156,13 +156,13 @@ sub scan_btw {
 	    }
 	}
 	elsif ( $extra =~ m/^tariefgroep=hoog$/i ) {
-	    $groep = BTWTYPE_HOOG;
+	    $groep = BTWTARIEF_HOOG;
 	}
 	elsif ( $extra =~ m/^tariefgroep=laag$/i ) {
-	    $groep = BTWTYPE_LAAG;
+	    $groep = BTWTARIEF_LAAG;
 	}
 	elsif ( $extra =~ m/^tariefgroep=geen$/i ) {
-	    $groep = BTWTYPE_GEEN;
+	    $groep = BTWTARIEF_GEEN;
 	}
 	elsif ( $extra =~ m/^incl(?:usief)?$/i ) {
 	    $incl = 1;
@@ -178,18 +178,18 @@ sub scan_btw {
 
     error(__x("BTW tarief {id}: geen percentage en de tariefgroep is niet \"{none}\"",
 	      id => $id, none => _T("geen"))."\n")
-      unless defined($perc) || $groep == BTWTYPE_GEEN;
+      unless defined($perc) || $groep == BTWTARIEF_GEEN;
 
     $btw[$id] = [ $id, $desc, $groep, $perc, $incl ];
 
-    if ( $groep == BTWTYPE_GEEN && !defined($btwmap{g}) ) {
+    if ( $groep == BTWTARIEF_GEEN && !defined($btwmap{g}) ) {
 	$btwmap{g} = $id;
     }
     elsif ( $incl ) {
-	if ( $groep == BTWTYPE_HOOG && !defined($btwmap{h}) ) {
+	if ( $groep == BTWTARIEF_HOOG && !defined($btwmap{h}) ) {
 	    $btwmap{h} = $id;
 	}
-	elsif ( $groep == BTWTYPE_LAAG && !defined($btwmap{l}) ) {
+	elsif ( $groep == BTWTARIEF_LAAG && !defined($btwmap{l}) ) {
 	    $btwmap{l} = $id;
 	}
     }
@@ -453,7 +453,7 @@ ESQL
 
     foreach ( @btw ) {
 	next unless defined;
-	if ( $_->[2] == BTWTYPE_GEEN ) {
+	if ( $_->[2] == BTWTARIEF_GEEN ) {
 	    $_->[3] = 0;
 	    $_->[4] = "\\N";
 	}
@@ -701,13 +701,13 @@ sub dump_acc {
 		$flags .= $acc_debcrd ? "D" : "C" if $balres;
 		$flags .= $acc_kstomz ? "K" : "O" unless $balres;
 		my $extra = "";
-		if ( $btw == BTWTYPE_HOOG && $btwincl ) {
+		if ( $btw == BTWTARIEF_HOOG && $btwincl ) {
 		    $extra .= " :btw=hoog";
 		}
-		elsif ( $btw == BTWTYPE_LAAG && $btwincl ) {
+		elsif ( $btw == BTWTARIEF_LAAG && $btwincl ) {
 		    $extra .= " :btw=laag";
 		}
-		elsif ( $btw != BTWTYPE_GEEN ) {
+		elsif ( $btw != BTWTARIEF_GEEN ) {
 		    $extra .= " :btw=$btw_id";
 		}
 		$extra .= " :koppeling=".$kopp{$id} if exists($kopp{$id});
@@ -736,8 +736,8 @@ sub dump_btw {
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($id, $desc, $perc, $btg, $incl) = @$rr;
 	my $extra = "";
-	$extra .= " :tariefgroep=" . lc(BTWTYPES->[$btg]);
-	if ( $btg != BTWTYPE_GEEN ) {
+	$extra .= " :tariefgroep=" . lc(BTWTARIEVEN->[$btg]);
+	if ( $btg != BTWTARIEF_GEEN ) {
 	    $extra .= " :perc=".btwfmt($perc);
 	    $extra .= " :" . qw(exclusief inclusief)[$incl] unless $incl;
 	}

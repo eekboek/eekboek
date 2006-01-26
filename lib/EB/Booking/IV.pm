@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.32 2006/01/23 10:30:51 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.33 2006/01/26 11:38:33 jv Exp $ ';
 
 package main;
 
@@ -180,7 +180,7 @@ sub perform {
 
 	my $btw_acc;
 	# Geen BTW voor non-EU.
-	if ( $btw_id && ($sbtw == BTW_NORMAAL || $sbtw == BTW_INTRA) ) {
+	if ( $btw_id && ($sbtw == BTWTYPE_NORMAAL || $sbtw == BTWTYPE_INTRA) ) {
 	    my $t = "btw_" . ($dagboek_type == DBKTYPE_INKOOP ? "i" : "v");
 	    if ( $btw_id =~ /^[hl]$/i ) {
 		$t .= lc($btw_id);
@@ -188,11 +188,11 @@ sub perform {
 				   " FROM BTWTabel".
 				   " WHERE btw_tariefgroep = ?".
 				   " AND btw_incl",
-				   lc($btw_id) eq 'h' ? BTWTYPE_HOOG : BTWTYPE_LAAG)->[0];
+				   lc($btw_id) eq 'h' ? BTWTARIEF_HOOG : BTWTARIEF_LAAG)->[0];
 	    }
 	    else {
 		my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
-		$t .= ($group == BTWTYPE_HOOG ? "h" : "l");
+		$t .= ($group == BTWTARIEF_HOOG ? "h" : "l");
 	    }
 	    $btw_acc = $dbh->std_acc($t);
 	}
