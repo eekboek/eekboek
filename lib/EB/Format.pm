@@ -129,7 +129,7 @@ sub norm_btw {
 			      " WHERE btw_id = ?", $bsr_btw_id);
 	    my $group;
 	    ($btw_perc, $btw_incl, $group) = @$rr;
-	    if ( $group == BTWTYPE_HOOG ) {
+	    if ( $group == BTWTARIEF_HOOG ) {
 		$btw_acc_inkoop = $dbh->std_acc("btw_ih");
 		$btw_acc_verkoop = $dbh->std_acc("btw_vh");
 	    }

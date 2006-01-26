@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.3 2006/01/22 15:55:42 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.4 2006/01/26 09:39:43 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 16:54:06 2006
-# Update Count    : 119
+# Last Modified On: Thu Jan 26 10:38:54 2006
+# Update Count    : 120
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -94,9 +94,7 @@ sub _relaties {
 	    $dbk =~ s/[^[:alnum]]/_/g;
 	    $out .= "\n\n" if $out;
 	    $out .= "relatie --dagboek=".lc($dbk);
-	    $out .= " --btw=verlegd" if $btw == BTW_VERLEGD;
-	    $out .= " --btw=intra"   if $btw == BTW_INTRA;
-	    $out .= " --btw=extra"   if $btw == BTW_EXTRA;
+	    $out .= " --btw=".lc(BTWTYPES->[$btw]) unless $btw == BTWTYPE_NORMAAL;
 	}
 	$out .= " \\\n        ";
 	$out .= sprintf("%-10s %s %d", _quote($code), _quote($desc), $acct);

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.23 2006/01/13 14:32:53 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.24 2006/01/26 09:44:47 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
@@ -329,17 +329,17 @@ sub collect {
 	    $amt = $a->[0] - ($btw = $a->[1]); # ex BTW
 	}
 
-	if ( $btw_status == BTW_NORMAAL ) {
+	if ( $btw_status == BTWTYPE_NORMAAL ) {
 	    if ( $debcrd ) {
-		if ( $btg_id == BTWTYPE_HOOG ) {
+		if ( $btg_id == BTWTARIEF_HOOG ) {
 		    $deb_h += $amt;
 		    $deb_btw_h += $btw;
 		}
-		elsif ( $btg_id == BTWTYPE_LAAG ) {
+		elsif ( $btg_id == BTWTARIEF_LAAG ) {
 		    $deb_l += $amt;
 		    $deb_btw_l += $btw;
 		}
-		elsif ( $btg_id == BTWTYPE_GEEN ) {
+		elsif ( $btg_id == BTWTARIEF_GEEN ) {
 		    $deb_0 += $amt
 		      if $btw_acc;	# ???
 		}
@@ -352,12 +352,12 @@ sub collect {
 		$crd_btw -= $btw;
 	    }
 	}
-	elsif ( $btw_status == BTW_VERLEGD ) {
+	elsif ( $btw_status == BTWTYPE_VERLEGD ) {
 	    if ( $debcrd ) {
 		$verlegd += $amt;
 	    }
 	}
-	elsif ( $btw_status == BTW_INTRA ) {
+	elsif ( $btw_status == BTWTYPE_INTRA ) {
 	    if ( $debcrd ) {
 		$intra_deb += $amt;
 		$intra_deb_btw += $btw;
@@ -367,7 +367,7 @@ sub collect {
 		$intra_crd_btw -= $btw;
 	    }
 	}
-	elsif ( $btw_status == BTW_EXTRA ) {
+	elsif ( $btw_status == BTWTYPE_EXTRA ) {
 	    if ( $debcrd ) {
 		$extra_deb += $amt;
 	    }
