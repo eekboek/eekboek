@@ -1,0 +1,54 @@
+                                        Crediteurenadministratie
+Periode: 2004-01-01 t/m 2004-12-31
+EekBoek Demo Administratie 2004                                                  EekBoek 0.30, 2006-01-13
+
+Crediteur   Datum       Omschrijving                   Bedrag  Openstaand     Betaald  Boekstuk
+---------------------------------------------------------------------------------------------------------
+KPN
+            2004-01-15  ADSL + Telefoon                104,65        0,00              Inkoop:2
+            2004-01-31    *ADSL + Telefoon                                     104,65  Postbank:3
+            2004-03-18  ADSL + Telefoon                101,52        0,00              Inkoop:5
+            2004-03-31    *ADSL + Telefoon                                     101,52  Postbank:8
+            2004-05-20  ADSL + Telefoon                102,22        0,00              Inkoop:8
+            2004-05-31    *ADSL + Telefoon                                     102,22  Postbank:12
+            2004-07-15  ADSL + Telefoon                104,66        0,00              Inkoop:11
+            2004-07-31    *ADSL + Telefoon                                     104,66  Postbank:16
+            2004-09-16  ADSL + Telefoon                108,72        0,00              Inkoop:14
+            2004-09-30    *ADSL + Telefoon                                     108,72  Postbank:20
+            2004-11-17  ADSL + Telefoon                109,67        0,00              Inkoop:17
+            2004-11-30    *ADSL + Telefoon                                     109,67  Postbank:23
+                                                   ----------  ----------
+KPN                     Totaal                         631,44        0,00
+
+XS4ALL
+            2004-01-05  ADSL                            22,80        0,00              Inkoop:1
+            2004-01-19    *ADSL                                                 22,80  Postbank:2
+            2004-02-09  ADSL                            22,80        0,00              Inkoop:3
+            2004-02-23    *ADSL                                                 22,80  Postbank:5
+            2004-03-08  ADSL                            22,80        0,00              Inkoop:4
+            2004-03-31    *ADSL                                                 22,80  Postbank:8
+            2004-04-05  ADSL                            22,80        0,00              Inkoop:6
+            2004-04-06    *ADSL                                                 22,80  Postbank:9
+            2004-05-10  ADSL                            22,80        0,00              Inkoop:7
+            2004-05-31    *ADSL                                                 22,80  Postbank:12
+            2004-06-07  ADSL                            22,80        0,00              Inkoop:9
+            2004-06-21    *ADSL                                                 22,80  Postbank:14
+            2004-07-05  ADSL                            22,80        0,00              Inkoop:10
+            2004-07-31    *ADSL                                                 22,80  Postbank:16
+            2004-08-09  ADSL                            22,80        0,00              Inkoop:12
+            2004-08-10    *ADSL                                                 22,80  Postbank:17
+            2004-09-06  ADSL                            22,80        0,00              Inkoop:13
+            2004-09-30    *ADSL                                                 22,80  Postbank:20
+            2004-10-11  ADSL                            22,80        0,00              Inkoop:15
+            2004-10-12    *ADSL                                                 22,80  Postbank:21
+            2004-11-07  ADSL                            22,80        0,00              Inkoop:16
+            2004-11-30    *ADSL                                                 22,80  Postbank:23
+            2004-12-06  ADSL                            22,80        0,00              Inkoop:18
+            2004-12-07    *ADSL                                                 22,80  Postbank:24
+            2004-12-07  ADSL                            22,80        0,00              Inkoop:20
+            2004-12-09    *ADSL                                                 10,00  Postbank:25
+            2004-12-10    *ADSL                                                 12,80  Postbank:26
+                                                   ----------  ----------
+XS4ALL                  Totaal                         296,40        0,00
+---------------------------------------------------------------------------------------------------------
+Totaal                                                 927,84        0,00
