@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.13 2005/10/19 16:41:37 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.14 2006/01/26 11:43:25 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 19 12:13:19 2005
-# Update Count    : 276
+# Last Modified On: Wed Jan 25 20:26:23 2006
+# Update Count    : 311
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -25,6 +25,7 @@ use Getopt::Long 2.13;
 
 # Command line options.
 my $verbose = 0;		# verbose processing
+my $ac5 = 0;			# DaviDOS compatible
 
 # Development options (not shown with -help).
 my $debug = 0;			# debugging
@@ -48,6 +49,7 @@ my $tsdate = strftime("%Y-%m-%d %k:%M:%S +0100", @tm[0..5], -1, -1, -1);
 
 ################ The Process ################
 
+use EB::Config qw(EekBoek);
 use EB::Globals;
 use EB::Finance;
 
@@ -60,6 +62,7 @@ exit 0;
 ################ Subroutines ################
 
 use Data::Dumper;
+use Encode;
 
 my $db;
 
@@ -89,6 +92,10 @@ sub read_exact_data {
 	    next unless $next;
 	    $next->(1);
 	}
+	elsif ( /^ \201{40}/ ) {
+	    next unless $next;
+	    $next->(1);
+	}
     }
     close($db);
     read_grootboek();
@@ -105,12 +112,26 @@ sub sql_constants {
 	#next unless $key->() =~ /^\d+$/ || $key->() =~ /^\[.*\]$/;
 	$out .= "$key\t" . $key->() . "\n";
     }
+    $out .= "KO_OK\t0\n";
     $out .= "\\.\n";
     open(my $f, ">constants.sql") or die("Cannot create constants.sql: $!\n");
     print $f $out;
     close($f);
 }
 
+sub _trim {
+    my ($t) = @_;
+    for ( $t ) {
+	s/\s+/ /g;
+	s/^\s+//;
+	s/\s+$//;
+	return $_;
+    }
+}
+
+sub _tsv {
+    join("\t", map { _trim($_) } @_) . "\n";
+}
 
 sub read_dagboeken {
     my ($off) = @_;
@@ -118,13 +139,24 @@ sub read_dagboeken {
     while ( <$db> ) {
 	last unless $_ =~ /\S/;
 	substr($_, 0, $off) = "" if $off;
-	# 1     Kas                                      Kas                 1000
-	#my @a = unpack("a6a41a20a6", $_);
-	my @a = /^(\d+)\s+(\S+)\s+(\S+)\s+(\d+|n\.v\.t\.)\s*$/i;
-	for ( @a[1,2] ) {
-	    s/\s+$//;
-	}
-	$dagboeken[0+$a[0]] = [ @a[1,2], lc($a[3]) eq "n.v.t." ? "\\N" : 0+$a[3] ];
+
+	my @a = split(' ', $_);
+	my ($id, $desc, $type, $aux);
+	$id = shift(@a);
+	$aux = pop(@a);
+	$type = pop(@a);
+	$desc = "@a";
+	$desc =~ s/\s+/_/g;
+
+	$dagboeken[0+$id] = [ $desc, $type, lc($aux) eq "n.v.t." ? "\\N" : 0+$aux ];
+
+#	# 1     Kas                                      Kas                 1000
+#	#my @a = unpack("a6a41a20a6", $_);
+#	my @a = /^(\d+)\s+(\S+)\s+(\S+)\s+(\d+|n\.v\.t\.)\s*$/i;
+#	for ( @a[1,2] ) {
+#	    s/\s+$//;
+#	}
+#	$dagboeken[0+$a[0]] = [ @a[1,2], lc($a[3]) eq "n.v.t." ? "\\N" : 0+$a[3] ];
     }
 
     open(my $f, ">dbk.sql") or die("Cannot create dbk.sql: $!\n");
@@ -133,6 +165,7 @@ sub read_dagboeken {
 	      "COPY Dagboeken FROM stdin;\n");
     my %dbmap = ("Kas"	      => DBKTYPE_KAS,
 		 "Bank/Giro"  => DBKTYPE_BANK,
+		 "Bank"       => DBKTYPE_BANK,
 		 "Giro"       => DBKTYPE_BANK,
 		 "Inkoop"     => DBKTYPE_INKOOP,
 		 "Verkoop"    => DBKTYPE_VERKOOP,
@@ -141,7 +174,7 @@ sub read_dagboeken {
     for ( my $i = 0; $i < @dagboeken; $i++ ) {
 	next unless exists $dagboeken[$i];
 	my $db = $dagboeken[$i];
-	print $f (join("\t", $i, $db->[0], $dbmap{$db->[1]}, $db->[2]), "\n");
+	print $f (_tsv($i, $db->[0], $dbmap{$db->[1]}, $db->[2]));
     }
     print $f ("\\.\n\n");
 
@@ -317,9 +350,9 @@ sub read_btw {
 	}
     }
     foreach ( @btwtable ) {
-	push(@$_, $_->[1] == 0 ? BTWTYPE_GEEN :
-	     $_->[1] == $hi ? BTWTYPE_HOOG :
-	     $_->[1] == $lo ? BTWTYPE_LAAG : warn("Onbekende BTW group: $_->[1]\n"));
+	push(@$_, $_->[1] == 0 ? BTWTARIEF_GEEN :
+	     $_->[1] == $hi ? BTWTARIEF_HOOG :
+	     $_->[1] == $lo ? BTWTARIEF_LAAG : warn("Onbekende BTW group: $_->[1]\n"));
     }
 
     open(my $f, ">btw.sql") or die("Cannot create btw.sql: $!\n");
@@ -330,7 +363,7 @@ sub read_btw {
     for ( my $i = 0; $i < @btwtable; $i++ ) {
 	next unless exists $btwtable[$i];
 	my $b = $btwtable[$i];
-	print $f (join("\t", $i, @$b), "\n");
+	print $f (_tsv($i, @$b));
     }
 
     print $f ("\\.\n\n");
@@ -350,11 +383,12 @@ sub write_rekeningschema {
 	my $v = $hoofdverdichtingen[$i];
 	# Skip unused verdichtingen.
 	next unless defined($v->[1]) && defined($v->[2]);
-	print $f (join("\t", $i,
+	$v->[0] = decode("cp-850", $v->[0]) if $ac5;
+	print $f (_tsv($i,
 		       $v->[0],
 		       $v->[1] eq 'B' ? 't' : 'f',
 		       $v->[2] eq 'N' ? 't' : 'f',
-		       "\\N"), "\n");
+		       "\\N"));
     }
     print $f ("\\.\n\n");
 
@@ -365,11 +399,12 @@ sub write_rekeningschema {
 	my $v = $verdichtingen[$i];
 	# Skip unused verdichtingen.
 	next unless defined($v->[1]) && defined($v->[2]);
-	print $f (join("\t", $i,
+	$v->[0] = decode("cp-850", $v->[0]) if $ac5;
+	print $f (_tsv($i,
 		       $v->[0],
 		       $v->[1] eq 'B' ? 't' : $v->[1] eq 'W' ? 'f' : '?',
 		       $v->[2] eq 'N' ? 't' : $v->[2] eq 'J' ? 'f' : '?',
-		       $v->[3]), "\n");
+		       $v->[3]));
     }
     print $f ("\\.\n\n");
     close($f);
@@ -383,7 +418,8 @@ sub write_rekeningschema {
     for my $i ( sort { $a <=> $b } keys(%grootboek) ) {
 	my $g = $grootboek{$i};
 	# desc B/W D/C N/.. struct btw N/J(omzet)?
-	print $f (join("\t", $i,
+	$g->[0] = decode("cp-850", $g->[0]) if $ac5;
+	print $f (_tsv($i,
 		       $g->[0],
 		       $g->[4],
 		       $g->[1] eq 'B' ? 't' : 'f',
@@ -391,7 +427,7 @@ sub write_rekeningschema {
 		       $g->[6] eq 'N' ? 't' : 'f',
 		       $g->[5],
 		       0,
-		       0), "\n");
+		       0));
     }
     print $f ("\\.\n\n");
     close($f);
@@ -432,6 +468,7 @@ sub app_options {
     if ( @ARGV > 0 ) {
 	GetOptions('ident'	=> \$ident,
 		   'verbose'	=> \$verbose,
+		   'ac5'	=> \$ac5,
 		   'trace'	=> \$trace,
 		   'help|?'	=> \$help,
 		   'man'	=> \$man,
