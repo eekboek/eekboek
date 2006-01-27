@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.11 2006/01/24 13:37:41 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.12 2006/01/27 15:43:08 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 24 14:29:51 2006
-# Update Count    : 253
+# Last Modified On: Fri Jan 27 16:32:35 2006
+# Update Count    : 260
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -32,6 +32,12 @@ our $cfg;
 
 # This will set up the config at 'use' time.
 use EB::Config $my_package;
+
+if ( @ARGV && ( $ARGV[0] eq '-P' || $ARGV[0] =~ /^--?printcfg$/ ) ) {
+    shift;
+    printconf();
+    exit;
+}
 
 ################ Command line parameters ################
 
@@ -118,6 +124,35 @@ my $shell = EB::Shell->new
 $| = 1;
 
 $shell->run;
+
+################ Subroutines ################
+
+sub printconf {
+    return unless @ARGV > 0;
+    my $sec = "general";
+    if ( !GetOptions(
+		     'section=s' => \$sec,
+		     '<>' => sub {
+			 my $conf = shift;
+			 my $sec = $sec;
+			 ($sec, $conf) = ($1, $2) if $conf =~ /^(.+?):(.+)/;
+			 my $val = $cfg->val($sec, $conf, undef);
+			 print STDOUT ($val) if defined $val;
+			 print STDOUT ("\n");
+		     }
+		    ) )
+    {
+	app_ident();
+	print STDERR __x(<<EndOfUsage, prog => $0);
+Gebruik: {prog} { --printcfg | -P } { [ --section=secname ] var ... } ...
+
+    Print de waarde van configuratie-variabelen.
+    Met --section=secname worden de eropvolgende variabelen
+    gezocht in sectie [secname].
+    Ook: secname:variabele.
+EndOfUsage
+    }
+}
 
 ################ Subroutines ################
 
