@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.4 2006/01/26 09:39:43 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.5 2006/01/27 15:15:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 10:38:54 2006
-# Update Count    : 120
+# Last Modified On: Fri Jan 27 16:15:51 2006
+# Update Count    : 121
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -53,7 +53,7 @@ sub _write {
       or die("?".__x("Fout bij schrijven bestand {file}: {err}",
 		     file => $file, err => $!)."\n");
     close($fh)
-      or die("?".__x("Fout bij aflsuiten bestand {file}: {err}",
+      or die("?".__x("Fout bij afsluiten bestand {file}: {err}",
 		     file => $file, err => $!)."\n");
 }
 
