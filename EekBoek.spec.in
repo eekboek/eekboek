@@ -58,6 +58,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jan 30 2006 Johan Vromans <jvromans@squirrel.nl> 0.37
+- Add build dep perl(Config::IniFiles).
 * Fri Dec 23 2005 Wytze van der Raay <wytze@nlnet.nl> 0.23
 - Fixes for x86_64 building problems.
 * Wed Dec 12 2005 Johan Vromans <jvromans@squirrel.nl> 0.22
