@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.9 2005/12/31 10:32:05 jv Exp $
+# $Id: Base.pm,v 1.10 2006/01/31 17:38:07 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -25,8 +25,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$XXVERSION    = 0.05;   # $Date: 2005/12/31 10:32:05 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
+$XXVERSION    = 0.05;   # $Date: 2006/01/31 17:38:07 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -287,8 +287,8 @@ sub init_completions {
         sort 
         "help",
         grep { ++$uniq{$_} == 1 }
-        map { s/^do_//; $_ }
-        grep /^do_/,
+        map { s/^(do|pp)_//; $_ }
+        grep /^(do|pp)_/,
         map({ %{"$_\::"} } @{"$class\::ISA"}),
         keys  %{"$class\::"});
 }
@@ -386,7 +386,19 @@ sub run {
             if ($cmd =~ /$RE_SHEBANG/) {
                 $cmd = "shell";
             }
-	    my $meth = "do_$cmd";
+	    my $meth = "pp_$cmd";
+	    if ( $self->can($meth) ) {
+		eval {
+		    ($cmd, @args) = $self->$meth($cmd, @args);
+		};
+		if ($@) {
+		    my $err = $@;
+		    chomp $err;
+		    warn "?$err\n";
+		    next;
+		}
+	    }
+	    $meth = "do_$cmd";
 	    if ( $self->can($meth) ) {
 		eval {
 		    $output = $self->$meth(@args);
@@ -1801,7 +1813,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.9 $.
+This documentation describes C<Shell::Base>, $Revision: 1.10 $.
 
 =head1 COPYRIGHT
 
