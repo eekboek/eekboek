@@ -24,38 +24,38 @@
 # Een credit-boeking kan worden gespecificeerd door een negatief
 # bedrag.
 
-inkoop 2004-01-05 XS4ALL "ADSL" 22,80
-inkoop 2004-01-15 KPN "ADSL + Telefoon" 104,65
+inkoop 2005-01-05 XS4ALL "ADSL" 22,80
+inkoop 2005-01-15 KPN "ADSL + Telefoon" 104,65
 
-inkoop 2004-02-09 XS4ALL "ADSL" 22,80
+inkoop 2005-02-09 XS4ALL "ADSL" 22,80
 
-inkoop 2004-03-08 XS4ALL "ADSL" 22,80
-inkoop 2004-03-18 KPN "ADSL + Telefoon" 101,52
+inkoop 2005-03-08 XS4ALL "ADSL" 22,80
+inkoop 2005-03-18 KPN "ADSL + Telefoon" 101,52
 
-inkoop 2004-04-05 XS4ALL "ADSL" 22,80 4905
+inkoop 2005-04-05 XS4ALL "ADSL" 22,80 4905
 
-inkoop 2004-05-10 XS4ALL "ADSL" 22,80
-inkoop 2004-05-20 KPN "ADSL + Telefoon" 102,22 4900
+inkoop 2005-05-10 XS4ALL "ADSL" 22,80
+inkoop 2005-05-20 KPN "ADSL + Telefoon" 102,22 4900
 
-inkoop 2004-06-07 XS4ALL "ADSL" 22,80
+inkoop 2005-06-07 XS4ALL "ADSL" 22,80
 
-inkoop 2004-07-05 XS4ALL "ADSL" 22,80
-inkoop 2004-07-15 KPN "ADSL + Telefoon" 104,66
+inkoop 2005-07-05 XS4ALL "ADSL" 22,80
+inkoop 2005-07-15 KPN "ADSL + Telefoon" 104,66
 
-inkoop 2004-08-09 XS4ALL "ADSL" 22,80
+inkoop 2005-08-09 XS4ALL "ADSL" 22,80
 
-inkoop 2004-09-06 XS4ALL "ADSL" 22,80
-inkoop 2004-09-16 KPN "ADSL + Telefoon" 108,72
+inkoop 2005-09-06 XS4ALL "ADSL" 22,80
+inkoop 2005-09-16 KPN "ADSL + Telefoon" 108,72
 
-inkoop 2004-10-11 XS4ALL "ADSL" 22,80
+inkoop 2005-10-11 XS4ALL "ADSL" 22,80
 
-inkoop 2004-11-07 XS4ALL "ADSL" 22,80
-inkoop 2004-11-17 KPN "ADSL + Telefoon" 109,67
+inkoop 2005-11-07 XS4ALL "ADSL" 22,80
+inkoop 2005-11-17 KPN "ADSL + Telefoon" 109,67
 
-inkoop 2004-12-06 XS4ALL "ADSL" 22,80
+inkoop 2005-12-06 XS4ALL "ADSL" 22,80
 
 # Expliciet boekstuknummer:
-inkoop:20 2004-12-07 XS4ALL "ADSL" 22,80
+inkoop:20 2005-12-07 XS4ALL "ADSL" 22,80
 
 # Verkopen (Dagboek: Verkoop)
 #
@@ -74,17 +74,17 @@ inkoop:20 2004-12-07 XS4ALL "ADSL" 22,80
 # Een debet-boeking kan worden gespecificeerd door een negatief
 # bedrag.
 
-verkoop 2004-02-18 ACME "Perl Cursus 1e bet." 3570 8300
+verkoop 2005-02-18 ACME "Perl Cursus 1e bet." 3570 8300
 
-verkoop 2004-03-18 ACME "Perl Cursus 2e bet." 3570 8300
+verkoop 2005-03-18 ACME "Perl Cursus 2e bet." 3570 8300
 
-verkoop 2004-04-18 ACME "Perl Cursus rest"     595 8300
+verkoop 2005-04-18 ACME "Perl Cursus rest"     595 8300
 
-verkoop 2004-05-14 ACME "Consultancy"          714 8000
+verkoop 2005-05-14 ACME "Consultancy"          714 8000
 
-verkoop 2004-07-16 ACME "Consultancy"          714 8000
+verkoop 2005-07-16 ACME "Consultancy"          714 8000
 
-verkoop 2004-08-19 ORA  "Produktie boek"      1000 8200
+verkoop 2005-08-19 ORA  "Produktie boek"      1000 8200
 
 # Bank (Dagboek: Postbank)
 #
@@ -112,55 +112,55 @@ verkoop 2004-08-19 ORA  "Produktie boek"      1000 8200
 # gewijzigd door aan de codering een "I" (Inkoop) of "V" (verkoop) toe
 # te voegen.
 
-postbank 2004-01-06 "Girotel" std "Girotel" -2,70 4980
-postbank 2004-01-19 "ADSL" crd XS4ALL -22,80
-postbank 2004-01-31 "Tel." crd KPN -104,65
+postbank 2005-01-06 "Girotel" std "Girotel" -2,70 4980
+postbank 2005-01-19 "ADSL" crd XS4ALL -22,80
+postbank 2005-01-31 "Tel." crd KPN -104,65
 
-postbank 2004-02-10 "Girotel" std "Girotel" -2,70 4980
-postbank 2004-02-23 "ADSL" crd XS4ALL -22,80
+postbank 2005-02-10 "Girotel" std "Girotel" -2,70 4980
+postbank 2005-02-23 "ADSL" crd XS4ALL -22,80
 
-postbank 2004-03-09 "Girotel" std "Girotel" -2,70 4980
-postbank 2004-03-18 "ACME" deb ACME 3570
-postbank 2004-03-31 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -101,52
+postbank 2005-03-09 "Girotel" std "Girotel" -2,70 4980
+postbank 2005-03-18 "ACME" deb ACME 3570
+postbank 2005-03-31 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -101,52
 
-postbank 2004-04-06 "Girotel, ADSL" std "Girotel" -2,70 4980 crd XS4ALL -22,80
-postbank 2004-04-12 "ACME" deb ACME 3570
+postbank 2005-04-06 "Girotel, ADSL" std "Girotel" -2,70 4980 crd XS4ALL -22,80
+postbank 2005-04-12 "ACME" deb ACME 3570
 
-postbank 2004-05-11 "Girotel" std "Girotel" -2,70 4980
-postbank 2004-05-31 "ADSL, ACME, Tel." crd XS4ALL -22,80 \
+postbank 2005-05-11 "Girotel" std "Girotel" -2,70 4980
+postbank 2005-05-31 "ADSL, ACME, Tel." crd XS4ALL -22,80 \
 	 deb ACME 595 crd KPN -102,22
 
-postbank 2004-06-08 "Girotel, ACME" std "Girotel" -2,70 4980 deb ACME 714
-postbank 2004-06-21 "ADSL" crd XS4ALL -22,80
+postbank 2005-06-08 "Girotel, ACME" std "Girotel" -2,70 4980 deb ACME 714
+postbank 2005-06-21 "ADSL" crd XS4ALL -22,80
 
-postbank 2004-07-06 "Girotel" std "Girotel" -2,70 4980
-postbank 2004-07-31 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -104,66
+postbank 2005-07-06 "Girotel" std "Girotel" -2,70 4980
+postbank 2005-07-31 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -104,66
 
-postbank 2004-08-10 "Girotel, ACME, ADSL" std "Girotel" -2,70 4980 \
+postbank 2005-08-10 "Girotel, ACME, ADSL" std "Girotel" -2,70 4980 \
 	 deb ACME 714 crd XS4ALL -22,80
 
-postbank 2004-08-19 "O'Reilly" deb ORA 1000
+postbank 2005-08-19 "O'Reilly" deb ORA 1000
 
-postbank 2004-09-17 "Girotel" std "Girotel" -2,70 4980
-postbank 2004-09-30 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -108,72
+postbank 2005-09-17 "Girotel" std "Girotel" -2,70 4980
+postbank 2005-09-30 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -108,72
 
-postbank 2004-10-12 "Girotel, ADSL" std "Girotel" -2,70 4980 crd XS4ALL -22,80
+postbank 2005-10-12 "Girotel, ADSL" std "Girotel" -2,70 4980 crd XS4ALL -22,80
 
-postbank 2004-11-08 "Girotel" std "Girotel" -2,70 4980
-postbank 2004-11-30 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -109,67
+postbank 2005-11-08 "Girotel" std "Girotel" -2,70 4980
+postbank 2005-11-30 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -109,67
 
 # Er kan een expliciet volgnummer worden opgegeven.
 # Ook kan het saldo na boeking worden geverifiëerd.
-postbank:24 --saldo 10357,48 2004-12-07 "Girotel, ADSL" \
+postbank:24 --saldo 10357,48 2005-12-07 "Girotel, ADSL" \
 	 std "Girotel" -2,70 4980 crd XS4ALL -22,80
 
 # Partiële betalingen door het boekstuk op te geven i.p.v. de
 # debiteur/crediteur.
 openstaand
-postbank:25 2004-12-09 "Eerste deel ADSL" --saldo=10347,48 \
+postbank:25 2005-12-09 "Eerste deel ADSL" --saldo=10347,48 \
 	 crd Inkoop:20 -10
 openstaand
-postbank:26 2004-12-10 "Tweede deel ADSL" --saldo=10334,68 \
+postbank:26 2005-12-10 "Tweede deel ADSL" --saldo=10334,68 \
 	 crd XS4ALL -12,80
 openstaand
 
@@ -174,15 +174,15 @@ openstaand
 # Eveneens van toepassing is de opmerking bij Bankboekingen over 'std'
 # boekingen met BTW.
 
-memoriaal 2004-12-31 "Afschrijving inventaris" \
+memoriaal 2005-12-31 "Afschrijving inventaris" \
 	  std "Afschrijving" -411,26 4330 \
 	  std "Afschrijving" 411,26 231 
-memoriaal 2004-12-31 "Afschrijving computers" \
+memoriaal 2005-12-31 "Afschrijving computers" \
 	  std "Afschrijving" -396,82 4340 \
 	  std "Afschrijving" 396,82 241 
 
 # Afboeking BTW
-#memoriaal 2004-12-31 "Afboeking BTW" \
+#memoriaal 2005-12-31 "Afboeking BTW" \
 #	  std "Afboeking" -144,50 1520 \
 #	  std "Afboeking" -1463,00 1500 \
 #	  std "Afboeking" 1318,50 1560
