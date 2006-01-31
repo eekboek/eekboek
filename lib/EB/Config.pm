@@ -1,10 +1,10 @@
 # Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.4 2006/01/23 10:30:29 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.5 2006/01/31 17:34:51 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 23 11:29:10 2006
-# Update Count    : 60
+# Last Modified On: Tue Jan 31 18:34:10 2006
+# Update Count    : 63
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -84,6 +84,14 @@ sub init_config {
     $cfg->_plug(qw(locale       lang         EB_LANG));
 
     $cfg->_plug(qw(database     name         EB_DB_NAME));
+
+    if ( my $db = $cfg->val(qw(database name), undef) ) {
+	$db =~ s/^eekboek_//;
+	$cfg->newval(qw(database     name), $db);
+	$cfg->newval(qw(database fullname), "eekboek_".$db);
+	$ENV{EB_DB_NAME} = $db;
+    }
+
     $cfg->_plug(qw(database     host         EB_DB_HOST));
     $cfg->_plug(qw(database     port         EB_DB_PORT));
     $cfg->_plug(qw(database     user         EB_DB_USER));
