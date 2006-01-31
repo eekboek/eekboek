@@ -5,7 +5,7 @@ EekBoek Demo Administratie                                                      
 Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstuk/regel                  Relatie
 -------------------------------------------------------------------------------------------------------------------
 2005-12-07  Postbank:24                                                  Girotel, ADSL
-2005-12-07    Crediteuren                    1600      22,80               *ADSL                         XS4ALL
+2005-12-07    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-12-07    Bankkosten                     4980       2,70               Girotel
 2005-12-07    Postbank                       1120                 25,50    Girotel, ADSL
 -------------------------------------------------------------------------------------------------------------------
