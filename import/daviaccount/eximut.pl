@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.12 2006/01/26 11:45:26 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.13 2006/01/31 18:53:02 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 24 16:24:25 2006
-# Update Count    : 239
+# Last Modified On: Tue Jan 31 18:11:49 2006
+# Update Count    : 251
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -127,13 +127,17 @@ sub flush {
     my $cmd = $dagboeken[$dbk];
     $cmd =~ s/\s+/_/g if $cmd;		# you won't believe it
 
+    $r0->{crdnr} = "R_".$r0->{crdnr} if $r0->{crdnr} =~ /^\d+$/;
+    $r0->{debnr} = "R_".$r0->{debnr} if $r0->{debnr} =~ /^\d+$/;
+
     if ( $dbktype eq 'I' ) {	# Inkoop
 	$cmd ||= "Onbekend_InkoopDagboek";
 	foreach my $r ( @$mut ) {
 	    check_rel($r0->{crdnr}, $r->{reknr}, "D");
 	}
 	print($cmd, ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
-	      ' "' . uc($r0->{crdnr}) . '"');
+	      ' "' . ($r0->{oms25}||$mut->[0]->{oms25}) . '"',
+	      ' "' . uc($r0->{crdnr}) . '" --totaal=' . (0+$r0->{bedrag}));
 	foreach my $r ( @$mut ) {
 	    print join(" ", "", '"' . $r->{oms25} . '"',
 		       # ($ac5 ? 0-$r->{bedrag} : $r->{bedrag}). ?????
@@ -149,7 +153,8 @@ sub flush {
 	    check_rel($r0->{debnr}, $r->{reknr}, "C");
 	}
 	print($cmd, ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
-	      ' "' . uc($r0->{debnr}) . '"');
+	      ' "' . ($r0->{oms25}||$mut->[0]->{oms25}) . '"',
+	      ' "' . uc($r0->{debnr}) . '" --totaal=' . ($ac5 ? 0+$r0->{bedrag} : 0-$r0->{bedrag}));
 	foreach my $r ( @$mut ) {
 	    print join(" ", "", '"' . $r->{oms25} . '"',
 		       ($ac5 ? $r->{bedrag} : 0-$r->{bedrag}).
@@ -174,6 +179,8 @@ sub flush {
 	$cmd ||= "Onbekend_BankDagboek";
 
 	foreach my $r ( @$mut ) {
+	    $r->{crdnr} = "R_".$r->{crdnr} if $r->{crdnr} =~ /^\d+$/;
+	    $r->{debnr} = "R_".$r->{debnr} if $r->{debnr} =~ /^\d+$/;
 	    if ( $r->{crdnr} ) {
 		check_rel($r->{crdnr}, 4990, "D");
 	    }
@@ -224,6 +231,8 @@ sub flush {
 	$cmd ||= "Onbekend_BankDagboek";
 
 	foreach my $r ( @$mut ) {
+	    $r->{crdnr} = "R_".$r->{crdnr} if $r->{crdnr} =~ /^\d+$/;
+	    $r->{debnr} = "R_".$r->{debnr} if $r->{debnr} =~ /^\d+$/;
 	    if ( $r->{crdnr} ) {
 		check_rel($r->{crdnr}, 4990, "D");
 	    }
@@ -274,6 +283,8 @@ sub flush {
 	$cmd ||= "Onbekend_Memoriaal";
 
 	foreach my $r ( @$mut ) {
+	    $r->{crdnr} = "R_".$r->{crdnr} if $r->{crdnr} =~ /^\d+$/;
+	    $r->{debnr} = "R_".$r->{debnr} if $r->{debnr} =~ /^\d+$/;
 	    if ( $r->{crdnr} ) {
 		check_rel($r->{crdnr}, 4990, "D");
 	    }
