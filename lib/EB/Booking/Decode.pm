@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.9 2006/01/25 21:20:30 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.10 2006/01/31 17:14:12 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 25 22:04:40 2006
-# Update Count    : 107
+# Last Modified On: Tue Jan 31 18:09:00 2006
+# Update Count    : 109
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -80,8 +80,9 @@ sub decode {
 	    $cmd .= ":$bsk_bky" if $ex_bky;
 	    $cmd .= ":$bsk_nr" if $ex_bsknr;
 	    $cmd .= " $bsk_date ";
-	    $cmd .= "\"$rel_code\""
-	      if $dbktype == DBKTYPE_VERKOOP || $dbktype == DBKTYPE_INKOOP;
+	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
+		$cmd .= "\"$bsk_desc\" \"$rel_code\"";
+	    }
 	    if ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS || $dbktype == DBKTYPE_MEMORIAAL) {
 		$cmd .= "\"$bsk_desc\"";
 	    }
