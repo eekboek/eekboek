@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.24 2006/01/26 11:39:23 jv Exp $
+-- $Id: eekboek.sql,v 1.25 2006/01/31 17:38:54 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -139,6 +139,7 @@ CREATE TABLE Boekstukregels (
     bsr_amount   int,
     bsr_btw_id   smallint references BTWTabel,
     bsr_btw_acc  int references Accounts,
+    bsr_btw_class  int, -- see BTWKLASSE definities
 --
     bsr_type      smallint,
                   -- I: Standaard, [- Artikel (levering van) -], ...,
