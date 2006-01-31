@@ -26,7 +26,7 @@ sub add {
 
     if ( defined($bstate) ) {
 	$bstate = lc($bstate);
-	if ( $bstate =~ /^\d+$/ && $bstate >= 0 && $bstate < @{BTWTYPES} ) {
+	if ( $bstate =~ /^\d+$/ && $bstate >= 0 && $bstate < @{&BTWTYPES} ) {
 	    # Ok.
 	}
 	elsif ( $bstate eq lc(BTWTYPES->[BTWTYPE_NORMAAL]) ) { $bstate = BTWTYPE_NORMAAL }
