@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.10 2006/01/26 11:46:17 jv Exp $ ';
+my $RCS_Id = '$Id: exirel.pl,v 1.11 2006/01/31 18:53:16 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 24 16:24:36 2006
-# Update Count    : 99
+# Last Modified On: Mon Jan 30 14:39:57 2006
+# Update Count    : 101
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -120,6 +120,7 @@ while ( <> ) {
 	    warn("Geen relatiecode voor debiteur $a{naam} -- overgeslagen\n");
 	    next;
 	}
+	$a{debzk} = "R_".$a{debzk} if $a{debzk} =~ /^\d+$/;
 	print("relatie ",
 	      ($a{btw_nummer} ne "" && $a{btw_nummer} eq "0") ? "--btw=extra " : "",
 	      '"', $a{debzk}, '"', " ",
@@ -142,6 +143,7 @@ while ( <> ) {
 	    warn("Geen relatiecode voor crediteur $a{naam} -- overgeslagen\n");
 	    next;
 	}
+	$a{crdzk} = "R_".$a{crdzk} if $a{crdzk} =~ /^\d+$/;
 	print("relatie ",
 	      ($a{btw_nummer} ne "" && $a{btw_nummer} eq "0") ? "--btw=extra " : "",
 	      '"', $a{crdzk}, '"', " ",
