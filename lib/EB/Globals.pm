@@ -51,13 +51,17 @@ BEGIN {
       qw(NORMAAL VERLEGD INTRA EXTRA);
     _newconst("BTWTYPES", "[qw(".N__("Normaal Verlegd Intra Extra").")]");
 
+    _newconst("BTWKLASSE_BTW_BIT",   0x200);
     _newconst("BTWKLASSE_IV_BIT",    0x100);
     _newconst("BTWKLASSE_TYPE_BITS", 0x0ff);
 
 }
 
-sub BTWKLASSE($$) {
-    ($_[0] & BTWKLASSE_TYPE_BITS) | ($_[1] ? BTWKLASSE_IV_BIT : 0);
+sub BTWKLASSE($$;$) {
+    unshift(@_, 1) if @_ == 2;
+    ($_[0] ? BTWKLASSE_BTW_BIT : 0)
+      | ($_[1] & BTWKLASSE_TYPE_BITS)
+	| ($_[2] ? BTWKLASSE_IV_BIT : 0);
 }
 
 BEGIN { push(@EXPORT, qw(BTWKLASSE)) }
