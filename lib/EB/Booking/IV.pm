@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.33 2006/01/26 11:38:33 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.34 2006/02/02 11:31:51 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 23 11:21:57 2006
-# Update Count    : 194
+# Last Modified On: Tue Jan 31 21:42:27 2006
+# Update Count    : 225
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -40,6 +40,15 @@ sub perform {
 
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
+
+    unless ( $dagboek_type == DBKTYPE_INKOOP || $dagboek_type == DBKTYPE_VERKOOP) {
+	warn("?".__x("Ongeldige operatie (IV) voor dagboek type {type}",
+		     type => $dagboek_type)."\n");
+	$dbh->rollback;
+	return;
+    }
+
+    my $iv = $dagboek_type == DBKTYPE_INKOOP;
     my $totaal = $opts->{totaal};
 
     my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
@@ -47,7 +56,7 @@ sub perform {
     if ( defined($totaal) ) {
 	$totaal = amount($totaal);
 	return "?".__x("Ongeldig totaal: {total}", total => $totaal) unless defined $totaal;
-	#$totaal = -$totaal if $dagboek_type == DBKTYPE_INKOOP;
+	#$totaal = -$totaal if $iv;
     }
 
     my ($begin, $end);
@@ -74,29 +83,59 @@ sub perform {
 	return;
     }
 
+    my $gdesc;
     my $debcode;
     my $rr;
-    if ( $dagboek_type == DBKTYPE_INKOOP
-	 || $dagboek_type == DBKTYPE_VERKOOP ) {
+
+    if ( $cfg->val(qw(general ivdesc), undef) ) {
+	$gdesc  = shift(@$args);
 	$debcode = shift(@$args);
 	$rr = $dbh->do("SELECT rel_code, rel_acc_id, rel_btw_status FROM Relaties" .
 		       " WHERE UPPER(rel_code) = ?" .
-		       "  AND " . ($dagboek_type == DBKTYPE_INKOOP ? "NOT " : "") . "rel_debcrd" .
+		       "  AND " . ($iv ? "NOT " : "") . "rel_debcrd" .
 		       "  AND rel_ledger = ?",
 		       uc($debcode), $dagboek);
 	unless ( defined($rr) ) {
-	    warn("?".__x("Onbekende {what}: {who}",
-			 what => lc($dagboek_type == DBKTYPE_VERKOOP ? _T("Debiteur") : _T("Crediteur")),
-			 who => $debcode)."\n");
-	    $dbh->rollback;
-	    return;
+	    unshift(@$args, $debcode);
+	    $debcode = $gdesc;
+	    undef $gdesc;
+	    $rr = $dbh->do("SELECT rel_code, rel_acc_id, rel_btw_status FROM Relaties" .
+			   " WHERE UPPER(rel_code) = ?" .
+			   "  AND " . ($iv ? "NOT " : "") . "rel_debcrd" .
+			   "  AND rel_ledger = ?",
+			   uc($debcode), $dagboek);
+	    unless ( defined($rr) ) {
+		warn("?".__x("Onbekende {what}: {who}",
+			     what => lc($iv ? _T("Crediteur") : _T("Debiteur")),
+			     who => $debcode)."\n");
+		$dbh->rollback;
+		return;
+	    }
 	}
     }
     else {
-	warn("?".__x("Ongeldige operatie (IV) voor dagboek type {type}",
-		     type => $dagboek_type)."\n");
-	$dbh->rollback;
-	return;
+	$debcode = shift(@$args);
+	$rr = $dbh->do("SELECT rel_code, rel_acc_id, rel_btw_status FROM Relaties" .
+		       " WHERE UPPER(rel_code) = ?" .
+		       "  AND " . ($iv ? "NOT " : "") . "rel_debcrd" .
+		       "  AND rel_ledger = ?",
+		       uc($debcode), $dagboek);
+	unless ( defined($rr) ) {
+	    $gdesc = $debcode;
+	    $debcode = shift(@$args);
+	    $rr = $dbh->do("SELECT rel_code, rel_acc_id, rel_btw_status FROM Relaties" .
+			   " WHERE UPPER(rel_code) = ?" .
+			   "  AND " . ($iv ? "NOT " : "") . "rel_debcrd" .
+			   "  AND rel_ledger = ?",
+			   uc($debcode), $dagboek);
+	    unless ( defined($rr) ) {
+		warn("?".__x("Onbekende {what}: {who}",
+			     what => lc($iv ? _T("Crediteur") : _T("Debiteur")),
+			     who => $debcode)."\n");
+		$dbh->rollback;
+		return;
+	    }
+	}
     }
 
     my ($rel_acc_id, $sbtw);
@@ -105,7 +144,6 @@ sub perform {
     my $nr = 1;
     my $bsk_id;
     my $bsk_nr;
-    my $gdesc;
     my $did = 0;
 
     while ( @$args ) {
@@ -131,7 +169,7 @@ sub perform {
 	    warn("?".__x("Ongeldig grootboekrekeningnummer: {acct}", acct => $acct )."\n");
 	    return;
 	}
-	my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_btw".
+	my $rr = $dbh->do("SELECT acc_desc,acc_balres,acc_kstomz,$dc,acc_btw".
 			  " FROM Accounts".
 			  " WHERE acc_id = ?", $acct);
 	unless ( $rr ) {
@@ -140,7 +178,7 @@ sub perform {
 	    $dbh->rollback;
 	    return;
 	}
-	my ($adesc, $balres, $debcrd, $btw_id) = @$rr;
+	my ($adesc, $balres, $kstomz, $debcrd, $btw_id) = @$rr;
 
 	if ( $balres ) {
 	    warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
@@ -148,13 +186,21 @@ sub perform {
 	    #$dbh->rollback;
 	    #return;
 	}
+	elsif ( $kstomz ? !$iv : $iv ) {
+	    warn("!".__x("Grootboekrekening {acct} ({desc}) is een {what}rekening",
+			 acct => $acct, desc => $adesc,
+			 what => $kstomz ? _T("kosten") : _T("omzet"),
+			)."\n");
+	    #$dbh->rollback;
+	    #return;
+	}
 
 	if ( $nr == 1 ) {
 	    $bsk_nr = $self->bsk_nr($opts);
+	    $gdesc ||= $desc;
 	    $dbh->sql_insert("Boekstukken",
 			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
-			     $bsk_nr, $desc, $dagboek, $date, $bky);
-	    $gdesc = $desc;
+			     $bsk_nr, $gdesc, $dagboek, $date, $bky);
 	    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
 	}
 
@@ -172,16 +218,12 @@ sub perform {
 	    return;
 	}
 
-	# DC Phase out -- Ignore DC status of account.
-	# $amt = -$amt unless $debcrd;
-#	$amt = -$amt if defined($explicit_dc) &&
-#	  ($explicit_dc xor $dagboek_type == DBKTYPE_INKOOP);
-	$amt = -$amt if $dagboek_type == DBKTYPE_VERKOOP;
+	$amt = -$amt unless $iv;
 
 	my $btw_acc;
+	my $t = "btw_" . ($iv ? "i" : "v");
 	# Geen BTW voor non-EU.
 	if ( $btw_id && ($sbtw == BTWTYPE_NORMAAL || $sbtw == BTWTYPE_INTRA) ) {
-	    my $t = "btw_" . ($dagboek_type == DBKTYPE_INKOOP ? "i" : "v");
 	    if ( $btw_id =~ /^[hl]$/i ) {
 		$t .= lc($btw_id);
 		$btw_id = $dbh->do("SELECT btw_id".
@@ -197,11 +239,23 @@ sub perform {
 	    $btw_acc = $dbh->std_acc($t);
 	}
 
+	my $btwclass = 0;
+	# Inkoop: alle bedragen met BTW en intra/extra bedragen zijn van belang.
+	if ( $iv ) {
+	    $btwclass = BTWKLASSE(1, $sbtw, 1)
+	      if $btw_id || $sbtw == BTWTYPE_INTRA || $sbtw == BTWTYPE_EXTRA;
+	}
+	# Verkoop: alle bedragen met BTW, en alle omzetten met 0%.
+	# Zo ook intra en extra.
+	else {
+	    $btwclass = BTWKLASSE(1, $sbtw, 0)
+	      if $btw_id || !$kstomz || $sbtw == BTWTYPE_INTRA || $sbtw == BTWTYPE_EXTRA;
+	}
 	$dbh->sql_insert("Boekstukregels",
 			 [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
-			     bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
+			     bsr_btw_id bsr_btw_acc bsr_btw_class bsr_type bsr_acc_id bsr_rel_code)],
 			 $nr++, $date, $bsk_id, $desc, $amt,
-			 $btw_id, $btw_acc, 0, $acct, $debcode);
+			 $btw_id, $btw_acc, $btwclass, 0, $acct, $debcode);
     }
 
     my $ret = EB::Finance::journalise($bsk_id);
@@ -220,7 +274,7 @@ sub perform {
 
     $dbh->store_journal($ret);
 
-    $tot = -$tot if $dagboek_type == DBKTYPE_INKOOP;
+    $tot = -$tot if $iv;
     my $fail = defined($totaal) && $tot != $totaal;
     if ( $opts->{journal} ) {
 	warn("?"._T("Dit overicht is ter referentie, de boeking is niet uitgevoerd!")."\n") if $fail;
