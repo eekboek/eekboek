@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.38 2006/02/02 11:34:31 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.39 2006/02/02 13:00:34 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  2 12:32:42 2006
-# Update Count    : 331
+# Last Modified On: Thu Feb  2 13:59:19 2006
+# Update Count    : 332
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -164,7 +164,7 @@ sub perform {
 	    $btw_id = 0, undef($bid) if defined($bid) && !$bid; # override: @0
 
 	    # If there's BTW associated, it must be explicitly confirmed.
-	    if ( $btw_id && !defined($bid) ) {
+	    if ( $btw_id && !defined($bid) && $dagboek_type == DBKTYPE_MEMORIAAL ) {
 		warn("?".__x("Boekingen met BTW zijn niet mogelijk in een {dbk}.".
 			     " De BTW is op nul gesteld.",
 			     dbk => $dagboek_type == DBKTYPE_BANK ? "bankboek" :
