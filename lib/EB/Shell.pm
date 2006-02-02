@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.55 2006/01/31 17:37:43 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.56 2006/02/02 11:58:10 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jan 28 18:08:30 2006
-# Update Count    : 665
+# Last Modified On: Thu Feb  2 12:58:05 2006
+# Update Count    : 672
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -1037,6 +1037,21 @@ Opties:
   --verwijder      Verwijder een tentatieve jaarafsluiting.
   --eb=XXXX        Schrijf openingsopdrachten in dit bestand.
 EOS
+}
+
+sub do_sql {
+    my ($self, @args) = @_;
+    $dbh->isql(@args);
+    undef;
+}
+
+sub help_sql {
+    <<EOD;
+Voer een SQL opdracht uit via de database driver. Met het gebruik
+hiervan vervalt alle garantie op correcte resultaten.
+
+  sql [ ...opdracht... ]
+EOD
 }
 
 ################ Argument parsing ################
