@@ -1,11 +1,10 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: Schema.pm,v 1.28 2006/01/26 11:36:03 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.29 2006/02/02 12:00:15 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 25 22:12:22 2006
-# Update Count    : 464
+# Last Modified On: Thu Feb  2 12:58:53 2006
+# Update Count    : 474
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -84,7 +83,6 @@ my %dbk;			# dagboeken
 my @dbk;			# dagboeken
 my @btw;			# btw tarieven
 my %btwmap;			# btw type/incl -> code
-my $ko_ok;			# K/O codes bruikbaar
 my $fail;			# any errors
 
 sub error { warn('?', @_); $fail++; }
@@ -213,7 +211,7 @@ sub scan_balres {
 	error(__x("Dubbel: rekening {acct}", acct => $1)."\n") if exists($acc{$id});
 	error(__x("Rekening {id} heeft geen verdichting", id => $id)."\n") unless defined($cvdi);
 	my $debcrd;
-	my $kstomz;
+	my $kstomz = 1;
 	if ( ($balres ? $flags =~ /^[dc]$/i : $flags =~ /^[ko]$/i)
 	     ||
 	     $flags =~ /^[dc][ko]$/i ) {
@@ -300,10 +298,6 @@ sub load_schema {
 	    $max_vrd = $2;
 	    next;
 	}
-	if ( /^kosten-omzet\s+ok$/i ) {
-	    $ko_ok = 1;
-	    next;
-	}
 
 	# Anders: Scan.
 	if ( $scanner ) {
@@ -380,7 +374,6 @@ sub sql_constants {
 	next if ref($key->());
 	$out .= "$key\t" . $key->() . "\n";
     }
-    $out .= "KO_OK\t" . ($ko_ok ? "1" : "0") . "\n";
     $out . "\\.\n";
 }
 
@@ -504,6 +497,10 @@ sub _tf {
     qw(f t)[shift];
 }
 
+sub _tfn {
+    defined($_[0]) ? qw(f t)[$_[0]] : "\\N";
+}
+
 ################ Subroutines ################
 
 sub dump_sql {
@@ -583,14 +580,22 @@ print {$fh}  <<EOD;
 #
 # Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
 
-# Uit historische overwegingen wordt de classificatie Kosten/Omzet
-# voor resultaatrekeningen onbetrouwbaar geacht. Met de aanduiding
-# "Kosten-Omzet OK" kan worden aangegeven dat de classificatie
-# betrouwbaar is en door EekBoek gebruikt mag worden.
+EOD
+
+=begin not_now
+
+# De classificatie Kosten/Omzet voor resultaatrekeningen wordt onder
+# meer gebruikt om te bepalen hoe BTW moet worden geboekt. Als om
+# welke reden dan ook de classificatie niet betrouwbaar moet worden
+# geacht, kan de aanduiding "Kosten-Omzet NOK" worden gebruikt om aan
+# te geven dat EekBoek deze niet mag gebruiken. Dit kan echter leiden
+# tot problemen met BTW boekingen!
 
 EOD
 
-    print {$fh} ($dbh->adm_ko ? "" : "# ", "Kosten-Omzet OK\n");
+    print {$fh} ($dbh->adm_ko ? "# " : "", "Kosten-Omzet NOK\n");
+
+=cut
 
 $max_hvd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE vdi_struct IS NULL")->[0];
 $max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct IS NULL")->[0];
@@ -698,8 +703,12 @@ sub dump_acc {
 	    while ( my $rr = $sth->fetchrow_arrayref ) {
 		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_kstomz, $btw_id, $btw, $btwincl) = @$rr;
 		my $flags = "";
-		$flags .= $acc_debcrd ? "D" : "C" if $balres;
-		$flags .= $acc_kstomz ? "K" : "O" unless $balres;
+		if ( $balres ) {
+		    $flags .= $acc_debcrd ? "D" : "C";
+		}
+		else {
+		    $flags .= $acc_kstomz ? "K" : "O";
+		}
 		my $extra = "";
 		if ( $btw == BTWTARIEF_HOOG && $btwincl ) {
 		    $extra .= " :btw=hoog";
