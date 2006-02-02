@@ -2,10 +2,8 @@
 
 BEGIN WORK;
 
--- Nieuwe constante om aan te geven of the Kosten/Omzet codering gebruikt
--- mag worden.
-
-INSERT INTO Constants (name, value) VALUES ('KO_OK', '0');
+ALTER TABLE Boekstukregels
+  ADD COLUMN bsr_btw_class int;
 
 -- Bump version.
 
