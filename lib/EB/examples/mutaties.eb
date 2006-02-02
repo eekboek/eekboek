@@ -100,7 +100,7 @@ verkoop 2005-08-19 "Pocket Reference" ORA  "Produktie boek"      1000 8200
 # Voor deze boekingen geldt dat een negatief getal het banksaldo
 # vermindert, en een positief getal het saldo vermeerdert.
 #
-# 'std' boekingen met BTW zijn gevaarlijk, en mogelijk illegaal.
+# 'std' boekingen met BTW zijn ongebruikelijk.
 # Daarom moet in dat geval de toepassing van BTW expliciet worden
 # opgegeven met de "@" toevoeging:
 #     @0         geen BTW (onderdrukt de warschuwing)
@@ -180,10 +180,4 @@ memoriaal 2005-12-31 "Afschrijving inventaris" \
 memoriaal 2005-12-31 "Afschrijving computers" \
 	  std "Afschrijving" -396,82 4340 \
 	  std "Afschrijving" 396,82 241 
-
-# Afboeking BTW
-#memoriaal 2005-12-31 "Afboeking BTW" \
-#	  std "Afboeking" -144,50 1520 \
-#	  std "Afboeking" -1463,00 1500 \
-#	  std "Afboeking" 1318,50 1560
 
