@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.5 2006/01/27 15:15:53 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.6 2006/02/02 11:36:07 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 27 16:15:51 2006
-# Update Count    : 121
+# Last Modified On: Tue Jan 31 21:22:07 2006
+# Update Count    : 123
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -212,6 +212,7 @@ sub _opening {
 		 bsknr  => 1,
 		 bky    => 1,
 		 total  => 0,
+		 noivbskdesc => 1,
 		 debcrd => 0 }) . "\n";
     }
 

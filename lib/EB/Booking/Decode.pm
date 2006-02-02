@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.10 2006/01/31 17:14:12 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.11 2006/02/02 11:36:26 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 31 18:09:00 2006
-# Update Count    : 109
+# Last Modified On: Tue Jan 31 21:20:40 2006
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -47,6 +47,8 @@ sub decode {
     my $ex_bky     = $opts->{bky};
     my $ex_debcrd  = $opts->{debcrd};
     my $ex_tot     = $opts->{totaal} || $opts->{total};
+    my $no_ivbskdesc = $opts->{noivbskdesc};
+
     my $dbver = sprintf("%03d%03d%03d", $dbh->adm("scm_majversion"),
 			$dbh->adm("scm_minversion")||0, $dbh->adm("scm_revision"));
 
@@ -81,7 +83,7 @@ sub decode {
 	    $cmd .= ":$bsk_nr" if $ex_bsknr;
 	    $cmd .= " $bsk_date ";
 	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
-		$cmd .= "\"$bsk_desc\" \"$rel_code\"";
+		$cmd .= $no_ivbskdesc ? "\"$rel_code\"" : "\"$bsk_desc\" \"$rel_code\"";
 	    }
 	    if ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS || $dbktype == DBKTYPE_MEMORIAAL) {
 		$cmd .= "\"$bsk_desc\"";
