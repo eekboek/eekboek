@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.34 2006/01/25 21:20:30 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.35 2006/02/02 11:35:14 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 25 20:31:55 2006
-# Update Count    : 300
+# Last Modified On: Thu Feb  2 12:34:59 2006
+# Update Count    : 302
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -363,14 +363,6 @@ sub adm_busy {
     my ($self) = @_;
     $self->connectdb;
     $self->do("SELECT COUNT(*) FROM Journal")->[0];
-}
-
-my $ko_ok;
-sub adm_ko {
-    return $ko_ok if defined($ko_ok);
-    my ($self) = @_;
-    $self->connectdb;
-    $ko_ok = $self->do("SELECT value FROM Constants WHERE name = 'KO_OK'")->[0];
 }
 
 ################ API calls for database backend ################
