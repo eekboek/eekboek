@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.3 2006/01/24 17:15:25 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.4 2006/02/02 11:57:33 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 24 16:16:51 2006
-# Update Count    : 56
+# Last Modified On: Thu Feb  2 12:55:37 2006
+# Update Count    : 66
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -22,7 +22,7 @@ use DBD::Pg;
 my $dbh;			# singleton
 my $dataset;
 
-my $trace = $cfg->val("postgres driver", "trace", 0);
+my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
 sub type { "Postgres" }
 
@@ -81,6 +81,7 @@ sub connect {
     $self->disconnect;
 
     $dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
+    $cfg->newval(qw(database fullname), $dbname);
     $dbname = "dbi:Pg:dbname=" . $dbname;
 
     my $t;
@@ -155,6 +156,41 @@ sub set_sequence {
     # The next call to get_sequence will return this value.
     $dbh->do("SELECT setval('$seq', $value, false)");
     $value;
+}
+
+sub isql {
+    my ($self, @args) = @_;
+
+    my $dbname = $cfg->val(qw(database fullname));
+    my $cmd = "psql";
+    my @cmd = ( $cmd );
+
+    for ( $cfg->val("database", "user", undef) ) {
+	next unless $_;
+	push(@cmd, "-O", $_);
+	push(@cmd, "-U", $_);
+    }
+#    for ( $cfg->val("database", "password", undef) ) {
+#	next unless $_;
+#	push(@cmd, "--password");
+#    }
+    for ( $cfg->val("database", "host", undef) ) {
+	next unless $_;
+	push(@cmd, "-h", $_);
+    }
+    for ( $cfg->val("database", "port", undef) ) {
+	next unless $_;
+	push(@cmd, "-p", $_);
+    }
+    push(@cmd, "-d", $dbname);
+
+    if ( @args ) {
+	push(@cmd, "-c", "@args");
+    }
+
+    my $res = system { $cmd } @cmd;
+    # warn(sprintf("=> ret = %02x", $res)."\n") if $res;
+
 }
 
 1;
