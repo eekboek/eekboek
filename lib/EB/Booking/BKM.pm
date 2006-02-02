@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.37 2006/01/26 11:38:29 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.38 2006/02/02 11:34:31 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 25 21:01:43 2006
-# Update Count    : 305
+# Last Modified On: Thu Feb  2 12:32:42 2006
+# Update Count    : 331
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -164,7 +164,7 @@ sub perform {
 	    $btw_id = 0, undef($bid) if defined($bid) && !$bid; # override: @0
 
 	    # If there's BTW associated, it must be explicitly confirmed.
-	    if ( $btw_id && !defined($bid) && !$dbh->adm_ko ) {
+	    if ( $btw_id && !defined($bid) ) {
 		warn("?".__x("Boekingen met BTW zijn niet mogelijk in een {dbk}.".
 			     " De BTW is op nul gesteld.",
 			     dbk => $dagboek_type == DBKTYPE_BANK ? "bankboek" :
@@ -193,7 +193,7 @@ sub perform {
 		elsif ( $bid =~ /^\d+|\d+[iv]|[iv]\d+$/i ) {
 		    my $t = $btw_id = $1 if $bid =~ /(\d+)/;
 		    my $group = $dbh->lookup($t, qw(BTWTabel btw_id btw_tariefgroep));
-		    unless ( $group ) {
+		    unless ( defined $group ) {
 			warn("?".__x("Ongeldige BTW codering: {cod}",
 				     cod => '@'.$bid)."\n");
 			$fail++;
@@ -203,7 +203,7 @@ sub perform {
 			$t = $1;
 		    }
 		    else {
-			$t = $amt < 0 ? "i" : "v";
+			$t = $kstomz ? "i" : "v";
 		    }
 		    $t .= $group == BTWTARIEF_HOOG ? "h" : "l";
 		    $btw_acc = $dbh->std_acc("btw_$t");
@@ -215,19 +215,13 @@ sub perform {
 		    next;
 		}
 	    }
-	    elsif ( $btw_id ) {	# implies KO_OK
+	    elsif ( $btw_id ) {
 		my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
 		croak("INTERNAL ERROR: btw code $btw_id heeft tariefgroep $tg")
 		  unless $tg;
-		my $t = qw(i v)[$kstomz] . qw(x h l)[$tg];
+		my $t = qw(v i)[$kstomz] . qw(x h l)[$tg];
 		$btw_acc = $dbh->std_acc("btw_$t");
 	    }
-
-#	    my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
-##	    my $btw_acc = $debcrd ?
-#	    my $btw_acc = (defined($explicit_dc) ? !$explicit_dc : ($amt < 0))  ?
-#	      $dbh->std_acc($group == BTWTARIEF_HOOG ? "btw_ih" : "btw_il") :
-#		$dbh->std_acc($group == BTWTARIEF_HOOG ? "btw_vh" : "btw_vl");
 
 	    my $btw = 0;
 	    my $bsr_amount = $amt;
@@ -242,11 +236,13 @@ sub perform {
 
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
-				 bsr_btw_id bsr_btw_acc bsr_type bsr_acc_id bsr_rel_code)],
+				 bsr_btw_id bsr_btw_acc bsr_btw_class bsr_type
+				 bsr_acc_id bsr_rel_code)],
 			     $nr++, $dd, $bsk_id, $desc, $orig_amount,
-			     $btw_id, $btw_acc, 0, $acct, undef);
+			     $btw_id, $btw_acc,
+			     BTWKLASSE(1, BTWTYPE_NORMAAL, $balres ? 1 : $kstomz),
+			     0, $acct, undef);
 
-#	    $amt = -$amt, $btw = -$btw if $debcrd;
 	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
 	    $dbh->upd_account($acct, -$amt);
 	    $tot += $amt;
@@ -340,7 +336,6 @@ sub perform {
 		$sql = "SELECT bsk_id, dbk_id, bsk_desc, bsk_amount ".
 		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
 		    " WHERE bsk_open != 0".
-    #		  ($amt ? "  AND ABS(bsk_amount) = ABS(?)" : "").
 		      ($amt ? "  AND bsk_open = ?" : "").
 			"  AND dbk_type = ?".
 			  "  AND bsk_dbk_id = dbk_id".
@@ -362,19 +357,14 @@ sub perform {
 	    }
 
 	    my ($bskid, $dbk_id, $bsk_desc, $bsk_amount, $bsr_rel) = @$rr;
-#	    warn("%".__x("Bedrag = {amt}, boekstuk = {bsk}",
-#			 amt => numfmt($amt), bsk => numfmt($bsk_amount))."\n");
-
 	    my $acct = $dbh->std_acc($debcrd ? "deb" : "crd");
-#	    $amt = $bsk_amount;
 
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
-				 bsr_btw_id bsr_type bsr_acc_id bsr_rel_code bsr_paid)],
-			     $nr++, $dd, $bsk_id, "*".$bsk_desc,
-#			     $debcrd ? -$amt : $amt,
-			     -$amt,
-			     0, $type eq "deb" ? 1 : 2, $acct, $bsr_rel, $bskid);
+				 bsr_btw_id bsr_type bsr_acc_id bsr_btw_class
+				 bsr_rel_code bsr_paid)],
+			     $nr++, $dd, $bsk_id, "*".$bsk_desc, -$amt, 0,
+			     $type eq "deb" ? 1 : 2, $acct, 0, $bsr_rel, $bskid);
 	    my $id = $dbh->get_sequence("boekstukregels_bsr_id_seq", "noincr");
 	    $dbh->sql_exec("UPDATE Boekstukken".
 			   " SET bsk_open = bsk_open - ?".
@@ -390,7 +380,6 @@ sub perform {
 	    $fail++;
 	    next;
 	}
-	#print("sub = $tot\n");
     }
 
     if ( $gacct ) {
