@@ -1,17 +1,18 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.24 2006/01/26 09:44:47 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.25 2006/02/02 12:01:12 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 13 15:32:37 2006
-# Update Count    : 403
+# Last Modified On: Wed Feb  1 20:45:21 2006
+# Update Count    : 438
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 package main;
 
+our $cfg;
 our $dbh;
 
 package EB::Report::BTWAangifte;
@@ -22,6 +23,8 @@ use EB;
 use EB::Finance;
 
 use POSIX qw(floor ceil);
+
+my $trace = $cfg->val(__PACKAGE__, "trace", undef);
 
 my @periodetabel;
 
@@ -257,15 +260,6 @@ sub parse_periode {
 sub collect {
     my ($self, $begin, $end) = @_;
 
-    # Target: alle boekstukken van type 0 (inkoop/verkoop).
-    my $sth = $dbh->sql_exec
-      ("SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,rel_debcrd,rel_btw_status".
-       " FROM Boekstukregels, Relaties".
-       " WHERE bsr_rel_code = rel_code".
-       " AND bsr_date >= ? AND bsr_date <= ?".
-       " AND bsr_type = 0",
-       $begin, $end);
-
     my $v;
 
     my $tot = 0;
@@ -316,9 +310,32 @@ sub collect {
     my $crd_btw = 0;		# BTW betaald (voorheffingen)
     my $xx = 0;			# ongeclassificeerd (fout, dus)
 
+    # Target: alle boekstukken van type 0 (inkoop/verkoop).
+    my $sth = $dbh->sql_exec
+      ("SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,bsr_btw_class,rel_debcrd,rel_btw_status".
+       " FROM Boekstukregels, Relaties".
+       " WHERE bsr_rel_code = rel_code".
+       " AND bsr_date >= ? AND bsr_date <= ?".
+       " AND bsr_type = 0".
+       " UNION ALL ".
+       "SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,bsr_btw_class,null as rel_debcrd,0 as rel_btw_status".
+       " FROM Boekstukregels".
+       " WHERE bsr_rel_code IS NULL".
+       " AND bsr_date >= ? AND bsr_date <= ?".
+       " AND bsr_type = 0",
+       $begin, $end, $begin, $end);
+
     my $rr;
+
+    my $tr = $trace ? sub {
+	warn("BTW " . shift() . " @$rr\n");
+    } : sub {};
+
     while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($amt, $acc, $btw_id, $btw_acc, $debcrd, $btw_status) = @$rr;
+	my ($amt, $acc, $btw_id, $btw_acc, $btwclass, $debcrd, $btw_status) = @$rr;
+
+	next unless $btwclass & BTWKLASSE_BTW_BIT;
+
 	my $btg_id = 0;
 	my $btw = 0;
 	$amt = -$amt;
@@ -329,36 +346,45 @@ sub collect {
 	    $amt = $a->[0] - ($btw = $a->[1]); # ex BTW
 	}
 
+	unless ( defined $debcrd ) {
+	    $debcrd = !($btwclass & BTWKLASSE_IV_BIT);
+	}
 	if ( $btw_status == BTWTYPE_NORMAAL ) {
 	    if ( $debcrd ) {
 		if ( $btg_id == BTWTARIEF_HOOG ) {
+		    $tr->("Hoog");
 		    $deb_h += $amt;
 		    $deb_btw_h += $btw;
 		}
 		elsif ( $btg_id == BTWTARIEF_LAAG ) {
+		    $tr->("Laag");
 		    $deb_l += $amt;
 		    $deb_btw_l += $btw;
 		}
 		elsif ( $btg_id == BTWTARIEF_GEEN ) {
-		    $deb_0 += $amt
-		      if $btw_acc;	# ???
+		    $tr->("0%");
+		    $deb_0 += $amt;
 		}
 		else {
+		    $tr->("Ander");
 		    $deb_x += $amt;
 		    $deb_btw_x += $btw;
 		}
 	    }
 	    else {
+		$tr->("Voorheffing");
 		$crd_btw -= $btw;
 	    }
 	}
 	elsif ( $btw_status == BTWTYPE_VERLEGD ) {
 	    if ( $debcrd ) {
+		$tr->("Verlegd");
 		$verlegd += $amt;
 	    }
 	}
 	elsif ( $btw_status == BTWTYPE_INTRA ) {
 	    if ( $debcrd ) {
+		$tr->("Intra");
 		$intra_deb += $amt;
 		$intra_deb_btw += $btw;
 	    }
@@ -369,14 +395,17 @@ sub collect {
 	}
 	elsif ( $btw_status == BTWTYPE_EXTRA ) {
 	    if ( $debcrd ) {
+		$tr->("Extra D");
 		$extra_deb += $amt;
 	    }
 	    else {
+		$tr->("Extra C");
 		$extra_crd -= $amt;
 	    }
 	}
 	else {
 	    # Foutvanger.
+	    $tr->("????");
 	    $xx += $amt;
 	}
     }
@@ -402,6 +431,7 @@ sub collect {
 
     # 1d. Belast met 0%/verlegd
     $data{deb_0} = rounddown($deb_0 + $verlegd);
+    #$data{deb_0} = roundtozero($deb_0 + $verlegd);
 
     # Buitenland
     # 3. Door mij verrichte leveringen
@@ -554,6 +584,19 @@ sub roundup {
     }
     else {
 	$vb = -floor(abs($vb));
+    }
+    $vb;
+}
+
+sub roundtozero {
+    my ($vb) = @_;
+    return 0 unless $vb;
+    $vb /= AMTSCALE;
+    if ( $vb >= 0 ) {
+	$vb = floor($vb);
+    }
+    else {
+	$vb = 0-floor(abs($vb));
     }
     $vb;
 }
