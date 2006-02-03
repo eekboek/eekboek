@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.17 2006/01/18 20:45:26 jv Exp $
+# $Id: Opening.pm,v 1.18 2006/02/03 22:04:14 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 18 18:35:31 2006
-# Update Count    : 146
+# Last Modified On: Fri Feb  3 23:04:12 2006
+# Update Count    : 149
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -199,6 +199,7 @@ sub open {
     if ( ($o->{balans} || $o->{relatie}) && !defined($o->{balanstotaal}) ) {
 	$fail++;
 	warn(_T("Het totaalbedrag van de openingsbalans is nog niet opgegeven")."\n");
+
     }
     if ( $o->{balanstotaal} ) {
 	my $adeb = $dbh->std_acc("deb");
@@ -479,9 +480,10 @@ Opdrachten voor het openen van een administratie:
 		Crediteuren of Debiteuren, dan moet er voor dit bedrag
 		ook openstaande posten worden ingevoerd met een of
 		meer adm_relatie opdrachten.
-  adm_relatie <datum> "Omschrijving" [ crd | deb ] <code> bedrag
+  adm_relatie <boekstuk> <datum> <code> <omschrijving> <bedrag>
 		Invoeren van een openstaande post uit het voorgaande
-		boekjaar.
+		boekjaar. Het <boekstuk> moet volledig zijn, dus
+                <dagboek>:<boekjaar>:<nummer>.
   adm_open
 		Alle informatie die met de bovenstaande opdrachten is
 		ingevoerd, wordt verwerkt.

@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.56 2006/02/02 11:58:10 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.57 2006/02/03 22:03:59 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  2 12:58:05 2006
-# Update Count    : 672
+# Last Modified On: Fri Feb  3 22:36:22 2006
+# Update Count    : 684
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -218,12 +218,16 @@ sub _help {
 
     if ( $dbk_type == DBKTYPE_INKOOP ) {
 	$text .= <<EOS;
-  $cmd [ <datum> ] <crediteur> "Omschrijving" <bedrag> [ <rekening> ]
+  $cmd [ <datum> ] "Omschrijving" <crediteur> "Omschrijving" <bedrag> [ <rekening> ]
+
+Controle van het totale boekstukbedrag kan met de optie --totaal=<bedrag>.
 EOS
     }
     elsif ( $dbk_type == DBKTYPE_VERKOOP ) {
 	$text .= <<EOS;
-  $cmd [ <datum> ] <debiteur> "Omschrijving" <bedrag> [ <rekening> ]
+  $cmd [ <datum> ] "Omschrijving" <debiteur> "Omschrijving" <bedrag> [ <rekening> ]
+
+Controle van het totale boekstukbedrag kan met de optie --totaal=<bedrag>.
 EOS
     }
     elsif ( $dbk_type == DBKTYPE_BANK || $dbk_type == DBKTYPE_KAS 
@@ -234,6 +238,9 @@ EOS
     std [ <datum> ] "Omschrijving" <bedrag> <rekening> -- gewone betaling
     crd [ <datum> ] <code> <bedrag>                    -- betaling van crediteur
     deb [ <datum> ] <code> <bedrag>                    -- betaling van debiteur
+
+Controle van het eindsaldo kan met de optie --saldo=<bedrag>.
+Controle van het totale boekstukbedrag kan met de optie --totaal=<bedrag>.
 EOS
     }
     $text;
@@ -369,12 +376,12 @@ sub do_journaal {
 
 sub help_journaal {
     <<EOS;
-Print journaalposten.
+Overzicht journaalposten.
 
   journaal all           -- alle posten
   journaal <id>          -- alleen boekstuknummer met dit id
   journaal <dagboek>     -- alle journaalposten van dit dagboek
-  journaal <dagboek>:<n> -- boekstuk n van dit dagboek
+  journaal <dagboek>:<n> -- boekstuk <n> van dit dagboek
   journaal               -- journaalposten van de laatste boeking
 
 Opties
@@ -418,6 +425,9 @@ Opties:
   --detail=N      Verdicht, mate van detail N = 0, 1 of 2
   --per=XXX       Selecteer einddatum
   --boekjaar=XX   Selecteer boekjaar
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
 EOS
 }
 
@@ -451,6 +461,9 @@ Opties:
   --detail=N       Verdicht, mate van detail N = 0, 1 of 2
   --periode=XXX    Selecteer periode
   --boekjaar=XX    Selecteer boekjaar
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
 EOS
 }
 
@@ -484,6 +497,9 @@ Opties:
   --detail=N      Verdicht, mate van detail N = 0, 1 of 2
   --per=XXX       Selecteer einddatum
   --boekjaar=XX   Selecteer boekjaar
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
 EOS
 }
 
@@ -533,6 +549,9 @@ Opties:
 
   --detail=N            -- mate van detail, N=0,1,2 (standaard is 2)
   --periode=XXX         -- alleen over deze periode
+
+Zie verder "help rapporten" voor algemene informatie over aan te maken
+rapporten.
 EOS
 }
 
@@ -554,7 +573,9 @@ sub do_dagboeken {
 
 sub help_dagboeken {
     <<EOS;
-Print een lijstje van beschikbare dagboeken.
+Toon een lijstje van beschikbare dagboeken.
+
+  dagboeken
 EOS
 }
 
@@ -895,6 +916,8 @@ Reproduceert het schema van de huidige database en schrijft deze naar
 standaard uitvoer.
 
   dump_schema
+
+Zie ook "help export".
 EOS
 }
 
@@ -939,6 +962,9 @@ Verwijdert een boekstuk. Het boekstuk mag niet in gebruik zijn.
 Opties:
 
   --boekjaar XXX    selekteer boekjaar
+
+Het verwijderde boekstuk wordt in de commando-historie geplaatst en kan met
+een pijltje-omhoog worden teruggehaald.
 EOS
 }
 
@@ -985,7 +1011,7 @@ sub help_toon {
     <<EOS;
 Toon een boekstuk in tekst- of commando-vorm.
 
-  toon [opties] <boekstuk>
+  toon [ <opties> ] <boekstuk>
 
 Opties:
 
@@ -993,6 +1019,9 @@ Opties:
   --verbose       toon in uitgebreide (tekst) vorm
   --btw           vermeld altijd BTW codes
   --bsknr         vermeld altijd het boekstuknummer (default)
+
+Het getoonde boekstuk wordt bovendien in de commando-historie geplaatst en kan met
+een pijltje-omhoog worden teruggehaald.
 EOS
 }
 
@@ -1027,7 +1056,7 @@ afboekingen en een overzicht van eventuele openstaande posten. Indien
 gewenst kan een bestand worden aangemaakt met openingsopdrachten voor
 het volgende boekjaar.
 
-  jaareinde [ opties ]
+  jaareinde [ <opties> ]
 
 Opties:
 
@@ -1050,7 +1079,7 @@ sub help_sql {
 Voer een SQL opdracht uit via de database driver. Met het gebruik
 hiervan vervalt alle garantie op correcte resultaten.
 
-  sql [ ...opdracht... ]
+  sql [ <opdracht> ]
 EOD
 }
 
