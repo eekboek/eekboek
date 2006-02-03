@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.25 2006/02/02 12:01:12 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.26 2006/02/03 12:46:48 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb  1 20:45:21 2006
-# Update Count    : 438
+# Last Modified On: Fri Feb  3 13:44:19 2006
+# Update Count    : 440
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -280,7 +280,9 @@ sub collect {
     my $deb_x = 0;
     my $deb_btw_x = 0;
 
-    # 1d. Belast met 0%/verlegd
+    # 1d. Eigen gebruikt.
+
+    # 1e. Belast met 0%/verlegd
 
     my $deb_0 = 0;
     my $verlegd = 0;
@@ -429,7 +431,9 @@ sub collect {
     $data{deb_x} = $v;
     $tot += $v;
 
-    # 1d. Belast met 0%/verlegd
+    # 1d. Eigen gebruik
+
+    # 1e. Belast met 0%/verlegd
     $data{deb_0} = rounddown($deb_0 + $verlegd);
     #$data{deb_0} = roundtozero($deb_0 + $verlegd);
 
@@ -503,8 +507,10 @@ sub report {
     # 1c. Belast met ander, niet-nul tarief
     $rep->outline('', "1c", "Belast met ander tarief", $data->{deb_x}, $data->{deb_btw_x});
 
-    # 1d. Belast met 0%/verlegd
-    $rep->outline('', "1d", "Belast met 0% / verlegd", $data->{deb_0}, undef);
+    # 1d. Eigen gebruik
+
+    # 1e. Belast met 0%/verlegd
+    $rep->outline('', "1e", "Belast met 0% / verlegd", $data->{deb_0}, undef);
 
     # Buitenland
     $rep->outline('H1', "Buitenland");
