@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.39 2006/02/02 13:00:34 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.40 2006/02/03 19:09:15 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  2 13:59:19 2006
-# Update Count    : 332
+# Last Modified On: Fri Feb  3 20:03:51 2006
+# Update Count    : 335
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,14 +42,21 @@ sub perform {
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
     my $totaal = $opts->{totaal};
-
-    my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
+    my $saldo = $opts->{saldo};
 
     if ( defined($totaal) ) {
 	$totaal = amount($totaal);
-	return "?".__x("Ongeldig totaal: {total}", total => $totaal) unless defined $totaal;
-	#$totaal = -$totaal if $dagboek_type == DBKTYPE_INKOOP;
+	return "?".__x("Ongeldig totaal: {total}", total => $totaal)
+	  unless defined $totaal;
     }
+
+    if ( defined($saldo) ) {
+	$saldo = amount($saldo);
+	return "?".__x("Ongeldig saldo: {saldo}", saldo => $saldo)
+	  unless defined $saldo;
+    }
+
+    my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
 
     my ($begin, $end);
     return unless ($begin, $end) = $self->begindate;
@@ -389,11 +396,10 @@ sub perform {
 	print(__x("Nieuw saldo: {bal}", bal => numfmt($new)), "\n");
 	$dbh->sql_exec("UPDATE Boekstukken SET bsk_saldo = ? WHERE bsk_id = ?",
 		       $new, $bsk_id)->finish;
-	if ( $opts->{saldo} ) {
-	    my $exp = amount($opts->{saldo});
-	    unless ( $exp == $new ) {
+	if ( defined $saldo ) {
+	    unless ( $saldo == $new ) {
 		warn("?".__x("Saldo {new} klopt niet met de vereiste waarde {act}",
-			     new => numfmt($new), act => numfmt($exp))."\n");
+			     new => numfmt($new), act => numfmt($saldo))."\n");
 		$fail++;
 	    }
 	}
