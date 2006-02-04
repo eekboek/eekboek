@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.18 2006/02/03 22:04:14 jv Exp $
+# $Id: Opening.pm,v 1.19 2006/02/04 12:00:15 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb  3 23:04:12 2006
-# Update Count    : 149
+# Last Modified On: Sat Feb  4 12:38:28 2006
+# Update Count    : 167
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -435,6 +435,7 @@ sub reopen {
 }
 
 sub shellhelp {
+    my ($self, $cmd) = @_;
     <<EOS;
 Het openen van een administratie kan slechts éénmaal gebeuren, vóór
 het invoeren van de eerste mutatie. Het openen van een nieuw boekjaar
@@ -442,8 +443,9 @@ kan te allen tijde worden uitgevoerd, uiteraard maar één keer per
 boekjaar.
 
 Het openen kan een aantal opdrachten omvatten, en wordt afgesloten met
-de opdracht "adm_open". Zolang deze opdracht niet is gegeven blijft de
-administratie ongewijzigd.
+de opdracht "adm_open". Zolang deze laatste opdracht niet is gegeven
+blijft de administratie ongewijzigd. Alle benodigde opdrachten moeten
+dan ook in één enkele EekBoek shell sessie worden afgehandeld.
 
 Mogelijke opdrachten voor openen van een boekjaar:
 
@@ -487,6 +489,111 @@ Opdrachten voor het openen van een administratie:
   adm_open
 		Alle informatie die met de bovenstaande opdrachten is
 		ingevoerd, wordt verwerkt.
+EOS
+}
+
+sub help_btwperiode {
+    <<EOS;
+Specifeer de BTW aangifteperiode voor het nieuw te openen jaar.
+
+  adm_btwperiode [ jaar | kwartaal | maand ]
+
+Deze opdracht kan worden gebruikt bij het openen van een boekjaar.
+Zie "help adm_open" voor meer informatie.
+EOS
+}
+
+sub help_boekjaarcode {
+    <<EOS;
+Specificeert de boekjaarcode voor het nieuw te openen jaar.
+
+  adm_boekjaarcode <code>
+
+De boekjaarcode telt maximaal 4 letters en/of cijfers.
+Standaard wordt het jaartal van het te openen boekjaar genomen.
+De boekjaarcode is alleen belangrijk indien er meerdere boekjaren in één
+administratie worden bijgehouden.
+
+Deze opdracht kan worden gebruikt bij het openen van een boekjaar.
+Zie "help adm_open" voor meer informatie.
+EOS
+}
+
+sub help_naam {
+    <<EOS;
+Specificeert de naam van de administatie, te gebruiken voor rapportages.
+
+  adm_naam "Naam van de administratie"
+
+Deze opdracht kan alleen worden gebruikt bij het openen van een nieuwe
+administratie. Zie "help adm_open" voor meer informatie.
+EOS
+}
+
+sub help_begindatum {
+    <<EOS;
+Specificeert de begindatum van de administratie.
+Een administratie loopt altijd van 1 januari tot en met 31 december
+van een kalenderjaar. Daarom moet als begindatum een jaartal worden
+opgegeven.
+
+  adm_begindatum <jaar>
+
+Deze opdracht kan alleen worden gebruikt bij het openen van een nieuwe
+administratie. Zie "help adm_open" voor meer informatie.
+EOS
+}
+
+sub help_balanstotaal {
+    <<EOS;
+Specificeert het balanstotaal voor de in te voeren openingbalans.
+
+  adm_balanstotaal <bedrag>
+
+Het balanstotaal is de zowel de som van alle debet-posten als de som
+van alle credit-posten van de openingsbalans. Als een balanstotaal is
+opgegeven, moeten er ook openingsbalansboekingen worden uitgevoerd met
+een of meer adm_balans opdrachten. Zie ook "help adm_balans".
+
+Deze opdracht kan alleen worden gebruikt bij het openen van een nieuwe
+administratie. Zie "help adm_open" voor meer informatie.
+EOS
+}
+
+sub help_balans {
+    <<EOS;
+Specificeert een balanspost voor de openingsbalans.
+
+  adm_balans <balansrekening> <bedrag>
+
+De debet en credit boekingen moeten uiteindelijk allebei gelijk zijn
+aan het opgegeven balanstotaal.
+
+Indien er een bedrag is opgegeven voor de balansrekening Crediteuren
+of voor Debiteuren, dan moeten er ook openstaande posten voor in
+totaal dit bedrag worden ingevoerd met een of meer adm_relatie
+opdrachten. Zie ook "help adm_relatie".
+
+Deze opdracht kan alleen worden gebruikt bij het openen van een nieuwe
+administratie. Zie "help adm_open" voor meer informatie.
+EOS
+}
+
+sub help_relatie {
+    <<EOS;
+Specificeert een openstaande post uit een voorgaand boekjaar.
+
+  adm_relatie <boekstuk> <datum> <code> <omschrijving> <bedrag>
+
+Het <boekstuk> moet volledig zijn, dus <dagboek>:<boekjaar>:<nummer>.
+
+Indien er voor de openingsbalans een bedrag is opgegeven voor de
+balansrekening Crediteuren of voor Debiteuren, dan moeten er ook
+openstaande posten voor in totaal dit bedrag worden ingevoerd. Zie ook
+"help adm_balans".
+
+Deze opdracht kan alleen worden gebruikt bij het openen van een nieuwe
+administratie. Zie "help adm_open" voor meer informatie.
 EOS
 }
 
