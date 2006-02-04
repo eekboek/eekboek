@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.37 is beschikbaar
+Subject: EekBoek versie 0.38 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -8,96 +8,25 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.37 van EekBoek is beschikbaar op de bekende sites:
+Release 0.38 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.37.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.38.tar.gz
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.37.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.38.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Database versie gewijzigd, auto-migratie beschikbaar. Zie echter ook
-  verderop!
+* BTW Aangifteformulier aangepast aan de moderne tijd.
+  Kleineondernemenrsregeling verwerkt in formulier.
 
-* Gebruik van de indeling Kosten/Omzet van de resultaatrekeningen bij
-  het bepalen van de BTW.
+* Betere foutdetectie op verkeerde commando-invoer.
 
-* Nieuwe waarschuwingen:
+* Herziening alle hulpteksten.
 
-  Grootboekrekening NNNN (Omschrijving) is een kostenrekening
-  Grootboekrekening NNNN (Omschrijving) is een omzetrekening
-
-  Deze worden gegeven indien er wordt geprobeerd inkopen te doen op
-  een omzetrekening, dan wel verkopen op een kostenrekening.
-
-* Dagboeken bank en kas kunnen nu ook vrije (std) boekingen doen met
-  BTW.
-
-* Vrije (std) boekingen in memoriaals blijven onderworpen aan de
-  verplichting om expliciete @x codering te gebruiken.
-
-* Herziening berekening BTW aangifte. Ook vrije boekingen worden nu
-  correct meegenomen, en BTW 0% wordt correct bepaald (issue 1378967).
-
-  LET OP: Dit geldt alleen voor boekingen die met de nieuwe versie van
-  de software zijn aangemaakt. Reeds uitgevoerde boekingen worden NIET
-  in de nieuwe BTW aangifte meegenomen.
-
-* Mogelijkheid tot user defined opdrachten en command wrappers. De
-  EekBoek shell zal bij het opstarten proberen een module
-  EB::Shell::Userdefs te laden. Deze module kan eigen opdrachten
-  implementeren, dan wel 'wrappen' naar eigen interpretatie.
-  Een voorbeeld staat in de examples directory.
-
-* Inkoop en Verkoopboekingen kunnen (weer) een boekstukbeschrijving
-  opgeven. Deze is gedocumenteerd maar was ooit een keer verloren
-  gegaan.
-
-  Om overgangsproblemen te voorkomen is de volgende heuristiek
-  geïmplementeerd.
-
-  - als de eerste tekst (na evt. datum) een bekende relatiecode is,
-    dan wordt verondersteld geen boekstukomschrijving opgegeven te
-    zijn.
-
-  Dit kan problemen geven in geval er boekstukomschrijvingen zijn die
-  overeen komen met een relatiecode. Daartoe kan de configuratie-
-  variabele [general]ivdesc op 1 worden gezet. De heuristiek wordt
-  dan:
-
-  - als de tweede tekst (na evt. datum) een bekende relatiecode is,
-    dan wordt de eerste tekst verondersteld de boekstukomschrijving te
-    zijn. 
-
-  Dit kan problemen geven in geval er boekstukregelomschrijvingen zijn
-  die overeen komen met een relatiecode. Vandaar.
-
-  Als iedereen zijn boekingen heeft omgezet dat kan deze heuristiek er
-  weer uit.
-
-* Nieuwe / gewijzigde configuratie-variabelen
-
-    [database] name     --  altijd de 'korte' naam, dus zonder eekboek_
-    [database] fullname --  altijd de volledige naam, dus met eekboek_
-
-* Opstartoptie --printcfg (of -P). Deze _moet als eerste_ op de command
-  line voorkomen! Indien gebruikt zal de EekBoek shell de warde van de
-  betreffende variabelen uitprinten (en verder niets doen). Bedoeld
-  voor in shell scripts, bijvoorbeeld:
-
-      pg_dump -c `ebshell -P database:fullname` > restore.sql
-
-* Installatie-verificatieprocedure kan worden gestart met "make ivp".
-
-* Herziening INSTALL en QUICKSTART documenten.
-
-* Import tools om administraties te importeren vanuit Davilex Account.
-  Niet volmaakt, maar komt aardig in de buurt.
-
-* Kleine wijzigen en bug fixjes.
+* Bug fix: RPM bouwprobleem met Config::IniFiles.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
