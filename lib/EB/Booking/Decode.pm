@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.11 2006/02/02 11:36:26 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.12 2006/02/06 12:08:49 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 31 21:20:40 2006
-# Update Count    : 110
+# Last Modified On: Mon Feb  6 13:06:39 2006
+# Update Count    : 115
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -168,11 +168,14 @@ sub decode {
 	next unless $trail;
 
 	$bsr_acc_id ||= "";
-	my $btw = $bsr_acc_id ?
-	  (($ex_btw
-	    || ( $bsr_type==0 && ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS
-				  || $dbktype == DBKTYPE_MEMORIAAL) && !$dbh->adm_ko)
-	    || btw_code($bsr_acc_id) != $bsr_btw_id) ? '@'.$bsr_btw_id : "") : "";
+	my $btw = "";
+	if ( $bsr_acc_id ) {
+	    if ( $ex_btw
+		 || ( $bsr_type == 0 && $dbktype == DBKTYPE_MEMORIAAL )
+		 || btw_code($bsr_acc_id) != $bsr_btw_id ) {
+		$btw = '@'.$bsr_btw_id;
+	    }
+	}
 
 	if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 	    $bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_VERKOOP;
