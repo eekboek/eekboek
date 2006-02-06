@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.4 2006/02/02 11:57:33 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.5 2006/02/06 14:54:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  2 12:55:37 2006
-# Update Count    : 66
+# Last Modified On: Mon Feb  6 15:30:36 2006
+# Update Count    : 67
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -132,6 +132,14 @@ sub clear {
 sub list {
     my @ds;
     eval {
+	local $ENV{PGUSER} = $cfg->val(qw(database user))
+	  if $cfg->val(qw(database user), undef);
+	local $ENV{PGPASS} = $cfg->val(qw(database password))
+	  if $cfg->val(qw(database password), undef);
+	local $ENV{PGHOST} = $cfg->val(qw(database host))
+	  if $cfg->val(qw(database host), undef);
+	local $ENV{PGPORT} = $cfg->val(qw(database port))
+	  if $cfg->val(qw(database port), undef);
 	@ds = DBI->data_sources("Pg");
 	die("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
     };
