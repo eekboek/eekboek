@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.34 2006/02/02 11:31:51 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.35 2006/02/06 11:56:31 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 31 21:42:27 2006
-# Update Count    : 225
+# Last Modified On: Mon Feb  6 12:53:23 2006
+# Update Count    : 226
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -54,9 +54,10 @@ sub perform {
     my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
 
     if ( defined($totaal) ) {
-	$totaal = amount($totaal);
-	return "?".__x("Ongeldig totaal: {total}", total => $totaal) unless defined $totaal;
-	#$totaal = -$totaal if $iv;
+	my $t = amount($totaal);
+	return "?".__x("Ongeldig totaal: {total}", total => $totaal)
+	  unless defined $t;
+	$totaal = $t;
     }
 
     my ($begin, $end);
