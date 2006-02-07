@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.29 2006/02/02 12:00:15 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.30 2006/02/07 10:02:50 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  2 12:58:53 2006
-# Update Count    : 474
+# Last Modified On: Tue Feb  7 10:59:11 2006
+# Update Count    : 475
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -55,14 +55,20 @@ sub create {
     shift;			# singleton class method
     my ($name) = @_;
     my $file;
-    foreach my $dir ( ".", "schema" ) {
-	foreach my $ext ( ".dat" ) {
-	    next unless -s "$dir/$name$ext";
-	    $file = "$dir/$name$ext";
-	    last;
-	}
+    if ( $name !~ /^\w+$/) {
+	$file = $name;
     }
-    $file = findlib("schema/$name.dat") unless $file;
+    else {
+	foreach my $dir ( ".", "schema" ) {
+	    foreach my $ext ( ".dat" ) {
+		next unless -s "$dir/$name$ext";
+		$file = "$dir/$name$ext";
+		last;
+	    }
+	}
+	$file = findlib("schema/$name.dat") unless $file;
+    }
+
     die("?".__x("Onbekend schema: {schema}", schema => $name)."\n") unless $file;
     open($fh, "<$file") or die("?".__x("Toegangsfout schema data: {err}", err => $!)."\n");
     $schema = $name;
