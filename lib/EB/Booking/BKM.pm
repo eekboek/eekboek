@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.40 2006/02/03 19:09:15 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.41 2006/02/07 11:42:56 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb  3 20:03:51 2006
-# Update Count    : 335
+# Last Modified On: Mon Feb  6 12:52:02 2006
+# Update Count    : 336
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -45,15 +45,17 @@ sub perform {
     my $saldo = $opts->{saldo};
 
     if ( defined($totaal) ) {
-	$totaal = amount($totaal);
+	my $t = amount($totaal);
 	return "?".__x("Ongeldig totaal: {total}", total => $totaal)
-	  unless defined $totaal;
+	  unless defined $t;
+	$totaal = $t;
     }
 
     if ( defined($saldo) ) {
-	$saldo = amount($saldo);
+	my $t = amount($saldo);
 	return "?".__x("Ongeldig saldo: {saldo}", saldo => $saldo)
-	  unless defined $saldo;
+	  unless defined $t;
+	$saldo = $t;
     }
 
     my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
