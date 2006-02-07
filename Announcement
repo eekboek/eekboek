@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.39 is beschikbaar
+Subject: EekBoek versie 0.40 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -8,18 +8,29 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.39 van EekBoek is beschikbaar op de bekende sites:
+Release 0.40 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.39.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.40.tar.gz
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.39.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.40.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Kleine bugfixjes.
+* Opdrachten "import" en "include" (experimenteel).
+
+  Met "import" kan een eerder geëxporteerde administratie in één klap
+  weer worden gereconstrueerd. De huidige inhoud van de database wordt
+  daarbij volledig overschreven.
+
+  Opdracht "include" neemt een bestandsnaam en voert alle opdrachten
+  uit dit bestand uit.
+
+* Schema-naam (ebshell --schema=naam) mag nu ook een bestand zijn in
+  plaats van een naam (alleen letters, cijfers en _). In het gevan van
+  een bestand wordt geen zoekstrategie toegepast.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
