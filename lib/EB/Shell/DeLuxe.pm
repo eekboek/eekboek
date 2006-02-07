@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.6 2006/01/25 10:15:29 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.7 2006/02/07 11:44:32 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 25 10:55:46 2006
-# Update Count    : 168
+# Last Modified On: Mon Feb  6 22:02:02 2006
+# Update Count    : 188
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -25,6 +25,9 @@ sub new {
 
     if ( $opts->{command} ) {
 	no strict 'refs';
+
+=begin xxx
+
 	my $eof;
 	*{"readline"} = sub {
 	    return undef if $eof;
@@ -35,6 +38,9 @@ sub new {
 	    }
 	    return [ @ARGV ];
 	};
+
+=cut
+
 	*{"parseline"} = sub {
 	    my ($arg0, @args) = @ARGV;
 	    return ($arg0, \%ENV, @args);
@@ -47,6 +53,9 @@ sub new {
 
     elsif ( !$opts->{interactive} ) {
 	no strict 'refs';
+
+=begin xxx
+
 	*{"readline"} = sub {
 	    my $line;
 	    my $pre = "";
@@ -75,6 +84,9 @@ sub new {
 		return $pre.$line;
 	    }
 	};
+
+=cut
+
 	*{"init_rl"} = sub {};
 	*{"histfile"} = sub {};
 	*{"print"} = sub { shift; CORE::print @_ };
@@ -82,7 +94,85 @@ sub new {
 
     my $self = $class->SUPER::new($opts);
     $self->{$_} = $opts->{$_} foreach keys(%$opts);
+
+    if ( $opts->{command} ) {
+	$self->{readline} = \&readline_command;
+    }
+    elsif ( !$opts->{interactive} ) {
+	$self->{readline} = sub { $self->readline_file(*STDIN) };
+    }
+    else {
+	$self->{readline} = \&readline_interactive;
+    }
+
     $self;
+}
+
+sub readline_interactive {
+    my ($self, $prompt) = @_;
+    return $self->term->readline($prompt);
+}
+
+sub readline_file {
+    my ($self, $fd) = @_;
+
+    my $line;
+    my $pre = "";
+    while ( 1 ) {
+	$line = <$fd>;
+	return unless $line;
+	if ( $self->{echo} ) {
+	    my $pr = $self->{echo};
+	    $pr =~ s/\>/>>/ if $pre;
+	    print($pr, $line);
+	}
+	unless ( $line =~ /\S/ ) {
+	    # Empty line will stop \ continuation.
+	    return $pre if $pre ne "";
+	    next;
+	}
+	next if $line =~ /^\s*#/;
+	chomp($line);
+	$line =~ s/\s+#.+$//;
+	if ( $line =~ /(^.*)\\$/ ) {
+	    $line = $1;
+	    $line =~ s/\s+$/ /;
+	    $pre .= $line;
+	    next;
+	}
+	return $pre.$line;
+    }
+
+}
+
+sub attach_file {
+    my ($self, $file) = @_;
+    push(@{$self->{readlines}}, $self->{readline});
+    $self->{readline} = sub { shift->readline_file($file) };
+}
+
+my $eof;
+sub readline_command {
+    my ($self, $prompt) = @_;
+    return undef if $eof;
+    $eof = 1;
+    if ( @ARGV == 1 ) {
+	use Text::ParseWords;
+	@ARGV = shellwords($ARGV[0]);
+    }
+    return [ @ARGV ];
+}
+
+sub readline {
+    my ($self, $prompt) = @_;
+    my $ret;
+    while ( !defined($ret = $self->{readline}->($self, $prompt)) ) {
+	unless ( $self->{readlines} && @{$self->{readlines}} ) {
+	    return;
+	}
+	$self->{readline} = pop(@{$self->{readlines}});
+    }
+    return $ret;
 }
 
 1;
