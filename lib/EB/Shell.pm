@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.59 2006/02/07 11:45:14 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.60 2006/02/07 11:54:59 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  7 12:45:07 2006
-# Update Count    : 739
+# Last Modified On: Tue Feb  7 12:54:55 2006
+# Update Count    : 740
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -929,7 +929,7 @@ sub do_import {
     return;
 }
 
-sub help_export {
+sub help_import {
     <<EOS;
 Importeert een complete, geëxporteerde administratie.
 
