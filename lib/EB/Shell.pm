@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.58 2006/02/04 12:00:07 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.59 2006/02/07 11:45:14 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Feb  4 12:38:51 2006
-# Update Count    : 726
+# Last Modified On: Tue Feb  7 12:45:07 2006
+# Update Count    : 739
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -899,6 +899,83 @@ Opties:
 
 Er moet of een --output of een --dir optie worden opgegeven.
 Zonder --boekjaar selectie wordt de gehele administratie geëxporteerd.
+EOS
+}
+
+sub do_import {
+    my ($self, @args) = @_;
+    my $opts = { 
+	       };
+
+    return unless
+    parse_args(\@args,
+	       [ 'dir=s',
+		 'file=s',
+	       ], $opts);
+
+    if ( defined($opts->{dir}) && defined($opts->{output}) ) {
+	warn("?"._T("Opties --dir en --output sluiten elkaar uit")."\n");
+	return;
+    }
+    if ( !defined($opts->{dir}) && !defined($opts->{output}) ) {
+	warn("?"._T("Specifieer --dir of --output")."\n");
+	return;
+    }
+
+    return unless argcnt(scalar(@args), 0);
+    require EB::Import;
+    EB::Import->do_import($self, $opts);
+
+    return;
+}
+
+sub help_export {
+    <<EOS;
+Importeert een complete, geëxporteerde administratie.
+
+  import [ <opties> ]
+
+Opties:
+
+  --input=<bestand>           Selecteer exportbestand
+  --dir=<directory>           Selecteer exportdirectory
+
+Er moet of een --input of een --dir optie worden opgegeven.
+
+LET OP: IMPORT VERVANGT DE COMPLETE ADMINISTRATIE!
+EOS
+}
+
+sub do_include {
+    my ($self, @args) = @_;
+    my $opts = { optional => 0,
+	       };
+
+    return unless
+    parse_args(\@args,
+	       [ 'optional|optioneel',
+	       ], $opts);
+    return unless argcnt(scalar(@args), 1);
+    my $file = shift(@args);
+    if ( open(my $fd, '<', $file) ) {
+	$self->attach_file($fd);
+    }
+    elsif ( !$opts->{optional} ) {
+	die("$file: $!\n");
+    }
+    ""
+}
+
+sub help_include {
+    <<EOS;
+Leest opdrachten uit een bestand.
+
+  include [ <opties> ] <bestand>
+
+Opties:
+
+  --optioneel                 Het bestand mag ontbreken. De opdracht
+                              wordt dan verder genegeerd.
 EOS
 }
 
