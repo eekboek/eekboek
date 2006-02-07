@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.36 2006/02/02 11:43:58 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.37 2006/02/07 11:46:28 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  2 12:43:09 2006
-# Update Count    : 306
+# Last Modified On: Tue Feb  7 12:28:53 2006
+# Update Count    : 309
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -407,6 +407,7 @@ sub cleardb {
     my ($self) = shift;
     $dbpkg ||= $self->_loaddbbackend;
     $dbpkg->clear;
+    $self->resetdbcache;
 }
 
 sub createdb {
@@ -414,6 +415,7 @@ sub createdb {
     $dbpkg ||= $self->_loaddbbackend;
     Carp::confess("OOPS") unless $dbpkg;
     $dbpkg->create($dbname);
+    $self->resetdbcache;
 }
 
 sub driverdb {
@@ -493,12 +495,17 @@ END {
       if %sth && $cfg->val("internal sql", qw(prepstats), 0);
 }
 
-sub close {
+sub resetdbcache {
     my ($self) = @_;
-    $self->disconnectdb;
     %sth = ();
     $self->std_acc("");
     $self->adm("");
+}
+
+sub close {
+    my ($self) = @_;
+    $self->disconnectdb;
+    $self->resetdbcache;
 }
 
 sub show_sql($$@) {
