@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.5 2006/02/06 14:54:49 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.6 2006/02/07 11:43:39 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  6 15:30:36 2006
-# Update Count    : 67
+# Last Modified On: Tue Feb  7 12:08:28 2006
+# Update Count    : 70
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -28,8 +28,19 @@ sub type { "Postgres" }
 
 sub create {
     my ($self, $dbname) = @_;
-    croak("?INTERNAL ERROR: create db while connected") if $dbh;
 
+    if ( $dbh && !$dbname ) {	# use current DB.
+	$dbh->{RaiseError} = 0;
+	$dbh->{PrintError} = 0;
+	$dbh->{AutoCommit} = 1;
+	$self->clear;
+	$dbh->{RaiseError} = 1;
+	$dbh->{PrintError} = 1;
+	$dbh->{AutoCommit} = 0;
+	return;
+    }
+
+    croak("?INTERNAL ERROR: create db while connected") if $dbh;
     my @ds = @{$self->list};
     if ( grep { $_ eq $dbname } @ds ) {
 	$self->connect($dbname);
