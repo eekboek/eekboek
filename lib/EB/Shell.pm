@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.60 2006/02/07 11:54:59 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.61 2006/02/08 15:25:39 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  7 12:54:55 2006
-# Update Count    : 740
+# Last Modified On: Wed Feb  8 16:24:45 2006
+# Update Count    : 743
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -878,6 +878,7 @@ sub do_export {
     }
 
     return unless argcnt(@args, 0);
+    check_open(1);
 
     use EB::Export;
     EB::Export->export($opts);
@@ -1240,10 +1241,22 @@ sub date_arg {
 sub check_open {
     my ($self, $open) = @_;
     $open = 1 unless defined($open);
-    if ( $open && !$dbh->adm_busy ) {
+    if ( $open && !$dbh->adm_open ) {
 	die("?"._T("De administratie is nog niet geopend")."\n");
     }
-    elsif ( !$open && $dbh->adm_busy ) {
+    elsif ( !$open && $dbh->adm_open ) {
+	die("?"._T("De administratie is reeds geopend")."\n");
+    }
+    1;
+}
+
+sub check_busy {
+    my ($self, $busy) = @_;
+    $busy = 1 unless defined($busy);
+    if ( $busy && !$dbh->adm_busy ) {
+	die("?"._T("De administratie is nog niet in gebruik")."\n");
+    }
+    elsif ( !$busy && $dbh->adm_busy ) {
 	die("?"._T("De administratie is reeds in gebruik")."\n");
     }
     1;
