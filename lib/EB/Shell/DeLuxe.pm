@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.7 2006/02/07 11:44:32 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.8 2006/02/08 15:23:13 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  6 22:02:02 2006
-# Update Count    : 188
+# Last Modified On: Wed Feb  8 16:18:42 2006
+# Update Count    : 200
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,75 +21,14 @@ sub new {
     $class = ref($class) || $class;
     my $opts = UNIVERSAL::isa($_[0], 'HASH') ? shift : { @_ };
 
+    $opts->{interactive} = 0 if $opts->{command};
     $opts->{interactive} = -t unless defined $opts->{interactive};
 
-    if ( $opts->{command} ) {
+    unless ( $opts->{interactive} ) {
 	no strict 'refs';
-
-=begin xxx
-
-	my $eof;
-	*{"readline"} = sub {
-	    return undef if $eof;
-	    $eof = 1;
-	    if ( @ARGV == 1 ) {
-		use Text::ParseWords;
-		@ARGV = shellwords($ARGV[0]);
-	    }
-	    return [ @ARGV ];
-	};
-
-=cut
-
-	*{"parseline"} = sub {
-	    my ($arg0, @args) = @ARGV;
-	    return ($arg0, \%ENV, @args);
-	};
-	*{"init_rl"} = sub {};
+	*{"init_rl"}  = sub {};
 	*{"histfile"} = sub {};
-	*{"print"} = sub { shift; CORE::print @_ };
-	$opts->{interactive} = 0;
-    }
-
-    elsif ( !$opts->{interactive} ) {
-	no strict 'refs';
-
-=begin xxx
-
-	*{"readline"} = sub {
-	    my $line;
-	    my $pre = "";
-	    while ( 1 ) {
-		$line = <>;
-		return unless $line;
-		if ( $opts->{echo} ) {
-		    my $pr = $opts->{echo};
-		    $pr =~ s/\>/>>/ if $pre;
-		    print($pr, $line);
-		}
-		unless ( $line =~ /\S/ ) {
-		    # Empty line will stop \ continuation.
-		    return $pre if $pre ne "";
-		    next;
-		}
-		next if $line =~ /^\s*#/;
-		chomp($line);
-		$line =~ s/\s+#.+$//;
-		if ( $line =~ /(^.*)\\$/ ) {
-		    $line = $1;
-		    $line =~ s/\s+$/ /;
-		    $pre .= $line;
-		    next;
-		}
-		return $pre.$line;
-	    }
-	};
-
-=cut
-
-	*{"init_rl"} = sub {};
-	*{"histfile"} = sub {};
-	*{"print"} = sub { shift; CORE::print @_ };
+	*{"print"}    = sub { shift; CORE::print @_ };
     }
 
     my $self = $class->SUPER::new($opts);
@@ -98,13 +37,13 @@ sub new {
     if ( $opts->{command} ) {
 	$self->{readline} = \&readline_command;
     }
-    elsif ( !$opts->{interactive} ) {
-	$self->{readline} = sub { $self->readline_file(*STDIN) };
-    }
-    else {
+    elsif ( $opts->{interactive} ) {
 	$self->{readline} = \&readline_interactive;
     }
-
+    else {
+	$self->{readline} = sub { $self->readline_file(*STDIN) };
+    }
+    $self->{inputstack} = [];
     $self;
 }
 
@@ -147,30 +86,30 @@ sub readline_file {
 
 sub attach_file {
     my ($self, $file) = @_;
-    push(@{$self->{readlines}}, $self->{readline});
+    push(@{$self->{inputstack}}, $self->{readline});
     $self->{readline} = sub { shift->readline_file($file) };
 }
 
-my $eof;
 sub readline_command {
     my ($self, $prompt) = @_;
-    return undef if $eof;
-    $eof = 1;
-    if ( @ARGV == 1 ) {
-	use Text::ParseWords;
-	@ARGV = shellwords($ARGV[0]);
+    return undef unless @ARGV;
+    return shift(@ARGV) if @ARGV == 1;
+    my $line = "";
+    while ( @ARGV ) {
+	my $word = shift(@ARGV);
+	$word =~ s/('|\\)/\\$1/g;
+	$line .= " " if $line ne "";
+	$line .= "'" . $word . "'";
     }
-    return [ @ARGV ];
+    return $line;
 }
 
 sub readline {
     my ($self, $prompt) = @_;
     my $ret;
     while ( !defined($ret = $self->{readline}->($self, $prompt)) ) {
-	unless ( $self->{readlines} && @{$self->{readlines}} ) {
-	    return;
-	}
-	$self->{readline} = pop(@{$self->{readlines}});
+	return unless @{$self->{inputstack}};
+	$self->{readline} = pop(@{$self->{inputstack}});
     }
     return $ret;
 }
@@ -211,6 +150,8 @@ This implements batch processing in the style of "sh < commands.sh".
 All commands are read from the standard input, and processing
 terminates after the last command has been read.
 
+Commands read this way can be backslash-continued.
+
 =item Single command execution
 
 This implements command execution in the style of "sh -c 'command'".
@@ -247,9 +188,10 @@ Defaults to true unless the standard input is not a terminal.
 =item command
 
 Controls whether this instance executes a single command, that is
-contained as an array reference in the value of this option.
+contained in @ARGV;
 
-  my $opts = { command => [ "exec", "this", "command" ] };
+  @ARGV = ( "exec", "this", "command" );
+  my $opts = { command => 1 };
   my $shell = EB::Shell::DeLuxe->new($opts);
   $shell->run;
 
@@ -270,7 +212,7 @@ Johan Vromans E<lt>jvromans@squirrel.nl<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005 Squirrel Consultancy. All Rights Reserved.
+Copyright (C) 2005,2006 Squirrel Consultancy. All Rights Reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
