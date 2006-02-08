@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.31 2006/02/07 11:44:05 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.32 2006/02/08 15:07:01 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  7 12:20:08 2006
-# Update Count    : 478
+# Last Modified On: Wed Feb  8 15:18:30 2006
+# Update Count    : 482
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -233,12 +233,12 @@ sub scan_balres {
 	error(__x("Dubbel: rekening {acct}", acct => $1)."\n") if exists($acc{$id});
 	error(__x("Rekening {id} heeft geen verdichting", id => $id)."\n") unless defined($cvdi);
 	my $debcrd;
-	my $kstomz = 1;
-	if ( ($balres ? $flags =~ /^[dc]$/i : $flags =~ /^[ko]$/i)
+	my $kstomz;
+	if ( ($balres ? $flags =~ /^[dc]$/i : $flags =~ /^[kon]$/i)
 	     ||
 	     $flags =~ /^[dc][ko]$/i ) {
 	    $debcrd = $flags =~ /d/i;
-	    $kstomz = $flags =~ /k/i;
+	    $kstomz = $flags =~ /k/i unless $flags =~ /n/i;
 	}
 	else {
 	    error(__x("Rekening {id}: onherkenbare vlaggetjes {flags}",
@@ -251,9 +251,13 @@ sub scan_balres {
 	    $desc = $1;
 	    $extra = $2;
 	    if ( $extra =~ m/^btw=(hoog|laag)$/i ) {
+		error(__x("Rekening {id}: BTW koppeling met balansrekening is niet toegestaan",
+			  id => $id)."\n") if $balres;
 		$btw = lc(substr($1,0,1));
 	    }
 	    elsif ( $extra =~ m/^btw=(\d+)$/i ) {
+		error(__x("Rekening {id}: BTW koppeling met balansrekening is niet toegestaan",
+			  id => $id)."\n") if $balres;
 		$btw = $1;
 	    }
 	    elsif ( $extra =~ m/koppeling=(\S+)/i ) {
@@ -409,7 +413,7 @@ ESQL
     for ( my $i = 0; $i < @hvdi; $i++ ) {
 	next unless exists $hvdi[$i];
 	my $v = $hvdi[$i];
-	$out .= _tsv($i, $v->[0], _tf($v->[1]), "\\N", "\\N");
+	$out .= _tsv($i, $v->[0], _tf($v->[1]), _tfn(undef), "\\N");
     }
     $out .= "\\.\n";
 
@@ -422,7 +426,7 @@ ESQL
     for ( my $i = 0; $i < @vdi; $i++ ) {
 	next unless exists $vdi[$i];
 	my $v = $vdi[$i];
-	$out .= _tsv($i, $v->[0], _tf($v->[1]), "\\N", $v->[2]);
+	$out .= _tsv($i, $v->[0], _tf($v->[1]), _tfn(undef), $v->[2]);
     }
     $out . "\\.\n";
 }
@@ -443,7 +447,7 @@ ESQL
 	$out .= _tsv($i, $g->[0], $g->[1],
 		     _tf($g->[2]),
 		     _tf($g->[3]),
-		     _tf($g->[4]),
+		     _tfn($g->[4]),
 		     $btwmap{$g->[5]},
 		     0, 0);
     }
@@ -730,7 +734,9 @@ sub dump_acc {
 		    $flags .= $acc_debcrd ? "D" : "C";
 		}
 		else {
-		    $flags .= $acc_kstomz ? "K" : "O";
+		    $flags .= defined($acc_kstomz)
+		      ? ($acc_kstomz ? "K" : "O")
+			: "N";
 		}
 		my $extra = "";
 		if ( $btw == BTWTARIEF_HOOG && $btwincl ) {
