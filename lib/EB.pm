@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.43 2006/02/07 09:50:41 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.44 2006/02/08 15:05:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  7 10:50:23 2006
-# Update Count    : 115
+# Last Modified On: Wed Feb  8 16:05:44 2006
+# Update Count    : 116
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -77,7 +77,7 @@ INIT {
 		 ident   => $ident,
 		 extra   => ($app ? "Wx " : ""),
 		 locale  => (LOCALISER ? "("._T("Nederlands").") " : ""),
-		 year    => $year)."\n") unless @ARGV && $ARGV[0] =~ /-(P|-?printconf)$/;
+		 year    => $year)."\n") unless @ARGV && $ARGV[0] =~ /-(P|-?printcfg)$/;
     @months =
       split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
     @month_names =
