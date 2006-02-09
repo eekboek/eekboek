@@ -30,3 +30,5 @@ Berekening
 5a   Subtotaal                                               1463
 5b   Voorbelasting                                            149
 5c   Subtotaal                                               1314
+5d   Vermindering kleineondernemersregeling                  1314
+5g   Totaal te betalen                                          0
