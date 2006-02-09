@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.35 2006/02/06 11:56:31 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.36 2006/02/09 16:52:32 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  6 12:53:23 2006
-# Update Count    : 226
+# Last Modified On: Thu Feb  9 17:52:19 2006
+# Update Count    : 232
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -70,7 +70,7 @@ sub perform {
     else {
 	return "?".__x("Onherkenbare datum: {date}",
 		       date => $args->[0])."\n"
-	  if ($args->[0]||"") =~ /^[[:digit:]]/;
+	  if ($args->[0]||"") =~ /^[[:digit:]]+-/;
 	$date = iso8601date();
     }
 
@@ -187,6 +187,7 @@ sub perform {
 	    #$dbh->rollback;
 	    #return;
 	}
+	# elsif ( defined($kstomz) && ($kstomz ? !$iv : $iv) ) {
 	elsif ( $kstomz ? !$iv : $iv ) {
 	    warn("!".__x("Grootboekrekening {acct} ({desc}) is een {what}rekening",
 			 acct => $acct, desc => $adesc,
@@ -204,12 +205,6 @@ sub perform {
 			     $bsk_nr, $gdesc, $dagboek, $date, $bky);
 	    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
 	}
-
-	# btw_id    btw_acc
-	#   0         \N          zonder BTW, extra/verlegd
-	#   0         nnnn        zonder BTW
-	#   n         nnnn        normaal
-	#   n         \N          extra/verlegd
 
 	# Amount can override BTW id with @X postfix.
 	my $oamt = $amt;

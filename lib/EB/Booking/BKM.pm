@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.41 2006/02/07 11:42:56 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.42 2006/02/09 16:51:33 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  6 12:52:02 2006
-# Update Count    : 336
+# Last Modified On: Thu Feb  9 10:55:17 2006
+# Update Count    : 338
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -70,7 +70,7 @@ sub perform {
     else {
 	return "?".__x("Onherkenbare datum: {date}",
 		       date => $args->[0])."\n"
-	  if ($args->[0]||"") =~ /^[[:digit:]]/;
+	  if ($args->[0]||"") =~ /^[[:digit:]]+-/;
 	$date = iso8601date();
     }
 
@@ -116,7 +116,7 @@ sub perform {
 	    else {
 		return "?".__x("Onherkenbare datum: {date}",
 			       date => $args->[0])."\n"
-		  if ($args->[0]||"") =~ /^[[:digit:]]/;
+		  if ($args->[0]||"") =~ /^[[:digit:]]+-/;
 		$dd = $date;
 	    }
 	    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
@@ -282,7 +282,7 @@ sub perform {
 	    else {
 		return "?".__x("Onherkenbare datum: {date}",
 			       date => $args->[0])."\n"
-		  if ($args->[0]||"") =~ /^[[:digit:]]/;
+		  if ($args->[0]||"") =~ /^[[:digit:]]+=/;
 		$dd = $date;
 	    }
 	    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
