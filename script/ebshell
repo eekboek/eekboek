@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.12 2006/01/27 15:43:08 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.13 2006/02/09 11:28:07 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 27 16:32:35 2006
-# Update Count    : 260
+# Last Modified On: Thu Feb  9 12:27:48 2006
+# Update Count    : 271
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -164,14 +164,26 @@ sub app_options {
     # Make sure defaults are set before returning!
     return unless @ARGV > 0;
 
+    Getopt::Long::Configure(qw(no_ignore_case));
+
     if ( !GetOptions(
 		     'command|c' => sub {
 			 $command = 1;
 			 die("!FINISH\n");
 		     },
 		     'createdb' => \$createdb,
+		     'define|D=s%' => sub {
+			 my ($opt, $key, $arg) = @_;
+			 if ( $key =~ /^(.+):(.+)$/ ) {
+			     $cfg->newval($1, $2, $arg);
+			 }
+			 else {
+			     die(__x("Ongeldige aanduiding voor config setting: {arg}",
+				    arg => $key)."\n");
+			 }
+		     },
 		     'schema=s' => \$schema,
-		     'echo!'	=> \$echo,
+		     'echo|e!'	=> \$echo,
 		     'ident'	=> \$ident,
 		     'journaal|journal'	=> \$journal,
 		     'boekjaar=s'	=> \$bky,
@@ -209,6 +221,7 @@ Gebruik: {prog} [options] [file ...]
     --boekjaar=XXX	specificeer boekjaar
     --createdb		maak nieuwe database aan
     --schema=XXX        initialisser database met schema
+    --define=XXX -D     definieer configuratiesetting
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
