@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.32 2006/02/08 15:07:01 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.33 2006/02/09 16:55:49 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb  8 15:18:30 2006
-# Update Count    : 482
+# Last Modified On: Thu Feb  9 10:52:58 2006
+# Update Count    : 488
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -251,13 +251,9 @@ sub scan_balres {
 	    $desc = $1;
 	    $extra = $2;
 	    if ( $extra =~ m/^btw=(hoog|laag)$/i ) {
-		error(__x("Rekening {id}: BTW koppeling met balansrekening is niet toegestaan",
-			  id => $id)."\n") if $balres;
 		$btw = lc(substr($1,0,1));
 	    }
 	    elsif ( $extra =~ m/^btw=(\d+)$/i ) {
-		error(__x("Rekening {id}: BTW koppeling met balansrekening is niet toegestaan",
-			  id => $id)."\n") if $balres;
 		$btw = $1;
 	    }
 	    elsif ( $extra =~ m/koppeling=(\S+)/i ) {
@@ -269,6 +265,12 @@ sub scan_balres {
 		  if $std{$1};
 		$std{$1} = $id;
 	    }
+	}
+	if ( $btw ne 'g' ) {
+	    error(__x("Rekening {id}: BTW koppeling met balansrekening is niet toegestaan",
+		      id => $id)."\n") if $balres;
+	    error(__x("Rekening {id}: BTW koppeling met neutrale resultaatrekening is niet toegestaan",
+		      id => $id)."\n") if !defined($kstomz);
 	}
 	$desc =~ s/\s+$//;
 	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz, $btw ];
@@ -583,7 +585,7 @@ print {$fh}  <<EOD;
 #
 # De omschrijving van de grootboekrekeningen wordt voorafgegaan door
 # een vlaggetje, een letter die resp. Debet/Credit (voor
-# balansrekeningen) en Kosten/Omzet (voor resultaatrekeningen)
+# balansrekeningen) en Kosten/Omzet/Neutraal (voor resultaatrekeningen)
 # aangeeft. De omschrijving wordt indien nodig gevolgd door extra
 # informatie. Voor grootboekrekeningen kan op deze wijze de BTW
 # tariefstelling worden aangegeven die op deze rekening van toepassing
@@ -608,21 +610,6 @@ print {$fh}  <<EOD;
 # Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
 
 EOD
-
-=begin not_now
-
-# De classificatie Kosten/Omzet voor resultaatrekeningen wordt onder
-# meer gebruikt om te bepalen hoe BTW moet worden geboekt. Als om
-# welke reden dan ook de classificatie niet betrouwbaar moet worden
-# geacht, kan de aanduiding "Kosten-Omzet NOK" worden gebruikt om aan
-# te geven dat EekBoek deze niet mag gebruiken. Dit kan echter leiden
-# tot problemen met BTW boekingen!
-
-EOD
-
-    print {$fh} ($dbh->adm_ko ? "# " : "", "Kosten-Omzet NOK\n");
-
-=cut
 
 $max_hvd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE vdi_struct IS NULL")->[0];
 $max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct IS NULL")->[0];
