@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.19 2006/02/04 12:00:15 jv Exp $
+# $Id: Opening.pm,v 1.20 2006/02/10 16:35:59 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Feb  4 12:38:28 2006
-# Update Count    : 167
+# Last Modified On: Fri Feb 10 17:31:41 2006
+# Update Count    : 168
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -81,9 +81,10 @@ sub set_boekjaarcode {
 sub set_balanstotaal {
     return shellhelp() unless @_ == 2;
     my ($self, $amt) = @_;
-    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($amt = amount($amt));
+    my $anew;
+    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($anew = amount($amt));
     $self->check_open(0);
-    $self->{o}->{balanstotaal} = $amt;
+    $self->{o}->{balanstotaal} = $anew;
     "";
 }
 
@@ -106,9 +107,10 @@ sub set_balans {
     else {
 	$debcrd = $rr->[1];
     }
-    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($amt = amount($amt));
+    my $anew;
+    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($anew = amount($amt));
     $self->check_open(0);
-    push(@{$self->{o}->{balans}}, [$acct, $debcrd ? $amt : -$amt]);
+    push(@{$self->{o}->{balans}}, [$acct, $debcrd ? $anew : -$anew]);
     "";
 }
 
@@ -156,10 +158,11 @@ sub set_relatie {
     return __x("Ongeldige relatie: {rel}", rel => $code)."\n"
       if $type  ^ $debcrd;
 
-    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($amt = amount($amt));
+    my $anew;
+    return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($anew = amount($amt));
 
     $self->check_open(0);
-    push(@{$self->{o}->{relatie}}, [$bky, $nr, $date, $desc, $type, $code, $amt]);
+    push(@{$self->{o}->{relatie}}, [$bky, $nr, $date, $desc, $type, $code, $anew]);
     "";
 }
 
