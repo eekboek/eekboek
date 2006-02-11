@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.33 2006/02/09 16:55:49 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.34 2006/02/11 17:16:16 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  9 10:52:58 2006
-# Update Count    : 488
+# Last Modified On: Sat Feb 11 18:14:48 2006
+# Update Count    : 513
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -213,6 +213,14 @@ sub scan_btw {
 	    $btwmap{l} = $id;
 	}
     }
+    else {
+	if ( $groep == BTWTARIEF_HOOG && !defined($btwmap{"h-"}) ) {
+	    $btwmap{"h-"} = $id;
+	}
+	elsif ( $groep == BTWTARIEF_LAAG && !defined($btwmap{"l-"}) ) {
+	    $btwmap{"l-"} = $id;
+	}
+    }
     $btwmap{$id} = $id;
     1;
 }
@@ -245,16 +253,37 @@ sub scan_balres {
 		      id => $id, flags => $flags)."\n");
 	}
 
-	my $btw = 'g';
+	my $btw_type = 'g';
+	my $btw_ko;
 	my $extra;
+
 	while ( $desc =~ /^(.+?)\s+:([^\s:]+)\s*$/ ) {
 	    $desc = $1;
 	    $extra = $2;
-	    if ( $extra =~ m/^btw=(hoog|laag)$/i ) {
-		$btw = lc(substr($1,0,1));
-	    }
-	    elsif ( $extra =~ m/^btw=(\d+)$/i ) {
-		$btw = $1;
+	    if ( $extra =~ m/^btw=(.+)$/i ) {
+		my ($spec) = lc($1);
+		my $btw_inex = 1;
+		if ( $balres && $spec =~ /^(\d+)(,kosten|,omzet)?$/ ) {
+		    $btw_type = $1;
+		    $btw_ko = substr($2, 2, 1) eq "k" if defined $2;
+		}
+		elsif ( $balres && $spec =~ /^(hoog|laag)(,excl|,incl)?(,kosten|,omzet)?$/ ) {
+		    $btw_type = substr($1, 0, 1);
+		    $btw_inex = substr($2, 1, 1) eq 'i' if defined $2;
+		    $btw_ko   = substr($3, 1, 1) eq "k" if defined $3;
+		}
+		elsif ( !$balres && $spec =~ /^(\d+)$/ ) {
+		    $btw_type = $1;
+		}
+		elsif ( !$balres && $spec =~ /^(hoog|laag)(,excl|,incl)?$/ ) {
+		    $btw_type = substr($1, 0, 1);
+		    $btw_inex = substr($2, 1, 1) eq 'i' if defined $2;
+		}
+		else {
+		    error(__x("Foutieve BTW specificatie: {spec}",
+			      spec -> $1)."\n");
+		}
+		$btw_type .= "-" unless $btw_inex;
 	    }
 	    elsif ( $extra =~ m/koppeling=(\S+)/i ) {
 		error(__x("Rekening {id}: onbekende koppeling \"{std}\"",
@@ -266,14 +295,19 @@ sub scan_balres {
 		$std{$1} = $id;
 	    }
 	}
-	if ( $btw ne 'g' ) {
-	    error(__x("Rekening {id}: BTW koppeling met balansrekening is niet toegestaan",
-		      id => $id)."\n") if $balres;
+	if ( $btw_type ne 'g' ) {
 	    error(__x("Rekening {id}: BTW koppeling met neutrale resultaatrekening is niet toegestaan",
 		      id => $id)."\n") if !defined($kstomz);
+	    error(__x("Rekening {id}: BTW koppeling '{ko}' met een {acc} is niet toegestaan",
+		      id => $id, ko => qw(omzet kosten)[$btw_ko],
+		      acc => qw(omzetrekening kostenrekening)[$kstomz])."\n")
+	      if !$balres && defined($kstomz) && defined($btw_ko) && $btw_ko != $kstomz;
+	    error(__x("Rekening {id}: BTW koppeling met een balansrekening vereist kosten/omzet specificatie",
+		      id => $id)."\n")
+	      if $balres && !defined($btw_ko);
 	}
 	$desc =~ s/\s+$//;
-	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz, $btw ];
+	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz||$btw_ko, $btw_type ];
     }
     else {
 	0;
@@ -726,11 +760,21 @@ sub dump_acc {
 			: "N";
 		}
 		my $extra = "";
-		if ( $btw == BTWTARIEF_HOOG && $btwincl ) {
+		if ( $btw == BTWTARIEF_HOOG ) {
 		    $extra .= " :btw=hoog";
+		    $extra .= ",excl" unless $btwincl;
+		    if ( $balres ) {
+			$extra .= ",kosten" if $acc_kstomz;
+			$extra .= ",omzet"  if !$acc_kstomz;
+		    }
 		}
-		elsif ( $btw == BTWTARIEF_LAAG && $btwincl ) {
+		elsif ( $btw == BTWTARIEF_LAAG ) {
 		    $extra .= " :btw=laag";
+		    $extra .= ",excl" unless $btwincl;
+		    if ( $balres ) {
+			$extra .= ",kosten" if $acc_kstomz;
+			$extra .= ",omzet"  if !$acc_kstomz;
+		    }
 		}
 		elsif ( $btw != BTWTARIEF_GEEN ) {
 		    $extra .= " :btw=$btw_id";
