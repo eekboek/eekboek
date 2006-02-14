@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.6 2006/02/07 11:43:39 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.7 2006/02/14 10:43:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  7 12:08:28 2006
-# Update Count    : 70
+# Last Modified On: Tue Feb 14 11:22:59 2006
+# Update Count    : 89
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -25,6 +25,18 @@ my $dataset;
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
 sub type { "Postgres" }
+
+sub _dsn {
+    my $dsn = "dbi:Pg:dbname=" . shift;
+    my $t;
+    $dsn .= ";host=" . $t if $t = $cfg->val(qw(database host), undef);
+    $dsn .= ";port=" . $t if $t = $cfg->val(qw(database port), undef);
+    wantarray
+      ? ( $dsn,
+	  $cfg->val("database", "user", undef),
+	  $cfg->val("database", "password", undef))
+      : $dsn;
+}
 
 sub create {
     my ($self, $dbname) = @_;
@@ -53,32 +65,24 @@ sub create {
     }
 
     $dbname =~ s/^(?!=eekboek_)/eekboek_/;
-    my $cmd = "createdb";
-    my @cmd = ( $cmd, qw(-E latin1) );
 
+    my $sql = "CREATE DATABASE $dbname";
+    $sql .= " ENCODING 'LATIN1'";
     for ( $cfg->val("database", "user", undef) ) {
 	next unless $_;
-	push(@cmd, "-O", $_);
-	push(@cmd, "-U", $_);
+	$sql .= " OWNER '$_'";
     }
-    for ( $cfg->val("database", "password", undef) ) {
-	next unless $_;
-	push(@cmd, "--password");
+    my $dbh = DBI->connect(_dsn("template1"));
+    my $errstr = $DBI::errstr;
+    if ( $dbh ) {
+	warn("+ $sql\n") if $trace;
+	$dbh->do($sql);
+	$errstr = $DBI::errstr;
+	$dbh->disconnect;
+	return unless $errstr;
     }
-    for ( $cfg->val("database", "host", undef) ) {
-	next unless $_;
-	push(@cmd, "-h", $_);
-    }
-    for ( $cfg->val("database", "port", undef) ) {
-	next unless $_;
-	push(@cmd, "-p", $_);
-    }
-    push(@cmd, $dbname);
-
-    warn("+ @cmd\n") if $trace;
-    my $res = system { $cmd } @cmd;
-    # warn(sprintf("=> ret = %02x", $res)."\n") if $res;
-    die("?"._T("Aanmaken database mislukt")."\n") if $res;
+    die("?".__x("Database probleem: {err}",
+		err => $errstr)."\n");
 }
 
 sub connect {
@@ -93,16 +97,7 @@ sub connect {
 
     $dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
     $cfg->newval(qw(database fullname), $dbname);
-    $dbname = "dbi:Pg:dbname=" . $dbname;
-
-    my $t;
-    $dbname .= ";host=" . $t if $t = $cfg->val(qw(database host), undef);
-    $dbname .= ";port=" . $t if $t = $cfg->val(qw(database port), undef);
-
-    my $dbuser = $cfg->val(qw(database user), undef);
-    my $dbpass = $cfg->val(qw(database password), undef);
-
-    $dbh = DBI::->connect($dbname, $dbuser, $dbpass)
+    $dbh = DBI::->connect(_dsn($dbname))
       or die("?".__x("Database verbindingsprobleem: {err}",
 		     err => $DBI::errstr)."\n");
     $dataset = $dbname;
