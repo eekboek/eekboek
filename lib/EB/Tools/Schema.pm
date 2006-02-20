@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.34 2006/02/11 17:16:16 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.35 2006/02/20 16:04:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Feb 11 18:14:48 2006
-# Update Count    : 513
+# Last Modified On: Mon Feb 20 17:02:20 2006
+# Update Count    : 514
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -307,7 +307,10 @@ sub scan_balres {
 	      if $balres && !defined($btw_ko);
 	}
 	$desc =~ s/\s+$//;
-	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz||$btw_ko, $btw_type ];
+	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd,
+		      defined($kstomz) ? $kstomz :
+		      defined($btw_ko) ? $btw_ko : undef,
+		      $btw_type ];
     }
     else {
 	0;
