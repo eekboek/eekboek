@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.42 2006/02/09 16:51:33 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.43 2006/02/20 13:30:32 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  9 10:55:17 2006
-# Update Count    : 338
+# Last Modified On: Mon Feb 20 14:28:34 2006
+# Update Count    : 341
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -129,11 +129,7 @@ sub perform {
 		warn(" "._T("boekstuk").": std $t $amt $acct\n");
 	    }
 
-	    my $dc = "acc_debcrd";
-	    my $explicit_dc;
 	    if ( $acct =~ /^(\d+)([cd])/i ) {
-#		$acct = $1;
-#		$explicit_dc = $dc = lc($2) eq 'd' ? 1 : 0;
 		warn("?"._T("De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet toegestaan")."\n");
 		$fail++;
 		next;
@@ -143,8 +139,8 @@ sub perform {
 		$fail++;
 		next;
 	    }
-	    $dc = 1;		# ####
-	    my $rr = $dbh->do("SELECT acc_desc,acc_balres,$dc,acc_kstomz,acc_btw".
+
+	    my $rr = $dbh->do("SELECT acc_desc,acc_balres,acc_kstomz,acc_btw".
 			      " FROM Accounts".
 			      " WHERE acc_id = ?", $acct);
 	    unless ( $rr ) {
@@ -153,7 +149,7 @@ sub perform {
 		$fail++;
 		next;
 	    }
-	    my ($adesc, $balres, $debcrd, $kstomz, $btw_id) = @$rr;
+	    my ($adesc, $balres, $kstomz, $btw_id) = @$rr;
 
 	    if ( $balres && $dagboek_type != DBKTYPE_MEMORIAAL ) {
 		warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
@@ -164,7 +160,7 @@ sub perform {
 
 	    my $bid;
 	    my $oamt = $amt;
-	    ($amt, $bid) = amount($amt, undef);
+	    ($amt, $bid) = amount_with_btw($amt, undef);
 	    unless ( defined($amt) ) {
 		warn("?".__x("Ongeldig bedrag: {amt}", amt => $oamt)."\n");
 		$fail++;
@@ -241,7 +237,7 @@ sub perform {
 		  @{EB::Finance::norm_btw($bsr_amount, $btw_id)};
 		$amt = $bsr_amount - $btw;
 	    }
-	    $orig_amount = -$orig_amount;# unless $debcrd;
+	    $orig_amount = -$orig_amount;
 
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
