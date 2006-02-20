@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.36 2006/02/09 16:52:32 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.37 2006/02/20 20:07:02 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  9 17:52:19 2006
-# Update Count    : 232
+# Last Modified On: Mon Feb 20 16:21:39 2006
+# Update Count    : 245
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -180,19 +180,9 @@ sub perform {
 	    return;
 	}
 	my ($adesc, $balres, $kstomz, $debcrd, $btw_id) = @$rr;
-
 	if ( $balres ) {
 	    warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
 			 acct => $acct, desc => $adesc)."\n") if 0;
-	    #$dbh->rollback;
-	    #return;
-	}
-	# elsif ( defined($kstomz) && ($kstomz ? !$iv : $iv) ) {
-	elsif ( $kstomz ? !$iv : $iv ) {
-	    warn("!".__x("Grootboekrekening {acct} ({desc}) is een {what}rekening",
-			 acct => $acct, desc => $adesc,
-			 what => $kstomz ? _T("kosten") : _T("omzet"),
-			)."\n");
 	    #$dbh->rollback;
 	    #return;
 	}
@@ -207,31 +197,45 @@ sub perform {
 	}
 
 	# Amount can override BTW id with @X postfix.
-	my $oamt = $amt;
-	($amt, $btw_id) = amount($amt, $btw_id);
-	unless ( defined($amt) ) {
-	    warn("?".__x("Ongeldig bedrag: {amt}", amt => $oamt)."\n");
+	my ($namt, $btw_spec) = amount_with_btw($amt, $btw_id);
+	unless ( defined($namt) ) {
+	    warn("?".__x("Ongeldig bedrag: {amt}", amt => $amt)."\n");
 	    return;
 	}
 
-	$amt = -$amt unless $iv;
+	$amt = $iv ? $namt : -$namt;
+
+	($btw_id, $kstomz) = parse_btw_spec($btw_spec, $btw_id, $kstomz);
+	unless ( defined($btw_id) ) {
+	    warn("?".__x("Ongeldige BTW-specificatie: {spec}", spec => $btw_spec)."\n");
+	    return;
+	}
+
+	if ( defined($kstomz) ) {
+	    if ( $kstomz ? !$iv : $iv ) {
+		#warn("?".__x("U kunt geen {ko} boeken in een {iv} dagboek",
+		warn("!".__x("Pas op! U boekt {ko} in een {iv} dagboek",
+			     ko => $kstomz ? _T("kosten") : _T("omzet"),
+			     iv => $iv ? _T("inkoop") : _T("verkoop"),
+			    )."\n");
+		#return;
+	    }
+	}
+	elsif ( $btw_id ) {
+	    warn("?"._T("BTW toepassen is niet mogelijk op een neutrale rekening")."\n");
+	    return;
+	}
 
 	my $btw_acc;
 	my $t = "btw_" . ($iv ? "i" : "v");
 	# Geen BTW voor non-EU.
 	if ( $btw_id && ($sbtw == BTWTYPE_NORMAAL || $sbtw == BTWTYPE_INTRA) ) {
-	    if ( $btw_id =~ /^[hl]$/i ) {
-		$t .= lc($btw_id);
-		$btw_id = $dbh->do("SELECT btw_id".
-				   " FROM BTWTabel".
-				   " WHERE btw_tariefgroep = ?".
-				   " AND btw_incl",
-				   lc($btw_id) eq 'h' ? BTWTARIEF_HOOG : BTWTARIEF_LAAG)->[0];
+	    my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+	    unless ( defined($tg) ) {
+		warn("?".__x("Onbekende BTW-code: {code}", code => $btw_id)."\n");
+		return;
 	    }
-	    else {
-		my $group = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
-		$t .= ($group == BTWTARIEF_HOOG ? "h" : "l");
-	    }
+	    $t .= $tg == BTWTARIEF_HOOG ? 'h' : 'l';
 	    $btw_acc = $dbh->std_acc($t);
 	}
 
@@ -245,7 +249,7 @@ sub perform {
 	# Zo ook intra en extra.
 	else {
 	    $btwclass = BTWKLASSE(1, $sbtw, 0)
-	      if $btw_id || !$kstomz || $sbtw == BTWTYPE_INTRA || $sbtw == BTWTYPE_EXTRA;
+	      if $btw_id || defined($kstomz) || $sbtw == BTWTYPE_INTRA || $sbtw == BTWTYPE_EXTRA;
 	}
 	$dbh->sql_insert("Boekstukregels",
 			 [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
