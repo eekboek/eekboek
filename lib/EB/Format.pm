@@ -23,7 +23,7 @@ my $btwfmtw;
 
 our @EXPORT;
 BEGIN {
-    push(@EXPORT, qw(amount numdebcrd numfmt numfmtw numfmtv numround btwfmt));
+    push(@EXPORT, qw(amount amount_with_btw parse_btw_spec numfmt numround btwfmt));
     $stdfmt0 = '%.' . AMTPRECISION . 'f';
     $stdfmtw = '%' . AMTWIDTH . "." . AMTPRECISION . 'f';
     $btwfmt0 = '%.' . (BTWPRECISION-2) . 'f';
@@ -40,16 +40,7 @@ BEGIN {
     $decimalpt = $cfg->val(qw(locale decimalpt), _T(","));
 }
 
-sub amount {
-    if ( @_ == 2 ) {
-	my ($amt, $btw_id) = @_;
-	if ( $amt =~ /^(.+)\@(.+)$/ ) {
-	    $amt = $1;
-	    $btw_id = $2;
-	}
-	return (amount($amt), $btw_id);
-    }
-
+sub amount($) {
     my $val = shift;
     if ( $val =~ /.[-+*\/\(\)]/ ) {
 	my $expr = EB::Expression->new;
@@ -61,6 +52,60 @@ sub amount {
     my ($s, $w, $f) = ($1 || "", $2 || 0, $3 || 0);
     $f .= "0" x (AMTPRECISION - length($f));
     return 0 + ($s.$w.$f);
+}
+
+sub amount_with_btw($$) {
+    my ($amt, $btw_spec) = @_;
+    if ( $amt =~ /^(.+)\@(.+)$/ ) {
+	$amt = $1;
+	$btw_spec = $2;
+    }
+    return (amount($amt), $btw_spec);
+}
+
+sub parse_btw_spec {
+    my ($spec, $btw_id, $kstomz) = @_;
+    $spec = lc($spec);
+
+    # Strip off trailing K|O.
+    if ( $spec =~ /^(.*)([ko])(.*)$/ ) {
+	$kstomz = $2 eq 'k';
+	$spec = $1.$3;
+    }
+    elsif ( $spec =~ /^(.*)([iv])(.*)$/ ) {
+	$kstomz = $2 eq 'i';
+	$spec = $1.$3;
+	warn("!".__x("BTW specificatie {spec}: Gebruik K of O in plaats van I of V",
+		     spec => $_[0])."\n");
+    }
+
+    # Examine rest. Numeric -> BTW id.
+    if ( $spec =~ /^(\d+)$/ ) {
+	$btw_id = $1;
+    }
+    # H L H- L- H+ L+
+    elsif ( $spec =~ /^([hl])([-+])?$/ ) {
+	$btw_id = $1;
+	my $excl;
+	$excl = $2 eq '-' if defined $2;
+	$btw_id = $dbh->do("SELECT btw_id FROM BTWTabel".
+			   " WHERE btw_tariefgroep = ?".
+			   " AND ".($excl?"NOT ":"")."btw_incl",
+			   $btw_id eq "h" ? BTWTARIEF_HOOG : BTWTARIEF_LAAG)->[0];
+    }
+    # + -
+    elsif ( $spec =~ /^([-+])$/ && $btw_id ) {
+	$btw_id = $dbh->do("SELECT btw_id FROM BTWTabel".
+			   " WHERE btw_tariefgroep =".
+			   " ( SELECT btw_tariefgroep FROM BTWTabel".
+			   " WHERE btw_id = ? )".
+			   " AND ".($1 eq '-'?"NOT ":"")."btw_incl",
+			   $btw_id)->[0];
+    }
+    elsif ( $spec ne '' ) {
+	return;
+    }
+    ($btw_id, $kstomz);
 }
 
 sub numfmt {
@@ -76,6 +121,7 @@ sub numfmt {
     $v;
 }
 
+#### UNUSED
 sub numfmtw {
     my $v = shift;
     if ( $v == int($v) && $v >= 0  ) {
@@ -90,6 +136,7 @@ sub numfmtw {
     $v;
 }
 
+#### UNUSED
 sub numfmtv {
     my $v = shift;
     if ( $v == int($v) && $v >= 0  ) {
@@ -205,12 +252,6 @@ sub journalise {
 	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
 	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
 	my $bsr_bsk_id = $bsk_id;
-
-#	# Flip sign for credit accounts.
-#	$bsr_amount = -$bsr_amount
-#	  unless $::dbh->lookup($bsr_acc_id,
-#				qw(Accounts acc_id acc_debcrd));
-
 	my $btw = 0;
 	my $amt = $bsr_amount;
 
