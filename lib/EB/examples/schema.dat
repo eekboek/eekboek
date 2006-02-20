@@ -1,4 +1,4 @@
-# $Id: schema.dat,v 1.7 2005/12/08 13:14:14 jv Exp $
+# $Id: schema.dat,v 1.8 2006/02/20 20:07:34 jv Exp $
 # EekBoek Rekeningschema voor eekboek_sample
 # Aangemaakt door EB::Tools::Schema op 08-12-2005 14:12:57
 #
@@ -59,9 +59,9 @@ Balansrekeningen
          211   C   Afschrijving verbouwingen
          220   D   Machines en installaties
          221   C   Afschrijving mach. & installaties
-         230   D   Inventaris en inrichting                   :btw=hoog
+         230   D   Inventaris en inrichting
          231   C   Afschrijving inventaris & inrichting
-         240   D   Computers                                  :btw=hoog
+         240   D   Computers
          241   C   Afschrijving computers
      13  Financiële vaste activa
          320   D   Lening u/g de heer A
