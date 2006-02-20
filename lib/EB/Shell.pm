@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.61 2006/02/08 15:25:39 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.62 2006/02/20 20:06:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb  8 16:24:45 2006
-# Update Count    : 743
+# Last Modified On: Mon Feb 13 15:48:50 2006
+# Update Count    : 746
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -33,6 +33,7 @@ sub new {
 
     # User defined stuff.
     eval { require EB::Shell::Userdefs };
+    warn($@) if $@ && $@ !~ /can't locate eb.shell.userdefs\.pm in \@inc/i;
 
     my $self = $class->SUPER::new($opts);
 
