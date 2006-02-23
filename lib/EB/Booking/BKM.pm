@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.44 2006/02/20 20:07:02 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.45 2006/02/23 12:22:31 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 20 16:32:48 2006
-# Update Count    : 351
+# Last Modified On: Thu Feb 23 13:22:05 2006
+# Update Count    : 352
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -158,7 +158,7 @@ sub perform {
 
 	    my $bid;
 	    my $oamt = $amt;
-	    ($amt, $bid) = amount_with_btw($amt, undef);
+	    ($amt, $bid) = $self->amount_with_btw($amt, undef);
 	    unless ( defined($amt) ) {
 		warn("?".__x("Ongeldig bedrag: {amt}", amt => $oamt)."\n");
 		$fail++;
@@ -176,7 +176,7 @@ sub perform {
 	    my $btw_acc;
 	    if ( defined($bid) ) {
 
-		($btw_id, $kstomz) = parse_btw_spec($bid, $btw_id, $kstomz);
+		($btw_id, $kstomz) = $self->parse_btw_spec($bid, $btw_id, $kstomz);
 		unless ( defined($btw_id) ) {
 		    warn("?".__x("Ongeldige BTW-specificatie: {spec}", spec => $bid)."\n");
 		    $fail++;

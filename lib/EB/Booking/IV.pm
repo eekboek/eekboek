@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.37 2006/02/20 20:07:02 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.38 2006/02/23 12:22:39 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 20 16:21:39 2006
-# Update Count    : 245
+# Last Modified On: Thu Feb 23 13:21:47 2006
+# Update Count    : 246
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -197,7 +197,7 @@ sub perform {
 	}
 
 	# Amount can override BTW id with @X postfix.
-	my ($namt, $btw_spec) = amount_with_btw($amt, $btw_id);
+	my ($namt, $btw_spec) = $self->amount_with_btw($amt, $btw_id);
 	unless ( defined($namt) ) {
 	    warn("?".__x("Ongeldig bedrag: {amt}", amt => $amt)."\n");
 	    return;
@@ -205,7 +205,7 @@ sub perform {
 
 	$amt = $iv ? $namt : -$namt;
 
-	($btw_id, $kstomz) = parse_btw_spec($btw_spec, $btw_id, $kstomz);
+	($btw_id, $kstomz) = $self->parse_btw_spec($btw_spec, $btw_id, $kstomz);
 	unless ( defined($btw_id) ) {
 	    warn("?".__x("Ongeldige BTW-specificatie: {spec}", spec => $btw_spec)."\n");
 	    return;
