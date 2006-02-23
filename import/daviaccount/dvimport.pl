@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.15 2006/02/02 14:07:02 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.16 2006/02/23 12:26:48 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb  1 12:27:11 2006
-# Update Count    : 312
+# Last Modified On: Thu Feb 23 13:25:51 2006
+# Update Count    : 313
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -351,7 +351,7 @@ sub read_btw {
 	}
     }
     foreach ( @btwtable ) {
-	push(@$_, $_->[1] == 0 ? BTWTARIEF_GEEN :
+	push(@$_, $_->[1] == 0 ? BTWTARIEF_NUL :
 	     $_->[1] == $hi ? BTWTARIEF_HOOG :
 	     $_->[1] == $lo ? BTWTARIEF_LAAG : warn("Onbekende BTW group: $_->[1]\n"));
     }

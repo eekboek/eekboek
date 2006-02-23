@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.30 2006/02/23 11:22:59 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.31 2006/02/23 12:27:08 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 12:14:30 2006
-# Update Count    : 460
+# Last Modified On: Thu Feb 23 13:25:00 2006
+# Update Count    : 461
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -364,7 +364,7 @@ sub collect {
 		    $deb_l += $amt;
 		    $deb_btw_l += $btw;
 		}
-		elsif ( $btg_id == BTWTARIEF_GEEN ) {
+		elsif ( $btg_id == BTWTARIEF_NUL ) {
 		    $tr->("0%");
 		    $deb_0 += $amt;
 		}

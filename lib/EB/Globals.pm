@@ -39,8 +39,8 @@ BEGIN {
 	      "[qw(".N__("-- Inkoop Verkoop Bank Kas Memoriaal").")]");
     $i = 0;
     map { _newconst("BTWTARIEF_$_", $i++) }
-      qw(GEEN HOOG LAAG);
-    _newconst("BTWTARIEVEN", "[qw(".N__("Geen Hoog Laag").")]");
+      qw(NUL HOOG LAAG);
+    _newconst("BTWTARIEVEN", "[qw(".N__("Nul Hoog Laag").")]");
     _newconst("BTWPER_GEEN", 0);
     _newconst("BTWPER_JAAR", 1);
     _newconst("BTWPER_KWARTAAL", 4);
