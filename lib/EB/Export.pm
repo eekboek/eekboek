@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.6 2006/02/02 11:36:07 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.7 2006/02/23 11:44:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 31 21:22:07 2006
-# Update Count    : 123
+# Last Modified On: Thu Feb 23 12:36:32 2006
+# Update Count    : 126
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -253,6 +253,16 @@ sub _mutaties {
 		$out .= "jaareinde --boekjaar=" . _quote($bky) . "\n";
 	    }
 	    $sth->finish;
+	}
+	my $bb = $dbh->adm("btwbegin");
+	my $bkb = $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin));
+	my $bke = $dbh->lookup($bky, qw(Boekjaren bky_code bky_end));
+	if ( $bb gt $bke ) {
+	    $out .= "btwaangifte --boekjaar=" . _quote($bky) . " --definitief --noreport\n";
+	}
+	elsif ( $bb gt $bkb ) {
+	    $bb = parse_date($bb, undef, -1);
+	    $out .= "btwaangifte --periode=$bkb-$bb --definitief --noreport\n";
 	}
     };
 
