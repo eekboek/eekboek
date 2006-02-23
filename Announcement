@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.41 is beschikbaar
+Subject: EekBoek versie 0.42 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -8,22 +8,35 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.41 van EekBoek is beschikbaar op de bekende sites:
+Release 0.42 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.41.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.42.tar.gz
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.41.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.42.tar.gz
 
 Belangrijkste wijzigingen:
 
-* BTW koppeling met balansrekening in schema niet langer toegestaan.
+* Toepassen van BTW is nu volledig gedreven door de kosten/omzet
+  classificatie van de grootboekrekeningen.
 
-* Config variabelen op command line:
+* Meer flexibele BTW codering in schema: naast hoog/laag kan ook
+  kosten/omzet en incl/excl worden opgegeven.
 
-  --define database:name=foo
+* BTW koppeling met balansrekening in schema is weer mogelijk, daarbij
+  moet dan een kosten/omzet classificatie worden opgegeven.
+
+* Naast kosten (code K) en omzet (code O) kan een grootboekrekening in
+  het schema ook als neutraal (code N) worden opgegeven. Op een
+  neutrale rekening kan nooit BTW worden geboekt.
+
+* Meer flexibele BTW codering in boekingsbedragen: naast H/L is ook
+  K/O mogelijk (en soms verplicht). BTW exclusief kan worden opgegeven
+  met een "-".
+
+* Herziene en aanvullende documentatie inzake het toepassen van BTW.
 
 * Kleine bugfixes.
 
