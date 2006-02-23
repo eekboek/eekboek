@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.28 2006/02/22 17:05:20 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.29 2006/02/23 11:12:44 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb 22 18:03:56 2006
-# Update Count    : 458
+# Last Modified On: Thu Feb 23 12:10:14 2006
+# Update Count    : 459
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -175,7 +175,7 @@ sub perform {
 
     my $data = $self->collect($rep->{per_begin}, $rep->{per_end});
 
-    $self->report($rep, $data);
+    $self->report($rep, $data) unless $opts->{noreport};
 
     if ( $opts->{close} ) {
 	$dbh->adm("btwbegin", scalar parse_date($rep->{per_end}, undef, 1));	# implied commit
