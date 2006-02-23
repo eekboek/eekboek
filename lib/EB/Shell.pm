@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.62 2006/02/20 20:06:42 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.63 2006/02/23 11:12:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 13 15:48:50 2006
-# Update Count    : 746
+# Last Modified On: Thu Feb 23 12:09:59 2006
+# Update Count    : 747
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -623,6 +623,7 @@ sub do_btwaangifte {
 		 'periode=s'  => sub { periode_arg($opts, @_) },
 		 "definitief" => sub { $opts->{close} = 1 },
 		 EB::Report::GenBase->backend_options(EB::Report::BTWAangifte::, $opts),
+		 "noreport",
 	       ], $opts)
       or goto &help_btwaangifte;
 
