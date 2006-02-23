@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.63 2006/02/23 11:12:57 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.64 2006/02/23 11:25:18 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 12:09:59 2006
-# Update Count    : 747
+# Last Modified On: Thu Feb 23 12:24:39 2006
+# Update Count    : 748
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -663,6 +663,9 @@ Opties:
                               met --boekjaar, en evenmin met de bovenvermelde
                               methode van periode-specificatie.
   --boekjaar=<code>           Selecteer boekjaar
+  --noreport                  Geen rapportage. Dit is enkel zinvol samen
+                              met --definitief om de afgesloten BTW periode
+                              aan te passen.
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
