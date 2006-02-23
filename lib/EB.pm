@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.47 2006/02/23 11:45:59 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.48 2006/02/23 11:47:18 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 12:45:15 2006
-# Update Count    : 119
+# Last Modified On: Thu Feb 23 12:47:10 2006
+# Update Count    : 120
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -35,6 +35,7 @@ sub EB_LIB() { $lib }
 # Some standard modules.
 use EB::Globals;
 use Carp;
+use Data::Dumper;
 
 BEGIN {
     # The core and GUI use a different EB::Locale module.
