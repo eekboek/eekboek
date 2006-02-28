@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.10 2006/01/31 17:38:07 jv Exp $
+# $Id: Base.pm,v 1.11 2006/02/28 22:13:43 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -25,8 +25,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$XXVERSION    = 0.05;   # $Date: 2006/01/31 17:38:07 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
+$XXVERSION    = 0.05;   # $Date: 2006/02/28 22:13:43 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -161,7 +161,8 @@ sub init_rl {
 
     if (my $histfile = $args->{ HISTFILE }) {
         $self->histfile($histfile);
-        $term->ReadHistory($histfile);
+        $term->ReadHistory($histfile)
+	  if $term->can("ReadHistory");
     }
 
     return $self;
@@ -464,7 +465,7 @@ sub readline {
 sub print {
     my ($self, @stuff) = @_;
     my $OUT = $self->term->Attribs->{'outstream'};
-
+    $OUT ||= *STDOUT;
     CORE::print $OUT @stuff;
 }
 
@@ -485,7 +486,8 @@ sub quit {
 
     if (my $h = $self->histfile) {
         # XXX Can this be better encapsulated?
-        $self->term->WriteHistory($h);
+        $self->term->WriteHistory($h)
+	  if $self->term->can("WriteHistory");
     }
 
     exit($status);
@@ -1813,7 +1815,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.10 $.
+This documentation describes C<Shell::Base>, $Revision: 1.11 $.
 
 =head1 COPYRIGHT
 
