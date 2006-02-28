@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.7 2006/02/14 10:43:01 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.8 2006/02/28 18:52:24 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb 14 11:22:59 2006
-# Update Count    : 89
+# Last Modified On: Tue Feb 28 19:47:18 2006
+# Update Count    : 90
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -70,7 +70,7 @@ sub create {
     $sql .= " ENCODING 'LATIN1'";
     for ( $cfg->val("database", "user", undef) ) {
 	next unless $_;
-	$sql .= " OWNER '$_'";
+	$sql .= " OWNER $_";
     }
     my $dbh = DBI->connect(_dsn("template1"));
     my $errstr = $DBI::errstr;
