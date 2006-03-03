@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Delete.pm,v 1.5 2005/10/03 19:03:08 jv Exp $ ';
+my $RCS_Id = '$Id: Delete.pm,v 1.6 2006/03/03 21:43:40 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Delete;
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  1 22:11:33 2005
-# Update Count    : 63
+# Last Modified On: Fri Mar  3 22:41:32 2006
+# Update Count    : 65
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -75,6 +75,8 @@ sub perform {
 
     eval {
 	# Adjust saldi grootboekrekeningen.
+	# Hoewel in veel gevallen niet nodig, is het toch noodzakelijk i.v.m.
+	# de saldi van bankrekeningen.
 	$sth = $dbh->sql_exec("SELECT jnl_acc_id, jnl_amount".
 			      " FROM Journal".
 			      " WHERE jnl_bsk_id = ? AND jnl_bsr_seq > 0", $bsk);
