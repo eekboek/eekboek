@@ -1,10 +1,10 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.6 2006/03/03 20:52:53 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.7 2006/03/03 21:14:13 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 21:52:48 2006
-# Update Count    : 79
+# Last Modified On: Fri Mar  3 22:00:01 2006
+# Update Count    : 80
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -54,6 +54,6 @@ EOD
 ppmdist : pure_all
 	sh ppm/mkppd
 EOD
-
+    }	
     return $ret;
 }
