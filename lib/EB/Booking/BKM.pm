@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.45 2006/02/23 12:22:31 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.46 2006/03/03 21:34:20 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 13:22:05 2006
-# Update Count    : 352
+# Last Modified On: Fri Mar  3 18:16:33 2006
+# Update Count    : 359
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -129,13 +129,13 @@ sub perform {
 		warn(" "._T("boekstuk").": std $t $amt $acct\n");
 	    }
 
-	    if ( $acct =~ /^(\d+)([cd])/i ) {
-		warn("?"._T("De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet toegestaan")."\n");
-		$fail++;
-		next;
-	    }
-	    elsif  ( $acct !~ /^\d+$/ ) {
-		warn("?".__x("Ongeldig grootboekrekeningnummer: {acct}", acct => $acct )."\n");
+	    if  ( $acct !~ /^\d+$/ ) {
+		if ( $acct =~ /^(\d+)([cd])/i ) {
+		    warn("?"._T("De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet toegestaan")."\n");
+		}
+		else {
+		    warn("?".__x("Ongeldig grootboekrekeningnummer: {acct}", acct => $acct )."\n");
+		}
 		$fail++;
 		next;
 	    }
@@ -214,18 +214,18 @@ sub perform {
 				 bsr_acc_id bsr_rel_code)],
 			     $nr++, $dd, $bsk_id, $desc, $orig_amount,
 			     $btw_id, $btw_acc,
-			     BTWKLASSE(1, BTWTYPE_NORMAAL, $balres ? 1 : $kstomz),
+			     BTWKLASSE(defined($kstomz), BTWTYPE_NORMAAL, $kstomz||0),
 			     0, $acct, undef);
 
-	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
-	    $dbh->upd_account($acct, -$amt);
+#	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
+#	    $dbh->upd_account($acct, -$amt);
 	    $tot += $amt;
 
 	    if ( $btw ) {
-		my $btw_acct =
-		  $dbh->lookup($acct, qw(Accounts acc_id acc_debcrd)) ? $btw_ink : $btw_verk;
-		warn("update $btw_acct with ".numfmt(-$btw)."\n") if $trace_updates;
-		$dbh->upd_account($btw_acct, -$btw);
+#		my $btw_acct =
+#		  $dbh->lookup($acct, qw(Accounts acc_id acc_debcrd)) ? $btw_ink : $btw_verk;
+#		warn("update $btw_acct with ".numfmt(-$btw)."\n") if $trace_updates;
+#		$dbh->upd_account($btw_acct, -$btw);
 		$tot += $btw;
 	    }
 
@@ -341,8 +341,8 @@ sub perform {
 			   " WHERE bsk_id = ?",
 			   $amt, $bskid);
 
-	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
-	    $dbh->upd_account($acct, -$amt);
+#	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
+#	    $dbh->upd_account($acct, -$amt);
 	    $tot += $amt;
 	}
 	else {
