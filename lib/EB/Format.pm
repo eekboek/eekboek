@@ -128,43 +128,28 @@ sub btwfmt {
 }
 
 sub norm_btw {
-    my ($bsr_amt, $bsr_btw_id);
-    my ($btw_perc, $btw_incl, $btw_acc_inkoop, $btw_acc_verkoop);
-    if ( @_ == 2 ) {
-	($bsr_amt, $bsr_btw_id) = @_;
-	if ( $bsr_btw_id ) {
-	    my $rr = $dbh->do("SELECT btw_perc, btw_incl, btw_tariefgroep".
-			      " FROM BTWTabel".
-			      " WHERE btw_id = ?", $bsr_btw_id);
-	    my $group;
-	    ($btw_perc, $btw_incl, $group) = @$rr;
-	    if ( $group == BTWTARIEF_HOOG ) {
-		$btw_acc_inkoop = $dbh->std_acc("btw_ih");
-		$btw_acc_verkoop = $dbh->std_acc("btw_vh");
-	    }
-	    else {
-		$btw_acc_inkoop = $dbh->std_acc("btw_il");
-		$btw_acc_verkoop = $dbh->std_acc("btw_vl");
-	    }
-	}
+    my ($bsr_amt, $bsr_btw_id) = @_;
+    my ($btw_perc, $btw_incl);
+    if ( $bsr_btw_id ) {
+	my $rr = $dbh->do("SELECT btw_perc, btw_incl".
+			  " FROM BTWTabel".
+			  " WHERE btw_id = ?", $bsr_btw_id);
+	($btw_perc, $btw_incl) = @$rr;
     }
-    else {
-	($bsr_amt, $btw_perc, $btw_incl) = @_;
-    }
+
+    return [ $bsr_amt, 0 ] unless $btw_perc;
 
     my $bruto = $bsr_amt;
     my $netto = $bsr_amt;
 
-    if ( $btw_perc ) {
-	if ( $btw_incl ) {
-	    $netto = numround($bruto * (1 / (1 + $btw_perc/BTWSCALE)));
-	}
-	else {
-	    $bruto = numround($netto * (1 + $btw_perc/BTWSCALE));
-	}
+    if ( $btw_incl ) {
+	$netto = numround($bruto * (1 / (1 + $btw_perc/BTWSCALE)));
+    }
+    else {
+	$bruto = numround($netto * (1 + $btw_perc/BTWSCALE));
     }
 
-    [ $bruto, $bruto - $netto, $btw_acc_inkoop, $btw_acc_verkoop ];
+    [ $bruto, $bruto - $netto ];
 }
 
 sub journalise {
@@ -185,7 +170,7 @@ sub journalise {
 		 " FROM Dagboeken".
 		 " WHERE dbk_id = ?", $bsk_dbk_id)};
     my $sth = $::dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
-			     "bsr_desc, bsr_amount, bsr_btw_id, ".
+			     "bsr_desc, bsr_amount, bsr_btw_class, bsr_btw_id, ".
 			     "bsr_btw_acc, bsr_type, bsr_acc_id, bsr_rel_code ".
 			     " FROM Boekstukregels".
 			     " WHERE bsr_bsk_id = ?", $bsk_id);
@@ -195,13 +180,13 @@ sub journalise {
     my $nr = 1;
 
     while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
+	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_class,
 	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
 	my $bsr_bsk_id = $bsk_id;
 	my $btw = 0;
 	my $amt = $bsr_amount;
 
-	if ( $bsr_btw_id && $bsr_btw_acc ) {
+	if ( ($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id && $bsr_btw_acc ) {
 	    ( $bsr_amount, $btw ) =
 	      @{EB::Finance::norm_btw($bsr_amount, $bsr_btw_id)};
 	    $amt = $bsr_amount - $btw;
