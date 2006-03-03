@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.25 2006/01/31 17:38:54 jv Exp $
+-- $Id: eekboek.sql,v 1.26 2006/03/03 15:55:14 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -29,8 +29,8 @@ CREATE TABLE Accounts (
     acc_debcrd  boolean,       -- t:debet  f:credit
     acc_kstomz  boolean,       -- t:kosten f:omzet
     acc_btw     smallint,      -- references BTWTabel (constraint postponed)
-    acc_ibalance int,          -- openingsbalanswaarde
-    acc_balance int
+    acc_ibalance int8,          -- openingsbalanswaarde
+    acc_balance int8
 );
 
 \i acc.sql
@@ -123,9 +123,9 @@ CREATE TABLE Boekstukken (
     bsk_dbk_id   varchar(4) references Dagboeken,
     bsk_date     date,
     bsk_bky      VARCHAR(4) references Boekjaren,
-    bsk_amount   int,		-- bedrag, negatief voor inkoop
-    bsk_open     int,		-- openstaand bedrag
-    bsk_saldo	 int,		-- eindsaldo na boeking
+    bsk_amount   int8,		-- bedrag, negatief voor inkoop
+    bsk_open     int8,		-- openstaand bedrag
+    bsk_saldo	 int8,		-- eindsaldo na boeking
     UNIQUE(bsk_nr, bsk_dbk_id, bsk_bky)
 );
 
@@ -136,7 +136,7 @@ CREATE TABLE Boekstukregels (
     bsr_date     date,
     bsr_bsk_id   int references Boekstukken,
     bsr_desc     text, -- editable copy van bsk_desc
-    bsr_amount   int,
+    bsr_amount   int8,
     bsr_btw_id   smallint references BTWTabel,
     bsr_btw_acc  int references Accounts,
     bsr_btw_class  int, -- see BTWKLASSE definities
@@ -170,7 +170,7 @@ CREATE TABLE Journal (
     jnl_bsr_date date not null,	--boekstukregeldatum
     jnl_bsr_seq	int not null,
     jnl_acc_id	int references Accounts,
-    jnl_amount	int,
+    jnl_amount	int8,
     jnl_desc	text,
     jnl_rel	CHAR(10) references Relaties,
     UNIQUE(jnl_bsk_id, jnl_dbk_id, jnl_bsr_seq)
@@ -180,7 +180,7 @@ CREATE TABLE Boekjaarbalans (
     bkb_bky      varchar(4) references Boekjaren,
     bkb_end	 date,
     bkb_acc_id   int references Accounts,
-    bkb_balance  int
+    bkb_balance  int8
 );
 
 -- Metadata
