@@ -1,4 +1,4 @@
-# $Id: schema.dat,v 1.8 2006/02/20 20:07:34 jv Exp $
+# $Id: schema.dat,v 1.9 2006/03/03 21:52:40 jv Exp $
 # EekBoek Rekeningschema voor eekboek_sample
 # Aangemaakt door EB::Tools::Schema op 08-12-2005 14:12:57
 #
@@ -166,7 +166,7 @@ Resultaatrekeningen
   5  Bedrijfsopbrengsten
      51  Netto omzet
          8000  O   Omzet advisering BTW hoog                  :btw=hoog
-         8010  O   Omzet advisering BTW vrij
+         8010  O   Omzet advisering BTW vrij                  :btw=nul
          8100  O   Omzet royalties
          8200  O   Omzet editing                              :btw=hoog
          8300  O   Omzet cursussen                            :btw=hoog
@@ -296,6 +296,7 @@ Resultaatrekeningen
          4980  K   Bankkosten
          4990  K   Overige algemene kosten                    :btw=hoog
          4991  K   Bijzondere baten & lasten
+         4999  N   Neutrale boekingen
 
   7  Afschrijvingen
      64  Afschrijving immateriele vaste activa
@@ -343,14 +344,14 @@ Dagboeken
 
 # BTW TARIEVEN
 #
-# Er zijn drie tariefgroepen: "hoog", "laag" en "geen". De tariefgroep
+# Er zijn drie tariefgroepen: "hoog", "laag" en "nul". De tariefgroep
 # bepaalt het rekeningnummer waarop de betreffende boeking plaatsvindt.
 # Binnen elke tariefgroep zijn meerdere tarieven mogelijk, hoewel dit
 # in de praktijk niet snel zal voorkomen.
 # In de eerste kolom wordt de (numerieke) code voor dit tarief
 # opgegeven. Deze kan o.m. worden gebruikt om expliciet een BTW tarief
 # op te geven bij het boeken. Voor elk tarief (behalve die van groep
-# "geen") moet het percentage worden opgegeven. Met de aanduiding
+# "nul") moet het percentage worden opgegeven. Met de aanduiding
 # :exclusief kan worden opgegeven dat boekingen op rekeningen met deze
 # tariefgroep standaard het bedrag exclusief BTW aangeven.
 #
@@ -361,7 +362,7 @@ Dagboeken
 
 BTW Tarieven
 
-   0  BTW Geen               :tariefgroep=geen
+   0  BTW 0%                 :tariefgroep=nul
    1  BTW 19% incl.          :tariefgroep=hoog :perc=19,00
    2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief
    3  BTW 6,0% incl.         :tariefgroep=laag :perc=6,00
