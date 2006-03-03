@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.20 2006/02/10 16:35:59 jv Exp $
+# $Id: Opening.pm,v 1.21 2006/03/03 21:46:05 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb 10 17:31:41 2006
-# Update Count    : 168
+# Last Modified On: Fri Mar  3 18:08:48 2006
+# Update Count    : 169
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -353,10 +353,10 @@ sub open {
 			     $nr, $desc, $dagboek, $date, $bky, $amt, $amt);
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_rel_code bsr_amount
-				 bsr_type)],
+				 bsr_type bsr_btw_class)],
 			     1, $date,
 			     $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr"),
-			     $desc, $code, 0-$amt, 9);
+			     $desc, $code, 0-$amt, 9, 0);
 	}
 #	my $highest = $dbh->get_sequence("bsk_nr_0_seq") + 1;
 #	$dbh->set_sequence("bsk_nr_${dbk_inkoop}_seq", $highest)
