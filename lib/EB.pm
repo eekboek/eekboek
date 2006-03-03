@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.48 2006/02/23 11:47:18 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.49 2006/03/03 21:16:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 12:47:10 2006
-# Update Count    : 120
+# Last Modified On: Fri Mar  3 22:16:28 2006
+# Update Count    : 124
 # Status          : Unknown, Use with caution!
 
 our $app;
@@ -58,6 +58,7 @@ BEGIN {
 		@EB::Utils::EXPORT,
 		@EB::Locale::EXPORT,
 		qw(carp croak),
+		qw(Dumper),
 	      );
 }
 
