@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.38 2006/02/23 12:22:39 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.39 2006/03/03 21:35:37 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 13:21:47 2006
-# Update Count    : 246
+# Last Modified On: Fri Mar  3 13:56:49 2006
+# Update Count    : 261
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -139,8 +139,8 @@ sub perform {
 	}
     }
 
-    my ($rel_acc_id, $sbtw);
-    ($debcode, $rel_acc_id, $sbtw) = @$rr;
+    my ($rel_acc_id, $rel_btw);
+    ($debcode, $rel_acc_id, $rel_btw) = @$rr;
 
     my $nr = 1;
     my $bsk_id;
@@ -158,19 +158,15 @@ sub perform {
 	    warn(" "._T("boekstuk").": $t $amt $acct\n");
 	}
 
-	my $dc = "acc_debcrd";
-	my $explicit_dc;
-	if ( $acct =~ /^(\d*)([cd])/i ) {
-	    warn("?"._T("De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet toegestaan")."\n");
-	    return;
-#	    $acct = $1 || $rel_acc_id;
-#	    $explicit_dc = $dc = lc($2) eq 'd' ? 1 : 0;
-	}
-	elsif  ( $acct !~ /^\d+$/ ) {
+	if  ( $acct !~ /^\d+$/ ) {
+	    if ( $acct =~ /^(\d*)([cd])/i ) {
+		warn("?"._T("De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet toegestaan")."\n");
+		return;
+	    }
 	    warn("?".__x("Ongeldig grootboekrekeningnummer: {acct}", acct => $acct )."\n");
 	    return;
 	}
-	my $rr = $dbh->do("SELECT acc_desc,acc_balres,acc_kstomz,$dc,acc_btw".
+	my $rr = $dbh->do("SELECT acc_desc,acc_balres,acc_kstomz,acc_debcrd,acc_btw".
 			  " FROM Accounts".
 			  " WHERE acc_id = ?", $acct);
 	unless ( $rr ) {
@@ -211,7 +207,14 @@ sub perform {
 	    return;
 	}
 
+	# Bepalen van de BTW.
+	# Voor neutrale boekingen (@N, of op een neutrale rekening) wordt geen BTW
+	# toegepast. Op _alle_ andere wel. De BTW kan echter nul zijn, of void.
+	# Het eerste wordt bewerkstelligd door $btw_id op 0 te zetten, het tweede
+	# door $btw_acc geen waarde te geven.
+	my $btw_acc;
 	if ( defined($kstomz) ) {
+	    # BTW toepassen.
 	    if ( $kstomz ? !$iv : $iv ) {
 		#warn("?".__x("U kunt geen {ko} boeken in een {iv} dagboek",
 		warn("!".__x("Pas op! U boekt {ko} in een {iv} dagboek",
@@ -220,54 +223,43 @@ sub perform {
 			    )."\n");
 		#return;
 	    }
+	    # Void BTW voor non-EU en verlegd.
+	    if ( $btw_id && ($rel_btw == BTWTYPE_NORMAAL || $rel_btw == BTWTYPE_INTRA) ) {
+		my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+		unless ( defined($tg) ) {
+		    warn("?".__x("Onbekende BTW-code: {code}", code => $btw_id)."\n");
+		    return;
+		}
+		my $t = "btw_" . ($iv ? "i" : "v");
+		$t .= $tg == BTWTARIEF_HOOG ? 'h' : 'l';
+		$btw_acc = $dbh->std_acc($t);
+	    }
 	}
 	elsif ( $btw_id ) {
 	    warn("?"._T("BTW toepassen is niet mogelijk op een neutrale rekening")."\n");
 	    return;
 	}
+	# ASSERT: $btw_id != 0 implies defined($kstomz).
 
-	my $btw_acc;
-	my $t = "btw_" . ($iv ? "i" : "v");
-	# Geen BTW voor non-EU.
-	if ( $btw_id && ($sbtw == BTWTYPE_NORMAAL || $sbtw == BTWTYPE_INTRA) ) {
-	    my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
-	    unless ( defined($tg) ) {
-		warn("?".__x("Onbekende BTW-code: {code}", code => $btw_id)."\n");
-		return;
-	    }
-	    $t .= $tg == BTWTARIEF_HOOG ? 'h' : 'l';
-	    $btw_acc = $dbh->std_acc($t);
-	}
-
-	my $btwclass = 0;
-	# Inkoop: alle bedragen met BTW en intra/extra bedragen zijn van belang.
-	if ( $iv ) {
-	    $btwclass = BTWKLASSE(1, $sbtw, 1)
-	      if $btw_id || $sbtw == BTWTYPE_INTRA || $sbtw == BTWTYPE_EXTRA;
-	}
-	# Verkoop: alle bedragen met BTW, en alle omzetten met 0%.
-	# Zo ook intra en extra.
-	else {
-	    $btwclass = BTWKLASSE(1, $sbtw, 0)
-	      if $btw_id || defined($kstomz) || $sbtw == BTWTYPE_INTRA || $sbtw == BTWTYPE_EXTRA;
-	}
 	$dbh->sql_insert("Boekstukregels",
 			 [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 			     bsr_btw_id bsr_btw_acc bsr_btw_class bsr_type bsr_acc_id bsr_rel_code)],
 			 $nr++, $date, $bsk_id, $desc, $amt,
-			 $btw_id, $btw_acc, $btwclass, 0, $acct, $debcode);
+			 $btw_id, $btw_acc,
+			 BTWKLASSE(defined($kstomz), $rel_btw, defined($kstomz) ? $kstomz : $iv),
+			 0, $acct, $debcode);
     }
 
     my $ret = EB::Finance::journalise($bsk_id);
-    $rr = [ @$ret ];
-    shift(@$rr);
-    $rr = [ sort { $a->[5] <=> $b->[5] } @$rr ];
-    foreach my $r ( @$rr ) {
-	my (undef, undef, undef, undef, $nr, $ac, $amt) = @$r;
-	next unless $nr;
-	warn("update $ac with ".numfmt($amt)."\n") if $trace_updates;
-	$dbh->upd_account($ac, $amt);
-    }
+#    $rr = [ @$ret ];
+#    shift(@$rr);
+#    $rr = [ sort { $a->[5] <=> $b->[5] } @$rr ];
+#    foreach my $r ( @$rr ) {
+#	my (undef, undef, undef, undef, $nr, $ac, $amt) = @$r;
+#	next unless $nr;
+#	warn("update $ac with ".numfmt($amt)."\n") if $trace_updates;
+#	$dbh->upd_account($ac, $amt);
+#    }
     my $tot = $ret->[$#{$ret}]->[6];
     $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ?, bsk_open = ? WHERE bsk_id = ?",
 		   $tot, $tot, $bsk_id)->finish;
