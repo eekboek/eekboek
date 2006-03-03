@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.5 2006/02/23 12:22:47 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.6 2006/03/03 21:17:40 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 13:21:18 2006
-# Update Count    : 36
+# Last Modified On: Thu Feb 23 14:48:23 2006
+# Update Count    : 38
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.5 2006/02/23 12:22:47 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.6 2006/03/03 21:17:40 jv Exp $ ';
 
 package main;
 
@@ -114,8 +114,7 @@ sub parse_btw_spec {
 
     # Quickie for G/N.
     if ( $spec =~ /^([gn])$/ ) {
-	$kstomz = undef;
-	$btw_id = 0;
+	return (0, undef);
     }
     # Strip off trailing K|O.
     elsif ( $spec =~ /^(.*)([ko])(.*)$/ ) {
