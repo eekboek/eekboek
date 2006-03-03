@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.37 2006/02/07 11:46:28 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.38 2006/03/03 21:19:27 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  7 12:28:53 2006
-# Update Count    : 309
+# Last Modified On: Fri Mar  3 22:18:11 2006
+# Update Count    : 317
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -166,6 +166,7 @@ sub check_db {
     $dbh->commit;
 }
 
+#### UNUSED
 sub upd_account {
     my ($self, $acc, $amt) = @_;
     my $op = '+';		# perfectionism
