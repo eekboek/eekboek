@@ -1,4 +1,4 @@
-# $Id: bvnv.dat,v 1.1 2005/12/14 16:22:15 jv Exp $
+# $Id: bvnv.dat,v 1.2 2006/03/03 10:24:22 jv Exp $
 # EekBoek voorbeeld rekeningschema voor een BV/NV
 #
 # DIT SCHEMA IS INDICATIEF EN DIENT VOOR EIGEN GEBRUIK TE WORDEN
@@ -445,11 +445,11 @@ Dagboeken
 
 BTW Tarieven
 
-   0  BTW Geen               :tariefgroep=geen
+   0  BTW 0%                 :tariefgroep=nul
    1  BTW 19% incl.          :tariefgroep=hoog :perc=19,00
-   2  BTW 19% excl.          :tariefgroep=hoog :perc=19,000 :exclusief
+   2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief
    3  BTW 6% incl.           :tariefgroep=laag :perc=6,00
    4  BTW 6% excl.           :tariefgroep=laag :perc=6,00 :exclusief
    5  BTW 12% autokostenvergoeding     :tariefgroep=hoog :perc=12,00 :exclusief
-   6  BTW privégebruik auto 12%        :tariefgroep=geen
-   7  BTW kleine ondernemersregeling   :tariefgroep=geen
+   6  BTW privégebruik auto 12%        :tariefgroep=nul
+   7  BTW kleine ondernemersregeling   :tariefgroep=nul

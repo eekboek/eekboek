@@ -1,4 +1,4 @@
-# $Id: eenmanszaak.dat,v 1.1 2005/12/14 16:22:15 jv Exp $
+# $Id: eenmanszaak.dat,v 1.2 2006/03/03 10:24:12 jv Exp $
 # EekBoek voorbeeld rekeningschema voor Eenmanszaak
 #
 # DIT SCHEMA IS INDICATIEF EN DIENT VOOR EIGEN GEBRUIK TE WORDEN
@@ -63,9 +63,9 @@ Balansrekeningen
          211   C   Afschrijving verbouwingen
          220   D   Machines en installaties
          221   C   Afschrijving mach. & installaties
-         230   D   Inventaris en inrichting                   :btw=hoog
+         230   D   Inventaris en inrichting                   :btw=hoog,kosten
          231   C   Afschrijving inventaris & inrichting
-         240   D   Computers                                  :btw=hoog
+         240   D   Computers                                  :btw=hoog,kosten
          241   C   Afschrijving computers
          250   D   Auto's
          251   C   Afschrijving Auto's
@@ -371,7 +371,7 @@ Dagboeken
 
 BTW Tarieven
 
-   0  BTW Geen               :tariefgroep=geen
+   0  BTW 0%                 :tariefgroep=nul
    1  BTW 19% incl.          :tariefgroep=hoog :perc=19,00
    2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief
    3  BTW 6,0% incl.         :tariefgroep=laag :perc=6,00
