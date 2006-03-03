@@ -1,10 +1,10 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.5 2006/03/03 10:48:25 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.6 2006/03/03 20:52:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 11:13:26 2006
-# Update Count    : 78
+# Last Modified On: Fri Mar  3 21:52:48 2006
+# Update Count    : 79
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -43,7 +43,7 @@ WriteSpecfile($data->{distname}, $x->{VERSION});
 
 # Extra.
 sub MY::postamble {
-    $ret = <<EOD;
+    my $ret = <<EOD;
 ivp : pure_all
 	cd ivp; sh ./verify.sh
 EOD
