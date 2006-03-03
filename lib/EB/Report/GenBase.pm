@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.16 2006/01/22 16:41:56 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.17 2006/03/03 10:47:54 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 15:50:34 2006
-# Update Count    : 112
+# Last Modified On: Fri Mar  3 11:47:32 2006
+# Update Count    : 127
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -70,8 +70,12 @@ sub backend {
     # Try to load backend. Gives user the opportunity to override.
     eval { require $pkg };
     if ( ! _loaded($class) ) {
-	die("?".__x("Onbekend uitvoertype: {gen}\n{err}",
-		    gen => $gen, err => $@)."\n");
+	my $err = $@;
+	if ( $err =~ /^can't locate /i ) {
+	    $err = _T("De uitvoer-backend kon niet worden gevonden");
+	}
+	die("?".__x("Uitvoer in de vorm {gen} is niet mogelijk: {reason}",
+		    gen => $gen, reason => $err)."\n");
     }
     my $be = $class->new($opts);
 
