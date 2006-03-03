@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.7 2006/02/23 11:44:58 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.8 2006/03/03 21:21:03 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 12:36:32 2006
-# Update Count    : 126
+# Last Modified On: Fri Feb 24 13:48:44 2006
+# Update Count    : 129
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -35,7 +35,7 @@ sub export {
 	$self->_write("$dir/schema.dat",  sub { $self->_schema(shift) });
 	$self->_write("$dir/relaties.eb", sub { print { shift } $self->_relaties });
 	$self->_write("$dir/opening.eb",  sub { print { shift } $self->_opening  });
-	$self->_write("$dir/mutaties.eb", sub { print { shift } $self->_mutaties });
+	$self->_write("$dir/mutaties.eb", sub { print { shift } $self->_mutaties($opts) });
 
     }
     else {
@@ -222,7 +222,7 @@ sub _opening {
 }
 
 sub _mutaties {
-    my ($self) = @_;
+    my ($self, $opts) = @_;
 
     my $out = __x("# {what} voor administratie {adm}",
 		  what => _T("Boekingen"), adm => $dbh->adm("name")) . "\n" .
@@ -294,10 +294,10 @@ sub _mutaties {
 	      ($bsk_id,
 	       { trail  => 1,
 		 d_boekjaar => $bky,
-		 single => 0,
-		 btw    => 0,
 		 bsknr  => 1,
-		 total  => 1,
+		 single => $opts->{single}   || 0,
+		 btw    => $opts->{explicit} || 0,
+		 total  => defined($opts->{totals}) ? $opts->{totals} : 1,
 		 debcrd => 0 }) . "\n";
 	}
 	$out .= "\n";
