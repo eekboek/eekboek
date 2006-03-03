@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.35 2006/02/20 16:04:42 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.36 2006/03/03 21:48:35 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 20 17:02:20 2006
-# Update Count    : 514
+# Last Modified On: Fri Mar  3 21:34:07 2006
+# Update Count    : 548
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -181,8 +181,10 @@ sub scan_btw {
 	elsif ( $extra =~ m/^tariefgroep=laag$/i ) {
 	    $groep = BTWTARIEF_LAAG;
 	}
-	elsif ( $extra =~ m/^tariefgroep=geen$/i ) {
-	    $groep = BTWTARIEF_GEEN;
+	elsif ( $extra =~ m/^tariefgroep=(nul|geen)$/i ) {
+	    $groep = BTWTARIEF_NUL;
+	    warn("!"._T("Gelieve BTW tariefgroep \"Geen\" te vervangen door \"Nul\"")."\n")
+	      if lc($1) eq "geen";
 	}
 	elsif ( $extra =~ m/^incl(?:usief)?$/i ) {
 	    $incl = 1;
@@ -198,12 +200,12 @@ sub scan_btw {
 
     error(__x("BTW tarief {id}: geen percentage en de tariefgroep is niet \"{none}\"",
 	      id => $id, none => _T("geen"))."\n")
-      unless defined($perc) || $groep == BTWTARIEF_GEEN;
+      unless defined($perc) || $groep == BTWTARIEF_NUL;
 
     $btw[$id] = [ $id, $desc, $groep, $perc, $incl ];
 
-    if ( $groep == BTWTARIEF_GEEN && !defined($btwmap{g}) ) {
-	$btwmap{g} = $id;
+    if ( $groep == BTWTARIEF_NUL && !defined($btwmap{n}) ) {
+	$btwmap{n} = $id;
     }
     elsif ( $incl ) {
 	if ( $groep == BTWTARIEF_HOOG && !defined($btwmap{h}) ) {
@@ -246,14 +248,14 @@ sub scan_balres {
 	     ||
 	     $flags =~ /^[dc][ko]$/i ) {
 	    $debcrd = $flags =~ /d/i;
-	    $kstomz = $flags =~ /k/i unless $flags =~ /n/i;
+	    $kstomz = $flags =~ /k/i if $flags =~ /[ko]/i;
 	}
 	else {
 	    error(__x("Rekening {id}: onherkenbare vlaggetjes {flags}",
 		      id => $id, flags => $flags)."\n");
 	}
 
-	my $btw_type = 'g';
+	my $btw_type = 'n';
 	my $btw_ko;
 	my $extra;
 
@@ -261,28 +263,35 @@ sub scan_balres {
 	    $desc = $1;
 	    $extra = $2;
 	    if ( $extra =~ m/^btw=(.+)$/i ) {
-		my ($spec) = lc($1);
+		my $spec = $1;
+		my @spec = split(/,/, lc($spec));
+
 		my $btw_inex = 1;
-		if ( $balres && $spec =~ /^(\d+)(,kosten|,omzet)?$/ ) {
-		    $btw_type = $1;
-		    $btw_ko = substr($2, 2, 1) eq "k" if defined $2;
+
+		foreach ( @spec ) {
+		    if ( $balres && /^(kosten|omzet)$/ ) {
+			$btw_ko = substr($1, 0, 1) eq "k";
+		    }
+		    elsif ( /^(hoog|laag|nul)$/ ) {
+			$btw_type = substr($1, 0, 1);
+		    }
+		    elsif ( /^\d+$/ ) {
+			$btw_type = $_;
+		    }
+		    elsif ( $_ eq "geen" ) {
+			$btw_type = 0;
+			$kstomz = $btw_ko = undef;
+		    }
+		    elsif ( /^(incl|excl)(usief)?$/ ) {
+			$btw_inex = substr($1, 1, 1) eq 'i';
+		    }
+		    else {
+			error(__x("Foutieve BTW specificatie: {spec}",
+				  spec => $spec)."\n");
+			last;
+		    }
 		}
-		elsif ( $balres && $spec =~ /^(hoog|laag)(,excl|,incl)?(,kosten|,omzet)?$/ ) {
-		    $btw_type = substr($1, 0, 1);
-		    $btw_inex = substr($2, 1, 1) eq 'i' if defined $2;
-		    $btw_ko   = substr($3, 1, 1) eq "k" if defined $3;
-		}
-		elsif ( !$balres && $spec =~ /^(\d+)$/ ) {
-		    $btw_type = $1;
-		}
-		elsif ( !$balres && $spec =~ /^(hoog|laag)(,excl|,incl)?$/ ) {
-		    $btw_type = substr($1, 0, 1);
-		    $btw_inex = substr($2, 1, 1) eq 'i' if defined $2;
-		}
-		else {
-		    error(__x("Foutieve BTW specificatie: {spec}",
-			      spec -> $1)."\n");
-		}
+
 		$btw_type .= "-" unless $btw_inex;
 	    }
 	    elsif ( $extra =~ m/koppeling=(\S+)/i ) {
@@ -295,22 +304,20 @@ sub scan_balres {
 		$std{$1} = $id;
 	    }
 	}
-	if ( $btw_type ne 'g' ) {
-	    error(__x("Rekening {id}: BTW koppeling met neutrale resultaatrekening is niet toegestaan",
-		      id => $id)."\n") if !defined($kstomz);
+	if ( $btw_type ne 'n' ) {
 	    error(__x("Rekening {id}: BTW koppeling '{ko}' met een {acc} is niet toegestaan",
 		      id => $id, ko => qw(omzet kosten)[$btw_ko],
 		      acc => qw(omzetrekening kostenrekening)[$kstomz])."\n")
 	      if !$balres && defined($kstomz) && defined($btw_ko) && $btw_ko != $kstomz;
+	    error(__x("Rekening {id}: BTW koppeling met neutrale resultaatrekening is niet toegestaan",
+		      id => $id)."\n") unless defined($kstomz) || defined($btw_ko);
 	    error(__x("Rekening {id}: BTW koppeling met een balansrekening vereist kosten/omzet specificatie",
 		      id => $id)."\n")
 	      if $balres && !defined($btw_ko);
 	}
 	$desc =~ s/\s+$//;
-	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd,
-		      defined($kstomz) ? $kstomz :
-		      defined($btw_ko) ? $btw_ko : undef,
-		      $btw_type ];
+	$kstomz = $btw_ko unless defined($kstomz);
+	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz, $btw_type ];
     }
     else {
 	0;
@@ -378,12 +385,44 @@ sub load_schema {
 		     " \"Dagboeken\" of \"BTW Tarieven\"")."\n");
     }
 
+=begin maybelater
+
+    # Bekijk alle dagboeken om te zien of er inkoop/verkoop dagboeken
+    # zijn die een tegenrekening nodig hebben. In dat geval moet de
+    # betreffende koppeling in het schema gemaakt zijn.
+    my ($need_deb, $need_crd) = (0,0);
+    use Data::Dumper; warn Dumper(\@dbk);
+    foreach ( @dbk ) {
+	next unless defined($_); # sparse
+	my ($id, $desc, $type, $rek) = @$_;
+	next if defined($rek);
+	if ( $type == DBKTYPE_INKOOP ) {
+	    $need_crd++;
+	    $_->[3] = $std{"crd"};
+	    #### Verify that it's a C acct.
+	}
+	elsif ( $type == DBKTYPE_VERKOOP ) {
+	    $need_deb++;
+	    $_->[3] = $std{"deb"};
+	    #### Verify that it's a D acct.
+	}
+	elsif ( $type != DBKTYPE_MEMORIAAL ) {
+	    error(__x("Dagboek {id} heeft geen tegenrekening", id => $id)."\n");
+	    $fail++;
+	}
+    }
+    # Verwijder onnodige koppelingen.
+    delete($std{crd}) unless $need_crd;
+    delete($std{deb}) unless $need_deb;
+
+=cut
+
     while ( my($k,$v) = each(%std) ) {
 	next if $v;
 	error(__x("Geen koppeling gevonden voor \"{std}\"", std => $k)."\n");
     }
 
-    my %mapbtw = ( g => "Geen", h => "Hoog", "l" => "Laag" );
+    my %mapbtw = ( n => "Nul", h => "Hoog", "l" => "Laag" );
     foreach ( keys(%mapbtw) ) {
 	next if defined($btwmap{$_});
 	error(__x("Geen BTW tarief gevonden met tariefgroep {gr}, inclusief",
@@ -512,7 +551,7 @@ ESQL
 
     foreach ( @btw ) {
 	next unless defined;
-	if ( $_->[2] == BTWTARIEF_GEEN ) {
+	if ( $_->[2] == BTWTARIEF_NUL ) {
 	    $_->[3] = 0;
 	    $_->[4] = "\\N";
 	}
@@ -779,8 +818,14 @@ sub dump_acc {
 			$extra .= ",omzet"  if !$acc_kstomz;
 		    }
 		}
-		elsif ( $btw != BTWTARIEF_GEEN ) {
+		elsif ( $btw != BTWTARIEF_NUL ) {
 		    $extra .= " :btw=$btw_id";
+		}
+		else {
+		    if ( $balres && defined($acc_kstomz) ) {
+			$extra .= " :btw=kosten" if $acc_kstomz;
+			$extra .= " :btw=omzet"  if !$acc_kstomz;
+		    }
 		}
 		$extra .= " :koppeling=".$kopp{$id} if exists($kopp{$id});
 		$desc =~ s/^\s+//;
@@ -809,7 +854,7 @@ sub dump_btw {
 	my ($id, $desc, $perc, $btg, $incl) = @$rr;
 	my $extra = "";
 	$extra .= " :tariefgroep=" . lc(BTWTARIEVEN->[$btg]);
-	if ( $btg != BTWTARIEF_GEEN ) {
+	if ( $btg != BTWTARIEF_NUL ) {
 	    $extra .= " :perc=".btwfmt($perc);
 	    $extra .= " :" . qw(exclusief inclusief)[$incl] unless $incl;
 	}
