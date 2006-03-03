@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.12 2006/02/06 12:08:49 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.13 2006/03/03 21:38:13 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  6 13:06:39 2006
-# Update Count    : 115
+# Last Modified On: Fri Feb 24 16:15:33 2006
+# Update Count    : 145
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -92,7 +92,7 @@ sub decode {
 		$cmd .= " --totaal=" . numfmt($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
 		  if $ex_tot && $acct;
 	    }
-	    $cmd .= " --saldo=" . numfmt($bsk_saldo) if defined $bsk_saldo;
+	    $cmd .= " --saldo=" . numfmt($bsk_saldo) if $ex_tot && defined $bsk_saldo;
 	}
 	else {
 	    $cmd = "Boekstuk $bsk_id, nr $bsk_nr, dagboek " .
@@ -120,7 +120,7 @@ sub decode {
     };
 
     my $sth = $dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
-			     "bsr_desc, bsr_amount, bsr_btw_id, ".
+			     "bsr_desc, bsr_amount, bsr_btw_id, bsr_btw_class, ".
 			     "bsr_type, bsr_acc_id, bsr_rel_code, bsr_paid ".
 			     " FROM Boekstukregels".
 			     " WHERE bsr_bsk_id = ?".
@@ -133,14 +133,14 @@ sub decode {
     }
 
     while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount,
-	    $bsr_btw_id, $bsr_type, $bsr_acc_id, $bsr_rel_code, $bsr_paid) = @$rr;
+	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_id,
+	    $bsr_btw_class, $bsr_type, $bsr_acc_id, $bsr_rel_code, $bsr_paid) = @$rr;
 	if ( $bsr_nr == 1) {
 	    $setup->($bsr_rel_code);
 	}
 
-	my ($rd, $rt) = $bsr_acc_id ?
-	  @{$dbh->do("SELECT acc_desc,acc_debcrd".
+	my ($rd, $rt, $acc_balres, $acc_kstomz) = $bsr_acc_id ?
+	  @{$dbh->do("SELECT acc_desc,acc_debcrd,acc_balres,acc_kstomz".
 		       " FROM Accounts".
 		       " WHERE acc_id = ?",
 		       $bsr_acc_id)}
@@ -161,7 +161,9 @@ sub decode {
 		     defined($bsr_acc_id) ? (", rek $bsr_acc_id (", $rt ? "D/" : "C/", $rd, ")",) : (),
 		     "\n") unless $trail;
 
-	#$bsr_amount = -$bsr_amount unless $rt;
+	croak("INTERNAL ERROR: BTW/N id = $bsr_btw_id")
+	  if !($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id;
+
 	my $a = EB::Finance::norm_btw($bsr_amount, $bsr_btw_id);
 	$tot += $a->[0];
 
@@ -169,13 +171,69 @@ sub decode {
 
 	$bsr_acc_id ||= "";
 	my $btw = "";
-	if ( $bsr_acc_id ) {
-	    if ( $ex_btw
-		 || ( $bsr_type == 0 && $dbktype == DBKTYPE_MEMORIAAL )
-		 || btw_code($bsr_acc_id) != $bsr_btw_id ) {
-		$btw = '@'.$bsr_btw_id;
+
+	# Refactor later.
+	if ( $bsr_btw_class & BTWKLASSE_BTW_BIT ) {
+	    my $ko = $bsr_btw_class & BTWKLASSE_KO_BIT ? 1 : 0;
+	    if ( $ex_btw ) {
+		$btw = $bsr_btw_id . qw(O K)[$ko];
+	    }
+	    else {
+		$btw .= $bsr_btw_id
+		  if btw_code($bsr_acc_id) != $bsr_btw_id
+		    || ($bsr_type == 0 && $dbktype == DBKTYPE_MEMORIAAL);
+		$btw .= qw(O K)[$ko]
+		  if (!defined($acc_kstomz) || ($acc_kstomz xor $ko));
 	    }
 	}
+	else {
+	    if ( $ex_btw ) {
+		$btw = 'N';
+	    }
+	    else {
+		$btw = 'N'
+		  if defined($acc_kstomz);
+	    }
+	}
+
+	$btw = '@' . $btw unless $btw eq "";
+
+
+=begin xxx
+
+
+
+
+
+
+
+
+
+	if ( $bsr_acc_id ) {
+	    my $ex_btw = $ex_btw;
+	    $ex_btw = 1 if $bsr_type == 0 && $dbktype == DBKTYPE_MEMORIAAL;
+	    $ex_btw = 1 if btw_code($bsr_acc_id) != $bsr_btw_id;
+	    $ex_btw = 1 if $acc_balres;
+
+	    my $ko;
+	    $ko = $bsr_btw_class & BTWKLASSE_KO_BIT ? 1 : 0
+	      if $bsr_btw_class & BTWKLASSE_BTW_BIT;
+
+	    if ( defined($ko) ) {
+		if ( $ex_btw ) {
+		    $btw = '@'.$bsr_btw_id;
+		    $btw .= qw(O K)[$ko]
+		      if $acc_balres && (!defined($acc_kstomz) || ($acc_kstomz xor $ko));
+		}
+	    }
+	    else {
+		$btw = '@N' if defined($acc_kstomz);
+	    }
+	}
+
+
+=cut
+
 
 	if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 	    $bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_VERKOOP;
