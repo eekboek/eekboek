@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.37 2006/03/04 17:44:52 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.38 2006/03/04 21:38:09 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  4 18:10:56 2006
-# Update Count    : 555
+# Last Modified On: Sat Mar  4 22:38:01 2006
+# Update Count    : 556
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -389,7 +389,6 @@ sub load_schema {
     # zijn die een tegenrekening nodig hebben. In dat geval moet de
     # betreffende koppeling in het schema gemaakt zijn.
     my ($need_deb, $need_crd) = (0,0);
-    warn Dumper(\@dbk);
     foreach ( @dbk ) {
 	next unless defined($_); # sparse
 	my ($id, $desc, $type, $rek) = @$_;
