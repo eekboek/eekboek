@@ -7,7 +7,7 @@ adm_begindatum 2005
 
 # Standaard wordt voor als boekjaarcode het jaartal gebruikt. U kunt
 # ook iets anders opgeven.
-adb_boekjaarcode "2005"
+adm_boekjaarcode "2005"
 
 # Data voor openingsbalans:
 

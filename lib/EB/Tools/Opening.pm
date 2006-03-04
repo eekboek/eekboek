@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.21 2006/03/03 21:46:05 jv Exp $
+# $Id: Opening.pm,v 1.22 2006/03/04 17:44:52 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 18:08:48 2006
-# Update Count    : 169
+# Last Modified On: Sat Mar  4 18:34:13 2006
+# Update Count    : 193
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -204,11 +204,25 @@ sub open {
 	warn(_T("Het totaalbedrag van de openingsbalans is nog niet opgegeven")."\n");
 
     }
+
+    # Generalise for multiple deb/crd accounts.
+    my %adeb;
+    my %acrd;
+    my $sth = $dbh->sql_exec("SELECT dbk_acc_id FROM Dagboeken".
+			     " WHERE dbk_type = ?", DBKTYPE_INKOOP);
+    while ( my $rr = $sth->fetch ) {
+	$acrd{0+$rr->[0]} = 0;
+    }
+    $sth = $dbh->sql_exec("SELECT dbk_acc_id FROM Dagboeken".
+			  " WHERE dbk_type = ?", DBKTYPE_VERKOOP);
+    while ( my $rr = $sth->fetch ) {
+	$adeb{0+$rr->[0]} = 0;
+    }
+
     if ( $o->{balanstotaal} ) {
-	my $adeb = $dbh->std_acc("deb");
-	my $acrd = $dbh->std_acc("crd");
-	my $rdeb;
-	my $rcrd;
+	my $adeb;
+	my $acrd;
+	my $need_rel = 0;
 	if ( !$o->{balans} ) {
 	    $fail++;
 	    warn(_T("De openingsbalans is nog niet opgegeven")."\n");
@@ -224,8 +238,8 @@ sub open {
 		else {
 		    $credit -= $amt;
 		}
-		$rdeb = $amt if $acct == $adeb;
-		$rcrd = $amt if $acct == $acrd;
+		$need_rel++, $adeb{$acct} = $amt if defined($adeb{$acct});
+		$need_rel++, $acrd{$acct} = $amt if defined($acrd{$acct});
 	    }
 	    $fail++, warn(_T("De openingsbalans is niet in balans!")."\n".
 			  __x("Totaal = {total}, residu debet = {rdeb}, residu credit = {rcrd}",
@@ -233,21 +247,46 @@ sub open {
 			      rdeb => numfmt($debet),
 			      rcrd => numfmt(-$credit))."\n")
 	      if $debet || $credit;
-	    $fail++, warn(_T("De openstaande debiteuren zijn nog niet opgegeven")."\n")
-	      if defined($rdeb) && !$o->{relatie};
-	    $fail++, warn(_T("De openstaande crediteuren zijn nog niet opgegeven")."\n")
-	      if defined($rcrd) && !$o->{relatie};
-	    $fail++, warn(_T("Er zijn openstaande posten opgegeven, maar geen corresponderende balansposten")."\n")
-	      if $o->{relatie} && !(defined($rdeb) || defined($rcrd));
 
+	    # Helpful hints...
+	    $fail++, warn(_T("Er zijn geen openstaande posten opgegeven")."\n")
+	      if !$o->{relatie} && $need_rel;
+	    $fail++, warn(_T("Er zijn openstaande posten opgegeven, maar geen corresponderende balansposten")."\n")
+	      if $o->{relatie} && !$need_rel;
+
+	    # Process relations.
 	    foreach my $r ( @{$o->{relatie}} ) {
 		my ($bky, $nr, $date, $desc, $debcrd, $code, $amt) = @$r;
+
 		if ( $debcrd ) {
-		    $rdeb -= $amt;
+		    $adeb ||= $dbh->std_acc("deb", $adeb);
+		    unless ( defined $adeb ) {
+			$adeb = (keys(%adeb))[0] if scalar(keys(%adeb)) == 1;
+		    }
+		    unless ( defined $adeb ) {
+			warn(_T("Deze administratie kent geen koppeling voor verkoopboekingen")."\n");
+			$fail++;
+			$adeb = 0;
+			next;
+		    }
+		    next unless $adeb;
+		    $adeb{$adeb} -= $amt;
 		}
 		else {
-		    $rcrd += $amt;
+		    $acrd ||= $dbh->std_acc("crd", $acrd);
+		    unless ( defined $acrd ) {
+			$acrd = (keys(%acrd))[0] if scalar(keys(%acrd)) == 1;
+		    }
+		    unless ( defined $acrd ) {
+			warn(_T("Deze administratie kent geen koppeling voor inkoopboekingen")."\n");
+			$fail++;
+			$acrd = 0; # defined
+			next;
+		    }
+		    next unless $acrd;
+		    $acrd{$acrd} += $amt;
 		}
+
 		if ( defined($bky) ) {
 		    my $sth = $dbh->sql_exec("SELECT bky_begin, bky_end".
 					     " FROM Boekjaren".
@@ -276,22 +315,36 @@ sub open {
 		    $bky = BKY_PREVIOUS;
 		}
 	    }
-	    $fail++, warn(($rdeb >= 0 ?
-			   __x("Er is {amt} te weinig aan openstaande {dc} opgegeven",
-			       amt => numfmt($rdeb),
-			       dc => lc(_T("Debiteuren"))) :
-			   __x("Er is {amt} te veel aan openstaande {dc} opgegeven",
-			       amt => numfmt(-$rdeb),
-			       dc => lc(_T("Debiteuren"))))."\n")
-	      if $rdeb;
-	    $fail++, warn(($rcrd >= 0 ?
-			   __x("Er is {amt} te weinig aan openstaande {dc} opgegeven",
-			       amt => numfmt($rcrd),
-			       dc => lc(_T("Crediteuren"))) :
-			   __x("Er is {amt} te veel aan openstaande {dc} opgegeven",
-			       amt => numfmt(-$rcrd),
-			       dc => lc(_T("Crediteuren"))))."\n")
-	      if $rcrd;
+
+	    foreach my $adeb ( keys(%adeb) ) {
+		next unless $adeb{$adeb};
+		$fail++;
+		if ( $adeb{$adeb} >= 0 ) {
+		    warn(__x("Er is {amt} te weinig aan openstaande {dc} (rekening {acct}) opgegeven",
+			     amt => numfmt($adeb{$adeb}), acct => $adeb,
+			     dc => lc(_T("Debiteuren")))."\n");
+		}
+		else {
+		    warn(__x("Er is {amt} te veel aan openstaande {dc} (rekening {acct}) opgegeven",
+			     amt => numfmt(-$adeb{$adeb}), acct => $adeb,
+			     dc => lc(_T("Debiteuren")))."\n");
+		}
+	    }
+
+	    foreach my $acrd ( keys(%acrd) ) {
+		next unless $acrd{$acrd};
+		$fail++;
+		if ( $acrd{$acrd} >= 0 ) {
+		    warn(__x("Er is {amt} te veel aan openstaande {dc} (rekening {acct}) opgegeven",
+			     amt => numfmt($acrd{$acrd}), acct => $acrd,
+			     dc => lc(_T("Crediteuren")))."\n");
+		}
+		else {
+		    warn(__x("Er is {amt} te weinig aan openstaande {dc} (rekening {acct}) opgegeven",
+			     amt => numfmt(-$acrd{$acrd}), acct => $acrd,
+			     dc => lc(_T("Crediteuren")))."\n");
+		}
+	    }
 	}
     }
     return _T("DE OPENING IS NIET UITGEVOERD!")."\n" if $fail;

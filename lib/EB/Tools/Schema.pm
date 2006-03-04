@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.36 2006/03/03 21:48:35 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.37 2006/03/04 17:44:52 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 21:34:07 2006
-# Update Count    : 548
+# Last Modified On: Sat Mar  4 18:10:56 2006
+# Update Count    : 555
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -146,8 +146,8 @@ sub scan_dagboeken {
     error(__x("Dagboek {id}: het :type ontbreekt", id => $id)."\n") unless defined($type);
     error(__x("Dagboek {id}: het :rekening nummer ontbreekt", id => $id)."\n")
       if ( $type == DBKTYPE_KAS || $type == DBKTYPE_BANK ) and !$type;
-    error(__x("Dagboek {id}: rekeningnummer enkel toegestaan voor Kas en Bankboeken", id => $id)."\n")
-      if $rek && !($type == DBKTYPE_KAS || $type == DBKTYPE_BANK || $type == DBKTYPE_MEMORIAAL);
+#    error(__x("Dagboek {id}: rekeningnummer enkel toegestaan voor Kas en Bankboeken", id => $id)."\n")
+#      if $rek && !($type == DBKTYPE_KAS || $type == DBKTYPE_BANK || $type == DBKTYPE_MEMORIAAL);
 
     $dbk{$id} = $dbkid;
     $dbk[$dbkid] = [ $id, $desc, $type, $rek||undef ];
@@ -385,13 +385,11 @@ sub load_schema {
 		     " \"Dagboeken\" of \"BTW Tarieven\"")."\n");
     }
 
-=begin maybelater
-
     # Bekijk alle dagboeken om te zien of er inkoop/verkoop dagboeken
     # zijn die een tegenrekening nodig hebben. In dat geval moet de
     # betreffende koppeling in het schema gemaakt zijn.
     my ($need_deb, $need_crd) = (0,0);
-    use Data::Dumper; warn Dumper(\@dbk);
+    warn Dumper(\@dbk);
     foreach ( @dbk ) {
 	next unless defined($_); # sparse
 	my ($id, $desc, $type, $rek) = @$_;
@@ -414,8 +412,6 @@ sub load_schema {
     # Verwijder onnodige koppelingen.
     delete($std{crd}) unless $need_crd;
     delete($std{deb}) unless $need_deb;
-
-=cut
 
     while ( my($k,$v) = each(%std) ) {
 	next if $v;
@@ -571,8 +567,8 @@ ESQL
 
     foreach ( @dbk ) {
 	next unless defined;
-	$_->[3] = $std{deb} if $_->[2] == DBKTYPE_VERKOOP;
-	$_->[3] = $std{crd} if $_->[2] == DBKTYPE_INKOOP;
+	$_->[3] ||= $std{deb} if $_->[2] == DBKTYPE_VERKOOP;
+	$_->[3] ||= $std{crd} if $_->[2] == DBKTYPE_INKOOP;
 	$out .= join("\t",
 		     map { defined($_) ? $_ : "\\N" } @$_).
 		       "\n";
@@ -683,7 +679,9 @@ print {$fh}  <<EOD;
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
 #
-# Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
+# Al deze koppelingen mogen ten hoogste éénmaal in het rekeningschema
+# voorkomen. Echter, alleen ongebruikte koppelingen mogen worden
+# weggelaten.
 
 EOD
 
@@ -723,8 +721,9 @@ print {$fh}  <<EOD;
 # dagboeken worden aangemaakt.
 # In de eerste kolom wordt de korte naam (code) voor het dagboek
 # opgegeven. Verder moet voor elk dagboek worden opgegeven van welk
-# type het is. Voor rekeningen van het type Kas en Bank moet bovendien
-# een tegenrekening worden opgegeven.
+# type het is. Voor dagboeken van het type Kas en Bank moet een
+# tegenrekening worden opgegeven, voor de overige dagboeken mag een
+# tegenrekening worden opgegeven.
 EOD
 
     dump_dbk($fh);			# Dagboeken
@@ -733,14 +732,14 @@ print {$fh}  <<EOD;
 
 # BTW TARIEVEN
 #
-# Er zijn drie tariefgroepen: "hoog", "laag" en "geen". De tariefgroep
+# Er zijn drie tariefgroepen: "hoog", "laag" en "nul". De tariefgroep
 # bepaalt het rekeningnummer waarop de betreffende boeking plaatsvindt.
 # Binnen elke tariefgroep zijn meerdere tarieven mogelijk, hoewel dit
 # in de praktijk niet snel zal voorkomen.
 # In de eerste kolom wordt de (numerieke) code voor dit tarief
 # opgegeven. Deze kan o.m. worden gebruikt om expliciet een BTW tarief
 # op te geven bij het boeken. Voor elk tarief (behalve die van groep
-# "geen") moet het percentage worden opgegeven. Met de aanduiding
+# "nul") moet het percentage worden opgegeven. Met de aanduiding
 # :exclusief kan worden opgegeven dat boekingen op rekeningen met deze
 # tariefgroep standaard het bedrag exclusief BTW aangeven.
 #
@@ -873,7 +872,8 @@ sub dump_dbk {
 			     " ORDER BY dbk_id");
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($id, $desc, $type, $acc_id) = @$rr;
-	$acc_id = 0 if $type == DBKTYPE_INKOOP || $type == DBKTYPE_VERKOOP;
+	$acc_id = 0 if $type == DBKTYPE_INKOOP  && $dbh->std_acc("crd", 0) == $acc_id;
+	$acc_id = 0 if $type == DBKTYPE_VERKOOP && $dbh->std_acc("deb", 0) == $acc_id;
 	my $t = sprintf("  %-4s  %-20s  :type=%-10s %s",
 			$id, $desc, lc(DBKTYPES->[$type]),
 			($acc_id ? ":rekening=$acc_id" : ""));

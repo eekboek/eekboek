@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.38 2006/03/03 21:19:27 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.39 2006/03/04 17:44:52 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 22:18:11 2006
-# Update Count    : 317
+# Last Modified On: Sat Mar  4 17:25:08 2006
+# Update Count    : 322
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -99,7 +99,8 @@ sub check_db {
 	sprintf("%03d%03d", $min, $rev) eq sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION);
 
     # Verify koppelingen.
-    for ( $self->std_acc("deb") ) {
+    for ( $self->std_acc("deb", undef) ) {
+	next unless defined;
 	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
 	$fail++, warn("?".__x("Geen grootboekrekening voor {dc} ({acct})",
 			      dc => _T("Debiteuren"), acct => $_)."\n")
@@ -110,7 +111,8 @@ sub check_db {
 	  unless $rr->[0] && $rr->[1];
     }
 
-    for ( $self->std_acc("crd") ) {
+    for ( $self->std_acc("crd", undef) ) {
+	next unless defined;
 	my $rr = $self->do("SELECT acc_debcrd, acc_balres FROM Accounts where acc_id = ?", $_);
 	$fail++, warn("?".__x("Geen grootboekrekening voor {dc} ({acct})",
 			      dc => _T("Crediteuren"), acct => $_)."\n")
@@ -141,7 +143,10 @@ sub check_db {
 	  unless $rr->[0];
     }
 
+=begin notanymore
+
     # Verify some grootboekrekeningen.
+    # We cannot do this anymore now we have free choice of accounts for ledgers.
     my $sth = $self->sql_exec("SELECT acc_id, acc_desc, dbk_id, dbk_type, dbk_desc FROM Dagboeken, Accounts".
 			      " WHERE dbk_acc_id = acc_id");
     while ( my $rr = $sth->fetchrow_arrayref ) {
@@ -157,6 +162,8 @@ sub check_db {
 			 acct => $acc_id, adesc => $acc_desc, dbk => $dbk_id, ddesc => $dbk_desc)."\n")
 	}
     }
+
+=cut
 
     die("?"._T("CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT")."\n") if $fail;
 
@@ -307,15 +314,16 @@ sub dbver {
 my %std_acc;
 my @std_acc;
 sub std_acc {
-    my ($self, $name) = @_;
+    my ($self, $name, $def) = @_;
     if ( $name eq "" ) {
 	%std_acc = ();
 	@std_acc = ();
 	return;
     }
     $self->std_accs unless %std_acc;
-    $std_acc{lc($name)} || die("?".__x("Niet-bestaande standaardrekening: {std}",
-				       std => $name)."\n");
+    return $std_acc{lc($name)} if defined($std_acc{lc($name)});
+    return $def if @_ > 2;
+    die("?".__x("Niet-bestaande standaardrekening: {std}", std => $name)."\n");
 }
 
 sub std_accs {
