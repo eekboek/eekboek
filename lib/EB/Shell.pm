@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.65 2006/03/03 21:28:35 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.66 2006/03/04 20:47:04 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb 24 13:47:22 2006
-# Update Count    : 753
+# Last Modified On: Sat Mar  4 21:45:13 2006
+# Update Count    : 765
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -32,8 +32,17 @@ sub new {
     _plug_cmds();
 
     # User defined stuff.
-    eval { require EB::Shell::Userdefs };
-    warn($@) if $@ && $@ !~ /can't locate eb.shell.userdefs\.pm in \@inc/i;
+    my $pkg = $cfg->val(qw(shell userdefs), undef);
+    if ( $pkg ) {
+	$pkg =~ s/::/\//g;
+	$pkg .= ".pm";
+	eval { require $pkg };
+	die($@) if $@;
+    }
+    else {
+	eval { require EB::Shell::Userdefs };
+	die($@) if $@ && $@ !~ /can't locate eb.shell.userdefs\.pm in \@inc/i;
+    }
 
     my $self = $class->SUPER::new($opts);
 
@@ -208,6 +217,13 @@ sub _plug_cmds {
 	    ($self->{o} ||= EB::Tools::Opening->new)->can($help)
 	      ? $self->{o}->$help() : $self->{o}->shellhelp($cmd);
 	};
+    }
+
+    # BTW aangifte.
+    if ( $dbh->does_btw ) {
+	no strict 'refs';
+	*{"do_btwaangifte"}   = \&_do_btwaangifte;
+	*{"help_btwaangifte"} = \&_help_btwaangifte;
     }
 
     $dbk_pat = $dbk_i_pat.$dbk_v_pat.$dbk_bkm_pat;
@@ -618,7 +634,8 @@ Toont een lijstje van beschikbare dagboeken.
 EOS
 }
 
-sub do_btwaangifte {
+# do_btwaangifte and help_btwaangifte are dynamically plugged in (or not).
+sub _do_btwaangifte {
     my ($self, @args) = @_;
     my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
 		 close	      => 0,
@@ -635,7 +652,7 @@ sub do_btwaangifte {
 		 EB::Report::GenBase->backend_options(EB::Report::BTWAangifte::, $opts),
 		 "noreport",
 	       ], $opts)
-      or goto &help_btwaangifte;
+      or goto &_help_btwaangifte;
 
     if ( lc($args[-1]) eq "definitief" ) {
 	$opts->{close} = 1;
@@ -648,7 +665,7 @@ sub do_btwaangifte {
     undef;
 }
 
-sub help_btwaangifte {
+sub _help_btwaangifte {
     <<EOS;
 Toont de BTW aangifte.
 
