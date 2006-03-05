@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.66 2006/03/04 20:47:04 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.67 2006/03/05 15:46:54 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  4 21:45:13 2006
-# Update Count    : 765
+# Last Modified On: Sun Mar  5 16:45:54 2006
+# Update Count    : 767
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -178,6 +178,7 @@ INIT { @outopts = qw(html csv text output=s page=i) }
 
 # Plug in some commands dynamically.
 sub _plug_cmds {
+    my $does_btw = $dbh->does_btw;
     my $sth = $dbh->sql_exec("SELECT dbk_id,dbk_desc,dbk_type FROM Dagboeken");
     my $rr;
     while ( $rr = $sth->fetchrow_arrayref ) {
@@ -207,6 +208,7 @@ sub _plug_cmds {
     foreach my $adm ( @{EB::Tools::Opening->commands} ) {
 	my $cmd = $adm;
 	$cmd =~ s/^set_//;
+	next if $cmd =~ /^btw/ && !$does_btw;
 	no strict 'refs';
 	*{"do_adm_$cmd"} = sub {
 	    (shift->{o} ||= EB::Tools::Opening->new)->$adm(@_);
@@ -220,7 +222,7 @@ sub _plug_cmds {
     }
 
     # BTW aangifte.
-    if ( $dbh->does_btw ) {
+    if ( $does_btw ) {
 	no strict 'refs';
 	*{"do_btwaangifte"}   = \&_do_btwaangifte;
 	*{"help_btwaangifte"} = \&_help_btwaangifte;
