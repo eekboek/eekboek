@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.38 2006/03/04 21:38:09 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.39 2006/03/05 20:58:08 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  4 22:38:01 2006
-# Update Count    : 556
+# Last Modified On: Sun Mar  5 21:05:03 2006
+# Update Count    : 570
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -412,17 +412,26 @@ sub load_schema {
     delete($std{crd}) unless $need_crd;
     delete($std{deb}) unless $need_deb;
 
+    my %mapbtw = ( n => "Nul", h => "Hoog", "l" => "Laag" );
+    if ( @btw ) {
+	foreach ( keys(%mapbtw) ) {
+	    next if defined($btwmap{$_});
+	    error(__x("Geen BTW tarief gevonden met tariefgroep {gr}, inclusief",
+		      gr => $mapbtw{$_})."\n");
+	}
+    }
+    else {
+	for ( qw(ih il vh vl ok) ) {
+	    delete($std{"btw_$_"}) unless $std{"btw_$_"};
+	}
+	$btwmap{n} = undef;
+	$btw[0] = [ 0, "BTW Nul", BTWTARIEF_NUL, 0, 0 ];
+    }
     while ( my($k,$v) = each(%std) ) {
 	next if $v;
 	error(__x("Geen koppeling gevonden voor \"{std}\"", std => $k)."\n");
     }
 
-    my %mapbtw = ( n => "Nul", h => "Hoog", "l" => "Laag" );
-    foreach ( keys(%mapbtw) ) {
-	next if defined($btwmap{$_});
-	error(__x("Geen BTW tarief gevonden met tariefgroep {gr}, inclusief",
-		  gr => $mapbtw{$_})."\n");
-    }
     die("?"._T("FOUTEN GEVONDEN, VERWERKING AFGEBROKEN")."\n") if $fail;
 
     if ( $sql ) {
@@ -516,12 +525,12 @@ ESQL
     for my $i ( sort { $a <=> $b } keys(%acc) ) {
 	my $g = $acc{$i};
 	croak(__x("Geen BTW tariefgroep voor code {code}",
-		  code => $g->[5])) unless defined $btwmap{$g->[5]};
+		  code => $g->[5])) unless exists $btwmap{$g->[5]};
 	$out .= _tsv($i, $g->[0], $g->[1],
 		     _tf($g->[2]),
 		     _tf($g->[3]),
 		     _tfn($g->[4]),
-		     $btwmap{$g->[5]},
+		     defined($btwmap{$g->[5]}) ? $btwmap{$g->[5]} : "\\N",
 		     0, 0);
     }
     $out . "\\.\n";
@@ -662,6 +671,7 @@ print {$fh}  <<EOD;
 # tariefstelling worden aangegeven die op deze rekening van toepassing
 # is:
 #
+#   :btw=nul
 #   :btw=hoog
 #   :btw=laag
 #
@@ -669,8 +679,8 @@ print {$fh}  <<EOD;
 # (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
 # zijn mogelijk:
 #
-#   crd		de tegenrekening (Crediteuren) voor inkoopboekingen
-#   deb		de tegenrekening (Debiteuren) voor verkoopboekingen
+#   crd		de standaard tegenrekening (Crediteuren) voor inkoopboekingen
+#   deb		de standaard tegenrekening (Debiteuren) voor verkoopboekingen
 #   btw_ih	de rekening voor BTW boekingen voor inkopen, hoog tarief
 #   btw_il	idem, laag tarief
 #   btw_vh	idem, verkopen, hoog tarief
@@ -678,10 +688,14 @@ print {$fh}  <<EOD;
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
 #
-# Al deze koppelingen mogen ten hoogste éénmaal in het rekeningschema
-# voorkomen. Echter, alleen ongebruikte koppelingen mogen worden
-# weggelaten.
-
+# De koppeling winst is verplicht en moet altijd in een administratie
+# voorkomen in verband met de jaarafsluiting.
+# De koppelingen voor BTW moeten worden opgegeven indien BTW
+# van toepassing is op de administratie.
+# De koppelingen voor Crediteuren en Debiteuren moeten worden
+# opgegeven indien er inkoop dan wel verkoopdagboeken zijn die gebruik
+# maken van de standaardwaarden (dus zelf geen tegenrekening hebben
+# opgegeven).
 EOD
 
 $max_hvd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE vdi_struct IS NULL")->[0];
@@ -727,7 +741,8 @@ EOD
 
     dump_dbk($fh);			# Dagboeken
 
-print {$fh}  <<EOD;
+    if ( $dbh->does_btw ) {
+	print {$fh}  <<EOD;
 
 # BTW TARIEVEN
 #
@@ -748,8 +763,8 @@ print {$fh}  <<EOD;
 # hebben voor de reeds in scripts vastgelegde boekingen.
 EOD
 
-    dump_btw($fh);			# BTW tarieven
-
+	dump_btw($fh);			# BTW tarieven
+    }
 print {$fh}  <<EOD;
 
 # Einde EekBoek schema
@@ -786,7 +801,8 @@ sub dump_acc {
 				     " acc_btw, btw_tariefgroep, btw_incl".
 				     " FROM Accounts, BTWTabel ".
 				     " WHERE acc_struct = ?".
-				     " AND btw_id = acc_btw".
+				     " AND (btw_id = acc_btw".
+				     " OR btw_id = 0 AND acc_btw IS NULL)".
 				     " ORDER BY acc_id", $id);
 	    while ( my $rr = $sth->fetchrow_arrayref ) {
 		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_kstomz, $btw_id, $btw, $btwincl) = @$rr;
