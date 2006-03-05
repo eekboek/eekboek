@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.67 2006/03/05 15:46:54 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.68 2006/03/05 20:07:53 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  5 16:45:54 2006
-# Update Count    : 767
+# Last Modified On: Sun Mar  5 21:07:06 2006
+# Update Count    : 770
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -858,7 +858,7 @@ sub do_relatie {
     return unless
     parse_args(\@args,
 	       [ 'dagboek=s',
-		 'btw=s',
+		 $dbh->does_btw ? 'btw=s' : (),
 	       ], $opts)
       or goto &help_relatie;
 
@@ -874,7 +874,7 @@ sub do_relatie {
 }
 
 sub help_relatie {
-    <<EOS;
+    my $ret = <<EOS;
 Aanmaken een of meer nieuwe relaties.
 
   relatie [ <opties> ] { <code> <omschrijving> <rekening> } ...
@@ -882,11 +882,15 @@ Aanmaken een of meer nieuwe relaties.
 Opties:
 
   --dagboek=<dagboek>         Selecteer dagboek voor deze relatie
+EOS
+
+    $ret .= <<EOS if $dbh->does_btw;
   --btw=<type>                BTW type: normaal, verlegd, intra, extra
 
 *** BTW type 'verlegd' wordt nog niet ondersteund ***
 *** BTW type 'intra' wordt nog niet geheel ondersteund ***
 EOS
+    $ret;
 }
 
 ################ Im/export ################
