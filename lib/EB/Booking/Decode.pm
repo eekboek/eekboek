@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.13 2006/03/03 21:38:13 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.14 2006/03/05 21:06:10 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb 24 16:15:33 2006
-# Update Count    : 145
+# Last Modified On: Sun Mar  5 21:56:40 2006
+# Update Count    : 147
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -186,7 +186,7 @@ sub decode {
 		  if (!defined($acc_kstomz) || ($acc_kstomz xor $ko));
 	    }
 	}
-	else {
+	elsif ( $dbh->does_btw ) {
 	    if ( $ex_btw ) {
 		$btw = 'N';
 	    }
@@ -197,43 +197,6 @@ sub decode {
 	}
 
 	$btw = '@' . $btw unless $btw eq "";
-
-
-=begin xxx
-
-
-
-
-
-
-
-
-
-	if ( $bsr_acc_id ) {
-	    my $ex_btw = $ex_btw;
-	    $ex_btw = 1 if $bsr_type == 0 && $dbktype == DBKTYPE_MEMORIAAL;
-	    $ex_btw = 1 if btw_code($bsr_acc_id) != $bsr_btw_id;
-	    $ex_btw = 1 if $acc_balres;
-
-	    my $ko;
-	    $ko = $bsr_btw_class & BTWKLASSE_KO_BIT ? 1 : 0
-	      if $bsr_btw_class & BTWKLASSE_BTW_BIT;
-
-	    if ( defined($ko) ) {
-		if ( $ex_btw ) {
-		    $btw = '@'.$bsr_btw_id;
-		    $btw .= qw(O K)[$ko]
-		      if $acc_balres && (!defined($acc_kstomz) || ($acc_kstomz xor $ko));
-		}
-	    }
-	    else {
-		$btw = '@N' if defined($acc_kstomz);
-	    }
-	}
-
-
-=cut
-
 
 	if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 	    $bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_VERKOOP;
