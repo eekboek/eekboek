@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.39 2006/03/04 17:44:52 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.40 2006/03/05 20:55:17 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  4 17:25:08 2006
-# Update Count    : 322
+# Last Modified On: Sun Mar  5 21:37:37 2006
+# Update Count    : 326
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -123,7 +123,8 @@ sub check_db {
 	  if $rr->[0] || !$rr->[1];
     }
 
-    for ( $self->std_acc("btw_ok") ) {
+    for ( $self->std_acc("btw_ok", undef) ) {
+	next unless defined;
 	my $rr = $self->do("SELECT acc_balres FROM Accounts where acc_id = ?", $_);
 	$fail++, warn("?".__x("Geen grootboekrekening voor {dc} ({acct})",
 			      dc => _T("BTW betaald"), acct => $_)."\n")
@@ -372,6 +373,15 @@ sub adm_busy {
     my ($self) = @_;
     $self->connectdb;
     $self->do("SELECT COUNT(*) FROM Journal")->[0];
+}
+
+sub does_btw {
+    my ($self) = @_;
+    $self->connectdb;
+    return defined($self->adm("btwbegin")) if $self->adm_open;
+    $self->do("SELECT COUNT(*)".
+	      " FROM BTWTabel".
+	      " WHERE btw_tariefgroep != 0")->[0];
 }
 
 ################ API calls for database backend ################
