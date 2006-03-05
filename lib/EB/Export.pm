@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.8 2006/03/03 21:21:03 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.9 2006/03/05 20:55:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb 24 13:48:44 2006
-# Update Count    : 129
+# Last Modified On: Sun Mar  5 18:31:12 2006
+# Update Count    : 132
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -125,7 +125,7 @@ sub _opening {
     $out .= "adm_boekjaarcode " . _quote($dbh->lookup($begin, qw(Boekjaren bky_begin bky_code))) . "\n";
     $out .= "adm_btwperiode   " .
       (qw(geen jaar x x kwartaal x x x x x x x maand)[$dbh->adm("btwperiod")]).
-	"\n";
+	"\n" if $dbh->does_btw;
 
     $out .= "\n# " . _T("Openingsbalans") . "\n";
 
@@ -254,15 +254,17 @@ sub _mutaties {
 	    }
 	    $sth->finish;
 	}
-	my $bb = $dbh->adm("btwbegin");
-	my $bkb = $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin));
-	my $bke = $dbh->lookup($bky, qw(Boekjaren bky_code bky_end));
-	if ( $bb gt $bke ) {
-	    $out .= "btwaangifte --boekjaar=" . _quote($bky) . " --definitief --noreport\n";
-	}
-	elsif ( $bb gt $bkb ) {
-	    $bb = parse_date($bb, undef, -1);
-	    $out .= "btwaangifte --periode=$bkb-$bb --definitief --noreport\n";
+	if ( $dbh->does_btw ) {
+	    my $bb = $dbh->adm("btwbegin");
+	    my $bkb = $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin));
+	    my $bke = $dbh->lookup($bky, qw(Boekjaren bky_code bky_end));
+	    if ( $bb gt $bke ) {
+		$out .= "btwaangifte --boekjaar=" . _quote($bky) . " --definitief --noreport\n";
+	    }
+	    elsif ( $bb gt $bkb ) {
+		$bb = parse_date($bb, undef, -1);
+		$out .= "btwaangifte --periode=$bkb-$bb --definitief --noreport\n";
+	    }
 	}
     };
 
