@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.46 2006/03/03 21:34:20 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.47 2006/03/05 20:57:29 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 18:16:33 2006
-# Update Count    : 359
+# Last Modified On: Sun Mar  5 20:47:36 2006
+# Update Count    : 367
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -43,6 +43,7 @@ sub perform {
     my $dagboek_type = $opts->{dagboek_type};
     my $totaal = $opts->{totaal};
     my $saldo = $opts->{saldo};
+    my $does_btw = $dbh->does_btw;
 
     if ( defined($totaal) ) {
 	my $t = amount($totaal);
@@ -108,7 +109,7 @@ sub perform {
 	    if ( $dd ) {
 		shift(@$args);
 		return unless $self->in_bky($dd, $begin, $end);
-		if ( $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
+		if ( $does_btw && $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
 		    warn("?"._T("De boekingsdatum valt in de periode waarover al BTW aangifte is gedaan")."\n");
 		    return;
 		}
@@ -155,10 +156,15 @@ sub perform {
 		warn("!".__x("Grootboekrekening {acct} ({desc}) is een balansrekening",
 			     acct => $acct, desc => $adesc)."\n") if 0;
 	    }
+	    if ( $btw_id && !$does_btw ) {
+		croak("INTERNAL ERROR: ".
+		      __x("Grootboekrekening {acct} heeft BTW in een BTW-vrije administratie",
+			  acct => $acct));
+	    }
 
 	    my $bid;
 	    my $oamt = $amt;
-	    ($amt, $bid) = $self->amount_with_btw($amt, undef);
+	    ($amt, $bid) = $does_btw ? $self->amount_with_btw($amt, undef) : amount($amt);
 	    unless ( defined($amt) ) {
 		warn("?".__x("Ongeldig bedrag: {amt}", amt => $oamt)."\n");
 		$fail++;
@@ -214,7 +220,7 @@ sub perform {
 				 bsr_acc_id bsr_rel_code)],
 			     $nr++, $dd, $bsk_id, $desc, $orig_amount,
 			     $btw_id, $btw_acc,
-			     BTWKLASSE(defined($kstomz), BTWTYPE_NORMAAL, $kstomz||0),
+			     BTWKLASSE($does_btw ? defined($kstomz) : 0, BTWTYPE_NORMAAL, $kstomz||0),
 			     0, $acct, undef);
 
 #	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
@@ -239,7 +245,7 @@ sub perform {
 	    if ( $dd ) {
 		shift(@$args);
 		return unless $self->in_bky($dd, $begin, $end);
-		if ( $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
+		if ( $does_btw && $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
 		    warn("?"._T("De boekingsdatum valt in de periode waarover al BTW aangifte is gedaan")."\n");
 		    return;
 		}

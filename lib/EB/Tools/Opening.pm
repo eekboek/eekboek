@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.22 2006/03/04 17:44:52 jv Exp $
+# $Id: Opening.pm,v 1.23 2006/03/05 20:57:49 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  4 18:34:13 2006
-# Update Count    : 193
+# Last Modified On: Sun Mar  5 21:37:50 2006
+# Update Count    : 198
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -182,6 +182,7 @@ sub open {
       unless $o->{naam};
     $fail++, warn(_T("De begindatum is nog niet opgegeven")."\n")
       unless $o->{begindatum};
+    my $does_btw = $dbh->does_btw;
 
     my $gbj;
     unless ( $gbj = defined($o->{boekjaarcode}) ) {
@@ -198,7 +199,7 @@ sub open {
     }
 
     $fail++, warn(_T("De BTW periode is nog niet opgegeven")."\n")
-      unless $o->{btwperiode};
+      if $does_btw && !$o->{btwperiode};
     if ( ($o->{balans} || $o->{relatie}) && !defined($o->{balanstotaal}) ) {
 	$fail++;
 	warn(_T("Het totaalbedrag van de openingsbalans is nog niet opgegeven")."\n");
@@ -355,10 +356,11 @@ sub open {
 		     [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened)],
 		     $o->{boekjaarcode}, $o->{naam},
 		     $o->{begindatum} . "-01-01", $o->{begindatum} . "-12-31", # TODO
-		     $o->{btwperiode}, $now);
+		     $o->{btwperiode}||0, $now);
     $dbh->sql_exec("UPDATE Metadata".
 		   " SET adm_bky = ?, adm_btwbegin = ?",
-		   $o->{boekjaarcode}, $o->{begindatum} . "-01-01");
+		   $o->{boekjaarcode},
+		   $does_btw ? $o->{begindatum} . "-01-01" : undef);
     $dbh->sql_exec("UPDATE Boekjaren".
 		   " SET bky_closed = ?, bky_end = ?".
 		   " WHERE bky_code = ?",
@@ -452,7 +454,7 @@ sub reopen {
     $o->{begindatum} = $y;
 
     warn(_T("Er is geen nieuwe BTW periode opgegeven, deze blijft ongewijzigd")."\n")
-      unless $o->{btwperiode};
+      if $dbh->does_btw && !$o->{btwperiode};
 
     if ( !defined($o->{boekjaarcode}) ) {
 	warn(__x("Er is geen boekjaarcode opgegeven, de waarde {val} wordt gebruikt",

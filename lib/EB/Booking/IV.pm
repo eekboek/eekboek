@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.39 2006/03/03 21:35:37 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.40 2006/03/05 20:57:28 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 13:56:49 2006
-# Update Count    : 261
+# Last Modified On: Sun Mar  5 20:47:13 2006
+# Update Count    : 272
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -50,6 +50,7 @@ sub perform {
 
     my $iv = $dagboek_type == DBKTYPE_INKOOP;
     my $totaal = $opts->{totaal};
+    my $does_btw = $dbh->does_btw;
 
     my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
 
@@ -79,7 +80,7 @@ sub perform {
 
     return unless $self->in_bky($date, $begin, $end);
 
-    if ( $dbh->adm("btwbegin") && $date lt $dbh->adm("btwbegin") ) {
+    if ( $does_btw && $dbh->adm("btwbegin") && $date lt $dbh->adm("btwbegin") ) {
 	warn("?"._T("De boekingsdatum valt in de periode waarover al BTW aangifte is gedaan")."\n");
 	return;
     }
@@ -182,6 +183,11 @@ sub perform {
 	    #$dbh->rollback;
 	    #return;
 	}
+	if ( $btw_id && !$does_btw ) {
+	    croak("INTERNAL ERROR: ".
+		  __x("Grootboekrekening {acct} heeft BTW in een BTW-vrije administratie",
+		      acct => $acct));
+	}
 
 	if ( $nr == 1 ) {
 	    $bsk_nr = $self->bsk_nr($opts);
@@ -193,7 +199,7 @@ sub perform {
 	}
 
 	# Amount can override BTW id with @X postfix.
-	my ($namt, $btw_spec) = $self->amount_with_btw($amt, $btw_id);
+	my ($namt, $btw_spec) = $does_btw ? $self->amount_with_btw($amt, $btw_id) : amount($amt);
 	unless ( defined($namt) ) {
 	    warn("?".__x("Ongeldig bedrag: {amt}", amt => $amt)."\n");
 	    return;
@@ -201,10 +207,12 @@ sub perform {
 
 	$amt = $iv ? $namt : -$namt;
 
-	($btw_id, $kstomz) = $self->parse_btw_spec($btw_spec, $btw_id, $kstomz);
-	unless ( defined($btw_id) ) {
-	    warn("?".__x("Ongeldige BTW-specificatie: {spec}", spec => $btw_spec)."\n");
-	    return;
+	if ( $does_btw ) {
+	    ($btw_id, $kstomz) = $self->parse_btw_spec($btw_spec, $btw_id, $kstomz);
+	    unless ( defined($btw_id) ) {
+		warn("?".__x("Ongeldige BTW-specificatie: {spec}", spec => $btw_spec)."\n");
+		return;
+	    }
 	}
 
 	# Bepalen van de BTW.
@@ -212,6 +220,7 @@ sub perform {
 	# toegepast. Op _alle_ andere wel. De BTW kan echter nul zijn, of void.
 	# Het eerste wordt bewerkstelligd door $btw_id op 0 te zetten, het tweede
 	# door $btw_acc geen waarde te geven.
+	my $btwclass = 0;
 	my $btw_acc;
 	if ( defined($kstomz) ) {
 	    # BTW toepassen.
@@ -246,7 +255,7 @@ sub perform {
 			     bsr_btw_id bsr_btw_acc bsr_btw_class bsr_type bsr_acc_id bsr_rel_code)],
 			 $nr++, $date, $bsk_id, $desc, $amt,
 			 $btw_id, $btw_acc,
-			 BTWKLASSE(defined($kstomz), $rel_btw, defined($kstomz) ? $kstomz : $iv),
+			 BTWKLASSE($does_btw ? defined($kstomz) : 0, $rel_btw, defined($kstomz) ? $kstomz : $iv),
 			 0, $acct, $debcode);
     }
 
