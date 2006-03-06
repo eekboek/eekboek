@@ -1,7 +1,7 @@
-# $Id: schema.dat,v 1.9 2006/03/03 21:52:40 jv Exp $
+# $Id: schema.dat,v 1.10 2006/03/06 15:47:11 jv Exp $
 # EekBoek Rekeningschema voor eekboek_sample
-# Aangemaakt door EB::Tools::Schema op 08-12-2005 14:12:57
-#
+# Aangemaakt door EB::Tools::Schema op 05-03-2006 22:24:07
+
 # Dit bestand definiëert alle vaste gegevens van een administratie of
 # groep administraties: het rekeningschema (balansrekeningen en
 # resultaatrekeningen), de dagboeken en de BTW tarieven.
@@ -22,12 +22,13 @@
 #
 # De omschrijving van de grootboekrekeningen wordt voorafgegaan door
 # een vlaggetje, een letter die resp. Debet/Credit (voor
-# balansrekeningen) en Kosten/Omzet (voor resultaatrekeningen)
+# balansrekeningen) en Kosten/Omzet/Neutraal (voor resultaatrekeningen)
 # aangeeft. De omschrijving wordt indien nodig gevolgd door extra
 # informatie. Voor grootboekrekeningen kan op deze wijze de BTW
 # tariefstelling worden aangegeven die op deze rekening van toepassing
 # is:
 #
+#   :btw=nul
 #   :btw=hoog
 #   :btw=laag
 #
@@ -35,8 +36,8 @@
 # (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
 # zijn mogelijk:
 #
-#   crd		de tegenrekening (Crediteuren) voor inkoopboekingen
-#   deb		de tegenrekening (Debiteuren) voor verkoopboekingen
+#   crd		de standaard tegenrekening (Crediteuren) voor inkoopboekingen
+#   deb		de standaard tegenrekening (Debiteuren) voor verkoopboekingen
 #   btw_ih	de rekening voor BTW boekingen voor inkopen, hoog tarief
 #   btw_il	idem, laag tarief
 #   btw_vh	idem, verkopen, hoog tarief
@@ -44,7 +45,25 @@
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
 #
-# Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
+# De koppeling winst is verplicht en moet altijd in een administratie
+# voorkomen in verband met de jaarafsluiting.
+# De koppelingen voor BTW moeten worden opgegeven indien BTW
+# van toepassing is op de administratie.
+# De koppelingen voor Crediteuren en Debiteuren moeten worden
+# opgegeven indien er inkoop dan wel verkoopdagboeken zijn die gebruik
+# maken van de standaardwaarden (dus zelf geen tegenrekening hebben
+# opgegeven).
+
+# Normaal lopen hoofdverdichtingen van 1 t/m 9, en verdichtingen
+# van 10 t/m 99. Indien daarvan wordt afgeweken kan dit worden opgegeven
+# met de opdracht "Verdichting". De twee getallen geven het hoogste
+# nummer voor hoofdverdichtingen resp. verdichtingen.
+# De nummers van de grootboekrekeningen worden geacht groter te zijn
+# dan de maximale verdichting. Daarvan kan worden afgeweken door
+# middels voorloopnullen de _lengte_ van het nummer groter te maken
+# dan de lengte van de maximale verdichting. Als bijvoorbeeld 99 de
+# maximale verdichting is, dan geeft 001 een grootboekrekening met
+# nummer 1 aan.
 
 Balansrekeningen
 
@@ -166,7 +185,7 @@ Resultaatrekeningen
   5  Bedrijfsopbrengsten
      51  Netto omzet
          8000  O   Omzet advisering BTW hoog                  :btw=hoog
-         8010  O   Omzet advisering BTW vrij                  :btw=nul
+         8010  O   Omzet advisering BTW vrij
          8100  O   Omzet royalties
          8200  O   Omzet editing                              :btw=hoog
          8300  O   Omzet cursussen                            :btw=hoog
@@ -176,7 +195,7 @@ Resultaatrekeningen
          8610  O   Omzet diversen BTW laag                    :btw=laag
          8620  O   Omzet diversen BTW vrij
          8900  K   Betalingskorting verkoop
-         8910  K   Korting  verkoop
+         8910  K   Korting verkoop
          8920  K   Prijsverschillen verkoop
      52  Kostprijs van de omzet
          7000  K   Inkoop materiaal                           :btw=hoog
@@ -204,7 +223,7 @@ Resultaatrekeningen
          4080  K   Ontvangen ziekengeld
          4090  K   Doorberekende salarissen
      61  Sociale lasten
-         4100  K   Bedrijfsvereniging  premies
+         4100  K   Bedrijfsvereniging premies
          4101  K   Ingehouden pr. bedr. vereniging
          4110  K   VUT premie
          4111  K   Ingehouden VUT premie
@@ -242,7 +261,7 @@ Resultaatrekeningen
      65  Huisvestingskosten
          4500  K   Huur bedrijfspand                          :btw=hoog
          4510  K   Servicekosten                              :btw=hoog
-         4520  K   Gas  water & electra
+         4520  K   Gas water & electra
          4530  K   Vaste lasten
          4540  K   Onderhoud bedrijfspand                     :btw=hoog
          4550  K   Schoonmaakkosten                           :btw=hoog
@@ -331,8 +350,9 @@ Resultaatrekeningen
 # dagboeken worden aangemaakt.
 # In de eerste kolom wordt de korte naam (code) voor het dagboek
 # opgegeven. Verder moet voor elk dagboek worden opgegeven van welk
-# type het is. Voor rekeningen van het type Kas en Bank moet bovendien
-# een tegenrekening worden opgegeven.
+# type het is. Voor dagboeken van het type Kas en Bank moet een
+# tegenrekening worden opgegeven, voor de overige dagboeken mag een
+# tegenrekening worden opgegeven.
 
 Dagboeken
 
@@ -367,3 +387,5 @@ BTW Tarieven
    2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief
    3  BTW 6,0% incl.         :tariefgroep=laag :perc=6,00
    4  BTW 6,0% excl.         :tariefgroep=laag :perc=6,00 :exclusief
+
+# Einde EekBoek schema
