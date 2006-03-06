@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.15 2006/01/22 16:43:00 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.16 2006/03/06 15:46:43 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 20 21:57:35 2006
-# Update Count    : 301
+# Last Modified On: Mon Mar  6 11:05:29 2006
+# Update Count    : 302
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -59,10 +59,10 @@ sub perform {
 	  title => $detail >= 0 ? _T("Verdichting/Grootboekrekening")
 				: _T("Grootboekrekening"),
 	  width => 40, },
-	{ name => "deb",  title => _T("Debet"),    width => 9, align => ">", },
-	{ name => "crd",  title => _T("Credit"),   width => 9, align => ">", },
-	{ name => "sdeb", title => _T("Saldo Db"), width => 9, align => ">" },
-	{ name => "scrd", title => _T("Saldo Cr"), width => 9, align => ">" },
+	{ name => "deb",  title => _T("Debet"),    width => $amount_width, align => ">", },
+	{ name => "crd",  title => _T("Credit"),   width => $amount_width, align => ">", },
+	{ name => "sdeb", title => _T("Saldo Db"), width => $amount_width, align => ">" },
+	{ name => "scrd", title => _T("Saldo Cr"), width => $amount_width, align => ">" },
       ];
 
     my $rep = EB::Report::GenBase->backend($self, $opts);

@@ -20,24 +20,77 @@ my $stdfmt0;
 my $stdfmtw;
 my $btwfmt0;
 my $btwfmtw;
-
-our @EXPORT;
-BEGIN {
-    push(@EXPORT, qw(amount numfmt numround btwfmt));
-    $stdfmt0 = '%.' . AMTPRECISION . 'f';
-    $stdfmtw = '%' . AMTWIDTH . "." . AMTPRECISION . 'f';
-    $btwfmt0 = '%.' . (BTWPRECISION-2) . 'f';
-    $btwfmtw = '%' . BTWWIDTH . "." . (BTWPRECISION-2) . 'f';
-}
-
 my $numpat;
 my $btwpat;
 my $decimalpt;
+my $thousandsep;
 
-BEGIN {
+our @EXPORT;
+our $amount_width;
+
+sub _setup  {
+    $btwfmt0 = '%.' . (BTWPRECISION-2) . 'f';
+    $btwfmtw = '%' . BTWWIDTH . "." . (BTWPRECISION-2) . 'f';
+
+    $amount_width = $cfg->val(qw(text numwidth), AMTWIDTH);
+    if ( $amount_width =~ /^\+(\d+)$/ ) {
+	$amount_width = AMTWIDTH + $1;
+    }
+    elsif ( $amount_width =~ /^\-(\d+)$/ ) {
+	$amount_width = AMTWIDTH - $1;
+    }
+    elsif ( $amount_width =~ /^(\d+)%$/ ) {
+	$amount_width = int((AMTWIDTH * $1) / 100);
+    }
+    elsif ( $amount_width !~ /^\d+$/ ) {
+	warn("?"._T("Configuratiefout: [format]numwidth moet een getal zijn")."\n");
+	$amount_width = AMTWIDTH;
+    }
+    $decimalpt = $cfg->val(qw(locale decimalpt), _T(","));
+    $thousandsep = $cfg->val(qw(locale thousandsep), "");
+    $amount_width += int(($amount_width - AMTPRECISION - 2) / 3) if $thousandsep;
+
+    $stdfmt0 = '%.' . AMTPRECISION . 'f';
+    $stdfmtw = '%' . $amount_width . "." . AMTPRECISION . 'f';
+
+    my $sub = "sub numfmt {\n";
+
+    $sub .= <<EOD;
+    # $amount_width
+    my \$v = shift;
+    if ( \$v == int(\$v) && \$v >= 0 ) {
+	\$v = ("0" x (@{[AMTPRECISION + 1]} - length(\$v))) . \$v if length(\$v) <= @{[AMTPRECISION]};
+	substr(\$v, length(\$v) - @{[AMTPRECISION]}, 0) = q\000$decimalpt\000;
+    }
+    else {
+	\$v = sprintf("$stdfmt0", \$v/@{[AMTSCALE]});
+EOD
+    $sub .= <<EOD if $decimalpt ne '.';
+	\$v =~ s/\./$decimalpt/;
+EOD
+    $sub .= <<EOD;
+    }
+EOD
+    $sub .= <<EOD if $thousandsep;
+    \$v = reverse(\$v);
+    \$v =~ s/(\\d\\d\\d)(?=\\d)(?!\\d*@{[quotemeta($decimalpt)]})/\${1}$thousandsep/g;
+    scalar(reverse(\$v));
+EOD
+    $sub .= <<EOD if !$thousandsep;
+    \$v;
+EOD
+
+    $sub .= "}\n";
+    eval($sub);
+    die($@) if $@;
+
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
     $btwpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[BTWPRECISION-2]}})?$/;
-    $decimalpt = $cfg->val(qw(locale decimalpt), _T(","));
+}
+
+BEGIN {
+    push(@EXPORT, qw(amount $amount_width numfmt numround btwfmt));
+    _setup();
 }
 
 sub amount($) {
@@ -52,19 +105,6 @@ sub amount($) {
     my ($s, $w, $f) = ($1 || "", $2 || 0, $3 || 0);
     $f .= "0" x (AMTPRECISION - length($f));
     return 0 + ($s.$w.$f);
-}
-
-sub numfmt {
-    my $v = shift;
-    if ( $v == int($v) && $v >= 0 ) {
-	$v = ("0" x (AMTPRECISION - length($v) + 1)) . $v if length($v) <= AMTPRECISION;
-	substr($v, length($v) - AMTPRECISION, 0) = $decimalpt;
-    }
-    else {
-	$v = sprintf($stdfmt0, $v/AMTSCALE);
-	$v =~ s/\./$decimalpt/;
-    }
-    $v;
 }
 
 #### UNUSED

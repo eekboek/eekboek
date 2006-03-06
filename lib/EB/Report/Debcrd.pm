@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.8 2006/01/12 21:38:09 jv Exp $ ';
+my $RCS_Id = '$Id: Debcrd.pm,v 1.9 2006/03/06 15:46:43 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 12 22:38:03 2006
-# Update Count    : 168
+# Last Modified On: Mon Mar  6 16:45:54 2006
+# Update Count    : 171
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -57,9 +57,9 @@ sub _perform {
 	  width => 10 },
 	{ name  => "date",   title => _T("Datum"),        width => 10 },
 	{ name  => "desc",   title => _T("Omschrijving"), width => 25 },
-	{ name  => "amount", title => _T("Bedrag"),       width => 10, align => ">" },
-	{ name  => "open",   title => _T("Openstaand"),   width => 10, align => ">" },
-	{ name  => "paid",   title => _T("Betaald"),      width => 10, align => ">" },
+	{ name  => "amount", title => _T("Bedrag"),       width => $amount_width, align => ">" },
+	{ name  => "open",   title => _T("Openstaand"),   width => $amount_width, align => ">" },
+	{ name  => "paid",   title => _T("Betaald"),      width => $amount_width, align => ">" },
 	{ name  => "bsknr",  title => _T("Boekstuk"),     width => 18 },
       ];
 

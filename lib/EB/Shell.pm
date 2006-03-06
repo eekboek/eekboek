@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.68 2006/03/05 20:07:53 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.69 2006/03/06 15:46:43 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  5 21:07:06 2006
-# Update Count    : 770
+# Last Modified On: Mon Mar  6 12:11:02 2006
+# Update Count    : 772
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -170,7 +170,6 @@ sub parseline {
 ################ Subroutines ################
 
 use EB;
-use EB::Tools::Opening;
 
 # Standard options for report generating backends.
 my @outopts;
@@ -205,6 +204,7 @@ sub _plug_cmds {
     }
 
     # Opening (adm_...) commands.
+    require EB::Tools::Opening;
     foreach my $adm ( @{EB::Tools::Opening->commands} ) {
 	my $cmd = $adm;
 	$cmd =~ s/^set_//;
@@ -864,7 +864,7 @@ sub do_relatie {
 
     warn("?"._T("Ongeldig aantal argumenten voor deze opdracht")."\n"), return if @args % 3;
 
-    use EB::Relation;
+    require EB::Relation;
 
     while ( @args ) {
 	my @a = splice(@args, 0, 3);
@@ -926,7 +926,7 @@ sub do_export {
     return unless argcnt(@args, 0);
     check_open(1);
 
-    use EB::Export;
+    require EB::Export;
     EB::Export->export($opts);
 
     return;
@@ -1098,7 +1098,7 @@ sub do_verwijder {
 	       ], $opts);
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
 
-    use EB::Booking::Delete;
+    require EB::Booking::Delete;
     @args = ($bsk) if $bsk && !@args;
     return _T("Gaarne een boekstuk") unless @args == 1;
     my $cmd;
@@ -1156,7 +1156,7 @@ sub do_toon {
     $opts->{trail} = !$opts->{verbose};
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
 
-    use EB::Booking::Decode;
+    require EB::Booking::Decode;
     @args = ($bsk) if $bsk && !@args;
     return _T("Gaarne een boekstuk") unless @args == 1;
     my ($id, $dbs, $err) = $dbh->bskid(shift(@args), $opts->{boekjaar});

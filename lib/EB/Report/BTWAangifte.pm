@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.31 2006/02/23 12:27:08 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.32 2006/03/06 15:46:43 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 13:25:00 2006
-# Update Count    : 461
+# Last Modified On: Mon Mar  6 11:15:41 2006
+# Update Count    : 465
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -678,7 +678,8 @@ sub outline {
 	return;
     }
 
-    $self->{fh}->printf("%-5s%-40s%10s%10s\n",
+    my $w = $EB::Finance::amount_width + 1;
+    $self->{fh}->printf("%-5s%-40s%${w}s%${w}s\n",
 			$tag0, $tag1,
 			defined($sub) ? $sub : "",
 			defined($amt) ? $amt : "");

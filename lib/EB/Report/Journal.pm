@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.27 2006/01/22 16:42:24 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.28 2006/03/06 15:46:43 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 15:52:30 2006
-# Update Count    : 270
+# Last Modified On: Mon Mar  6 11:05:00 2006
+# Update Count    : 271
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -41,8 +41,8 @@ sub journal {
       [ { name => "date", title => _T("Datum"),              width => 10, },
 	{ name => "desc", title => _T("Boekstuk/Grootboek"), width => 30, },
 	{ name => "acct", title => _T("Rek"),                width =>  5, align => ">", },
-	{ name => "deb",  title => _T("Debet"),              width =>  9, align => ">", },
-	{ name => "crd",  title => _T("Credit"),             width =>  9, align => ">", },
+	{ name => "deb",  title => _T("Debet"),              width => $amount_width, align => ">", },
+	{ name => "crd",  title => _T("Credit"),             width => $amount_width, align => ">", },
 	{ name => "bsk",  title => _T("Boekstuk/regel"),     width => 30, },
 	{ name => "rel",  title => _T("Relatie"),            width => 10, },
       ];

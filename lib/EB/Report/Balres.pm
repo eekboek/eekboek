@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.20 2006/01/23 20:45:34 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.21 2006/03/06 15:46:43 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 23 21:45:13 2006
-# Update Count    : 352
+# Last Modified On: Mon Mar  6 11:02:14 2006
+# Update Count    : 353
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -73,8 +73,8 @@ sub perform {
 	  title => $detail >= 0 ? _T("Verdichting/Grootboekrekening")
 				: _T("Grootboekrekening"),
 	  width => 40 },
-	{ name => "deb", title => _T("Debet"),  width => 9, align => ">" },
-	{ name => "crd", title => _T("Credit"), width => 9, align => ">" },
+	{ name => "deb", title => _T("Debet"),  width => $amount_width, align => ">" },
+	{ name => "crd", title => _T("Credit"), width => $amount_width, align => ">" },
       ];
 
     my $rep = EB::Report::GenBase->backend($self, $opts);
