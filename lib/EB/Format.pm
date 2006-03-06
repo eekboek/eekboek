@@ -56,7 +56,6 @@ sub _setup  {
     my $sub = "sub numfmt {\n";
 
     $sub .= <<EOD;
-    # $amount_width
     my \$v = shift;
     if ( \$v == int(\$v) && \$v >= 0 ) {
 	\$v = ("0" x (@{[AMTPRECISION + 1]} - length(\$v))) . \$v if length(\$v) <= @{[AMTPRECISION]};
@@ -66,7 +65,7 @@ sub _setup  {
 	\$v = sprintf("$stdfmt0", \$v/@{[AMTSCALE]});
 EOD
     $sub .= <<EOD if $decimalpt ne '.';
-	\$v =~ s/\./$decimalpt/;
+	\$v =~ s/\\./$decimalpt/;
 EOD
     $sub .= <<EOD;
     }
