@@ -53,7 +53,7 @@ sub _setup  {
     $stdfmt0 = '%.' . AMTPRECISION . 'f';
     $stdfmtw = '%' . $amount_width . "." . AMTPRECISION . 'f';
 
-    my $sub = "sub numfmt {\n";
+    my $sub = "";
 
     $sub .= <<EOD;
     my \$v = shift;
@@ -70,6 +70,10 @@ EOD
     $sub .= <<EOD;
     }
 EOD
+
+    eval("sub numfmt_plain { $sub; \$v }");
+    die($@) if $@;
+
     $sub .= <<EOD if $thousandsep;
     \$v = reverse(\$v);
     \$v =~ s/(\\d\\d\\d)(?=\\d)(?!\\d*@{[quotemeta($decimalpt)]})/\${1}$thousandsep/g;
@@ -79,8 +83,7 @@ EOD
     \$v;
 EOD
 
-    $sub .= "}\n";
-    eval($sub);
+    eval("sub numfmt { $sub }");
     die($@) if $@;
 
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
@@ -88,7 +91,7 @@ EOD
 }
 
 BEGIN {
-    push(@EXPORT, qw(amount $amount_width numfmt numround btwfmt));
+    push(@EXPORT, qw(amount $amount_width numfmt numfmt_plain numround btwfmt));
     _setup();
 }
 
@@ -106,7 +109,7 @@ sub amount($) {
     return 0 + ($s.$w.$f);
 }
 
-#### UNUSED
+#### USED BY GUI
 sub numfmtw {
     my $v = shift;
     if ( $v == int($v) && $v >= 0  ) {

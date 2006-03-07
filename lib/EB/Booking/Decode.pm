@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.14 2006/03/05 21:06:10 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.15 2006/03/07 08:55:06 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  5 21:56:40 2006
-# Update Count    : 147
+# Last Modified On: Mon Mar  6 18:33:06 2006
+# Update Count    : 148
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -89,10 +89,10 @@ sub decode {
 		$cmd .= "\"$bsk_desc\"";
 	    }
 	    else {
-		$cmd .= " --totaal=" . numfmt($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
+		$cmd .= " --totaal=" . numfmt_plain($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
 		  if $ex_tot && $acct;
 	    }
-	    $cmd .= " --saldo=" . numfmt($bsk_saldo) if $ex_tot && defined $bsk_saldo;
+	    $cmd .= " --saldo=" . numfmt_plain($bsk_saldo) if $ex_tot && defined $bsk_saldo;
 	}
 	else {
 	    $cmd = "Boekstuk $bsk_id, nr $bsk_nr, dagboek " .
@@ -113,7 +113,7 @@ sub decode {
 		$cmd .= $bsk_open ? ", *$bsk_open" : ", open"
 	    }
 	    elsif ( defined $bsk_open ) {
-		$cmd .= $bsk_open ? ", @{[numfmt(abs($bsk_open))]} open" : ", voldaan"
+		$cmd .= $bsk_open ? ", @{[numfmt_plain(abs($bsk_open))]} open" : ", voldaan"
 	    }
 	    $cmd .= "\n";
 	}
@@ -153,7 +153,7 @@ sub decode {
 		     "\"$bsr_desc\"",
 		     ", type $bsr_type (", $bsr_types[$dbktype][$bsr_type], ")\n",
 		     "  ",
-		     "bedrag ", numfmt(abs($bsr_amount)), " ", $dc,
+		     "bedrag ", numfmt_plain(abs($bsr_amount)), " ", $dc,
 		     defined($bsr_btw_id) ?
 		     (", BTW code $bsr_btw_id (",
 		      $dbh->lookup($bsr_btw_id, qw(BTWTabel btw_id btw_desc)),
@@ -202,7 +202,7 @@ sub decode {
 	    $bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_VERKOOP;
 	    $cmd .= $single ? " " : " \\\n\t";
 	    $cmd .= "\"$bsr_desc\" " .
-	      numfmt($bsr_amount) . $btw . " " .
+	      numfmt_plain($bsr_amount) . $btw . " " .
 		$bsr_acc_id;
 	}
 	elsif ( $dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS
@@ -213,7 +213,7 @@ sub decode {
 	    if ( $bsr_type == 0 ) {
 		$cmd .= $single ? " " : " \\\n\t";
 		$cmd .= "std$dd \"$bsr_desc\" " .
-		  numfmt($bsr_amount) . $btw . " " .
+		  numfmt_plain($bsr_amount) . $btw . " " .
 		    $bsr_acc_id;
 	    }
 	    elsif ( $bsr_type == 1 || $bsr_type == 2 ) {
@@ -230,7 +230,7 @@ sub decode {
 		if ( $paid == $bsr_amount) {
 		    # Matches -> Full payment
 		    $cmd .= "$type$dd \"$bsr_rel_code\" " .
-		      numfmt($bsr_amount);
+		      numfmt_plain($bsr_amount);
 		}
 		else {
 		    # Partial payment. Use boekstuknummer.
@@ -238,7 +238,7 @@ sub decode {
 		    $dbk =~ s/[^[:alnum:]]/_/g;
 		    $cmd .= "$type$dd $dbk";
 		    $cmd .= ":$bky" if ($opts->{boekjaar}||$opts->{d_boekjaar}) ne $bky;
-		    $cmd .= ":$nr " . numfmt($bsr_amount);
+		    $cmd .= ":$nr " . numfmt_plain($bsr_amount);
 		}
 	    }
 	}
