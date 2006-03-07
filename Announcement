@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.45 is beschikbaar
+Subject: EekBoek versie 0.46 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -8,44 +8,20 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.45 van EekBoek is beschikbaar op de bekende sites:
+Release 0.46 van EekBoek is beschikbaar op de bekende sites:
 
-* SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.45.tar.gz
+* SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154612
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.46.tar.gz
 * http://www.squirrel.nl/eekboek/dl/ppms/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.45.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.46.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Kolombreedte van bedragen in tekstuele rapportages is instelbaar.
-
-  Configuratievariabele 'numwidth' in sectie 'text' kan hiervoor
-  worden gebruikt:
-
-      [text]
-      numwidth = 10
-      numwidth = +1
-      numwidth = 111%
-
-  Elk van deze settings vergroot de standaardwaarde van 9 naar 10.
-      
-* Duizendpuntjes.
-
-  Configuratievariabele 'thousandsep' in sectie 'locale' kan hiervoor
-  worden gebruikt:
-
-      [locale]
-      decimalpt = ,
-      thousandsep = .
-
-  De kolombreedte in tekstuele rapportages wordt automatisch vergroot
-  bij het gebruik van duizendpuntjes.
-
-* Windows install kit voor de ActiveState Perl Package Manager.
-  Zie README.WINDOWS.
+* Duizendpuntjes worden niet worden toegepast in geëporteerde gegevens
+  omdat die anders niet meer kunnen worden ingelezen.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
