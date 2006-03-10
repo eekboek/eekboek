@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.46 is beschikbaar
+Subject: EekBoek versie 0.47 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -8,20 +8,23 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.46 van EekBoek is beschikbaar op de bekende sites:
+Release 0.47 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.46.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.47.tar.gz
 * http://www.squirrel.nl/eekboek/dl/ppms/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.46.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.47.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Duizendpuntjes worden niet worden toegepast in geëporteerde gegevens
-  omdat die anders niet meer kunnen worden ingelezen.
+* Additionele fixes voor duizendpuntjes in jaarafsluiting.
+
+* Fix BTW afsluiting na export/import indien BTW periode != jaar.
+
+* Kleine fixjes.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
