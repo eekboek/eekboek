@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.69 2006/03/06 15:46:43 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.70 2006/03/10 12:51:24 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  6 12:11:02 2006
-# Update Count    : 772
+# Last Modified On: Thu Mar  9 13:07:05 2006
+# Update Count    : 773
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -1099,6 +1099,7 @@ sub do_verwijder {
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
 
     require EB::Booking::Delete;
+    require EB::Booking::Decode;
     @args = ($bsk) if $bsk && !@args;
     return _T("Gaarne een boekstuk") unless @args == 1;
     my $cmd;
