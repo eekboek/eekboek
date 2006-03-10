@@ -1,13 +1,13 @@
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.8 2006/01/22 16:47:38 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.9 2006/03/10 12:51:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 20 21:54:52 2006
-# Update Count    : 211
+# Last Modified On: Wed Mar  8 19:27:38 2006
+# Update Count    : 212
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Einde.pm,v 1.8 2006/01/22 16:47:38 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.9 2006/03/10 12:51:57 jv Exp $ ';
 
 package main;
 
@@ -273,7 +273,7 @@ sub perform {
 			     "\n");
 	    }
 	    printf {$eb} ("adm_balans %-5s %10s   # %s\n",
-			  $acc_id, numfmt($acc_balance),
+			  $acc_id, numfmt_plain($acc_balance),
 			  $acc_desc);
 	    $debcrd = $acc_debcrd;
 	}
@@ -283,7 +283,7 @@ sub perform {
 		    arg2 => numfmt($ct))."\n")
 	  unless $dt == $ct;
 	print {$eb} ("\n# ", _T("Totaal"), "\n",
-		     "adm_balanstotaal   ", numfmt($dt), "\n");
+		     "adm_balanstotaal   ", numfmt_plain($dt), "\n");
 
 	print {$eb} ("\n# ",
 		     __x("Openstaande posten bij afsluiting boekjaar {bky}",
