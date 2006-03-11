@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.16 2006/02/23 12:26:48 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.17 2006/03/11 14:12:58 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 13:25:51 2006
-# Update Count    : 313
+# Last Modified On: Sat Mar 11 15:09:51 2006
+# Update Count    : 315
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -245,10 +245,6 @@ sub read_grootboek {
 	    if ( $balance ) {
 		$balance = -$balance if $a[4] eq 'D';
 		push(@transactions, [0+$a[0], $balance]);
-		if ( $balance < 0 ) {
-		    $a[4] = ($a[4] eq 'D') ? 'C' : 'D';
-		    $balance = -$balance;
-		}
 		if ( $a[4] eq 'C' ) {
 		    $op_crd += $balance;
 		}

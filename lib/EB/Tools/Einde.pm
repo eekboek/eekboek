@@ -1,13 +1,13 @@
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.9 2006/03/10 12:51:57 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.10 2006/03/11 14:12:18 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  8 19:27:38 2006
-# Update Count    : 212
+# Last Modified On: Sat Mar 11 15:10:43 2006
+# Update Count    : 214
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Einde.pm,v 1.9 2006/03/10 12:51:57 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.10 2006/03/11 14:12:18 jv Exp $ ';
 
 package main;
 
@@ -256,11 +256,9 @@ sub perform {
 				  " AND bkb_acc_id = ?",
 				  $bky, $acc_id) ) {
 		$acc_balance -= $t->[0];
-#		warn("=> acc $acc_id bal = $acc_balance (fixed with $t->[0])\n");
 	    }
 	    next unless $acc_balance;
-#	    warn("=> acc $acc_id bal = $acc_balance final\n");
-	    if ( $acc_balance >= 0 ) {
+	    if ( $acc_debcrd ) {
 		$dt += $acc_balance;
 	    }
 	    else {
