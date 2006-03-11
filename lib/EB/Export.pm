@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.11 2006/03/09 14:29:11 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.12 2006/03/11 14:12:48 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  9 15:27:33 2006
-# Update Count    : 135
+# Last Modified On: Sat Mar 11 15:10:15 2006
+# Update Count    : 138
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -143,7 +143,7 @@ sub _opening {
 	my ($acc_id, $acc_desc, $acc_balance, $acc_debcrd) = @$rr;
 	next unless $acc_balance;
 
-	if ( $acc_balance >= 0 ) {
+	if ( $acc_debcrd ) {
 	    $dt += $acc_balance;
 	}
 	else {
@@ -258,10 +258,12 @@ sub _mutaties {
 	}
 	if ( $dbh->does_btw ) {
 	    my $bb = $dbh->adm("btwbegin");
-	    my $bkb = $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin));
 	    my $bke = $dbh->lookup($bky, qw(Boekjaren bky_code bky_end));
-	    $bke = parse_date($bb, undef, -1) if $bb le $bke;
-	    $out .= "btwaangifte --periode=$bkb-$bke --definitief --noreport\n";
+	    my $bkb = $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin));
+	    if ( $bb gt $bkb ) {
+		$bke = parse_date($bb, undef, -1) if $bb le $bke;
+		$out .= "btwaangifte --periode=$bkb-$bke --definitief --noreport\n";
+	    }
 	}
     };
 
