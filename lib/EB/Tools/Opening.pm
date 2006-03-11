@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.23 2006/03/05 20:57:49 jv Exp $
+# $Id: Opening.pm,v 1.24 2006/03/11 14:11:51 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  5 21:37:50 2006
-# Update Count    : 198
+# Last Modified On: Sat Mar 11 14:58:53 2006
+# Update Count    : 203
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -110,7 +110,7 @@ sub set_balans {
     my $anew;
     return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($anew = amount($amt));
     $self->check_open(0);
-    push(@{$self->{o}->{balans}}, [$acct, $debcrd ? $anew : -$anew]);
+    push(@{$self->{o}->{balans}}, [$acct, $debcrd, $debcrd ? $anew : -$anew]);
     "";
 }
 
@@ -220,11 +220,11 @@ sub open {
 	$adeb{0+$rr->[0]} = 0;
     }
 
-    if ( $o->{balanstotaal} ) {
+    if ( defined($o->{balanstotaal}) ) {
 	my $adeb;
 	my $acrd;
 	my $need_rel = 0;
-	if ( !$o->{balans} ) {
+	if ( !$o->{balans} && $o->{openingsbalans} ) {
 	    $fail++;
 	    warn(_T("De openingsbalans is nog niet opgegeven")."\n");
 	}
@@ -232,8 +232,8 @@ sub open {
 	    my $debet = $o->{balanstotaal};
 	    my $credit = -$debet;
 	    foreach my $b ( @{$o->{balans}} ) {
-		my ($acct, $amt) = @$b;
-		if ( $amt >= 0 ) {
+		my ($acct, $dc, $amt) = @$b;
+		if ( $dc ) {
 		    $debet -= $amt;
 		}
 		else {
@@ -368,9 +368,9 @@ sub open {
 		   scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
 		   BKY_PREVIOUS);
 
-    if ( $o->{balanstotaal} ) {
+    if ( defined $o->{balanstotaal} ) {
 	foreach my $b ( @{$o->{balans}} ) {
-	    my ($acct, $amt) = @$b;
+	    my ($acct, $dc, $amt) = @$b;
 	    $dbh->sql_exec("UPDATE Accounts".
 			   " SET acc_balance = ?,".
 			   "     acc_ibalance = ?".
