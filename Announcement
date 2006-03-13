@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.47 is beschikbaar
+Subject: EekBoek versie 0.48 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -8,27 +8,49 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.47 van EekBoek is beschikbaar op de bekende sites:
+Release 0.48 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.47.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.48.tar.gz
 * http://www.squirrel.nl/eekboek/dl/ppms/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.47.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.48.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Additionele fixes voor duizendpuntjes in jaarafsluiting.
+* Negatieve getallen in de openingsbalans blijven gehandhaafd.
+  In vorige versies werd (foutief!) de D/C status gewisseld.
+
+  B.v., oude situatie:
+
+	adm_balans <debetrek>  100
+	adm_balans <debetrek>  -10
+
+	adm_balans <creditrek>  90
+
+	adm_balanstotaal       100
+
+  Nieuwe situatie:
+
+	adm_balans <debetrek>  100
+	adm_balans <debetrek>  -10
+
+	adm_balans <creditrek>  90
+
+	adm_balanstotaal        90
+
+Dit is een incompatibele wijziging, doch enkel indien er
+negatieve bedragen in de openingsbalans voorkomen (wat
+doorgaans niet het geval zal zijn). In dat geval moet het
+balanstotaal even worden aangepast.
 
 * Fix BTW afsluiting na export/import indien BTW periode != jaar.
-
-* Kleine fixjes.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
 Squirrel Consultancy                                  Exloo, the Netherlands
 http://www.squirrel.nl                              http://johan.vromans.org
-PGP Key 2048/4783B14D                   http://johan.vromans.org/pgpkey.html
+PGP Key 2048/4883B14D                   http://johan.vromans.org/pgpkey.html
 ----------------------- "Arms are made for hugging" ------------------------
