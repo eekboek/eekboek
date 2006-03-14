@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.24 2006/03/11 14:11:51 jv Exp $
+# $Id: Opening.pm,v 1.25 2006/03/14 14:05:03 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar 11 14:58:53 2006
-# Update Count    : 203
+# Last Modified On: Tue Mar 14 14:55:29 2006
+# Update Count    : 205
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -229,15 +229,27 @@ sub open {
 	    warn(_T("De openingsbalans is nog niet opgegeven")."\n");
 	}
 	else {
-	    my $debet = $o->{balanstotaal};
-	    my $credit = -$debet;
+	    # Boekhoudkundig rekenen.
+	    my $bdebet  = $o->{balanstotaal};
+	    my $bcredit = -$bdebet;
+	    # Rekenkundig rekenen.
+	    my $rcredit = $bcredit;
+	    my $rdebet  = $bdebet;
 	    foreach my $b ( @{$o->{balans}} ) {
 		my ($acct, $dc, $amt) = @$b;
+		# Rekenkundig rekenen.
 		if ( $dc ) {
-		    $debet -= $amt;
+		    $rdebet -= $amt;
 		}
 		else {
-		    $credit -= $amt;
+		    $rcredit -= $amt;
+		}
+		# Boekhoudkundig rekenen.
+		if ( $amt >= 0 ) {
+		    $bdebet -= $amt;
+		}
+		else {
+		    $bcredit -= $amt;
 		}
 		$need_rel++, $adeb{$acct} = $amt if defined($adeb{$acct});
 		$need_rel++, $acrd{$acct} = $amt if defined($acrd{$acct});
@@ -245,9 +257,9 @@ sub open {
 	    $fail++, warn(_T("De openingsbalans is niet in balans!")."\n".
 			  __x("Totaal = {total}, residu debet = {rdeb}, residu credit = {rcrd}",
 			      total => numfmt($o->{balanstotaal}),
-			      rdeb => numfmt($debet),
-			      rcrd => numfmt(-$credit))."\n")
-	      if $debet || $credit;
+			      rdeb => numfmt($rdebet),
+			      rcrd => numfmt(-$rcredit))."\n")
+	      if ($rdebet || $rcredit) && ($bdebet || $rdebet);
 
 	    # Helpful hints...
 	    $fail++, warn(_T("Er zijn geen openstaande posten opgegeven")."\n")
