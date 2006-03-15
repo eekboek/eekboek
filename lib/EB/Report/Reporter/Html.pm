@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.3 2006/01/22 16:46:52 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.4 2006/03/15 11:01:44 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 20 21:58:44 2006
-# Update Count    : 28
+# Last Modified On: Wed Mar 15 12:01:22 2006
+# Update Count    : 29
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -32,6 +32,8 @@ sub finish {
     print {$self->{fh}} ("</table>\n");
 
     my $now = $cfg->val(qw(internal now), iso8601date());
+    # Treat empty value as no value.
+    $now ||= iso8601date();
     my $ident = $EB::ident;
     $ident = (split(' ', $ident))[0] if $cfg->val(qw(internal now), 0);
 
