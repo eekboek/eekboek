@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.25 2006/03/14 14:05:03 jv Exp $
+# $Id: Opening.pm,v 1.26 2006/03/17 18:31:11 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar 14 14:55:29 2006
-# Update Count    : 205
+# Last Modified On: Fri Mar 17 19:12:33 2006
+# Update Count    : 224
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -110,7 +110,15 @@ sub set_balans {
     my $anew;
     return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($anew = amount($amt));
     $self->check_open(0);
-    push(@{$self->{o}->{balans}}, [$acct, $debcrd, $debcrd ? $anew : -$anew]);
+    $anew = -$anew unless $debcrd;
+    if ( exists($self->{o}->{balans}->{$acct}) ) {
+	my $e = $self->{o}->{balans}->{$acct};
+	$anew = -$anew if ($e->[0] xor $debcrd);
+	$self->{o}->{balans}->{$acct}->[1] += $anew;
+    }
+    else {
+	$self->{o}->{balans}->{$acct} = [ $debcrd, $anew ];
+    }
     "";
 }
 
@@ -235,8 +243,8 @@ sub open {
 	    # Rekenkundig rekenen.
 	    my $rcredit = $bcredit;
 	    my $rdebet  = $bdebet;
-	    foreach my $b ( @{$o->{balans}} ) {
-		my ($acct, $dc, $amt) = @$b;
+	    while ( my ($acct, $e) = each(%{$o->{balans}}) ) {
+		my ($dc, $amt) = @$e;
 		# Rekenkundig rekenen.
 		if ( $dc ) {
 		    $rdebet -= $amt;
@@ -251,15 +259,27 @@ sub open {
 		else {
 		    $bcredit -= $amt;
 		}
-		$need_rel++, $adeb{$acct} = $amt if defined($adeb{$acct});
-		$need_rel++, $acrd{$acct} = $amt if defined($acrd{$acct});
+		$need_rel++, $adeb{$acct} += $amt if defined($adeb{$acct});
+		$need_rel++, $acrd{$acct} += $amt if defined($acrd{$acct});
 	    }
-	    $fail++, warn(_T("De openingsbalans is niet in balans!")."\n".
-			  __x("Totaal = {total}, residu debet = {rdeb}, residu credit = {rcrd}",
-			      total => numfmt($o->{balanstotaal}),
-			      rdeb => numfmt($rdebet),
-			      rcrd => numfmt(-$rcredit))."\n")
-	      if ($rdebet || $rcredit) && ($bdebet || $rdebet);
+	    if ( ($rdebet || $rcredit) && ($bdebet || $bcredit) ) {
+		$fail++;
+		warn(_T("De openingsbalans is niet correct!")."\n");
+		warn(__x("Opgegeven balanstotaal = {total}",
+			 total => numfmt($o->{balanstotaal}))."\n");
+		warn(__x("Rekenkundig residu debet = {rdeb}, credit = {rcrd}",
+			 rdeb => numfmt($rdebet),
+			 rcrd => numfmt(-$rcredit)).
+		     ($rdebet == -$rcredit
+		      ? __x(" (balanstotaal {total})", total => numfmt($o->{balanstotaal} - $rdebet))
+		      : ())."\n");
+		warn(__x("Boekhoudkundig residu debet = {rdeb}, credit = {rcrd}",
+			 rdeb => numfmt($bdebet),
+			 rcrd => numfmt(-$bcredit)).
+		     ($bdebet == -$bcredit
+		      ? __x(" (balanstotaal {total})", total => numfmt($o->{balanstotaal} - $bdebet))
+		      : ())."\n");
+	    }
 
 	    # Helpful hints...
 	    $fail++, warn(_T("Er zijn geen openstaande posten opgegeven")."\n")
@@ -381,11 +401,11 @@ sub open {
 		   BKY_PREVIOUS);
 
     if ( defined $o->{balanstotaal} ) {
-	foreach my $b ( @{$o->{balans}} ) {
-	    my ($acct, $dc, $amt) = @$b;
+	while ( my ($acct, $e) = each(%{$o->{balans}}) ) {
+	    my ($dc, $amt) = @$e;
 	    $dbh->sql_exec("UPDATE Accounts".
-			   " SET acc_balance = ?,".
-			   "     acc_ibalance = ?".
+			   " SET acc_balance = acc_balance + ?,".
+			   "     acc_ibalance = acc_ibalance + ?".
 			   " WHERE acc_id = ?",
 			   $amt, $amt, $acct);
 	}
