@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.12 2006/03/11 14:12:48 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.13 2006/03/17 18:30:10 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar 11 15:10:15 2006
-# Update Count    : 138
+# Last Modified On: Fri Mar 17 14:58:18 2006
+# Update Count    : 139
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -143,7 +143,8 @@ sub _opening {
 	my ($acc_id, $acc_desc, $acc_balance, $acc_debcrd) = @$rr;
 	next unless $acc_balance;
 
-	if ( $acc_debcrd ) {
+	# Export boekhoudkundig saldo (zie EB::Tools::Opening).
+	if ( $acc_balance >= 0 ) {
 	    $dt += $acc_balance;
 	}
 	else {
