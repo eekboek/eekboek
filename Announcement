@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.49 is beschikbaar
+Subject: EekBoek versie 0.50 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -8,24 +8,20 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.49 van EekBoek is beschikbaar op de bekende sites:
+Release 0.50 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.49.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.50.tar.gz
 * http://www.squirrel.nl/eekboek/dl/ppms/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.49.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.50.tar.gz
 
 Belangrijkste wijzigingen:
 
-* De oorspronkelijke, boekhoudkundige berekening van het balanstotaal
-  voor de openingsbalans wordt nu ook weer geaccepteerd, evenals de in
-  de vorige versie geïntroduceerde rekenkundige berekening. Zie de
-  documentatie. 
-
-* Kleine bugfixes.
+* Bugfixes m.b.t. de boekhoudkundige/rekenkundige berekening van
+  balanstotaal.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
