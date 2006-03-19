@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.5 2006/01/22 16:51:08 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.6 2006/03/19 18:00:16 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 20 15:05:30 2006
-# Update Count    : 24
+# Last Modified On: Sun Mar 19 17:42:56 2006
+# Update Count    : 40
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -13,28 +13,33 @@ use File::Spec;
 
 our $data;
 
-$data->{author} = 'Johan Vromans (jvromans@squirrel.nl)';
-$data->{abstract} = 'Elementary Bookkeeping (for the Dutch/European market)';
-$data->{pl_files} = {};
-$data->{installtype} = 'site';
-$data->{distname} = 'EekBoek';
-$data->{name} = "eekboek";
-$data->{script} = [ map { File::Spec->catfile("script", $_) }
-		     qw(ebshell) ];
-$data->{prereq_pm} = {
-		      'Getopt::Long' => '2.13',
-		      'Term::ReadLine' => 0,
-		      'Term::ReadLine::Gnu' => 0,
-		      'DBI' => 1.40,
-		      'DBD::Pg' => 1.41,
-		      'Config::IniFiles' => 2.38,
-#		      'Text::CSV_XS' => 0,
-#		      'Locale::gettext' => 1.05,
-	       };
-$data->{recomm_pm} = {
-		'Getopt::Long' => '2.32',
-	       };
-$data->{usrbin} = "/usr/bin";
+$data =
+  { %$data,
+    author          => 'Johan Vromans (jvromans@squirrel.nl)',
+    abstract        => 'Elementary Bookkeeping (for the Dutch/European market)',
+    pl_files        => {},
+    installtype     => 'site',
+    modname         => 'EekBoek',
+    distname        => 'EekBoek',
+    version_from    => File::Spec->catfile("lib", "EB.pm"),
+    license         => "perl",
+    script_files    => [ map { File::Spec->catfile("script", $_) }
+			 qw(ebshell) ],
+    prereq_pm =>
+    { 'Getopt::Long'        => '2.13',
+      'Term::ReadLine'      => 0,
+      'Term::ReadLine::Gnu' => 0,
+      'DBI'                 => 1.40,
+      'DBD::Pg'             => 1.41,
+      'Config::IniFiles'    => 2.38,
+#     'Text::CSV_XS'        => 0,
+#     'Locale::gettext'     => 1.05,
+    },
+    recomm_pm =>
+    { 'Getopt::Long'        => '2.32',
+    },
+    usrbin => "/usr/bin",
+  };
 
 sub checkbin {
     my ($msg) = @_;
@@ -50,10 +55,25 @@ EOD
     print STDERR ($msg);
 }
 
-use File::Find;
-
 sub filelist {
     my ($dir, $pfx) = @_;
+    $pfx ||= "";
+    my $dirp = quotemeta($dir . "/");
+    my $pm;
+
+    open(my $mf, "MANIFEST") or return filelist_dyn($dir, $pfx);
+    while ( <$mf> ) {
+	chomp;
+	next unless /$dirp(.*)/;
+	$pm->{$_} = $pfx ? $pfx . $1 : $_;
+    }
+    close($mf);
+    $pm;
+}
+
+sub filelist_dyn {
+    my ($dir, $pfx) = @_;
+    use File::Find;
     $pfx ||= "";
     my $dirl = length($dir);
     my $pm;
