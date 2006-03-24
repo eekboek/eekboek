@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.50 is beschikbaar
+Subject: EekBoek versie 0.51 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -8,20 +8,37 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.50 van EekBoek is beschikbaar op de bekende sites:
+Release 0.51 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.50.tar.gz
-* http://www.squirrel.nl/eekboek/dl/ppms/EekBoek.ppd
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.51.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.50.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.51.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Bugfixes m.b.t. de boekhoudkundige/rekenkundige berekening van
-  balanstotaal.
+* Bouwen en installeren gaat nu middels het Module::Build framework.
+
+  $ perl Build.PL
+  $ ./Build
+  $ ./Build test
+  $ su
+  # ./Build install
+
+* Het Module::Build framework wordt (vooralsnog) meegeleverd.
+
+* Een compatibility-mode Makefile.PL is meegeleverd.
+
+* De installatie-verificatieprocedure is nu geïntegreerd in de build
+  tests. 
+
+* De build, test en installatie kan nu ook onder ActiveState Perl
+  onder Windows.
+
+* Fix probleem met ophalen database naam op remote database server.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
