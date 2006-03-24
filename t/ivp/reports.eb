@@ -1,0 +1,42 @@
+# Verify: balans in varianten.
+balans            --output=balans.txt
+balans --detail=0 --output=balans0.txt
+balans --detail=1 --output=balans1.txt
+balans --detail=2 --output=balans2.txt
+balans --verdicht --output=balans2.txt
+
+# Verify: verlies/winst in varianten.
+result            --output=result.txt
+result --detail=0 --output=result0.txt
+result --detail=1 --output=result1.txt
+result --verdicht --output=result2.txt
+
+# Verify: Journaal.
+journaal             --output=journaal.txt
+# Verify: Journaal van dagboek.
+journaal postbank    --output=journaal-postbank.txt
+# Verify: Journaal van boekstuk.
+journaal postbank:24 --output=journaal-postbank24.txt
+
+# Verify: Proef- en Saldibalans in varianten.
+proefensaldibalans            --output=proef.txt
+proefensaldibalans --detail=0 --output=proef0.txt
+proefensaldibalans --detail=1 --output=proef1.txt
+proefensaldibalans --detail=2 --output=proef2.txt
+proefensaldibalans --verdicht --output=proef2.txt
+
+# Verify: Grootboek in varianten.
+grootboek            --output=grootboek.txt
+grootboek --detail=0 --output=grootboek0.txt
+grootboek --detail=1 --output=grootboek1.txt
+grootboek --detail=2 --output=grootboek2.txt
+
+# Verify: BTW aangifte.
+btwaangifte j --output=btw.txt
+
+# Verify: HTML generatie.
+balans --detail=2 --gen-html             --output=balans2.html
+balans --detail=2 --gen-html --style=xxx --output=balans2xxx.html
+
+# Verify: CSV generatie.
+balans --detail=2 --gen-csv --output=balans2.csv
