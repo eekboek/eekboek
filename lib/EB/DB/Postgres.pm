@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.9 2006/03/24 13:53:26 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.10 2006/03/24 16:40:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 22 10:08:24 2006
-# Update Count    : 99
+# Last Modified On: Fri Mar 24 16:47:29 2006
+# Update Count    : 104
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -54,7 +54,10 @@ sub create {
 
     croak("?INTERNAL ERROR: create db while connected") if $dbh;
     eval {
-	$self->connect($dbname);
+	{
+	    local($SIG{__WARN__}) = sub {};
+	    $self->connect($dbname);
+	}
 	$dbh->{RaiseError} = 0;
 	$dbh->{PrintError} = 0;
 	$dbh->{AutoCommit} = 1;
