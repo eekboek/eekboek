@@ -1,5 +1,5 @@
 %define modname EekBoek
-%define modversion 0.17
+%define modversion 0.50
 
 Name: %modname
 Version: %modversion
@@ -28,16 +28,15 @@ appreciated).
 %setup -q
 
 %build
-perl Makefile.PL
-make all
-env EB_SKIPDBTESTS=1 make test
+perl Build.PL
+./Build
+./Build test --skipdbtests
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT install
+./Build destdir=$RPM_BUILD_ROOT install
 
 rm -f ${RPM_BUILD_ROOT}%{_libdir}/perl*/*/*/perllocal.pod
-rm -f ${RPM_BUILD_ROOT}%{_libdir}/perl*/*/*/*/auto/eekboek/.packlist
 
 mkdir -p ${RPM_BUILD_ROOT}%{_sysconfdir}/eekboek
 install -m 0644 example/eekboek.conf ${RPM_BUILD_ROOT}%{_sysconfdir}/eekboek
@@ -54,10 +53,13 @@ rm -rf $RPM_BUILD_ROOT
 %{perl_sitelib}/EB
 %{perl_sitelib}/EB.pm
 %{perl_sitelib}/EekBoek.pm
+%{perl_sitearch}/auto/EekBoek/.packlist
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 
 %changelog
+* Sun Mar 19 2006 Johan Vromans <jvromans@squirrel.nl> 0.50
+- Switch to Build.PL instead of Makefile.PL.
 * Mon Jan 30 2006 Johan Vromans <jvromans@squirrel.nl> 0.37
 - Add build dep perl(Config::IniFiles).
 * Fri Dec 23 2005 Wytze van der Raay <wytze@nlnet.nl> 0.23

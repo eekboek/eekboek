@@ -1,10 +1,10 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.7 2006/03/03 21:14:13 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.8 2006/03/24 13:59:40 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 22:00:01 2006
-# Update Count    : 80
+# Last Modified On: Fri Mar 24 14:34:58 2006
+# Update Count    : 84
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -25,14 +25,14 @@ EOD
 # Write Makefile.
 my $x = 
 WriteMakefile(
-	      NAME       => $data->{name},
+	      NAME       => $data->{distname},
 	      ($] >= 5.005) ?
 	      ( AUTHOR	  => $data->{author},
 		ABSTRACT  => $data->{abstract} ) : (),
 	      PL_FILES    => $data->{pl_files},
 	      INSTALLDIRS => $data->{installtype},
 	      DISTNAME    => $data->{distname},
-	      EXE_FILES   => $data->{script},
+	      EXE_FILES   => $data->{script_files},
 	      VERSION_FROM => "lib/EB.pm",
 	      PREREQ_PM   => $data->{prereq_pm},
 	      PM          => filelist("lib", '$(INST_LIBDIR)'),
@@ -45,15 +45,7 @@ WriteSpecfile($data->{distname}, $x->{VERSION});
 sub MY::postamble {
     my $ret = <<EOD;
 ivp : pure_all
-	cd ivp; sh ./verify.sh
+	prove -b t/*ivp.t
 EOD
-
-    if ( -s "ppm/mkppd" ) {
-	$ret .= <<EOD;
-
-ppmdist : pure_all
-	sh ppm/mkppd
-EOD
-    }	
     return $ret;
 }
