@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.8 2006/02/28 18:52:24 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.9 2006/03/24 13:53:26 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb 28 19:47:18 2006
-# Update Count    : 90
+# Last Modified On: Wed Mar 22 10:08:24 2006
+# Update Count    : 99
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -53,16 +53,15 @@ sub create {
     }
 
     croak("?INTERNAL ERROR: create db while connected") if $dbh;
-    my @ds = @{$self->list};
-    if ( grep { $_ eq $dbname } @ds ) {
+    eval {
 	$self->connect($dbname);
 	$dbh->{RaiseError} = 0;
 	$dbh->{PrintError} = 0;
 	$dbh->{AutoCommit} = 1;
 	$self->clear;
 	$self->disconnect;
-	return;
-    }
+    };
+    return unless $@;
 
     $dbname =~ s/^(?!=eekboek_)/eekboek_/;
 
@@ -137,18 +136,17 @@ sub clear {
 
 sub list {
     my @ds;
+
+    my $t;
+    local $ENV{PGHOST}   = $t if $t = $cfg->val(qw(database host), undef);
+    local $ENV{PGPORT}   = $t if $t = $cfg->val(qw(database port), undef);
+    local $ENV{DBI_USER} = $t if $t = $cfg->val("database", "user", undef);
+    local $ENV{DBI_PASS} = $t if $t = $cfg->val("database", "password", undef);
     eval {
-	local $ENV{PGUSER} = $cfg->val(qw(database user))
-	  if $cfg->val(qw(database user), undef);
-	local $ENV{PGPASS} = $cfg->val(qw(database password))
-	  if $cfg->val(qw(database password), undef);
-	local $ENV{PGHOST} = $cfg->val(qw(database host))
-	  if $cfg->val(qw(database host), undef);
-	local $ENV{PGPORT} = $cfg->val(qw(database port))
-	  if $cfg->val(qw(database port), undef);
 	@ds = DBI->data_sources("Pg");
-	die("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
     };
+    # If the list cannot be established, @ds will be (undef).
+    return [] unless defined($ds[0]);
     [ map { $_ =~ s/^.*?dbname=eekboek_// and $_ } @ds ];
 }
 
