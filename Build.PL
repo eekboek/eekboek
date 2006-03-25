@@ -2,12 +2,13 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 24 14:36:58 2006
-# Update Count    : 57
+# Last Modified On: Fri Mar 24 22:13:38 2006
+# Update Count    : 72
 # Status          : Experimental
 
 use strict;
-use Module::Build;
+use lib '.';
+use Module::Build 0.27_09;
 use File::Find;
 
 our $data = {};
@@ -23,16 +24,6 @@ EOD
 # checkexec("psql");
 
 my $class = Module::Build->subclass(code => <<'EOF');
-sub ACTION_ivp {
-    my $self = shift;
-    eval { require IPC::Run3 };
-    if ( $IPC::Run3::VERSION ) {
-	system("prove -b t/90_ivp.t");
-    }
-    else {
-	die("Action 'ivp' skipped -- IPC::Run3 is missing\n");
-    }
-}
 sub ACTION_test {
     my $self = shift;
     if ( $self->args("skipdbtests") ) {
@@ -56,6 +47,21 @@ my $build = $class->new
    pm_files	       => filelist("lib"),
 #  create_makefile_pl  => 'traditional',
    get_options	       => { skipdbtests => { } },
+   no_index	       => { foo => "bar" },
+   add_to_cleanup      => [ 'pod2htm*',
+			    map { +"t/ivp/*.$_" }
+				qw(sql log txt html csv)
+			  ],
+   meta_merge	       =>
+     { resources =>
+	{
+	   homepage => 'http://www.squirrel.nl/eekboek',
+	   MailingList => 'http://lists.sourceforge.net/lists/listinfo/eekboek',
+	 }
+     },
+   meta_add            => {
+     no_index          => { dir => [ qw(Module IPC) ] },
+   },
   );
 
 $build->create_build_script;
