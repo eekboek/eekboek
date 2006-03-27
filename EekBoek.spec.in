@@ -30,7 +30,7 @@ appreciated).
 %build
 perl Build.PL
 ./Build
-./Build test --skipdbtests
+./Build test %{!?_with_dbtests:--skipdbtests}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -58,6 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/*
 
 %changelog
+* Mon Mar 27 2006 Johan Vromans <jvromans@squirrel.nl> 0.52
+- Add "--with dbtests" parameter for rpmbuild.
+- Resultant rpm may be signed.
 * Sun Mar 19 2006 Johan Vromans <jvromans@squirrel.nl> 0.50
 - Switch to Build.PL instead of Makefile.PL.
 * Mon Jan 30 2006 Johan Vromans <jvromans@squirrel.nl> 0.37
