@@ -1,10 +1,10 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.8 2006/03/24 13:59:40 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.9 2006/03/27 12:24:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 24 14:34:58 2006
-# Update Count    : 84
+# Last Modified On: Mon Mar 27 11:35:33 2006
+# Update Count    : 87
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -14,7 +14,7 @@ use ExtUtils::MakeMaker;
 
 our $data = {};
 
-require 'build_common.inc';
+require 'inc/build_common.pl';
 
 # Warn on non-standard install locations.
 checkbin(<<EOD);
@@ -23,7 +23,7 @@ convenient location) to "make install".
 EOD
 
 # Write Makefile.
-my $x = 
+my $x =
 WriteMakefile(
 	      NAME       => $data->{distname},
 	      ($] >= 5.005) ?
@@ -40,12 +40,3 @@ WriteMakefile(
 
 # Write .spec file.
 WriteSpecfile($data->{distname}, $x->{VERSION});
-
-# Extra.
-sub MY::postamble {
-    my $ret = <<EOD;
-ivp : pure_all
-	prove -b t/*ivp.t
-EOD
-    return $ret;
-}

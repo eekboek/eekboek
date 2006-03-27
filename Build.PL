@@ -2,17 +2,17 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 24 22:13:38 2006
-# Update Count    : 72
+# Last Modified On: Mon Mar 27 11:35:46 2006
+# Update Count    : 82
 # Status          : Experimental
 
 use strict;
-use lib '.';
+use lib 'inc';
 use Module::Build 0.27_09;
 use File::Find;
 
 our $data = {};
-require "build_common.inc";
+require "inc/build_common.pl";
 
 # Warn on non-standard install locations.
 checkbin(<<EOD);
@@ -45,9 +45,7 @@ my $build = $class->new
    recommends	       => $data->{recomm_pm},
    script_files	       => $data->{script_files},
    pm_files	       => filelist("lib"),
-#  create_makefile_pl  => 'traditional',
    get_options	       => { skipdbtests => { } },
-   no_index	       => { foo => "bar" },
    add_to_cleanup      => [ 'pod2htm*',
 			    map { +"t/ivp/*.$_" }
 				qw(sql log txt html csv)
@@ -60,7 +58,7 @@ my $build = $class->new
 	 }
      },
    meta_add            => {
-     no_index          => { dir => [ qw(Module IPC) ] },
+     no_index          => { dir => [ qw(inc) ] },
    },
   );
 
