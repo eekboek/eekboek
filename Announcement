@@ -1,44 +1,41 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.51 is beschikbaar
+Subject: EekBoek versie 0.52 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
+X-PGP-Key: http://www.squirrel.nl/people/jvromans/pubkey.asc
 Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.51 van EekBoek is beschikbaar op de bekende sites:
+Release 0.52 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.51.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.52.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.51.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.52.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Bouwen en installeren gaat nu middels het Module::Build framework.
+* Wijzigingen in packaging t.b.v. RPM-build en CPAN.
 
-  $ perl Build.PL
-  $ ./Build
-  $ ./Build test
-  $ su
-  # ./Build install
+* Database-tests kunnen worden uitgevoerd met een RPM-build:
 
-* Het Module::Build framework wordt (vooralsnog) meegeleverd.
+   $ rpmbuild ... --with dbtests ...
 
-* Een compatibility-mode Makefile.PL is meegeleverd.
+* De source-RPM is getekend met mijn GPG key. Om de source-RPM te
+  verifiëren moet je mijn GPG key in het rpm systeem importeren,
+  bijvoorbeeld:
 
-* De installatie-verificatieprocedure is nu geïntegreerd in de build
-  tests. 
+   $ wget http://www.squirrel.nl/people/jvromans/pubkey.asc
+   $ sudo rpm --import pubkey.asc
 
-* De build, test en installatie kan nu ook onder ActiveState Perl
-  onder Windows.
-
-* Fix probleem met ophalen database naam op remote database server.
+* Fix probleem met aanmaken database op remote database server.
+  Hierdoor faalt de IVP indien de database nog niet bestaat.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
