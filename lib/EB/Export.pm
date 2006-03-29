@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.14 2006/03/29 18:11:34 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.15 2006/03/29 18:32:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 29 18:51:18 2006
-# Update Count    : 141
+# Last Modified On: Wed Mar 29 20:32:32 2006
+# Update Count    : 142
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -50,7 +50,7 @@ sub _write {
     open($fh, ">", $file)
       or die("?".__x("Fout bij aanmaken bestand {file}: {err}",
 		     file => $file, err => $!)."\n");
-    if ( $cfg->val(qw(locale unicode)) ) {
+    if ( $cfg->val(qw(locale unicode), 0) ) {
 	binmode($fh, ":utf8");
     }
     $producer->($fh)
