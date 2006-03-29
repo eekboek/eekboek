@@ -1,11 +1,15 @@
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.3 2005/09/22 14:07:30 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.4 2006/03/29 18:20:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 22 15:50:41 2005
-# Update Count    : 62
+# Last Modified On: Wed Mar 29 20:19:10 2006
+# Update Count    : 85
 # Status          : Unknown, Use with caution!
+
+package main;
+
+our $cfg;
 
 package EB::Locale;
 
@@ -26,7 +30,15 @@ BEGIN {
 
 # First alternative: no gettext.
 
-sub _T($) { $_[0] }
+if ( $cfg->val(qw(locale unicode), 0) ) {
+    require Encode;
+    eval 'sub _T($) { Encode::decode("ISO-8859-1", $_[0]) };';
+    binmode(STDOUT, ":uft8");
+    binmode(STDERR, ":uft8");
+}
+else {
+    eval 'sub _T($) { $_[0] };';
+}
 
 sub LOCALISER() { "" }
 
