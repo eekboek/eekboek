@@ -1,15 +1,16 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.13 2006/03/17 18:30:10 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.14 2006/03/29 18:11:34 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 17 14:58:18 2006
-# Update Count    : 139
+# Last Modified On: Wed Mar 29 18:51:18 2006
+# Update Count    : 141
 # Status          : Unknown, Use with caution!
 
 package main;
 
 our $dbh;
+our $cfg;
 
 package EB::Export;
 
@@ -49,6 +50,9 @@ sub _write {
     open($fh, ">", $file)
       or die("?".__x("Fout bij aanmaken bestand {file}: {err}",
 		     file => $file, err => $!)."\n");
+    if ( $cfg->val(qw(locale unicode)) ) {
+	binmode($fh, ":utf8");
+    }
     $producer->($fh)
       or die("?".__x("Fout bij schrijven bestand {file}: {err}",
 		     file => $file, err => $!)."\n");

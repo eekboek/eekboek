@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.17 2006/03/03 10:47:54 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.18 2006/03/29 18:10:16 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 11:47:32 2006
-# Update Count    : 127
+# Last Modified On: Wed Mar 29 18:42:53 2006
+# Update Count    : 130
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -87,6 +87,9 @@ sub backend {
     }
     else {
 	$be->{fh} = IO::File->new_from_fd(fileno(STDOUT), "w");
+    }
+    if ( $cfg->val(qw(locale unicode), 0) ) {
+	binmode($be->{fh}, ":utf8");
     }
 
     # Handle pagesize.
