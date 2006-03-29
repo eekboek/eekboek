@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.4 2006/03/15 11:01:44 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.5 2006/03/29 19:57:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 15 12:01:22 2006
-# Update Count    : 29
+# Last Modified On: Wed Mar 29 21:49:04 2006
+# Update Count    : 31
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,6 +16,7 @@ package EB::Report::Reporter::Html;
 use strict;
 use warnings;
 use EB;
+use HTML::Entities ();
 
 use base qw(EB::Report::Reporter);
 
@@ -104,6 +105,10 @@ sub header {
 ################ Internal methods ################
 
 sub _html {
+    HTML::Entities::encode(shift);
+}
+
+sub __html {
     my ($t) = @_;
     $t =~ s/&/&amp;/g;
     $t =~ s/</&lt;/g;
