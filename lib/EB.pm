@@ -1,13 +1,16 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.57 2006/03/24 13:53:07 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.58 2006/03/29 18:12:24 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 24 13:34:48 2006
-# Update Count    : 132
+# Last Modified On: Wed Mar 29 20:11:53 2006
+# Update Count    : 139
 # Status          : Unknown, Use with caution!
 
+package main;
+
 our $app;
+our $cfg;
 
 package EB;
 
@@ -15,7 +18,7 @@ use strict;
 use base qw(Exporter);
 
 our $VERSION;
-$VERSION = "0.51";
+$VERSION = "0.53";
 
 our @EXPORT;
 our @EXPORT_OK;
@@ -75,10 +78,13 @@ INIT {
     my $thisyear = (localtime(time))[5] + 1900;
     $year .= "-$thisyear" unless $year == $thisyear;
     $ident = __x("EekBoek {version}", version => $VERSION);
+    my $u = $cfg->val(qw(locale unicode),0);
     warn(__x("{ident} {extra}{locale}-- Copyright {year} Squirrel Consultancy",
 		 ident   => $ident,
 		 extra   => ($app ? "Wx " : ""),
-		 locale  => (LOCALISER ? "("._T("Nederlands").") " : ""),
+		 locale  => (LOCALISER || $u
+			     ? "("._T("Nederlands").($u ? ", UNICODE" : "").") "
+			     : ""),
 		 year    => $year)."\n") unless @ARGV && $ARGV[0] =~ /-(P|-?printcfg)$/;
     @months =
       split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
