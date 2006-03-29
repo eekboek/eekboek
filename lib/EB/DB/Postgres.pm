@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.10 2006/03/24 16:40:31 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.11 2006/03/29 18:11:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 24 16:47:29 2006
-# Update Count    : 104
+# Last Modified On: Wed Mar 29 18:50:28 2006
+# Update Count    : 119
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -69,7 +69,7 @@ sub create {
     $dbname =~ s/^(?!=eekboek_)/eekboek_/;
 
     my $sql = "CREATE DATABASE $dbname";
-    $sql .= " ENCODING 'LATIN1'";
+    $sql .= " ENCODING 'UNICODE'";
     for ( $cfg->val("database", "user", undef) ) {
 	next unless $_;
 	$sql .= " OWNER $_";
@@ -103,6 +103,14 @@ sub connect {
       or die("?".__x("Database verbindingsprobleem: {err}",
 		     err => $DBI::errstr)."\n");
     $dataset = $dbname;
+    if ( $cfg->val(qw(locale unicode), 0) ) {
+	$dbh->do("SET CLIENT_ENCODING TO 'UNICODE'");
+	$dbh->{pg_enable_utf8} = 1;
+    }
+    else {
+	$dbh->do("SET CLIENT_ENCODING TO 'LATIN1'");
+	#$dbh->{pg_enable_utf8} = 0;
+    }
     return $dbh;
 }
 
