@@ -1,10 +1,10 @@
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.4 2006/03/29 18:20:31 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.5 2006/03/31 08:46:43 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 29 20:19:10 2006
-# Update Count    : 85
+# Last Modified On: Fri Mar 31 10:11:29 2006
+# Update Count    : 86
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -33,6 +33,7 @@ BEGIN {
 if ( $cfg->val(qw(locale unicode), 0) ) {
     require Encode;
     eval 'sub _T($) { Encode::decode("ISO-8859-1", $_[0]) };';
+    binmode(STDIN,  ":uft8");
     binmode(STDOUT, ":uft8");
     binmode(STDERR, ":uft8");
 }
