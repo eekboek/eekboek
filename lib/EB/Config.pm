@@ -1,10 +1,10 @@
 # Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.6 2006/03/29 18:12:59 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.7 2006/03/31 08:46:08 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 29 13:53:39 2006
-# Update Count    : 64
+# Last Modified On: Fri Mar 31 10:44:29 2006
+# Update Count    : 68
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,6 +16,8 @@ package EB::Config;
 use strict;
 use warnings;
 use Config::IniFiles;
+
+my $unicode;
 
 sub init_config {
     my ($app) = @_;
@@ -79,13 +81,15 @@ sub init_config {
     # Make sure we have an object, even if no config files.
     $cfg ||= EB::Config::IniFiles->new;
 
-    $ENV{EB_LANG} = $cfg->val('locale','lang', $ENV{EB_LANG}||"nl_NL");
+    $ENV{EB_LANG} = $cfg->val('locale','lang',
+			      $ENV{EB_LANG}||$ENV{LANG}||"nl_NL");
 
     $cfg->_plug(qw(locale       lang         EB_LANG));
     unless ( defined($cfg->val(qw(locale unicode), undef)) ) {
 	$cfg->newval(qw(locale unicode),
-		     $cfg->val(qw(locale lang)) =~ /\.utf-?8$/i);
+		     ($cfg->val(qw(locale lang)) =~ /\.utf-?8$/i)||0);
     }
+    $unicode = $cfg->val(qw(locale unicode));
 
     $cfg->_plug(qw(database     name         EB_DB_NAME));
 
@@ -151,6 +155,10 @@ sub val {
     Carp::cluck("=> missing config: \"$section\" \"$parameter\"\n")
       unless defined $res || @_ > 3;
     $res;
+}
+
+sub unicode {
+    $unicode;
 }
 
 1;
