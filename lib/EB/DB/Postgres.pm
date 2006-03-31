@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.11 2006/03/29 18:11:17 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.12 2006/03/31 08:50:56 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 29 18:50:28 2006
-# Update Count    : 119
+# Last Modified On: Fri Mar 31 10:50:29 2006
+# Update Count    : 136
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -65,6 +65,7 @@ sub create {
 	$self->disconnect;
     };
     return unless $@;
+    die($@) if $cfg->unicode && $@ =~ /UNICODE/;
 
     $dbname =~ s/^(?!=eekboek_)/eekboek_/;
 
@@ -103,13 +104,18 @@ sub connect {
       or die("?".__x("Database verbindingsprobleem: {err}",
 		     err => $DBI::errstr)."\n");
     $dataset = $dbname;
-    if ( $cfg->val(qw(locale unicode), 0) ) {
+    if ( $cfg->unicode ) {
+	my $enc = $dbh->selectall_arrayref("SHOW CLIENT_ENCODING")->[0]->[0];
+	if ( $enc ne 'UNICODE' ) {
+	    die("?".__x("Database {name} is niet in UNICODE maar {enc}",
+			name => $_[1], enc => $enc)."\n");
+	}
 	$dbh->do("SET CLIENT_ENCODING TO 'UNICODE'");
 	$dbh->{pg_enable_utf8} = 1;
     }
     else {
 	$dbh->do("SET CLIENT_ENCODING TO 'LATIN1'");
-	#$dbh->{pg_enable_utf8} = 0;
+	$dbh->{pg_enable_utf8} = 0;
     }
     return $dbh;
 }
