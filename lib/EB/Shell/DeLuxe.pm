@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.9 2006/03/31 08:47:47 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.10 2006/03/31 08:48:31 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 31 10:40:37 2006
-# Update Count    : 211
+# Last Modified On: Fri Mar 31 10:48:17 2006
+# Update Count    : 212
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -61,7 +61,7 @@ use Encode;
 
 sub readline_file {
     my ($self, $fd) = @_;
-    binmode($fd, ":utf8");
+    binmode($fd, ":utf8") if $cfg->unicode;
     my $line;
     my $pre = "";
     while ( 1 ) {
