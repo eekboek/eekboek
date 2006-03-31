@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.39 2006/03/05 20:58:08 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.40 2006/03/31 08:49:35 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  5 21:05:03 2006
-# Update Count    : 570
+# Last Modified On: Fri Mar 31 10:49:25 2006
+# Update Count    : 579
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -35,6 +35,7 @@ $my_version .= '*' if length('$Locker:  $ ') > 12;
 use EB;
 use EB::Finance;
 use EB::DB;
+use Encode;
 
 ################ Subroutines ################
 
@@ -71,6 +72,7 @@ sub create {
 
     die("?".__x("Onbekend schema: {schema}", schema => $name)."\n") unless $file;
     open($fh, "<$file") or die("?".__x("Toegangsfout schema data: {err}", err => $!)."\n");
+    #binmode($fh, ":utf8") if $cfg->unicode;
     $schema = $name;
     $dbh = EB::DB->new(trace => $trace) unless $sql;
     load_schema();
@@ -340,10 +342,24 @@ sub load_schema {
     my $scanner;		# current scanner
     $max_hvd = 9;
     $max_vrd = 99;
+    my $uerr = 0;
 
     %std = map { $_ => 0 } qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih);
     $fh ||= *ARGV;
     while ( <$fh> ) {
+
+	if ( $cfg->unicode ) {
+	    my $s = $_;
+	    eval {
+		$_ = decode('utf8', $s, 1);
+	    };
+	    if ( $@ ) {
+		warn("?".__x("Geen geldige UNICODE tekens in regel {line} van het schema",
+			     line => $.)."\n");
+		$fail++;
+	    }
+	}
+
 	next if /^\s*#/;
 	next unless /\S/;
 
