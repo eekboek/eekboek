@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.9 2006/03/06 15:46:43 jv Exp $ ';
+my $RCS_Id = '$Id: Debcrd.pm,v 1.10 2006/04/04 13:12:31 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  6 16:45:54 2006
-# Update Count    : 171
+# Last Modified On: Tue Apr  4 13:10:36 2006
+# Update Count    : 173
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -55,7 +55,7 @@ sub _perform {
       [ { name  => "debcrd",
 	  title => $debcrd ? _T("Debiteur") : _T("Crediteur"),
 	  width => 10 },
-	{ name  => "date",   title => _T("Datum"),        width => 10 },
+	{ name  => "date",   title => _T("Datum"),        width => $date_width },
 	{ name  => "desc",   title => _T("Omschrijving"), width => 25 },
 	{ name  => "amount", title => _T("Bedrag"),       width => $amount_width, align => ">" },
 	{ name  => "open",   title => _T("Openstaand"),   width => $amount_width, align => ">" },
@@ -152,7 +152,7 @@ sub _perform {
 		$o_tot += $bsr_open;
 
 		$rep->add({ desc   => $bsk_desc,
-			    date   => $bsk_date,
+			    date   => datefmt($bsk_date),
 			    amount => numfmt($bsr_amount),
 			    open   => numfmt($bsr_open),
 			    bsknr  => join(":", $dbk_desc, $bsk_bky, $bsk_nr),
@@ -173,7 +173,7 @@ sub _perform {
 			$x_dbk_desc, $x_bsk_nr, $x_bsk_bky) = @$rr;
 		    $x_bsr_amount = 0-$x_bsr_amount unless $debcrd;
 		    $rep->add({ desc    => $x_bsr_desc,
-				date    => $x_bsr_date,
+				date    => datefmt($x_bsr_date),
 				paid    => numfmt(0-$x_bsr_amount),
 				bsknr   => join(":", $x_dbk_desc, $x_bsk_nr),
 				_style  => "paid",
@@ -221,7 +221,7 @@ sub _perform {
 	    $o_tot += $bsr_open;
 
 	    $rep->add({ desc   => $bsk_desc,
-			date   => $bsk_date,
+			date   => datefmt($bsk_date),
 			amount => numfmt($bsr_amount),
 			open   => numfmt($bsr_open),
 			bsknr  => join(":", $dbk_desc, $bsk_nr),
@@ -242,7 +242,7 @@ sub _perform {
 		    $x_dbk_desc, $x_bsk_nr) = @$rr;
 		$x_bsr_amount = 0-$x_bsr_amount unless $debcrd;
 		$rep->add({ desc    => $x_bsr_desc,
-			    date    => $x_bsr_date,
+			    date    => datefmt($x_bsr_date),
 			    paid    => numfmt(0-$x_bsr_amount),
 			    bsknr   => join(":", $x_dbk_desc, $x_bsk_nr),
 			    _style  => "paid",

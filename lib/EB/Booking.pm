@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.7 2006/03/05 20:54:38 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.8 2006/04/04 13:12:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  5 17:58:54 2006
-# Update Count    : 41
+# Last Modified On: Tue Apr  4 13:39:35 2006
+# Update Count    : 42
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.7 2006/03/05 20:54:38 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.8 2006/04/04 13:12:31 jv Exp $ ';
 
 package main;
 
@@ -89,11 +89,13 @@ sub begindate {
 sub in_bky {
     my ($self, $date, $begin, $end) = @_;
     if ( $date lt $begin ) {
-	warn("?".__x("De boekingsdatum {date} valt vóór aanvang van dit boekjaar", date => $date)."\n");
+	warn("?".__x("De boekingsdatum {date} valt vóór aanvang van dit boekjaar",
+		     date => datefmt_full($date))."\n");
 	return;
     }
     if ( $date gt $end ) {
-	warn("?".__x("De boekingsdatum {date} valt na het einde van dit boekjaar", date => $date)."\n");
+	warn("?".__x("De boekingsdatum {date} valt na het einde van dit boekjaar",
+		     date => datefmt_full($date))."\n");
 	return;
     }
     1;

@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.18 2006/03/29 18:10:16 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.19 2006/04/04 13:12:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 29 18:42:53 2006
-# Update Count    : 130
+# Last Modified On: Tue Apr  4 13:22:47 2006
+# Update Count    : 131
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -137,7 +137,8 @@ sub backend {
 
     if ( $be->{per_end} gt $be->{now} ) {
 	warn("!".__x("Datum {per} valt na de huidige datum {now}",
-		     per => $be->{per_end}, now => $be->{now})."\n")
+		     per => datefmt_full($be->{per_end}),
+		     now => datefmt_full($be->{now}))."\n")
 	  if 0;
 	$be->{periode}->[1] = $be->{per_end} = $be->{now}
 	  if 0;
@@ -149,16 +150,18 @@ sub backend {
 
     if ( $be->{per_begin} gt $be->{now} ) {
 	die("?".__x("Periode begint {from}, dit is na de huidige datum {now}",
-		    from => $be->{per_begin},
-		    now => $be->{now})."\n");
+		    from  => datefmt_full($be->{per_begin}),
+		    now   => datefmt_full($be->{now}))."\n");
     }
     if ( $be->{per_begin} lt $opendate ) {
 	die("?".__x("Datum {per} valt vóór het begin van de administratie {begin}",
-		    per => $be->{per_begin}, begin => $opendate)."\n");
+		    per   => datefmt_full($be->{per_begin}),
+		    begin => datfmt_full($opendate))."\n");
     }
     if ( $be->{per_end} lt $opendate ) {
 	die("?".__x("Datum {per} valt vóór het begin van de administratie {begin}",
-		    per => $be->{per_end}, begin => $opendate)."\n");
+		    per   => datefmt_full($be->{per_end}),
+		    begin => datefmt_full($opendate))."\n");
     }
 
     $be->{_style} = $opts->{style} if $opts->{style};

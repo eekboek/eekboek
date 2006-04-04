@@ -1,10 +1,10 @@
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.8 2006/01/24 14:59:17 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.9 2006/04/04 13:12:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 24 15:26:51 2006
-# Update Count    : 138
+# Last Modified On: Tue Apr  4 13:12:09 2006
+# Update Count    : 141
 # Status          : Unknown, Use with caution!
 
 
@@ -17,6 +17,7 @@ package EB::Report::Reporter;
 use strict;
 use warnings;
 use EB;
+use EB::Finance;
 
 sub new {
     my ($class, $style, $config) = @_;
@@ -117,12 +118,12 @@ sub start {
 	if ( exists($self->{periodex}) ) {
 	    if ( $self->{periodex} == 1 ) {
 		$t2 = __x("Periode: t/m {to}",
-			  to   => $self->{periode}->[1]);
+			  to   => datefmt_full($self->{periode}->[1]));
 	    }
 	    else {
 		$t2 = __x("Periode: {from} t/m {to}",
-			  from => $self->{periode}->[0],
-			  to   => $self->{periode}->[1]);
+			  from => datefmt_full($self->{periode}->[0]),
+			  to   => datefmt_full($self->{periode}->[1]));
 	    }
 	}
     }
@@ -140,7 +141,7 @@ sub start {
 	}
 	else {
 	    # Use current date.
-	    $t3r = $EB::ident . ", " . iso8601date();
+	    $t3r = $EB::ident . ", " . datefmt_full(iso8601date());
 	}
     }
 

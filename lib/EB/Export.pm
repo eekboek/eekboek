@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.15 2006/03/29 18:32:35 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.16 2006/04/04 13:12:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 29 20:32:32 2006
-# Update Count    : 142
+# Last Modified On: Tue Apr  4 13:53:56 2006
+# Update Count    : 145
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -87,7 +87,7 @@ sub _relaties {
     my $out = __x("# {what} voor administratie {adm}",
 		  what => _T("Relaties"), adm => $dbh->adm("name")) . "\n" .
 		    __x("# Aangemaakt door {id} op {date}",
-			id => $EB::ident, date => iso8601date());
+			id => $EB::ident, date => datefmt_full(iso8601date()));
 
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($code, $desc, $debcrd, $btw, $dbk, $acct) = @$rr;
@@ -117,7 +117,7 @@ sub _opening {
     my $out = __x("# {what} voor administratie {adm}",
 		  what => _T("Openingsgegevens"), adm => $dbh->adm("name")) . "\n" .
 		    __x("# Aangemaakt door {id} op {date}",
-			id => $EB::ident, date => iso8601date() . "\n\n");
+			id => $EB::ident, date => datefmt_full(iso8601date()) . "\n\n");
 
     $out .= "adm_naam         " . _quote($dbh->adm("name")) . "\n";
 
@@ -234,7 +234,7 @@ sub _mutaties {
     my $out = __x("# {what} voor administratie {adm}",
 		  what => _T("Boekingen"), adm => $dbh->adm("name")) . "\n" .
 		    __x("# Aangemaakt door {id} op {date}",
-			id => $EB::ident, date => iso8601date()) . "\n\n";
+			id => $EB::ident, date => datefmt_full(iso8601date())) . "\n\n";
 
     my @bky;
     my $sth = $dbh->sql_exec("SELECT bky_code".
@@ -267,7 +267,8 @@ sub _mutaties {
 	    my $bkb = $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin));
 	    if ( $bb gt $bkb ) {
 		$bke = parse_date($bb, undef, -1) if $bb le $bke;
-		$out .= "btwaangifte --periode=$bkb-$bke --definitief --noreport\n";
+		$out .= "btwaangifte --periode=".
+		  datefmt_full($bkb)."-".datefmt_full($bke)." --definitief --noreport\n";
 	    }
 	}
     };

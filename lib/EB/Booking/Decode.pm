@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.15 2006/03/07 08:55:06 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.16 2006/04/04 13:12:31 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  6 18:33:06 2006
-# Update Count    : 148
+# Last Modified On: Tue Apr  4 13:31:46 2006
+# Update Count    : 149
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -81,7 +81,7 @@ sub decode {
 	    $cmd =~ s/[^[:alnum:]]/_/g;
 	    $cmd .= ":$bsk_bky" if $ex_bky;
 	    $cmd .= ":$bsk_nr" if $ex_bsknr;
-	    $cmd .= " $bsk_date ";
+	    $cmd .= " ".datefmt_full($bsk_date)." ";
 	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 		$cmd .= $no_ivbskdesc ? "\"$rel_code\"" : "\"$bsk_desc\" \"$rel_code\"";
 	    }
@@ -98,7 +98,7 @@ sub decode {
 	    $cmd = "Boekstuk $bsk_id, nr $bsk_nr, dagboek " .
 	      $dbh->lookup($bsk_dbk_id, qw(Dagboeken dbk_id dbk_desc =)).
 		"($bsk_dbk_id)".
-		  ", datum $bsk_date".
+		  ", ".datefmt_full(datum $bsk_date).
 		    ", ";
 	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 		my ($rd, $rt) = @{$dbh->do("SELECT rel_desc,rel_debcrd".
@@ -209,7 +209,7 @@ sub decode {
 		|| $dbktype == DBKTYPE_MEMORIAAL ) {
 	    $bsr_amount = -$bsr_amount;
 	    my $dd = "";
-	    $dd = " $bsr_date" unless $bsr_date eq $bsk_date;
+	    $dd = " ".datefmt_full($bsr_date) unless $bsr_date eq $bsk_date;
 	    if ( $bsr_type == 0 ) {
 		$cmd .= $single ? " " : " \\\n\t";
 		$cmd .= "std$dd \"$bsr_desc\" " .

@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.26 2006/03/17 18:31:11 jv Exp $
+# $Id: Opening.pm,v 1.27 2006/04/04 13:12:31 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 17 19:12:33 2006
-# Update Count    : 224
+# Last Modified On: Tue Apr  4 13:40:34 2006
+# Update Count    : 225
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -148,7 +148,8 @@ sub set_relatie {
     return __x("Ongeldige datum: {date}", date => $date)."\n"
       unless $t;
     $date = $t;
-    return __x("Datum {date} valt niet vóór het boekjaar", date => $date)."\n"
+    return __x("Datum {date} valt niet vóór het boekjaar",
+	       date => datefmt_full($date))."\n"
       if $self->{o}->{begindatum} && $self->{o}->{begindatum} <= $1;
     $bky = substr($date, 0, 4) unless defined $bky;
 

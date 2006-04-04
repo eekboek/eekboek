@@ -27,10 +27,17 @@ my $thousandsep;
 
 our @EXPORT;
 our $amount_width;
+our $date_width;
 
 sub _setup  {
+
+    ################ BTW display format ################
+
     $btwfmt0 = '%.' . (BTWPRECISION-2) . 'f';
     $btwfmtw = '%' . BTWWIDTH . "." . (BTWPRECISION-2) . 'f';
+    $btwpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[BTWPRECISION-2]}})?$/;
+
+    ################ Amount display format ################
 
     $amount_width = $cfg->val(qw(text numwidth), AMTWIDTH);
     if ( $amount_width =~ /^\+(\d+)$/ ) {
@@ -87,11 +94,37 @@ EOD
     die($@) if $@;
 
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
-    $btwpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[BTWPRECISION-2]}})?$/;
+
+    ################ Date display format ################
+
+    my $fmt = $cfg->val(qw(format date), "YYYY-MM-DD");
+
+    $sub          = "sub datefmt { \$_[0] }";
+    my $sub_full  = "sub datefmt_full { \$_[0] }";
+    my $sub_plain = "sub datefmt_plain { \$_[0] }";
+    if ( lc($fmt) eq "dd-mm-yyyy" ) {
+	$sub      = q<sub datefmt { join("-", reverse(split(/-/, $_[0]))) }>;
+	$sub_full = q<sub datefmt_full { join("-", reverse(split(/-/, $_[0]))) }>;
+    }
+    elsif ( lc($fmt) eq "dd-mm" ) {
+	$sub      = q<sub datefmt { $_[0] =~ /(\d+)-(\d+)-(\d+)/; "$3-$2" }>;
+	$sub_full = q<sub datefmt_full { join("-", reverse(split(/-/, $_[0]))) }>;
+    }
+    elsif ( lc($fmt) ne "yyyy-mm-dd" ) {
+	die("?".__x("Ongeldige datumformaatspecificatie: {fmt}",
+		    fmt => $fmt)."\n");
+    }
+    for ( $sub, $sub_full, $sub_plain ) {
+	eval($_);
+	die($_."\n".$@) if $@;
+    }
+    $date_width = length(datefmt("2006-01-01"));
 }
 
 BEGIN {
-    push(@EXPORT, qw(amount $amount_width numfmt numfmt_plain numround btwfmt));
+    push(@EXPORT, qw(amount numround btwfmt));
+    push(@EXPORT, qw($amount_width numfmt numfmt_plain));
+    push(@EXPORT, qw($date_width datefmt datefmt_full datefmt_plain));
     _setup();
 }
 

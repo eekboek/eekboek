@@ -1,10 +1,10 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.9 2006/01/22 16:43:44 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.10 2006/04/04 13:12:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 20 21:59:45 2006
-# Update Count    : 28
+# Last Modified On: Tue Apr  4 13:43:45 2006
+# Update Count    : 30
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,6 +16,7 @@ package EB::Report::BTWAangifte::Html;
 
 use strict;
 use EB;
+use EB::Finance qw(datefmt_full);
 
 use base qw(EB::Report::GenBase);
 
@@ -98,7 +99,7 @@ sub finish {
 
     $self->{fh}->print("<p class=\"footer\">",
 		       __x("Overzicht aangemaakt op {date} door <a href=\"{url}\">{ident}</a>",
-			   ident => $ident, date => $now, url => $EB::url), "</p>\n");
+			   ident => $ident, date => datefmt_full($now), url => $EB::url), "</p>\n");
 
     $self->{fh}->print("</body>\n",
 		       "</html>\n");

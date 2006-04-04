@@ -1,13 +1,13 @@
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.11 2006/03/17 18:30:19 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.12 2006/04/04 13:12:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 17 15:20:42 2006
-# Update Count    : 215
+# Last Modified On: Tue Apr  4 13:43:01 2006
+# Update Count    : 216
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Einde.pm,v 1.11 2006/03/17 18:30:19 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.12 2006/04/04 13:12:31 jv Exp $ ';
 
 package main;
 
@@ -82,7 +82,7 @@ sub perform {
 
     $opts->{STYLE} = "journaal";
     $opts->{LAYOUT} =
-      [ { name => "date", title => _T("Datum"),              width => 10, },
+      [ { name => "date", title => _T("Datum"),              width => $date_width, },
 	{ name => "desc", title => _T("Boekstuk/Grootboek"), width => 30, },
 	{ name => "acct", title => _T("Rek"),                width =>  5, align => ">", },
 	{ name => "deb",  title => _T("Debet"),              width =>  9, align => ">", },
@@ -120,14 +120,14 @@ sub perform {
 	}
 	unless ( $desc ) {
 	    $rep->add({ _style => 'head',
-			date => $end,
+			date => datefmt_full($end),
 			desc => join(":", "<<"._T("Systeemdagboek").">>", $bky, 1),
 		      });
 	    $desc = "Afboeken Resultaatrekeningen";
 	}
 	$acc_balance = -$acc_balance;
 	$rep->add({ _style => 'data',
-		    date => $end,
+		    date => datefmt_full($end),
 		    desc => $dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
 		    acct => $acc_id,
 		    $acc_balance >= 0 ? ( deb => numfmt($acc_balance) )
@@ -148,7 +148,7 @@ sub perform {
 
 	$tot = -$tot;
 	$rep->add({ _style => 'data',
-		    date => $end,
+		    date => datefmt_full($end),
 		    desc => $d,
 		    acct => $dbh->std_acc("winst"),
 		    $tot >= 0 ? ( crd => numfmt($tot) )
@@ -182,7 +182,7 @@ sub perform {
 	}
 	unless ( $desc ) {
 	    $rep->add({ _style => 'head',
-			date => $end,
+			date => datefmt_full($end),
 			desc => join(":", "<<"._T("Systeemdagboek").">>", $bky, 2),
 		      });
 	    $desc = "Afboeken BTW rekeningen";
@@ -190,7 +190,7 @@ sub perform {
 
 	$acc_balance = -$acc_balance;
 	$rep->add({ _style => 'data',
-		    date => $end,
+		    date => datefmt_full($end),
 		    desc => $dbh->lookup($acc_id, qw(Accounts acc_id acc_desc)),
 		    acct => $acc_id,
 		    $acc_balance >= 0 ? ( deb => numfmt($acc_balance) )
@@ -212,7 +212,7 @@ sub perform {
 
 	$tot = -$tot;
 	$rep->add({ _style => 'data',
-		    date => $end,
+		    date => datefmt_full($end),
 		    desc => $acc_desc,
 		    acct => $acc_id,
 		    $tot >= 0 ? ( crd => numfmt($tot) )

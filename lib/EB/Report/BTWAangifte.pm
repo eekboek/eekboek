@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.32 2006/03/06 15:46:43 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.33 2006/04/04 13:12:31 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  6 11:15:41 2006
-# Update Count    : 465
+# Last Modified On: Tue Apr  4 13:08:20 2006
+# Update Count    : 466
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -497,8 +497,8 @@ sub report {
 		$self->{compat_periode} ? __x("Periode: {per}",
 					      per => $self->{compat_periode})
 					: __x("Periode: {from} t/m {to}",
-					      from => $rep->{per_begin},
-					      to   => $rep->{per_end}));
+					      from => datefmt_full($rep->{per_begin}),
+					      to   => datefmt_full($rep->{per_end})));
 
     # Binnenland
     $rep->outline('H1', "Binnenland");

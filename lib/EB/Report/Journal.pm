@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.28 2006/03/06 15:46:43 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.29 2006/04/04 13:12:31 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  6 11:05:00 2006
-# Update Count    : 271
+# Last Modified On: Tue Apr  4 13:36:03 2006
+# Update Count    : 274
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -38,7 +38,7 @@ sub journal {
 
     $opts->{STYLE} = "journaal";
     $opts->{LAYOUT} =
-      [ { name => "date", title => _T("Datum"),              width => 10, },
+      [ { name => "date", title => _T("Datum"),              width => $date_width, },
 	{ name => "desc", title => _T("Boekstuk/Grootboek"), width => 30, },
 	{ name => "acct", title => _T("Rek"),                width =>  5, align => ">", },
 	{ name => "deb",  title => _T("Debet"),              width => $amount_width, align => ">", },
@@ -129,7 +129,7 @@ sub journal {
 	if ( $jnl_bsr_seq == 0 ) {
 	    $nl++, next unless $detail;
 	    $rep->add({ _style => 'head',
-			date => $jnl_bsr_date,
+			date => datefmt($jnl_bsr_date),
 			desc => join(":", _dbk_desc($jnl_dbk_id), $bsk_nr),
 			bsk  => $jnl_desc,
 		      });
@@ -140,7 +140,7 @@ sub journal {
 	$totc -= $jnl_amount if $jnl_amount < 0;
 	next unless $detail;
 	$rep->add({ _style => 'data',
-		    date => $jnl_bsr_date,
+		    date => datefmt($jnl_bsr_date),
 		    desc => _acc_desc($jnl_acc_id),
 		    acct => $jnl_acc_id,
 		    $jnl_amount >= 0 ? ( deb => numfmt($jnl_amount) )
