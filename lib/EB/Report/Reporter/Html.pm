@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.7 2006/04/04 13:12:31 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.8 2006/04/04 13:21:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:43:22 2006
-# Update Count    : 35
+# Last Modified On: Tue Apr  4 15:21:41 2006
+# Update Count    : 37
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -120,6 +120,7 @@ sub __html {
     $t =~ s/</&lt;/g;
     $t =~ s/>/&gt;/g;
     $t =~ s/\240/&nbsp;/g;
+    $t =~ s/\x{eb}/&euml;/g;	# for IVP.
     $t;
 }
 
