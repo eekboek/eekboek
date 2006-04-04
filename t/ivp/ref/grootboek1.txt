@@ -2,7 +2,7 @@
 Periode: 2005-01-01 t/m 2005-12-31
 EekBoek Demo Administratie                                                      EekBoek, 2005-12-31
 
- GrBk  Grootboek/Boekstuk                   Datum      Debet     Credit  BoekstukNr      Relatie
+ GrBk  Grootboek/Boekstuk              Datum           Debet     Credit  BoekstukNr      Relatie
 ---------------------------------------------------------------------------------------------------
   230  Inventaris en inrichting
         Beginsaldo                                   1344,37       0,00
