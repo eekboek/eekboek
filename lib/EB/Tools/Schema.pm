@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.40 2006/03/31 08:49:35 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.41 2006/04/04 09:55:10 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 31 10:49:25 2006
-# Update Count    : 579
+# Last Modified On: Fri Mar 31 10:54:42 2006
+# Update Count    : 580
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -72,6 +72,7 @@ sub create {
 
     die("?".__x("Onbekend schema: {schema}", schema => $name)."\n") unless $file;
     open($fh, "<$file") or die("?".__x("Toegangsfout schema data: {err}", err => $!)."\n");
+    # binmode($fh, ":utf8") conflicts with our UNICODE checks.
     #binmode($fh, ":utf8") if $cfg->unicode;
     $schema = $name;
     $dbh = EB::DB->new(trace => $trace) unless $sql;
