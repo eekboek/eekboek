@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.5 2006/03/29 19:57:12 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.6 2006/04/04 09:55:45 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 29 21:49:04 2006
-# Update Count    : 31
+# Last Modified On: Fri Mar 31 14:13:14 2006
+# Update Count    : 33
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,14 +16,19 @@ package EB::Report::Reporter::Html;
 use strict;
 use warnings;
 use EB;
-use HTML::Entities ();
 
 use base qw(EB::Report::Reporter);
 
 ################ API ################
 
+my $html;
+
 sub start {
     my ($self, @args) = @_;
+    eval {
+	require HTML::Entities;
+    };
+    $html = $@ ? \&__html : \&_html;
     $self->SUPER::start(@args);
 }
 
@@ -70,7 +75,7 @@ sub add {
 	#    }
 	# }
 	print {$self->{fh}} ("<td class=\"c_$fname\">",
-			     $value eq "" ? "&nbsp;" : _html($value),
+			     $value eq "" ? "&nbsp;" : $html->($value),
 			     "</td>\n");
     }
 
@@ -85,18 +90,18 @@ sub header {
     print {$self->{fh}}
       ("<html>\n",
        "<head>\n",
-       "<title>", _html($self->{_title1}), "</title>\n",
+       "<title>", $html->($self->{_title1}), "</title>\n",
        '<link rel="stylesheet" href="css/', $self->{_style}, '.css">', "\n",
        "</head>\n",
        "<body>\n",
-       "<p class=\"title\">", _html($self->{_title1}), "</p>\n",
-       "<p class=\"subtitle\">", _html($self->{_title2}), "<br>\n", _html($self->{_title3l}), "</p>\n",
+       "<p class=\"title\">", $html->($self->{_title1}), "</p>\n",
+       "<p class=\"subtitle\">", $html->($self->{_title2}), "<br>\n", $html->($self->{_title3l}), "</p>\n",
        "<table class=\"main\">\n");
 
     print {$self->{fh}} ("<tr class=\"head\">\n");
     foreach ( @{$self->{_fields}} ) {
 	print {$self->{fh}} ("<th class=\"h_", $_->{name}, "\">",
-			     _html($_->{title}), "</th>\n");
+			     $html->($_->{title}), "</th>\n");
     }
     print {$self->{fh}} ("</tr>\n");
 
