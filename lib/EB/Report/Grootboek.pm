@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.23 2006/03/06 15:46:43 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.24 2006/04/04 13:12:41 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  6 11:04:32 2006
-# Update Count    : 241
+# Last Modified On: Tue Apr  4 13:35:47 2006
+# Update Count    : 244
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -46,7 +46,7 @@ sub perform {
     $opts->{LAYOUT} =
       [ { name => "acct", title => _T("GrBk"),               width =>  5, align => ">" },
 	{ name => "desc", title => _T("Grootboek/Boekstuk"), width => 30,              },
-	{ name => "date", title => _T("Datum"),              width => 10, align => ">" },
+	{ name => "date", title => _T("Datum"),              width => $date_width      },
 	{ name => "deb",  title => _T("Debet"),              width => $amount_width, align => ">" },
 	{ name => "crd",  title => _T("Credit"),             width => $amount_width, align => ">" },
 	{ name => "bsk",  title => _T("BoekstukNr"),         width => 14,              },
@@ -138,7 +138,7 @@ sub perform {
 	    }
 	    $rep->add({ _style => 'd',
 			desc   => $desc,
-			date   => $date,
+			date   => datefmt($date),
 			$amount >= 0 ? ( deb => numfmt($amount), crd => $n0)
 				     : ( deb => $n0, crd => numfmt(-$amount)),
 			bsk    => join(":", $dbk_desc, $bsk_nr),
