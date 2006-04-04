@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.54 is beschikbaar
+Subject: EekBoek versie 0.55 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,30 +9,28 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.54 van EekBoek is beschikbaar op de bekende sites:
+Release 0.55 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.54.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.55.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.54.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.55.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Aanvullende wijzigingen voor UNICODE support.
+* Instelbaar datumformaat.
 
-  Bestanden worden gecontroleerd op valide UNICODE tekens.
+  In de config file:
 
-  Non-UNICODE databases worden geweigerd indien UNICODE is
-  geactiveerd.
+     [format]
+     date = yyyy-mm-dd
 
-  Let op: De standaardbestanden (schema's en zo) zijn nog steeds
-  Latin1.
-
-* De HTML uitvoer kan gebruik maken van de module HTML::Entities,
-  indien deze is geïnstalleerd.
+  Mogelijke formaten zijn: YYYY-MM-DD (default), DD-MM-YYY en
+  DD-MM. In het laatste geval wordt, waar nodig, het formaat
+  aangevuld tot DD-MM-YYYY.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
