@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.58 2006/03/29 18:12:24 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.59 2006/04/04 10:11:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 29 20:11:53 2006
-# Update Count    : 139
+# Last Modified On: Tue Apr  4 11:57:31 2006
+# Update Count    : 140
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ use strict;
 use base qw(Exporter);
 
 our $VERSION;
-$VERSION = "0.53";
+$VERSION = "0.54";
 
 our @EXPORT;
 our @EXPORT_OK;

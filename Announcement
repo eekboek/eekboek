@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.53 is beschikbaar
+Subject: EekBoek versie 0.54 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,52 +9,30 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.53 van EekBoek is beschikbaar op de bekende sites:
+Release 0.54 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.53.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.54.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.53.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.54.tar.gz
 
 Belangrijkste wijzigingen:
 
-* UNICODE support.  ****EXPERIMENTEEL****
+* Aanvullende wijzigingen voor UNICODE support.
 
-  Aanzetten met de EekBoek locale in de config file:
+  Bestanden worden gecontroleerd op valide UNICODE tekens.
 
-    [locale]
-    unicode = 1
-
-  of
-
-    [locale]
-    lang = nl_NL.utf8
-
-  Elke suffix anders dan utf8 (of utf-8) wordt als latin1
-  geïnterpreteerd.
-
-  ("unicode" heeft prioriteit over "lang").
-
-  Semantiek:
-
-  - Alle geproduceerde uitvoer (scherm, maar ook rapporten, exports,
-    etc) wordt in UTF-8 weggeschreven.
-  - Alle invoerbestanden (schema, opening.eb, imports, etc) moeten
-    UTF-8 zijn.
-
-  Geen databasewijzigingen. Echter, alle met 0,53 aangemaakte
-  databases zijn niet te verwerken met pre-0.53 versies.
-
-  Zonder het aanzetten van UNICODE moet alles zijn zoals het was.
-
-  Zoals gezegd, is e.e.a. nog een beetje experimenteel. Testresultaten
-  en feedback wordt op prijs gesteld.
+  Non-UNICODE databases worden geweigerd indien UNICODE is
+  geactiveerd.
 
   Let op: De standaardbestanden (schema's en zo) zijn nog steeds
   Latin1.
+
+* De HTML uitvoer kan gebruik maken van de module HTML::Entities,
+  indien deze is geïnstalleerd.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
