@@ -90,13 +90,15 @@ find ${RPM_BUILD_ROOT}%{ebshare}/script ! -type d \
 %defattr(-,root,root)
 %doc CHANGES README INSTALL QUICKSTART example doc/html TODO
 %dir %{_sysconfdir}/%{lcname}
-%config %{_sysconfdir}/%{lcname}/eekboek.conf
+%config(noreplace) %{_sysconfdir}/%{lcname}/eekboek.conf
 %{ebshare}
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 
 %changelog
+* Wed Apr 12 2006 Johan Vromans <jvromans@squirrel.nl> 0.56
+- %config(noreplace) for eekboek.conf.
 * Tue Mar 28 2006 Johan Vromans <jvromans@squirrel.nl> 0.52
 - Perl Independent Install
 * Mon Mar 27 2006 Johan Vromans <jvromans@squirrel.nl> 0.52
