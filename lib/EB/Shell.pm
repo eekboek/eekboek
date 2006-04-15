@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.70 2006/03/10 12:51:24 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.71 2006/04/15 08:18:01 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  9 13:07:05 2006
-# Update Count    : 773
+# Last Modified On: Mon Apr 10 16:14:14 2006
+# Update Count    : 783
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -157,6 +157,7 @@ sub eb_complete {
 
 sub parseline {
     my ($self, $line) = @_;
+    $line =~ s/\\\s*$//;
     $line =~ s/;\s*$//;
     my ($cmd, $env, @args) = $self->SUPER::parseline($line);
 
