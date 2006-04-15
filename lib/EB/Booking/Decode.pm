@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.16 2006/04/04 13:12:31 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.17 2006/04/15 08:35:09 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:31:46 2006
-# Update Count    : 149
+# Last Modified On: Sat Apr 15 10:33:25 2006
+# Update Count    : 151
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,6 +22,7 @@ use warnings;
 
 use EB;
 use EB::Finance;
+use EB::Booking;		# for norm_btw()
 
 sub new {
     return bless {};
@@ -164,7 +165,7 @@ sub decode {
 	croak("INTERNAL ERROR: BTW/N id = $bsr_btw_id")
 	  if !($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id;
 
-	my $a = EB::Finance::norm_btw($bsr_amount, $bsr_btw_id);
+	my $a = EB::Booking::->norm_btw($bsr_amount, $bsr_btw_id);
 	$tot += $a->[0];
 
 	next unless $trail;

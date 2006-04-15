@@ -202,29 +202,4 @@ sub btwfmt {
     $v;
 }
 
-sub norm_btw {
-    my ($bsr_amt, $bsr_btw_id) = @_;
-    my ($btw_perc, $btw_incl);
-    if ( $bsr_btw_id ) {
-	my $rr = $dbh->do("SELECT btw_perc, btw_incl".
-			  " FROM BTWTabel".
-			  " WHERE btw_id = ?", $bsr_btw_id);
-	($btw_perc, $btw_incl) = @$rr;
-    }
-
-    return [ $bsr_amt, 0 ] unless $btw_perc;
-
-    my $bruto = $bsr_amt;
-    my $netto = $bsr_amt;
-
-    if ( $btw_incl ) {
-	$netto = numround($bruto * (1 / (1 + $btw_perc/BTWSCALE)));
-    }
-    else {
-	$bruto = numround($netto * (1 + $btw_perc/BTWSCALE));
-    }
-
-    [ $bruto, $bruto - $netto ];
-}
-
 1;

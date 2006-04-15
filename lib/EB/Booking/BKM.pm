@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.48 2006/04/15 08:17:30 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.49 2006/04/15 08:35:09 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:16:08 2006
-# Update Count    : 369
+# Last Modified On: Sat Apr 15 10:31:25 2006
+# Update Count    : 370
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -209,7 +209,7 @@ sub perform {
 	    my ($btw_ink, $btw_verk);
 	    if ( $btw_id ) {
 		( $bsr_amount, $btw, $btw_ink, $btw_verk ) =
-		  @{EB::Finance::norm_btw($bsr_amount, $btw_id)};
+		  @{$self->norm_btw($bsr_amount, $btw_id)};
 		$amt = $bsr_amount - $btw;
 	    }
 	    $orig_amount = -$orig_amount;

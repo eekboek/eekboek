@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.9 2006/04/15 08:17:30 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.10 2006/04/15 08:35:09 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:15:50 2006
-# Update Count    : 44
+# Last Modified On: Sat Apr 15 10:30:50 2006
+# Update Count    : 45
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.9 2006/04/15 08:17:30 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.10 2006/04/15 08:35:09 jv Exp $ ';
 
 package main;
 
@@ -160,6 +160,33 @@ sub parse_btw_spec {
     ($btw_id, $kstomz);
 }
 
+#### Class method
+sub norm_btw {
+    my ($self, $bsr_amt, $bsr_btw_id) = @_;
+    my ($btw_perc, $btw_incl);
+    if ( $bsr_btw_id ) {
+	my $rr = $dbh->do("SELECT btw_perc, btw_incl".
+			  " FROM BTWTabel".
+			  " WHERE btw_id = ?", $bsr_btw_id);
+	($btw_perc, $btw_incl) = @$rr;
+    }
+
+    return [ $bsr_amt, 0 ] unless $btw_perc;
+
+    my $bruto = $bsr_amt;
+    my $netto = $bsr_amt;
+
+    if ( $btw_incl ) {
+	$netto = numround($bruto * (1 / (1 + $btw_perc/BTWSCALE)));
+    }
+    else {
+	$bruto = numround($netto * (1 + $btw_perc/BTWSCALE));
+    }
+
+    [ $bruto, $bruto - $netto ];
+}
+
+#### Class method
 sub journalise {
     my ($self, $bsk_id) = @_;
 
@@ -196,7 +223,7 @@ sub journalise {
 
 	if ( ($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id && $bsr_btw_acc ) {
 	    ( $bsr_amount, $btw ) =
-	      @{EB::Finance::norm_btw($bsr_amount, $bsr_btw_id)};
+	      @{$self->norm_btw($bsr_amount, $bsr_btw_id)};
 	    $amt = $bsr_amount - $btw;
 	}
 	$tot += $bsr_amount;
