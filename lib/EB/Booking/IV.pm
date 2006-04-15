@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.40 2006/03/05 20:57:28 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.41 2006/04/15 08:17:30 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  5 20:47:13 2006
-# Update Count    : 272
+# Last Modified On: Sat Apr 15 10:16:19 2006
+# Update Count    : 274
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -259,7 +259,7 @@ sub perform {
 			 0, $acct, $debcode);
     }
 
-    my $ret = EB::Finance::journalise($bsk_id);
+    my $ret = $self->journalise($bsk_id);
 #    $rr = [ @$ret ];
 #    shift(@$rr);
 #    $rr = [ sort { $a->[5] <=> $b->[5] } @$rr ];

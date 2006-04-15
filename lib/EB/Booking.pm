@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.8 2006/04/04 13:12:31 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.9 2006/04/15 08:17:30 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:39:35 2006
-# Update Count    : 42
+# Last Modified On: Sat Apr 15 10:15:50 2006
+# Update Count    : 44
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.8 2006/04/04 13:12:31 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.9 2006/04/15 08:17:30 jv Exp $ ';
 
 package main;
 
@@ -158,6 +158,67 @@ sub parse_btw_spec {
 	return;
     }
     ($btw_id, $kstomz);
+}
+
+sub journalise {
+    my ($self, $bsk_id) = @_;
+
+    # date  bsk_id  bsr_seq(0)   dbk_id  (acc_id) amount debcrd desc(bsk) (rel)
+    # date (bsk_id) bsr_seq(>0) (dbk_id)  acc_id  amount debcrd desc(bsr) rel(acc=1200/1600)
+    my ($jnl_date, $jnl_bsk_id, $jnl_bsr_seq, $jnl_dbk_id, $jnl_acc_id,
+	$jnl_amount, $jnl_desc, $jnl_rel);
+
+    my $rr = $::dbh->do("SELECT bsk_nr, bsk_desc, bsk_dbk_id, bsk_date".
+		      " FROM boekstukken".
+		      " WHERE bsk_id = ?", $bsk_id);
+    my ($bsk_nr, $bsk_desc, $bsk_dbk_id, $bsk_date) = @$rr;
+
+    my ($dbktype, $dbk_acc_id) =
+      @{$::dbh->do("SELECT dbk_type, dbk_acc_id".
+		 " FROM Dagboeken".
+		 " WHERE dbk_id = ?", $bsk_dbk_id)};
+    my $sth = $::dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
+			     "bsr_desc, bsr_amount, bsr_btw_class, bsr_btw_id, ".
+			     "bsr_btw_acc, bsr_type, bsr_acc_id, bsr_rel_code ".
+			     " FROM Boekstukregels".
+			     " WHERE bsr_bsk_id = ?", $bsk_id);
+
+    my $ret = [];
+    my $tot = 0;
+    my $nr = 1;
+
+    while ( $rr = $sth->fetchrow_arrayref ) {
+	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_class,
+	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
+	my $bsr_bsk_id = $bsk_id;
+	my $btw = 0;
+	my $amt = $bsr_amount;
+
+	if ( ($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id && $bsr_btw_acc ) {
+	    ( $bsr_amount, $btw ) =
+	      @{EB::Finance::norm_btw($bsr_amount, $bsr_btw_id)};
+	    $amt = $bsr_amount - $btw;
+	}
+	$tot += $bsr_amount;
+
+	push(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
+		     $bsr_acc_id,
+		     $bsr_amount - $btw, $bsr_desc,
+		     $bsr_type ? $bsr_rel_code : undef]);
+	push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
+		     $bsr_btw_acc,
+		     $btw, "BTW ".$bsr_desc,
+		     undef]) if $btw;
+    }
+
+    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
+		 -$tot, $bsk_desc, undef])
+      if $dbk_acc_id;
+
+    unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsk_date, 0, undef,
+		    undef, $bsk_desc, undef]);
+
+    $ret;
 }
 
 1;
