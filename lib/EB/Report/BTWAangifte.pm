@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.34 2006/04/15 08:35:09 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.35 2006/04/15 09:08:35 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:32:45 2006
-# Update Count    : 467
+# Last Modified On: Sat Apr 15 10:57:48 2006
+# Update Count    : 470
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::BTWAangifte;
 use strict;
 
 use EB;
-use EB::Finance;
+use EB::Format;
 use EB::Booking;		# for norm_btw()
 
 use POSIX qw(floor ceil);
@@ -653,6 +653,8 @@ package EB::Report::BTWAangifte::Text;
 
 use strict;
 use EB;
+use EB::Format qw($amount_width);
+
 use base qw(EB::Report::GenBase);
 
 sub new {
@@ -679,7 +681,7 @@ sub outline {
 	return;
     }
 
-    my $w = $EB::Finance::amount_width + 1;
+    my $w = $amount_width + 1;
     $self->{fh}->printf("%-5s%-40s%${w}s%${w}s\n",
 			$tag0, $tag1,
 			defined($sub) ? $sub : "",

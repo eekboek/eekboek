@@ -1,13 +1,13 @@
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.12 2006/04/04 13:12:31 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.13 2006/04/15 09:08:34 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:43:01 2006
-# Update Count    : 216
+# Last Modified On: Sat Apr 15 10:49:30 2006
+# Update Count    : 217
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Einde.pm,v 1.12 2006/04/04 13:12:31 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.13 2006/04/15 09:08:34 jv Exp $ ';
 
 package main;
 
@@ -20,7 +20,7 @@ use strict;
 use warnings;
 
 use EB;
-use EB::Finance;
+use EB::Format;
 use EB::Report;
 use EB::Report::GenBase;
 use EB::Report::Journal;

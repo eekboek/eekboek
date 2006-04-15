@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.41 2006/04/15 08:17:30 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.42 2006/04/15 09:08:35 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:16:19 2006
-# Update Count    : 274
+# Last Modified On: Sat Apr 15 10:45:32 2006
+# Update Count    : 275
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -27,7 +27,7 @@ use warnings;
 
 use EB;
 use EB::DB;
-use EB::Finance;
+use EB::Format;
 use EB::Report::Journal;
 use base qw(EB::Booking);
 

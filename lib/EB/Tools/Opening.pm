@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.27 2006/04/04 13:12:31 jv Exp $
+# $Id: Opening.pm,v 1.28 2006/04/15 09:08:34 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:40:34 2006
-# Update Count    : 225
+# Last Modified On: Sat Apr 15 10:49:43 2006
+# Update Count    : 226
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -17,7 +17,7 @@ package EB::Tools::Opening;
 
 use strict;
 use EB;
-use EB::Finance;
+use EB::Format;
 use EB::DB;
 
 # List of API methods (for the shell).

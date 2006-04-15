@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.16 2006/03/06 15:46:43 jv Exp $ ';
+my $RCS_Id = '$Id: Proof.pm,v 1.17 2006/04/15 09:08:35 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Proof;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  6 11:05:29 2006
-# Update Count    : 302
+# Last Modified On: Sat Apr 15 10:48:11 2006
+# Update Count    : 303
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -25,7 +25,7 @@ use warnings;
 ################ The Process ################
 
 use EB;
-use EB::Finance;
+use EB::Format;
 use EB::Report;
 
 ################ Subroutines ################

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.22 2006/04/04 13:12:31 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.23 2006/04/15 09:08:35 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:28:26 2006
-# Update Count    : 355
+# Last Modified On: Sat Apr 15 10:47:01 2006
+# Update Count    : 356
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -26,7 +26,7 @@ use warnings;
 
 use EB;
 use EB::Report;
-use EB::Finance;
+use EB::Format;
 
 ################ Subroutines ################
 

@@ -1,10 +1,10 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.10 2006/04/04 13:12:31 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.11 2006/04/15 09:08:34 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:43:45 2006
-# Update Count    : 30
+# Last Modified On: Sat Apr 15 10:46:50 2006
+# Update Count    : 31
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,7 +16,7 @@ package EB::Report::BTWAangifte::Html;
 
 use strict;
 use EB;
-use EB::Finance qw(datefmt_full);
+use EB::Format qw(datefmt_full);
 
 use base qw(EB::Report::GenBase);
 

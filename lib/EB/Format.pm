@@ -7,7 +7,7 @@ our $dbh;
 our $config;
 our $app;
 
-package EB::Finance;
+package EB::Format;
 
 use EB;
 use EB::Expression;

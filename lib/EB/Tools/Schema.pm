@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.41 2006/04/04 09:55:10 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.42 2006/04/15 09:08:34 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 31 10:54:42 2006
-# Update Count    : 580
+# Last Modified On: Sat Apr 15 10:56:02 2006
+# Update Count    : 582
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -33,7 +33,7 @@ $my_version .= '*' if length('$Locker:  $ ') > 12;
 ################ The Process ################
 
 use EB;
-use EB::Finance;
+use EB::Format;
 use EB::DB;
 use Encode;
 

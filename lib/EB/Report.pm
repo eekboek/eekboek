@@ -1,10 +1,10 @@
 # Report.pm -- Report tools
-# RCS Info        : $Id: Report.pm,v 1.3 2006/03/03 21:27:11 jv Exp $
+# RCS Info        : $Id: Report.pm,v 1.4 2006/04/15 09:08:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Nov 14 21:46:04 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 15:29:50 2006
-# Update Count    : 35
+# Last Modified On: Sat Apr 15 10:52:07 2006
+# Update Count    : 37
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,7 +16,7 @@ package EB::Report;
 use strict;
 use warnings;
 use EB;
-use EB::Finance;
+use EB::Format qw(numfmt);
 use EB::Report::GenBase;
 
 my $trace = 0;

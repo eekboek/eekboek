@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.16 2006/04/04 13:12:31 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.17 2006/04/15 09:08:35 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:36:21 2006
-# Update Count    : 191
+# Last Modified On: Sat Apr 15 10:48:01 2006
+# Update Count    : 192
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,7 +24,7 @@ use warnings;
 ################ The Process ################
 
 use EB;
-use EB::Finance;
+use EB::Format;
 
 ################ Subroutines ################
 

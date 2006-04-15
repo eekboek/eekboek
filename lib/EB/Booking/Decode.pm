@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.17 2006/04/15 08:35:09 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.18 2006/04/15 09:08:35 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:33:25 2006
-# Update Count    : 151
+# Last Modified On: Sat Apr 15 10:45:18 2006
+# Update Count    : 152
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,7 +21,7 @@ use strict;
 use warnings;
 
 use EB;
-use EB::Finance;
+use EB::Format;
 use EB::Booking;		# for norm_btw()
 
 sub new {

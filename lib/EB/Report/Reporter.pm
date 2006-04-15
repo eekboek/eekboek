@@ -1,10 +1,10 @@
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.9 2006/04/04 13:12:31 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.10 2006/04/15 09:08:34 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:12:09 2006
-# Update Count    : 141
+# Last Modified On: Sat Apr 15 10:48:39 2006
+# Update Count    : 142
 # Status          : Unknown, Use with caution!
 
 
@@ -17,7 +17,7 @@ package EB::Report::Reporter;
 use strict;
 use warnings;
 use EB;
-use EB::Finance;
+use EB::Format;
 
 sub new {
     my ($class, $style, $config) = @_;

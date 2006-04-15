@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.8 2006/04/04 13:21:58 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.9 2006/04/15 09:08:34 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 15:21:41 2006
-# Update Count    : 37
+# Last Modified On: Sat Apr 15 10:46:08 2006
+# Update Count    : 38
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,7 +16,7 @@ package EB::Report::Reporter::Html;
 use strict;
 use warnings;
 use EB;
-use EB::Finance qw(datefmt_full);
+use EB::Format qw(datefmt_full);
 
 use base qw(EB::Report::Reporter);
 

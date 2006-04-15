@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.10 2006/04/15 08:35:09 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.11 2006/04/15 09:08:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:30:50 2006
-# Update Count    : 45
+# Last Modified On: Sat Apr 15 10:56:22 2006
+# Update Count    : 48
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.10 2006/04/15 08:35:09 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.11 2006/04/15 09:08:35 jv Exp $ ';
 
 package main;
 
@@ -22,7 +22,7 @@ use strict;
 use warnings;
 
 use EB;
-use EB::Finance;
+use EB::Format;
 
 sub new {
     my ($class) = @_;

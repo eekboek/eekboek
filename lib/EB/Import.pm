@@ -1,10 +1,10 @@
 # Import.pm -- Import EekBoek administratie
-# RCS Info        : $Id: Import.pm,v 1.2 2006/03/07 08:55:06 jv Exp $
+# RCS Info        : $Id: Import.pm,v 1.3 2006/04/15 09:08:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  6 17:03:22 2006
-# Update Count    : 16
+# Last Modified On: Sat Apr 15 10:50:40 2006
+# Update Count    : 17
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -17,7 +17,7 @@ use strict;
 use warnings;
 
 use EB;
-use EB::Finance;
+use EB::Format;			# needs to be setup before we can use Schema
 
 my $ident;
 

@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.16 2006/04/04 13:12:31 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.17 2006/04/15 09:08:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:53:56 2006
-# Update Count    : 145
+# Last Modified On: Sat Apr 15 10:51:01 2006
+# Update Count    : 146
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ use strict;
 use warnings;
 
 use EB;
-use EB::Finance;
+use EB::Format;
 
 my $ident;
 
