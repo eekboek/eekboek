@@ -202,4 +202,6 @@ sub btwfmt {
     $v;
 }
 
+sub btwpat { $btwpat }
+
 1;
