@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.12 2006/03/31 08:50:56 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.13 2006/05/05 15:36:32 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 31 10:50:29 2006
-# Update Count    : 136
+# Last Modified On: Fri May  5 17:23:19 2006
+# Update Count    : 141
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -106,9 +106,9 @@ sub connect {
     $dataset = $dbname;
     if ( $cfg->unicode ) {
 	my $enc = $dbh->selectall_arrayref("SHOW CLIENT_ENCODING")->[0]->[0];
-	if ( $enc ne 'UNICODE' ) {
-	    die("?".__x("Database {name} is niet in UNICODE maar {enc}",
-			name => $_[1], enc => $enc)."\n");
+	if ( $enc !~ /^unicode|utf8$/i ) {
+	    warn("!".__x("Database {name} is niet in UTF-8 maar {enc}",
+			 name => $_[1], enc => $enc)."\n");
 	}
 	$dbh->do("SET CLIENT_ENCODING TO 'UNICODE'");
 	$dbh->{pg_enable_utf8} = 1;
