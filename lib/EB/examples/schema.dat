@@ -1,21 +1,21 @@
-# $Id: schema.dat,v 1.10 2006/03/06 15:47:11 jv Exp $
+# $Id: schema.dat,v 1.11 2006/05/05 15:33:59 jv Exp $ -*- coding: utf-8 -*-
 # EekBoek Rekeningschema voor eekboek_sample
-# Aangemaakt door EB::Tools::Schema op 05-03-2006 22:24:07
+# Content-Type: text; charset = UTF-8
 
-# Dit bestand definiëert alle vaste gegevens van een administratie of
+# Dit bestand definiÃ«ert alle vaste gegevens van een administratie of
 # groep administraties: het rekeningschema (balansrekeningen en
 # resultaatrekeningen), de dagboeken en de BTW tarieven.
 #
 # Algemene syntaxregels:
 #
 # * Lege regels en regels die beginnen met een hekje # worden niet
-#   geïnterpreteerd.
+#   geÃ¯nterpreteerd.
 # * Een niet-ingesprongen tekst introduceert een nieuw onderdeel.
 # * Alle ingesprongen regels zijn gegevens voor dat onderdeel.
 
 # REKENINGSCHEMA
 #
-# Het rekeningschema is hiërarchisch opgezet volgende de beproefde
+# Het rekeningschema is hiÃ«rarchisch opgezet volgende de beproefde
 # methode Bakker. De hoofdverdichtingen lopen van 1 t/m 9, de
 # verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
 # balansrekeningen en resultaatrekeningen.
@@ -68,10 +68,10 @@
 Balansrekeningen
 
   1  Vaste Activa
-     11  Immateriële vaste activa
+     11  ImmateriÃ«le vaste activa
          110   D   Aanloopkosten
          111   C   Afschrijving aanloopkst.
-     12  Materiële vaste activa
+     12  MateriÃ«le vaste activa
          200   D   Gebouwen en terreinen
          201   C   Afschrijving gebouwen
          210   D   Verbouwing
@@ -82,7 +82,7 @@ Balansrekeningen
          231   C   Afschrijving inventaris & inrichting
          240   D   Computers
          241   C   Afschrijving computers
-     13  Financiële vaste activa
+     13  FinanciÃ«le vaste activa
          320   D   Lening u/g de heer A
 
   2  Vlottende activa
@@ -125,15 +125,15 @@ Balansrekeningen
   3  Eigen vermogen
      31  Kapitaal
          500   C   Kapitaal                                   :koppeling=winst
-         510   C   Privé stortingen
-         520   C   Privé opnamen
-         530   C   Privé rente
-         540   C   Privé ziektekosten
-         550   C   Privé belastingen
-         560   C   Privé schenkingen
-         570   C   Privé verzekeringen
-         580   C   Privé buitengewone lasten
-         590   C   Privé uitgaven overige
+         510   C   PrivÃ© stortingen
+         520   C   PrivÃ© opnamen
+         530   C   PrivÃ© rente
+         540   C   PrivÃ© ziektekosten
+         550   C   PrivÃ© belastingen
+         560   C   PrivÃ© schenkingen
+         570   C   PrivÃ© verzekeringen
+         580   C   PrivÃ© buitengewone lasten
+         590   C   PrivÃ© uitgaven overige
 
   4  Vreemd vermogen
      41  Kredietinstellingen lang
@@ -213,7 +213,7 @@ Resultaatrekeningen
   6  Personeelslasten
      60  Lonen en salarissen
          4000  K   Bruto lonen
-         4001  K   Tantième
+         4001  K   TantiÃ¨me
          4002  K   Gratificaties
          4010  K   Overhevelingstoeslag
          4020  K   Premiespaarregeling
@@ -276,7 +276,7 @@ Resultaatrekeningen
          4650  K   Huur auto                                  :btw=hoog
          4670  K   Boetes
          4671  K   Boetes 0% aftrekbaar
-         4680  K   BTW privégebruik auto
+         4680  K   BTW privÃ©gebruik auto
          4690  K   Overige autokosten                         :btw=hoog
      67  Verkoopkosten
          4700  K   Reclamekosten                              :btw=hoog
@@ -322,7 +322,7 @@ Resultaatrekeningen
          4380  K   Afschr. kosten goodwill
          4390  K   Afschr. kosten aanloopkosten
 
-  9  Financiële baten & lasten
+  9  FinanciÃ«le baten & lasten
      71  Rente baten
          9000  K   Rente bate deposito
          9040  K   Rente bate lening u/g

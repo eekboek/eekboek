@@ -1,4 +1,6 @@
-# $Id: bvnv.dat,v 1.2 2006/03/03 10:24:22 jv Exp $
+# $Id: bvnv.dat,v 1.3 2006/05/05 15:33:59 jv Exp $ -*- coding: utf-8 -*-
+# Content-Type: text; charset = UTF-8
+
 # EekBoek voorbeeld rekeningschema voor een BV/NV
 #
 # DIT SCHEMA IS INDICATIEF EN DIENT VOOR EIGEN GEBRUIK TE WORDEN
@@ -6,20 +8,20 @@
 #
 # Aangemaakt door EB::Tools::Schema op 12-12-2005 17:22:47
 
-# Dit bestand definiëert alle vaste gegevens van een administratie of
+# Dit bestand definiÃ«ert alle vaste gegevens van een administratie of
 # groep administraties: het rekeningschema (balansrekeningen en
 # resultaatrekeningen), de dagboeken en de BTW tarieven.
 #
 # Algemene syntaxregels:
 #
 # * Lege regels en regels die beginnen met een hekje # worden niet
-#   geïnterpreteerd.
+#   geÃ¯nterpreteerd.
 # * Een niet-ingesprongen tekst introduceert een nieuw onderdeel.
 # * Alle ingesprongen regels zijn gegevens voor dat onderdeel.
 
 # REKENINGSCHEMA
 #
-# Het rekeningschema is hiërarchisch opgezet volgende de beproefde
+# Het rekeningschema is hiÃ«rarchisch opgezet volgende de beproefde
 # methode Bakker. De hoofdverdichtingen lopen van 1 t/m 9, de
 # verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
 # balansrekeningen en resultaatrekeningen.
@@ -48,7 +50,7 @@
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
 #
-# Al deze koppelingen moeten éénmaal in het rekeningschema voorkomen.
+# Al deze koppelingen moeten Ã©Ã‚Ã©nmaal in het rekeningschema voorkomen.
 
 # Normaal lopen hoofdverdichtingen van 1 t/m 9, en verdichtingen
 # van 10 t/m 99. Indien daarvan wordt afgeweken kan dit worden opgegeven
@@ -60,12 +62,12 @@ Verdichting 12 97
 Balansrekeningen
 
   1  Vaste Activa
-     15  Immateriële vaste activa
+     15  ImmateriÃ«le vaste activa
          100   D   Goodwill
          101   C   Afschrijving goodwill
          110   D   Aanloopkosten
          111   C   Afschrijving aanloopkosten
-     16  Materiële vaste activa
+     16  MateriÃ«le vaste activa
          200   D   Gebouwen en terreinen
          201   C   Afschrijving gebouwen
          210   D   Verbouwingen
@@ -78,7 +80,7 @@ Balansrekeningen
          241   C   Afschrijving computers
          250   D   Auto's
          251   C   Afschrijving Auto's
-     17  Financiële vaste activa
+     17  FinanciÃ«le vaste activa
          300   D   Deelneming B.V. A
          301   D   Deelneming B.V. B
          302   D   Deelneming B.V. C
@@ -179,7 +181,7 @@ Balansrekeningen
          1520  D   BTW Inkoop Hoog                            :koppeling=btw_ih
          1530  D   BTW Inkoop Laag                            :koppeling=btw_il
          1540  C   BTW autokostenverg.
-         1541  C   BTW privégebr. auto
+         1541  C   BTW privÃ©gebr. auto
          1560  C   Omzetbelasting betaald                     :koppeling=btw_ok
          1570  D   BTW kleine ondernemersregeling
          1700  C   Vennootschapsbelasting
@@ -288,7 +290,7 @@ Resultaatrekeningen
          4390  K   Afschr. kosten aanloopkosten
 
   8  Overige bedrijfslasten
-     63  Afschrijving materiële vaste activa
+     63  Afschrijving materiÃ«le vaste activa
          4300  K   Afschr. kosten gebouwen
          4310  K   Afschr. kosten verbouwing
          4320  K   Afschr. kosten mach. & install.
@@ -312,7 +314,7 @@ Resultaatrekeningen
          4630  K   Verzekering auto
          4640  K   Kilometervergoedingen
          4650  K   Huur auto                                  :btw=hoog
-         4660  K   BTW privégebruik auto
+         4660  K   BTW privÃ©gebruik auto
          4670  K   Boetes
          4671  K   Boetes 0% aftrekbaar
          4690  K   Overige autokosten                         :btw=hoog
@@ -354,7 +356,7 @@ Resultaatrekeningen
          4990  K   Overige algemene kosten                    :btw=hoog
          4991  K   Bijzondere baten & lasten
 
-  9  Financiële baten & lasten
+  9  FinanciÃ«le baten & lasten
      71  Rente baten
          9000  K   Rente bate deposito
          9030  K   Rente bate lening B.V.
@@ -367,7 +369,7 @@ Resultaatrekeningen
          9070  K   Rente bate aandeelhouder
          9080  K   Rente bate belastingen
          9090  K   Rente bate overige
-     72  Rente- en overige financiële lasten
+     72  Rente- en overige financiÃ«le lasten
          9100  K   Rente last hypotheek pand
          9110  K   Rente last lening bank
          9111  K   Rente last m.l. krediet
@@ -451,5 +453,5 @@ BTW Tarieven
    3  BTW 6% incl.           :tariefgroep=laag :perc=6,00
    4  BTW 6% excl.           :tariefgroep=laag :perc=6,00 :exclusief
    5  BTW 12% autokostenvergoeding     :tariefgroep=hoog :perc=12,00 :exclusief
-   6  BTW privégebruik auto 12%        :tariefgroep=nul
+   6  BTW privÃ©gebruik auto 12%        :tariefgroep=nul
    7  BTW kleine ondernemersregeling   :tariefgroep=nul
