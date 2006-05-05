@@ -150,11 +150,11 @@ postbank 2005-11-08 "Girotel" std "Girotel" -2,70 4980
 postbank 2005-11-30 "ADSL, Tel." crd XS4ALL -22,80 crd KPN -109,67
 
 # Er kan een expliciet volgnummer worden opgegeven.
-# Ook kan het saldo na boeking worden geverifiëerd.
+# Ook kan het saldo na boeking worden geverifieerd.
 postbank:24 --saldo 10357,48 2005-12-07 "Girotel, ADSL" \
 	 std "Girotel" -2,70 4980 crd XS4ALL -22,80
 
-# Partiële betalingen door het boekstuk op te geven i.p.v. de
+# Partiele betalingen door het boekstuk op te geven i.p.v. de
 # debiteur/crediteur.
 openstaand
 postbank:25 2005-12-09 "Eerste deel ADSL" --saldo=10347,48 \
