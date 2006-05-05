@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.13 2006/01/31 18:53:02 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.14 2006/05/05 15:38:15 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 31 18:11:49 2006
-# Update Count    : 251
+# Last Modified On: Thu May  4 15:36:52 2006
+# Update Count    : 252
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -58,7 +58,7 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 ################ The Process ################
 
 use Text::CSV_XS;
-use EB::Finance;
+use EB::Format;
 
 @ARGV = (-s "FMUTA6.CSV" ? "FMUTA6.CSV" : "fmuta6.csv") unless @ARGV;
 

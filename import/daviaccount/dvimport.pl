@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.18 2006/03/17 18:29:54 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.19 2006/05/05 15:38:24 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 17 15:17:50 2006
-# Update Count    : 316
+# Last Modified On: Tue May  2 21:56:53 2006
+# Update Count    : 317
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -51,7 +51,7 @@ my $tsdate = strftime("%Y-%m-%d %k:%M:%S +0100", @tm[0..5], -1, -1, -1);
 
 use EB::Config qw(EekBoek);
 use EB::Globals;
-use EB::Finance;
+use EB::Format;
 
 read_exact_data();
 
