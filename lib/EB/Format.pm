@@ -29,6 +29,24 @@ our @EXPORT;
 our $amount_width;
 our $date_width;
 
+sub numround_ieee {
+    # This somethimes does odd things.
+    # E.g. 892,5 -> 892 and 891,5 -> 892.
+    0 + sprintf("%.0f", $_[0]);
+}
+
+use POSIX qw(floor ceil);
+
+sub numround_posix {
+    my ($val) = @_;
+    if ( $val < 0 ) {
+	ceil($val - 0.5);
+    }
+    else {
+	floor($val + 0.5);
+    }
+}
+
 sub _setup  {
 
     ################ BTW display format ################
@@ -94,6 +112,15 @@ EOD
     die($@) if $@;
 
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
+
+    ################ Rounding Algorithms ################
+
+    my $numround = lc($cfg->val(qw(strategy round), "ieee"));
+    unless ( defined &{"numround_$numround"} ) {
+	die("?".__x("Onbekende afrondingsmethode: {meth}",
+		    meth => $numround)."\n");
+    }
+    *numround = \&{"numround_$numround"};
 
     ################ Date display format ################
 
@@ -171,30 +198,6 @@ sub numfmtv {
     }
     $v;
 }
-
-sub numround {
-    # This somethimes does odd things.
-    # E.g. 892,5 -> 892 and 891,5 -> 892.
-    0 + sprintf("%.0f", $_[0]);
-}
-
-=begin alternative
-
-# Is this a beteer alternative?
-
-use POSIX qw(floor ceil);
-
-sub numround {
-    my ($val) = @_;
-    if ( $val < 0 ) {
-	ceil($val - 0.5);
-    }
-    else {
-	floor($val + 0.5);
-    }
-}
-
-=cut
 
 sub btwfmt {
     my $v = sprintf($btwfmt0, 100*$_[0]/BTWSCALE);
