@@ -1,10 +1,10 @@
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.5 2006/03/31 08:46:43 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.6 2006/05/05 15:37:41 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 31 10:11:29 2006
-# Update Count    : 86
+# Last Modified On: Fri May  5 17:16:39 2006
+# Update Count    : 88
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -33,9 +33,9 @@ BEGIN {
 if ( $cfg->val(qw(locale unicode), 0) ) {
     require Encode;
     eval 'sub _T($) { Encode::decode("ISO-8859-1", $_[0]) };';
-    binmode(STDIN,  ":uft8");
-    binmode(STDOUT, ":uft8");
-    binmode(STDERR, ":uft8");
+    binmode(STDIN,  ":utf8");
+    binmode(STDOUT, ":utf8");
+    binmode(STDERR, ":utf8");
 }
 else {
     eval 'sub _T($) { $_[0] };';
@@ -44,7 +44,7 @@ else {
 sub LOCALISER() { "" }
 
 # Second alternative: Locale-gettext 1.05 (on CPAN).
-# Simple and leight-weight.
+# Simple and light-weight.
 # It only provides the straight-forward translation, so we need
 # to add the utility routines __x __n __xn __nx.
 
