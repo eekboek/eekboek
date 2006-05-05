@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.11 2006/04/04 09:55:19 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.12 2006/05/05 15:35:11 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 31 10:54:00 2006
-# Update Count    : 214
+# Last Modified On: Fri May  5 16:20:56 2006
+# Update Count    : 230
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -49,6 +49,7 @@ sub new {
 	$self->{readline} = sub { $self->readline_file(*STDIN) };
     }
     $self->{inputstack} = [];
+    $self->{unicode} = $cfg->unicode;
     $self;
 }
 
@@ -68,9 +69,35 @@ sub readline_file {
     while ( 1 ) {
 	$line = <$fd>;
 	return unless $line;
-	if ( $cfg->unicode && !decode_utf8($line) ) {
-	    warn("?".__x("Geen geldige UNICODE tekens in regel {line} van de invoer",
-			 line => $.)."\n");
+
+	if ( $line =~ /^#\s*content-type:\s+text;\s*charset\s*=\s*(\S+)\s*$/i ) {
+	    my $charset = lc($1);
+	    if ( $charset =~ /^(?:latin[19]|iso-?8859[-.]15?)$/i ) {
+		$self->{unicode} = 0;
+		next;
+	    }
+	    if ( $charset =~ /^(?:unicode|utf-?8)$/i ) {
+		$self->{unicode} = 1;
+		next;
+	    }
+	}
+
+	if ( $self->{unicode} xor $cfg->unicode  ) {
+	    my $s = $line;
+	    eval {
+		if ( $cfg->unicode ) {
+		    $line = decode($self->{unicode} ? 'utf8' : 'latin1', $s, 1);
+		}
+		else {
+		    Encode::from_to($line, 'utf8', 'latin1', 1);
+		}
+	    };
+	    if ( $@ ) {
+		warn("?".__x("Geen geldige {cs} tekens in regel {line} van de invoer",
+			     cs => $self->{unicode} ? "UTF-8" : "Latin1",
+			     line => $.)."\n".$line."\n");
+		next;
+	    }
 	}
 	if ( $self->{echo} ) {
 	    my $pr = $self->{echo};
@@ -98,7 +125,7 @@ sub readline_file {
 
 sub attach_file {
     my ($self, $file) = @_;
-    push(@{$self->{inputstack}}, $self->{readline});
+    push(@{$self->{inputstack}}, [$self->{readline}, $self->{unicode}]);
     $self->{readline} = sub { shift->readline_file($file) };
 }
 
@@ -121,7 +148,7 @@ sub readline {
     my $ret;
     while ( !defined($ret = $self->{readline}->($self, $prompt)) ) {
 	return unless @{$self->{inputstack}};
-	$self->{readline} = pop(@{$self->{inputstack}});
+	($self->{readline}, $self->{unicode}) = @{pop(@{$self->{inputstack}})};
     }
     return $ret;
 }

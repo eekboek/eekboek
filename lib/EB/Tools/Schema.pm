@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.42 2006/04/15 09:08:34 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.43 2006/05/05 15:34:48 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:56:02 2006
-# Update Count    : 582
+# Last Modified On: Fri May  5 16:18:12 2006
+# Update Count    : 603
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -344,20 +344,41 @@ sub load_schema {
     $max_hvd = 9;
     $max_vrd = 99;
     my $uerr = 0;
+    my $unicode = $cfg->unicode;
 
     %std = map { $_ => 0 } qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih);
     $fh ||= *ARGV;
     while ( <$fh> ) {
 
-	if ( $cfg->unicode ) {
+	if ( /^#\s*content-type:\s+text;\s*charset\s*=\s*(\S+)\s*$/i ) {
+	    my $charset = lc($1);
+	    if ( $charset =~ /^(?:latin[19]|iso-?8859[-.]15?)$/i ) {
+		$unicode = 0;
+		next;
+	    }
+	    if ( $charset =~ /^(?:unicode|utf-?8)$/i ) {
+		$unicode = 1;
+		next;
+	    }
+	}
+
+	if ( $unicode xor $cfg->unicode ) {
 	    my $s = $_;
 	    eval {
-		$_ = decode('utf8', $s, 1);
+		if ( $cfg->unicode ) {
+		    $_ = decode($unicode ? 'utf8' : 'latin1', $s, 1);
+		}
+		else {
+		    Encode::from_to($_, 'utf8', 'latin1', 1);
+		}
 	    };
 	    if ( $@ ) {
-		warn("?".__x("Geen geldige UNICODE tekens in regel {line} van het schema",
-			     line => $.)."\n");
+		warn("?".__x("Geen geldige {cs} tekens in regel {line} van de invoer",
+			     cs => $unicode ? "UTF-8" : "Latin1",
+			     line => $.)."\n".$_."\n");
+		warn($@);
 		$fail++;
+		next;
 	    }
 	}
 
@@ -648,7 +669,8 @@ sub dump_schema {
 	  "# Aangemaakt door ", __PACKAGE__, " $my_version");
     my @t = localtime(time);
     printf {$fh} ("op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
-
+    printf {$fh} ("# Content-Type: text; charset = %s\n",
+		  $cfg->unicode ? "UTF-8" : "ISO-8859.1");
     print {$fh}  <<EOD;
 
 # Dit bestand definiëert alle vaste gegevens van een administratie of

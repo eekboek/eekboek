@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.17 2006/04/15 09:08:35 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.18 2006/05/05 15:37:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:51:01 2006
-# Update Count    : 146
+# Last Modified On: Tue May  2 15:22:51 2006
+# Update Count    : 152
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -50,7 +50,7 @@ sub _write {
     open($fh, ">", $file)
       or die("?".__x("Fout bij aanmaken bestand {file}: {err}",
 		     file => $file, err => $!)."\n");
-    if ( $cfg->val(qw(locale unicode), 0) ) {
+    if ( $cfg->unicode ) {
 	binmode($fh, ":utf8");
     }
     $producer->($fh)
@@ -86,9 +86,10 @@ sub _relaties {
     my $cur_btw = -1;
     my $out = __x("# {what} voor administratie {adm}",
 		  what => _T("Relaties"), adm => $dbh->adm("name")) . "\n" .
-		    __x("# Aangemaakt door {id} op {date}",
-			id => $EB::ident, date => datefmt_full(iso8601date()));
-
+	      __x("# Aangemaakt door {id} op {date}",
+		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
+	      "# Content-Type: text; charset = " .
+	      ($cfg->unicode ? "UTF-8" : "ISO-8859.1");
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($code, $desc, $debcrd, $btw, $dbk, $acct) = @$rr;
 
@@ -116,8 +117,11 @@ sub _opening {
 
     my $out = __x("# {what} voor administratie {adm}",
 		  what => _T("Openingsgegevens"), adm => $dbh->adm("name")) . "\n" .
-		    __x("# Aangemaakt door {id} op {date}",
-			id => $EB::ident, date => datefmt_full(iso8601date()) . "\n\n");
+	      __x("# Aangemaakt door {id} op {date}",
+		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
+	      "# Content-Type: text; charset = " .
+	      ($cfg->unicode ? "UTF-8" : "ISO-8859.1") .
+	      "\n\n";
 
     $out .= "adm_naam         " . _quote($dbh->adm("name")) . "\n";
 
@@ -233,8 +237,11 @@ sub _mutaties {
 
     my $out = __x("# {what} voor administratie {adm}",
 		  what => _T("Boekingen"), adm => $dbh->adm("name")) . "\n" .
-		    __x("# Aangemaakt door {id} op {date}",
-			id => $EB::ident, date => datefmt_full(iso8601date())) . "\n\n";
+	      __x("# Aangemaakt door {id} op {date}",
+		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
+	      "# Content-Type: text; charset = " .
+	      ($cfg->unicode ? "UTF-8" : "ISO-8859.1") .
+	      "\n\n";
 
     my @bky;
     my $sth = $dbh->sql_exec("SELECT bky_code".
