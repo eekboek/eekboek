@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.55 is beschikbaar
+Subject: EekBoek versie 0.56 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,28 +9,62 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.55 van EekBoek is beschikbaar op de bekende sites:
+Release 0.56 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.55.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.56.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.55.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.56.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Instelbaar datumformaat.
+* (Enigszins experimenteel) Betere Unicode transparantie.
 
-  In de config file:
+  Alle door EekBoek te verwerken bestanden kunnen middels een
+  Content-Type aanduiding aangeven of de inhoud Latin1 dan wel UTF-8
+  is. Dit geldt voor:
 
-     [format]
-     date = yyyy-mm-dd
+  - schema
+  - invoer via redirectie en de 'include' opdracht.
 
-  Mogelijke formaten zijn: YYYY-MM-DD (default), DD-MM-YYY en
-  DD-MM. In het laatste geval wordt, waar nodig, het formaat
-  aangevuld tot DD-MM-YYYY.
+  Bij het schrijven van export-bestanden wordt standaard een
+  Content-Type toegevoegd.
+
+  De Content-Type aanduiding is:
+
+    # Content-Type: text; charset = XXX
+
+  XXX = Latin1, Latin9, ISO-8859.1 of ISO-8859.15 (voor Latin1 invoer)
+  XXX = UTF-8 (voor Unicode UTF-8 invoer)
+
+  Zonder Content-Type aanduiding worden de invoerbestanden
+  verondersteld overeen te komen met de omgeving, dus UTF-8 in een
+  Unicode omgeving, en anders Latin1.
+
+  De meegeleverde bestanden (schema's) zijn nu in UTF-8, en hebben een
+  overeenkomstige Content-Type aanduiding.
+
+  De restrictie dat in een Unicode omgeving een database ook Unicode
+  moet zijn is (voorlopig) (weer) vervallen. 
+
+* Onder MS Windows wordt default een Unicode omgeving verondersteld.
+
+* Keuze uit afrondingsalgoritmen. In de config file:
+
+  [strategy]
+  round = XXX
+
+  Op dit moment zijn er twee mogelijkheden: "ieee", de huidige
+  methode, en "posix", een over het algemeen iets betere
+  afrondingsmethode.
+
+  Suggesties (plus implementatie, zie EB::Format) voor meer
+  afrondingsalgoritmen zijn welkom.
+
+* Fix probleem met trailing backslash in non-file invoer.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
