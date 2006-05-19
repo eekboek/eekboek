@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.42 2006/04/15 09:08:35 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.43 2006/05/19 10:41:36 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:45:32 2006
-# Update Count    : 275
+# Last Modified On: Fri May 19 12:37:36 2006
+# Update Count    : 276
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -191,6 +191,7 @@ sub perform {
 
 	if ( $nr == 1 ) {
 	    $bsk_nr = $self->bsk_nr($opts);
+	    return unless defined($bsk_nr);
 	    $gdesc ||= $desc;
 	    $dbh->sql_insert("Boekstukken",
 			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],

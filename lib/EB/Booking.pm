@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.11 2006/04/15 09:08:35 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.12 2006/05/19 10:41:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:56:22 2006
-# Update Count    : 48
+# Last Modified On: Fri May 19 12:39:45 2006
+# Update Count    : 49
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.11 2006/04/15 09:08:35 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.12 2006/05/19 10:41:37 jv Exp $ ';
 
 package main;
 
@@ -44,6 +44,10 @@ sub bsk_nr {
     my $bsk_nr;
     my $prev = defined($opts->{boekjaar}) && $opts->{boekjaar} ne $dbh->adm("bky");
     if ( $bsk_nr = $opts->{boekstuk} ) {
+	unless ( $bsk_nr =~ /^[0-9]+$/ ) {
+	    warn("?"._T("Het boekstuknummer moet een geheel getal (volgnummer) zijn")."\n");
+	    return;
+	}
 	my $t = $prev ? "0" : $opts->{dagboek};
 	$dbh->set_sequence("bsk_nr_${t}_seq", $bsk_nr+1)
 #	  if $dbh->get_sequence("bsk_nr_${t}_seq", "noincr") < $bsk_nr;
