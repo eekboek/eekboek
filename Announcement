@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.56 is beschikbaar
+Subject: EekBoek versie 0.57 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,7 +9,7 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.56 van EekBoek is beschikbaar op de bekende sites:
+Release 0.57 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
 * http://www.squirrel.nl/eekboek/dl/EekBoek-0.56.tar.gz
@@ -17,54 +17,34 @@ Release 0.56 van EekBoek is beschikbaar op de bekende sites:
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.56.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.57.tar.gz
 
 Belangrijkste wijzigingen:
 
-* (Enigszins experimenteel) Betere Unicode transparantie.
+* Probeerdatabase
 
-  Alle door EekBoek te verwerken bestanden kunnen middels een
-  Content-Type aanduiding aangeven of de inhoud Latin1 dan wel UTF-8
-  is. Dit geldt voor:
+  Na afloop van de installatieverificatietests is er een
+  probeerdatabase "sample" beschikbaar. Deze wordt nu ook in de vorm
+  van een SQL file in de example directory meegeleverd.
 
-  - schema
-  - invoer via redirectie en de 'include' opdracht.
+  Dit is met name van belang indien er wordt geïnstalleerd vanuit een
+  RPM, want dan is de probeerdatabase niet aangemaakt.
 
-  Bij het schrijven van export-bestanden wordt standaard een
-  Content-Type toegevoegd.
+  De probeerdatabase kan te allen tijde worden (her)aangemaakt met:
 
-  De Content-Type aanduiding is:
+   $ dropdb eekboek_sample
+   $ psql template1 < example/sampledb.sql
 
-    # Content-Type: text; charset = XXX
+  Na een RPM installatie is de example directory te vinden in de
+  zogenaamde 'doc' dir, meestal /usr/share/doc/eekboek-X.XX .
 
-  XXX = Latin1, Latin9, ISO-8859.1 of ISO-8859.15 (voor Latin1 invoer)
-  XXX = UTF-8 (voor Unicode UTF-8 invoer)
+* Controle op numeriek zijn van het boekstuknummer.
 
-  Zonder Content-Type aanduiding worden de invoerbestanden
-  verondersteld overeen te komen met de omgeving, dus UTF-8 in een
-  Unicode omgeving, en anders Latin1.
-
-  De meegeleverde bestanden (schema's) zijn nu in UTF-8, en hebben een
-  overeenkomstige Content-Type aanduiding.
-
-  De restrictie dat in een Unicode omgeving een database ook Unicode
-  moet zijn is (voorlopig) (weer) vervallen. 
-
-* Onder MS Windows wordt default een Unicode omgeving verondersteld.
-
-* Keuze uit afrondingsalgoritmen. In de config file:
-
-  [strategy]
-  round = XXX
-
-  Op dit moment zijn er twee mogelijkheden: "ieee", de huidige
-  methode, en "posix", een over het algemeen iets betere
-  afrondingsmethode.
-
-  Suggesties (plus implementatie, zie EB::Format) voor meer
-  afrondingsalgoritmen zijn welkom.
-
-* Fix probleem met trailing backslash in non-file invoer.
+* "--opening" optie voor "balans". Hiermee wordt de openingsbalans
+  opnieuw getoond.
+  In geval van meervoudige boekjaren dienen de voorgaande boekjaren te
+  zijn afgesloten, anders is deze openingsbalans gelijk aan de
+  eindbalans van het voorgaande boekjaar.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
