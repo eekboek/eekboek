@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.71 2006/04/15 08:18:01 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.72 2006/05/25 17:15:25 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Apr 10 16:14:14 2006
-# Update Count    : 783
+# Last Modified On: Thu May 25 19:14:57 2006
+# Update Count    : 785
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -457,11 +457,17 @@ sub do_balans {
     parse_args(\@args,
 	       [ 'detail=i',
 		 'verdicht',
+		 'opening',
 		 'boekjaar=s',
 		 'per=s' => sub { date_arg($opts, @_) },
 		 EB::Report::GenBase->backend_options(EB::Report::Balres::, $opts),
 	       ], $opts);
     return unless argcnt(@args, 0);
+
+    if ( $opts->{opening} && $opts->{per} ) {
+	warn("?"._T("Openingsbalans kent geen einddatum")."\n");
+	return;
+    }
 
     EB::Report::Balres->new->balans($opts);
     undef;
@@ -477,6 +483,7 @@ Opties:
   --detail=<n>                Verdicht, mate van detail <n> = 0, 1 of 2
   --per=<datum>               Selecteer einddatum
   --boekjaar=<code>           Selecteer boekjaar
+  --opening                   Toon openingsbalans
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
