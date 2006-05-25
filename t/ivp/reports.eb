@@ -4,6 +4,7 @@ balans --detail=0 --output=balans0.txt
 balans --detail=1 --output=balans1.txt
 balans --detail=2 --output=balans2.txt
 balans --verdicht --output=balans2.txt
+balans --opening  --output=obalans.txt
 
 # Verify: verlies/winst in varianten.
 result            --output=result.txt

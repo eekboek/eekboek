@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.1 2006/03/24 13:53:41 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.2 2006/05/25 17:28:26 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => 32);
+  : (tests => 33);
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
@@ -67,6 +67,7 @@ vfy([@ebcmd, qw(-c balans --detail=0)], "balans0.txt");
 vfy([@ebcmd, qw(-c balans --detail=1)], "balans1.txt");
 vfy([@ebcmd, qw(-c balans --detail=2)], "balans2.txt");
 vfy([@ebcmd, qw(-c balans --verdicht)], "balans2.txt");
+vfy([@ebcmd, qw(-c balans --opening) ], "obalans.txt");
 
 # Verify: verlies/winst in varianten.
 vfy([@ebcmd, qw(-c result)           ], "result.txt");
