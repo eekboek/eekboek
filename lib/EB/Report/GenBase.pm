@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.19 2006/04/04 13:12:31 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.20 2006/06/01 15:38:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  4 13:22:47 2006
-# Update Count    : 131
+# Last Modified On: Thu Jun  1 16:25:17 2006
+# Update Count    : 138
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -164,6 +164,8 @@ sub backend {
 		    begin => datefmt_full($opendate))."\n");
     }
 
+    $be->{_cssdir} = $cfg->val(qw(html cssdir), undef);
+    $be->{_cssdir} =~ s;/*$;/; if defined $be->{_cssdir};
     $be->{_style} = $opts->{style} if $opts->{style};
 
     # Return instance.
