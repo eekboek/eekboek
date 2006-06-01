@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.43 2006/05/05 15:34:48 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.44 2006/06/01 15:37:55 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May  5 16:18:12 2006
-# Update Count    : 603
+# Last Modified On: Thu Jun  1 15:42:03 2006
+# Update Count    : 604
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -38,14 +38,6 @@ use EB::DB;
 use Encode;
 
 ################ Subroutines ################
-
-sub findlib {
-    my ($file) = @_;
-    foreach ( @INC ) {
-	return "$_/EB/$file" if -e "$_/EB/$file";
-    }
-    undef;
-}
 
 ################ Schema Loading ################
 
