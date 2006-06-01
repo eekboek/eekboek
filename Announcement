@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.57 is beschikbaar
+Subject: EekBoek versie 0.58 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,7 +9,7 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.57 van EekBoek is beschikbaar op de bekende sites:
+Release 0.58 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
 * http://www.squirrel.nl/eekboek/dl/EekBoek-0.56.tar.gz
@@ -17,34 +17,45 @@ Release 0.57 van EekBoek is beschikbaar op de bekende sites:
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.57.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.58.tar.gz
 
 Belangrijkste wijzigingen:
 
-* Probeerdatabase
+* CSS stylesheet afhandeling in HTML rapporten
 
-  Na afloop van de installatieverificatietests is er een
-  probeerdatabase "sample" beschikbaar. Deze wordt nu ook in de vorm
-  van een SQL file in de example directory meegeleverd.
+  Er is nu een config setting `cssdir' in sectie `html' waar de
+  directory kan worden opgegeven waar de CSS stylesheets zijn te
+  vinden.
 
-  Dit is met name van belang indien er wordt geïnstalleerd vanuit een
-  RPM, want dan is de probeerdatabase niet aangemaakt.
+  Het uiteindelijke resultaat hangt af van deze `cssdir', en de voor
+  het rapport opgegeven `style' optie.
 
-  De probeerdatabase kan te allen tijde worden (her)aangemaakt met:
+    Style         Cssdir   Resultaat
+    --------------------------------
+    -             -        De EekBoek standaard style voor dit type
+                           rapport wordt opgenomen in het rapport.
 
-   $ dropdb eekboek_sample
-   $ psql template1 < example/sampledb.sql
+    naam          -        De EekBoek standaard style `naam' wordt
+                           opgenomen in het rapport.
 
-  Na een RPM installatie is de example directory te vinden in de
-  zogenaamde 'doc' dir, meestal /usr/share/doc/eekboek-X.XX .
+    -             dir      Stylesheet link naar dir/std.css, waarin std
+                           de naam is van de EekBoek standaard style
+                           voor dit type rapport.
 
-* Controle op numeriek zijn van het boekstuknummer.
+    naam          dir      Stylesheet link naar dir/naam.css
 
-* "--opening" optie voor "balans". Hiermee wordt de openingsbalans
-  opnieuw getoond.
-  In geval van meervoudige boekjaren dienen de voorgaande boekjaren te
-  zijn afgesloten, anders is deze openingsbalans gelijk aan de
-  eindbalans van het voorgaande boekjaar.
+    bestandsnaam  n.v.t.   Stylesheet link naar bestandsnaam
+
+  Zonder wijzigingen betekent het dat de standaard stylesheet nu in de
+  rapporten wordt opgenomen, zodat deze direct toonbaar zijn.
+
+  Om hetzelfde resultaat te bereiken als tot nu toe het geval is, moet
+  de config setting
+
+    [html]
+    cssdir = css
+
+  worden opgegeven.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
