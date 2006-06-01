@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.9 2006/04/15 09:08:34 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.10 2006/06/01 15:38:21 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:46:08 2006
-# Update Count    : 38
+# Last Modified On: Thu Jun  1 16:16:57 2006
+# Update Count    : 54
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -91,9 +91,32 @@ sub header {
     print {$self->{fh}}
       ("<html>\n",
        "<head>\n",
-       "<title>", $html->($self->{_title1}), "</title>\n",
-       '<link rel="stylesheet" href="css/', $self->{_style}, '.css">', "\n",
-       "</head>\n",
+       "<title>", $html->($self->{_title1}), "</title>\n");
+
+    if ( my $style = $self->{_style} ) {
+	if ( $style =~ /\W/ ) {
+	    print {$self->{fh}}
+	      ('<link rel="stylesheet" href="', $style, '">', "\n");
+	}
+	elsif ( defined $self->{_cssdir} ) {
+	    print {$self->{fh}}
+	      ('<link rel="stylesheet" href="', $self->{_cssdir},
+	       $style, '.css">', "\n");
+	}
+	elsif ( my $css = findlib("css/".$style.".css") ) {
+	    print {$self->{fh}} ('<style type="text/css">', "\n");
+	    copy_style($self->{fh}, $css);
+	    print {$self->{fh}} ('</style>', "\n");
+	}
+	else {
+	    print {$self->{fh}} ("<!-- ",
+				 __x("Geen stylesheet voor {style}",
+				     style => $style), " -->\n");
+	}
+    }
+
+    print {$self->{fh}}
+      ("</head>\n",
        "<body>\n",
        "<p class=\"title\">", $html->($self->{_title1}), "</p>\n",
        "<p class=\"subtitle\">", $html->($self->{_title2}), "<br>\n", $html->($self->{_title3l}), "</p>\n",
@@ -122,6 +145,28 @@ sub __html {
     $t =~ s/\240/&nbsp;/g;
     $t =~ s/\x{eb}/&euml;/g;	# for IVP.
     $t;
+}
+
+sub copy_style {
+    my ($out, $css) = @_;
+    my $in;
+    unless ( open($in, "<", $css) ) {
+	print {$out} ("<!-- stylesheet $css: $! -->\n");
+	return;
+    }
+    print {$out} ("<!-- begin stylesheet $css -->\n");
+    while ( <$in> ) {
+	if ( /^\s*\@import\s*(["'])(.*?)\1\s*;/ ) {
+	    use File::Basename;
+	    my $newcss = join("/", dirname($css), $2);
+	    copy_style($out, $newcss);
+	}
+	else {
+	    print {$out} $_;
+	}
+    }
+    close($in);
+    print {$out} ("<!-- end   stylesheet $css -->\n");
 }
 
 1;
