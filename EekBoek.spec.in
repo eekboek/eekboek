@@ -137,6 +137,7 @@ find ${RPM_BUILD_ROOT}%{ebshare}/script ! -type d \
 %dir %{ebshare}
 %{ebshare}/lib
 %{ebshare}/css
+%dir %{ebshare}/script
 %{ebshare}/script/ebshell
 %{_bindir}/ebshell
 %{_mandir}/man1/*
