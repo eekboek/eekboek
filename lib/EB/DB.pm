@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.40 2006/03/05 20:55:17 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.41 2006/06/02 10:05:48 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  5 21:37:37 2006
-# Update Count    : 326
+# Last Modified On: Fri Jun  2 10:43:58 2006
+# Update Count    : 330
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -172,6 +172,7 @@ sub check_db {
     $dbh->do("SELECT * INTO TEMP TAccounts FROM Accounts WHERE acc_id = 0");
     # Make it semi-permanent (this connection only).
     $dbh->commit;
+    $self->{has_schema} = 1;
 }
 
 #### UNUSED
@@ -384,6 +385,11 @@ sub does_btw {
 	      " WHERE btw_tariefgroep != 0")->[0];
 }
 
+sub has_schema {
+    my ($self) = @_;
+    $self->{has_schema};
+}
+
 ################ API calls for database backend ################
 
 my $dbpkg;
@@ -405,6 +411,7 @@ sub connectdb {
     $dbh->{RaiseError} = 1;
     $dbh->{AutoCommit} = 0;
     $dbh->{ChopBlanks} = 1;
+    $self->{has_schema} = 0;
     $self->check_db unless $nocheck;
     $dbh;
 }
@@ -425,7 +432,7 @@ sub listdb {
 sub cleardb {
     my ($self) = shift;
     $dbpkg ||= $self->_loaddbbackend;
-    $dbpkg->clear;
+    $dbpkg->clear if $self->has_schema;
     $self->resetdbcache;
 }
 
