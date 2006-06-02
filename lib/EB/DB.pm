@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.41 2006/06/02 10:05:48 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.42 2006/06/02 13:39:13 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  2 10:43:58 2006
-# Update Count    : 330
+# Last Modified On: Fri Jun  2 15:29:28 2006
+# Update Count    : 339
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,7 +22,6 @@ use EB;
 use DBI;
 
 my $dbh;			# singleton for DB
-my $db;				# singleton for EBDB
 
 my $verbose = 0;
 my $trace = 0;
@@ -261,10 +260,10 @@ sub new {
     $verbose = delete($atts{verbose}) || 0;
     $trace   = delete($atts{trace}) || 0;
 
-    $db = {};
-    bless $db, $pkg;
-    $db->_init;
-    $db;
+    my $self = {};
+    bless $self, $pkg;
+    $self->_init;
+    $self;
 }
 
 sub _init {
