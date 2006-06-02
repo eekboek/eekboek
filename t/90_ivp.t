@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.2 2006/05/25 17:28:26 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.3 2006/06/02 13:38:38 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -103,6 +103,7 @@ vfy([@ebcmd, qw(-c btwaangifte j)], "btw.txt");
 # Verify: HTML generatie.
 vfy([@ebcmd, qw(-c balans --detail=2 --gen-html)            ], "balans2.html");
 vfy([@ebcmd, qw(-c balans --detail=2 --gen-html --style=xxx)], "balans2xxx.html");
+vfy([@ebcmd, qw(-c btwaangifte j)], "btw.html");
 
 # Verify: CSV generatie.
 vfy([@ebcmd, qw(-c balans --detail=2 --gen-csv)], "balans2.csv");

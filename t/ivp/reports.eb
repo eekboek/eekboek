@@ -38,6 +38,7 @@ btwaangifte j --output=btw.txt
 # Verify: HTML generatie.
 balans --detail=2 --gen-html             --output=balans2.html
 balans --detail=2 --gen-html --style=xxx --output=balans2xxx.html
+btwaangifte j --output=btw.html
 
 # Verify: CSV generatie.
 balans --detail=2 --gen-csv --output=balans2.csv
