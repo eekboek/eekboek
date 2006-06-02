@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: ebshell,v 1.14 2006/03/03 10:50:26 jv Exp $ ';
+my $RCS_Id = '$Id: ebshell,v 1.15 2006/06/02 10:04:33 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 23 15:23:38 2006
-# Update Count    : 273
+# Last Modified On: Fri Jun  2 10:56:37 2006
+# Update Count    : 276
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -171,6 +171,17 @@ sub app_options {
 			 $command = 1;
 			 die("!FINISH\n");
 		     },
+		     'import' => sub {
+			 $command = 1;
+			 $createdb = 1;
+			 unshift(@ARGV, "import");
+			 die("!FINISH\n");
+		     },
+		     'export' => sub {
+			 $command = 1;
+			 unshift(@ARGV, "export");
+			 die("!FINISH\n");
+		     },
 		     'createdb' => \$createdb,
 		     'define|D=s%' => sub {
 			 my ($opt, $key, $arg) = @_;
@@ -221,6 +232,8 @@ Gebruik: {prog} [options] [file ...]
     --boekjaar=XXX	specificeer boekjaar
     --createdb		maak nieuwe database aan
     --schema=XXX        initialisser database met schema
+    --import --dir=XXX  importeer een nieuwe administratie
+    --export --dir=XXX  exporteer een administratie
     --define=XXX -D     definieer configuratiesetting
     --help		deze hulpboodschap
     --ident		toon identificatie
