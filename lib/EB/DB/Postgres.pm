@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.13 2006/05/05 15:36:32 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.14 2006/06/02 10:07:47 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May  5 17:23:19 2006
-# Update Count    : 141
+# Last Modified On: Fri Jun  2 10:36:46 2006
+# Update Count    : 143
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -137,18 +137,21 @@ sub clear {
 		     Boekstukken Dagboeken Boekjaren Constants
 		     Accounts Btwtabel Verdichtingen) ) {
 	warn("+ DROP TABLE $tbl\n") if $trace;
-	$dbh->do("DROP TABLE $tbl");
+	eval { $dbh->do("DROP TABLE $tbl") };
     }
 
-    my $rr = $dbh->selectall_arrayref("SELECT relname".
-				      " FROM pg_class".
-				      " WHERE relkind = 'S'".
-				      ' AND relname LIKE \'bsk_%_seq\'');
-    foreach my $seq ( @$rr ) {
-	warn("+ DROP SEQUENCE $seq->[0]\n") if $trace;
-	$dbh->do("DROP SEQUENCE $seq->[0]");
-    }
+    eval {
+	my $rr = $dbh->selectall_arrayref("SELECT relname".
+					  " FROM pg_class".
+					  " WHERE relkind = 'S'".
+					  ' AND relname LIKE \'bsk_%_seq\'');
+	foreach my $seq ( @$rr ) {
+	    warn("+ DROP SEQUENCE $seq->[0]\n") if $trace;
+	    eval { $dbh->do("DROP SEQUENCE $seq->[0]") };
+	}
+    };
     $dbh->commit unless $dbh->{AutoCommit};
+
 }
 
 sub list {
