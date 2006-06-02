@@ -1,10 +1,10 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.11 2006/04/15 09:08:34 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.12 2006/06/02 13:38:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:46:50 2006
-# Update Count    : 31
+# Last Modified On: Fri Jun  2 15:33:15 2006
+# Update Count    : 36
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -73,9 +73,35 @@ sub start {
     $self->{fh}->print
       ("<html>\n",
        "<head>\n",
-       "<title>", html($t1), "</title>\n",
-       '<link rel="stylesheet" href="css/', $self->{style} || $reptype, '.css">', "\n",
-       "</head>\n",
+       "<title>", html($t1), "</title>\n");
+
+    # This is copied from EB::Report::Reporter::Html.
+    # MUST BE INTEGRATED (LATER).
+    require EB::Report::Reporter::Html;
+    if ( my $style = $self->{style} || $reptype ) {
+	if ( $style =~ /\W/ ) {
+	    print {$self->{fh}}
+	      ('<link rel="stylesheet" href="', $style, '">', "\n");
+	}
+	elsif ( defined $self->{_cssdir} ) {
+	    print {$self->{fh}}
+	      ('<link rel="stylesheet" href="', $self->{_cssdir},
+	       $style, '.css">', "\n");
+	}
+	elsif ( my $css = findlib("css/".$style.".css") ) {
+	    print {$self->{fh}} ('<style type="text/css">', "\n");
+	    EB::Report::Reporter::Html::copy_style($self->{fh}, $css);
+	    print {$self->{fh}} ('</style>', "\n");
+	}
+	else {
+	    print {$self->{fh}} ("<!-- ",
+				 __x("Geen stylesheet voor {style}",
+				     style => $style), " -->\n");
+	}
+    }
+
+    print {$self->{fh}}
+      ("</head>\n",
        "<body>\n",
        "<p class=\"title\">", html($t1), "</p>\n",
        "<p class=\"subtitle\">", html($adm), "</br>\n",
