@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.72 2006/05/25 17:15:25 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.73 2006/06/02 10:06:52 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May 25 19:14:57 2006
-# Update Count    : 785
+# Last Modified On: Fri Jun  2 10:44:35 2006
+# Update Count    : 793
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -29,7 +29,11 @@ sub new {
     $class = ref($class) || $class;
     my $opts = UNIVERSAL::isa($_[0], 'HASH') ? shift : { @_ };
 
-    _plug_cmds();
+    if ( $opts->{command} && $ARGV[0] eq "import" ) {
+	$dbh->connectdb(1);
+    }
+    _plug_cmds() if $dbh->has_schema;
+
 
     # User defined stuff.
     my $pkg = $cfg->val(qw(shell userdefs), undef);
