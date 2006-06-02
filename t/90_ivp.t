@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.3 2006/06/02 13:38:38 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.4 2006/06/02 13:47:43 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => 33);
+  : (tests => 34);
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
