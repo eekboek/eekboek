@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.62 2006/05/25 17:37:39 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.63 2006/06/02 10:05:15 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May 25 19:37:19 2006
-# Update Count    : 147
+# Last Modified On: Thu Jun  1 17:08:33 2006
+# Update Count    : 149
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ use strict;
 use base qw(Exporter);
 
 our $VERSION;
-$VERSION = "0.57";
+$VERSION = "0.58";
 
 our @EXPORT;
 our @EXPORT_OK;
@@ -62,6 +62,7 @@ BEGIN {
 		@EB::Locale::EXPORT,
 		qw(carp croak),
 		qw(Dumper),
+		qw(findlib),
 	      );
 }
 
@@ -95,6 +96,14 @@ INIT {
       split(" ", _T("Zon Maa Din Woe Don Vri Zat"));
     @day_names =
       split(" ", _T("Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag"));
+}
+
+sub findlib {
+    my ($file) = @_;
+    foreach ( @INC ) {
+	return "$_/EB/$file" if -e "$_/EB/$file";
+    }
+    undef;
 }
 
 1;
