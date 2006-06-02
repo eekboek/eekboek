@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.10 2006/06/01 15:38:21 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.11 2006/06/02 13:33:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jun  1 16:16:57 2006
-# Update Count    : 54
+# Last Modified On: Fri Jun  2 15:32:16 2006
+# Update Count    : 55
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -156,7 +156,7 @@ sub copy_style {
     }
     print {$out} ("<!-- begin stylesheet $css -->\n");
     while ( <$in> ) {
-	if ( /^\s*\@import\s*(["'])(.*?)\1\s*;/ ) {
+	if ( /^\s*\@import\s*(["']?)(.*?)\1\s*;/ ) {
 	    use File::Basename;
 	    my $newcss = join("/", dirname($css), $2);
 	    copy_style($out, $newcss);
