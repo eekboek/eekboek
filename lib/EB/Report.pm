@@ -1,10 +1,10 @@
 # Report.pm -- Report tools
-# RCS Info        : $Id: Report.pm,v 1.5 2006/05/25 17:15:35 jv Exp $
+# RCS Info        : $Id: Report.pm,v 1.6 2006/06/03 09:54:08 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Nov 14 21:46:04 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May 25 19:04:16 2006
-# Update Count    : 40
+# Last Modified On: Sat Jun  3 11:51:53 2006
+# Update Count    : 41
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -42,7 +42,7 @@ sub GetTAccountsBal {
     my $sth = $dbh->sql_exec("SELECT jnl_acc_id,acc_balance,SUM(jnl_amount)".
 			     " FROM Journal,TAccounts".
 			     " WHERE acc_id = jnl_acc_id".
-			     " AND jnl_date <= ?".
+			     " AND jnl_date ".($inc ? "<" : "<=")." ?".
 			     " GROUP BY jnl_acc_id,acc_balance,acc_ibalance",
 			     $end);
 
