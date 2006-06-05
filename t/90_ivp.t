@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.4 2006/06/02 13:47:43 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.5 2006/06/05 19:38:45 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -22,18 +22,13 @@ unlink(<*.txt>);
 unlink(<*.html>);
 unlink(<*.csv>);
 
-my @ebcmd = qw(ebshell -X -f ivp.conf --echo);
+my @ebcmd = qw(-MEB::Shell -e shell -- -X -f ivp.conf --echo);
 
-if ( $INC[0] =~ /\bblib\b/ ) {
-    $ebcmd[0] = "../../blib/script/ebshell";
-    unshift(@ebcmd, map { ("-I",
-			   "../../$_"
-			  ) } grep { /^\w\w/ } reverse @INC);
-    unshift(@ebcmd, "perl");
-}
-else {
-    unshift(@ebcmd, "perl", "-S");
-}
+unshift(@ebcmd, map { ("-I",
+		       "../../$_"
+		      ) } grep { /^\w\w/ } reverse @INC);
+unshift(@ebcmd, "perl");
+
 my $fail;
 
 for my $log ( "createdb.log" ) {
