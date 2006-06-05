@@ -1,10 +1,10 @@
 # Import.pm -- Import EekBoek administratie
-# RCS Info        : $Id: Import.pm,v 1.4 2006/06/02 10:06:12 jv Exp $
+# RCS Info        : $Id: Import.pm,v 1.5 2006/06/05 19:37:13 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  2 10:44:57 2006
-# Update Count    : 22
+# Last Modified On: Fri Jun  2 15:57:40 2006
+# Update Count    : 23
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -47,7 +47,7 @@ sub do_import {
 			 file => "mutaties.eb", err => $!)."\n");
 
 	# Create DB.
-	$dbh->cleardb;
+	$dbh->cleardb if $opts->{clean};
 
 	# Schema.
 	EB::Tools::Schema->create("$dir/schema.dat");
