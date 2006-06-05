@@ -1,20 +1,253 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.75 2006/06/05 10:27:11 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.76 2006/06/05 19:33:46 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  2 15:57:15 2006
-# Update Count    : 797
+# Last Modified On: Mon Jun  5 21:27:35 2006
+# Update Count    : 806
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 package main;
 
+use strict;
+
+# Package or program libraries, if appropriate.
+# $LIBDIR = $ENV{'LIBDIR'} || '/usr/local/lib/sample';
+# use lib qw($LIBDIR);
+# require 'common.pl';
+
+# Package name.
+my $my_package; BEGIN { $my_package = 'EekBoek' }
+
+# Program name and version.
+my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
+# Tack '*' if it is not checked in into RCS.
+$my_version .= '*' if length('$Locker:  $ ') > 12;
+
+################ Configuration ################
+
 our $cfg;
 our $dbh;
+
+sub shell {
+
+# This will set up the config at 'use' time.
+use EB::Config $my_package;
+
+if ( @ARGV && ( $ARGV[0] eq '-P' || $ARGV[0] =~ /^--?printcfg$/ ) ) {
+    shift(@ARGV);
+    printconf();
+    exit;
+}
+
+################ Command line parameters ################
+
+use Getopt::Long 2.13;
+
+# Command line options.
+my $interactive = -t;
+my $command;
+my $echo;
+my $dataset;
+my $createdb;			# create database
+my $schema;			# initialise w/ schema
+my $confirm = 0;
+my $journal = 0;
+my $verbose = 0;		# verbose processing
+my $bky;
+
+# Development options (not shown with -help).
+my $debug = 0;			# debugging
+my $trace = 0;			# trace (show process)
+my $test = 0;			# test mode.
+
+# Process command line options.
+app_options();
+
+# Post-processing.
+$trace |= ($debug || $test);
+
+################ Presets ################
+
+my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
+
+################ The Process ################
+
+use EB;
+#use base qw(EB::Shell);
+
+my $app = $my_package;
+my $userdir = glob("~/.".lc($app));
+mkdir($userdir) unless -d $userdir;
+
+$echo = "eb> " if $echo;
+
+$dataset ||= $cfg->val(qw(database name), undef);
+
+unless ( $dataset ) {
+    die("?"._T("Geen dataset opgegeven.".
+	       " Specificeer een dataset in de configuratiefile,".
+	       " of geef een dataset".
+	       " naam mee op de command line met \"--dataset=...\".").
+	"\n");
+}
+
+$cfg->newval(qw(database name), $dataset);
+
+use EB::DB;
+our $dbh = EB::DB->new(trace => $trace);
+
+if ( $createdb ) {
+    $dbh->createdb($dataset);
+    warn("%".__x("Lege dataset {db} is aangemaakt", db => $dataset)."\n");
+}
+
+if ( $schema ) {
+    require EB::Tools::Schema;
+    $dbh->connectdb(1);
+    EB::Tools::Schema->create($schema);
+}
+
+exit(0) if $command && !@ARGV;
+
+my $shell = EB::Shell->new
+  ({ HISTFILE	  => $userdir."/history",
+     command	  => $command,
+     interactive  => $interactive,
+     verbose	  => $verbose,
+     trace	  => $trace,
+     journal	  => $journal,
+     echo	  => $echo,
+     prompt	  => lc($app),
+     boekjaar	  => $bky,
+   });
+
+$| = 1;
+
+$shell->run;
+
+################ Subroutines ################
+
+sub printconf {
+    return unless @ARGV > 0;
+    my $sec = "general";
+    if ( !GetOptions(
+		     'section=s' => \$sec,
+		     '<>' => sub {
+			 my $conf = shift;
+			 my $sec = $sec;
+			 ($sec, $conf) = ($1, $2) if $conf =~ /^(.+?):(.+)/;
+			 my $val = $cfg->val($sec, $conf, undef);
+			 print STDOUT ($val) if defined $val;
+			 print STDOUT ("\n");
+		     }
+		    ) )
+    {
+	app_ident();
+	print STDERR __x(<<EndOfUsage, prog => $0);
+Gebruik: {prog} { --printcfg | -P } { [ --section=secname ] var ... } ...
+
+    Print de waarde van configuratie-variabelen.
+    Met --section=secname worden de eropvolgende variabelen
+    gezocht in sectie [secname].
+    Ook: secname:variabele.
+EndOfUsage
+    }
+}
+
+################ Subroutines ################
+
+sub app_options {
+    my $help = 0;		# handled locally
+    my $ident = 0;		# handled locally
+
+    # Process options, if any.
+    # Make sure defaults are set before returning!
+    return unless @ARGV > 0;
+
+    Getopt::Long::Configure(qw(no_ignore_case));
+
+    if ( !GetOptions(
+		     'command|c' => sub {
+			 $command = 1;
+			 die("!FINISH\n");
+		     },
+		     'import' => sub {
+			 $command = 1;
+			 $createdb = 1;
+			 unshift(@ARGV, "import", "--noclean");
+			 die("!FINISH\n");
+		     },
+		     'export' => sub {
+			 $command = 1;
+			 unshift(@ARGV, "export");
+			 die("!FINISH\n");
+		     },
+		     'createdb' => \$createdb,
+		     'define|D=s%' => sub {
+			 my ($opt, $key, $arg) = @_;
+			 if ( $key =~ /^(.+?)::?([^:]+)$/ ) {
+			     $cfg->newval($1, $2, $arg);
+			 }
+			 else {
+			     die(__x("Ongeldige aanduiding voor config setting: {arg}",
+				    arg => $key)."\n");
+			 }
+		     },
+		     'schema=s' => \$schema,
+		     'echo|e!'	=> \$echo,
+		     'ident'	=> \$ident,
+		     'journaal|journal'	=> \$journal,
+		     'boekjaar=s'	=> \$bky,
+		     'verbose'	=> \$verbose,
+		     'db|dataset=s' => \$dataset,
+		     'trace'	=> \$trace,
+		     'help|?'	=> \$help,
+		     'debug'	=> \$debug,
+		    ) or $help )
+    {
+	app_usage(2);
+    }
+    app_usage(2) if @ARGV && !$command;
+    app_ident() if $ident;
+}
+
+sub app_ident {
+    print STDERR (__x("Dit is {pkg} [{name} {version}]",
+		      pkg     => $my_package,
+		      name    => $my_name,
+		      version => $my_version) . "\n");
+}
+
+sub app_usage {
+    my ($exit) = @_;
+    app_ident();
+    print STDERR __x(<<EndOfUsage, prog => $0);
+Gebruik: {prog} [options] [file ...]
+
+    --command  -c       voer de rest van de opdrachtregel uit als command
+    --echo  -e          toon ingelezen opdrachten
+    --journaal          toon de journaalregels na elke opdracht
+    --dataset=DB        specificeer database
+    --db=DB             specificeer database
+    --boekjaar=XXX	specificeer boekjaar
+    --createdb		maak nieuwe database aan
+    --schema=XXX        initialisser database met schema
+    --import --dir=XXX  importeer een nieuwe administratie
+    --export --dir=XXX  exporteer een administratie
+    --define=XXX -D     definieer configuratiesetting
+    --help		deze hulpboodschap
+    --ident		toon identificatie
+    --verbose		geef meer uitgebreide information
+EndOfUsage
+    exit $exit if defined $exit && $exit != 0;
+}
+
+}
 
 package EB::Shell;
 
