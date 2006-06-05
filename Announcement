@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.58 is beschikbaar
+Subject: EekBoek versie 0.59 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,7 +9,7 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.58 van EekBoek is beschikbaar op de bekende sites:
+Release 0.59 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
 * http://www.squirrel.nl/eekboek/dl/EekBoek-0.56.tar.gz
@@ -17,45 +17,33 @@ Release 0.58 van EekBoek is beschikbaar op de bekende sites:
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.58.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.59.tar.gz
+
+De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* CSS stylesheet afhandeling in HTML rapporten
+* Het main programma ebshell is nu een triviale wrapper rondom
+  module EB::Shell.
 
-  Er is nu een config setting `cssdir' in sectie `html' waar de
-  directory kan worden opgegeven waar de CSS stylesheets zijn te
-  vinden.
+  (Dat is nu zo'n wijziging waar niemand iets van zou moeten kunnen
+  merken, maar je weet maar nooit.)
 
-  Het uiteindelijke resultaat hangt af van deze `cssdir', en de voor
-  het rapport opgegeven `style' optie.
+* Er is nu een command line import en export commando.
 
-    Style         Cssdir   Resultaat
-    --------------------------------
-    -             -        De EekBoek standaard style voor dit type
-                           rapport wordt opgenomen in het rapport.
+  $ ebshell --export --dir=foo
 
-    naam          -        De EekBoek standaard style `naam' wordt
-                           opgenomen in het rapport.
+  Equivalent met: $ ebshell -c export --dir=foo
 
-    -             dir      Stylesheet link naar dir/std.css, waarin std
-                           de naam is van de EekBoek standaard style
-                           voor dit type rapport.
+  $ ebshell --import --dir=foo
 
-    naam          dir      Stylesheet link naar dir/naam.css
+  Equivalent met: $ ebshell --createdb -c import --dir=foo
 
-    bestandsnaam  n.v.t.   Stylesheet link naar bestandsnaam
+* Bijkomende wijzigingen voor CSS handling (zie 0.58).
 
-  Zonder wijzigingen betekent het dat de standaard stylesheet nu in de
-  rapporten wordt opgenomen, zodat deze direct toonbaar zijn.
+* Fix probleem met verwijderen script dir van geïnstalleerde rpm.
 
-  Om hetzelfde resultaat te bereiken als tot nu toe het geval is, moet
-  de config setting
-
-    [html]
-    cssdir = css
-
-  worden opgegeven.
+* Fix 1 januari-probleem met openingsbalans.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
