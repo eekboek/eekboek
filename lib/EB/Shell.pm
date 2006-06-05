@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.74 2006/06/02 13:39:30 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.75 2006/06/05 10:27:11 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  2 15:29:14 2006
-# Update Count    : 795
+# Last Modified On: Fri Jun  2 15:57:15 2006
+# Update Count    : 797
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -964,13 +964,14 @@ EOS
 
 sub do_import {
     my ($self, @args) = @_;
-    my $opts = { 
+    my $opts = { clean => 1,
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'dir=s',
 		 'file=s',
+		 'clean!',
 	       ], $opts);
 
     if ( defined($opts->{dir}) && defined($opts->{output}) ) {
