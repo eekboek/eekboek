@@ -1,6 +1,6 @@
 %define modname EekBoek
 %define lcname eekboek
-%define modversion 0.56
+%define modversion 0.59
 
 ################ Build Options ################
 %define gui 0
@@ -89,14 +89,12 @@ The wxWidgets extension for %{name}.
 find blib/lib -type d -printf "mkdir ${RPM_BUILD_ROOT}%{ebshare}/lib/%%P\n" | sh -x
 find blib/lib ! -type d -printf "%{__install} -m 0444 %p ${RPM_BUILD_ROOT}%{ebshare}/lib/%%P\n" | sh -x
 
-%{__mkdir_p} ${RPM_BUILD_ROOT}%{ebshare}/script
-%{__install} -m 0755 blib/script/ebshell ${RPM_BUILD_ROOT}%{ebshare}/script
-
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{_bindir}
 
 echo "#!%{__perl}" > ${RPM_BUILD_ROOT}%{_bindir}/ebshell
-echo 'my $share = "%{ebshare}";' >> ${RPM_BUILD_ROOT}%{_bindir}/ebshell
-echo 'exec $^X "perl", "-Mlib=$share/lib", "$share/script/ebshell", @ARGV;' >> ${RPM_BUILD_ROOT}%{_bindir}/ebshell
+
+sed -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
+	< script/ebshell >> ${RPM_BUILD_ROOT}%{_bindir}/ebshell
 %{__chmod} 0755 ${RPM_BUILD_ROOT}%{_bindir}/ebshell
 
 %if %{dbtests}
@@ -104,6 +102,7 @@ pg_dump eekboek_sample -x -C -O -f example/sampledb.sql
 %endif
 
 %if %{gui}
+%{__mkdir_p} ${RPM_BUILD_ROOT}%{ebshare}/script
 %{__install} -m 0755 blib/script/ebgui ${RPM_BUILD_ROOT}%{ebshare}/script
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{ebshare}/libgui
 echo "#!%{__perl}" > ${RPM_BUILD_ROOT}%{_bindir}/ebgui
@@ -117,15 +116,6 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell.1
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{_mandir}/man3
 pod2man blib/lib/EekBoek.pm > ${RPM_BUILD_ROOT}%{_mandir}/man3/Eekboek.3pm
 
-%{__mv} ${RPM_BUILD_ROOT}%{ebshare}/lib/EB/css ${RPM_BUILD_ROOT}%{ebshare}
-
-find ${RPM_BUILD_ROOT}%{ebshare}/lib ! -type d \
-	-printf "%%%%attr(0644,root,root) %{ebshare}/lib/%%P\n" > files
-find ${RPM_BUILD_ROOT}%{ebshare}/css ! -type d \
-	-printf "%%%%attr(0644,root,root) %{ebshare}/css/%%P\n" >> files
-find ${RPM_BUILD_ROOT}%{ebshare}/script ! -type d \
-	-printf "%%%%attr(0755,root,root) %{ebshare}/script/%%P\n" >> files
-
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
 
@@ -136,9 +126,6 @@ find ${RPM_BUILD_ROOT}%{ebshare}/script ! -type d \
 %config(noreplace) %{_sysconfdir}/%{lcname}/eekboek.conf
 %dir %{ebshare}
 %{ebshare}/lib
-%{ebshare}/css
-%dir %{ebshare}/script
-%{ebshare}/script/ebshell
 %{_bindir}/ebshell
 %{_mandir}/man1/*
 %{_mandir}/man3/*
@@ -147,11 +134,14 @@ find ${RPM_BUILD_ROOT}%{ebshare}/script ! -type d \
 %files gui
 %defattr(-,root,root)
 %{ebshare}/libgui
+%dir %{ebshare}/script
 %{ebshare}/script/ebgui
 %{_bindir}/ebgui
 %endif
 
 %changelog
+* Mon Jun 05 2006 Johan Vromans <jvromans@squirrel.nl> 0.59
+- Better script handling.
 * Mon Apr 17 2006 Johan Vromans <jvromans@squirrel.nl> 0.56
 - Initial provisions for GUI.
 * Wed Apr 12 2006 Johan Vromans <jvromans@squirrel.nl> 0.56
