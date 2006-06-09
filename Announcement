@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.59 is beschikbaar
+Subject: EekBoek versie 0.60 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,41 +9,32 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.59 van EekBoek is beschikbaar op de bekende sites:
+Release 0.60 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.59.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.60.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.59.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.60.tar.gz
 
 De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Het main programma ebshell is nu een triviale wrapper rondom
-  module EB::Shell.
+* Lokatie van de 'example' directory:
 
-  (Dat is nu zo'n wijziging waar niemand iets van zou moeten kunnen
-  merken, maar je weet maar nooit.)
+  - In geval van Build install: <site_perl>/EB/example
+  - In geval van RPM   install: <share_doc>/EekBoek-x.xx/example
+  - In geval van PPM   install: <site_perl>/EB/example
 
-* Er is nu een command line import en export commando.
+* Het sample database script is vervallen. Met de nieuwe import
+  functionaliteit kan de sample database eenvoudig worden opgezet met
 
-  $ ebshell --export --dir=foo
+  $ ebshell --db=sample --import --dir=<example>
 
-  Equivalent met: $ ebshell -c export --dir=foo
-
-  $ ebshell --import --dir=foo
-
-  Equivalent met: $ ebshell --createdb -c import --dir=foo
-
-* Bijkomende wijzigingen voor CSS handling (zie 0.58).
-
-* Fix probleem met verwijderen script dir van geïnstalleerde rpm.
-
-* Fix 1 januari-probleem met openingsbalans.
+  waarin <example> de 'example' directory is.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
