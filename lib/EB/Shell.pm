@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.77 2006/06/12 13:49:39 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.78 2006/06/20 19:48:08 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 12 15:36:21 2006
-# Update Count    : 807
+# Last Modified On: Tue Jun 20 20:45:36 2006
+# Update Count    : 811
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -1152,7 +1152,7 @@ sub do_export {
     return unless
     parse_args(\@args,
 	       [ 'dir=s',
-		 'output=s',
+		 'file|output=s',
 		 'boekjaar=s',
 		 'single',
 		 'explicit',
@@ -1160,12 +1160,12 @@ sub do_export {
 	       ], $opts)
       or goto &help_export;
 
-    if ( defined($opts->{dir}) && defined($opts->{output}) ) {
-	warn("?"._T("Opties --dir en --output sluiten elkaar uit")."\n");
+    if ( defined($opts->{dir}) && defined($opts->{file}) ) {
+	warn("?"._T("Opties --dir en --file sluiten elkaar uit")."\n");
 	return;
     }
-    if ( !defined($opts->{dir}) && !defined($opts->{output}) ) {
-	warn("?"._T("Specifieer --dir of --output")."\n");
+    if ( !defined($opts->{dir}) && !defined($opts->{file}) ) {
+	warn("?"._T("Specifieer --dir of --file")."\n");
 	return;
     }
 
@@ -1186,12 +1186,13 @@ Exporteert de complete administratie.
 
 Opties:
 
-  --output=<bestand>          Selecteer uitvoerbestand
+  --file=<bestand>          Selecteer uitvoerbestand
   --dir=<directory>           Selecteer uitvoerdirectory
   --boekjaar=<code>           Selecteer boekjaar
 
-Er moet of een --output of een --dir optie worden opgegeven.
+Er moet of een --file of een --dir optie worden opgegeven.
 Zonder --boekjaar selectie wordt de gehele administratie geëxporteerd.
+Eventueel bestaande files worden overschreven.
 EOS
 }
 
@@ -1207,12 +1208,12 @@ sub do_import {
 		 'clean!',
 	       ], $opts);
 
-    if ( defined($opts->{dir}) && defined($opts->{output}) ) {
-	warn("?"._T("Opties --dir en --output sluiten elkaar uit")."\n");
+    if ( defined($opts->{dir}) && defined($opts->{file}) ) {
+	warn("?"._T("Opties --dir en --file sluiten elkaar uit")."\n");
 	return;
     }
-    if ( !defined($opts->{dir}) && !defined($opts->{output}) ) {
-	warn("?"._T("Specifieer --dir of --output")."\n");
+    if ( !defined($opts->{dir}) && !defined($opts->{file}) ) {
+	warn("?"._T("Specifieer --dir of --file")."\n");
 	return;
     }
 
