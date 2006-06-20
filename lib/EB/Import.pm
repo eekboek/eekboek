@@ -1,10 +1,10 @@
 # Import.pm -- Import EekBoek administratie
-# RCS Info        : $Id: Import.pm,v 1.5 2006/06/05 19:37:13 jv Exp $
+# RCS Info        : $Id: Import.pm,v 1.6 2006/06/20 19:48:28 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  2 15:57:40 2006
-# Update Count    : 23
+# Last Modified On: Tue Jun 20 21:25:01 2006
+# Update Count    : 46
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -27,7 +27,7 @@ sub do_import {
     require EB::Tools::Schema;
 
     my $dir = $opts->{dir};
-    if ( $dir ) {
+    if ( defined $dir ) {
 	die("?".__x("Directory {dir} bestaat niet",
 		    dir => $dir)."\n") unless -d $dir;
 	die("?".__x("Geen toegang tot directory {dir}",
@@ -57,10 +57,86 @@ sub do_import {
 	$cmdobj->attach_file($mutaties);
 	$cmdobj->attach_file($opening);
 	$cmdobj->attach_file($relaties);
+	return;
     }
-    else {
-	die("?"._T("Import van bestand is nog niet geïmplementeerd")."\n");
+
+    my $inp = $opts->{file};
+    if ( defined $inp ) {
+	# die("?"._T("Import van bestand is nog niet geïmplementeerd")."\n");
+
+	eval { require Archive::Zip }
+	  or die("?"._T("Module Archive::Zip, nodig voor import van file, is niet beschikbaar")."\n");
+
+	open(my $zipf, "<", $inp)
+	  or die("?".__x("Bestand \"{file}\" is niet beschikbaar ({err})",
+			 file => $inp, err => $!)."\n");
+	binmode($zipf);
+
+	my $zip = Archive::Zip->new;
+	my $status = $zip->read($zipf);
+	die("?".__x("Fout {code} tijdens het lezen van {file}",
+		    code => $status, file => $inp)."\n") if $status;
+
+	my $c = $zip->zipfileComment;
+	if ( $c ) {
+	    warn("$inp: $c\n");
+	}
+
+	my $fail;
+
+	my $d_schema   = $zip->contents("schema.dat");
+	unless ( $d_schema ) {
+	    warn("?".__x("Het schema ontbreekt in bestand {file}",
+			 file => $inp)."\n");
+	    $fail++;
+	}
+
+	my $d_relaties = $zip->contents("relaties.eb");
+	unless ( $d_relaties ) {
+	    warn("?".__x("De relatiegegevens ontbreken in bestand {file}",
+			 file => $inp)."\n");
+	    $fail++;
+	}
+
+	my $d_opening  = $zip->contents("opening.eb");
+	unless ( $d_opening ) {
+	    warn("?".__x("De openingsgegevens ontbreken in bestand {file}",
+			 file => $inp)."\n");
+	    $fail++;
+	}
+
+	my $d_mutaties = $zip->contents("mutaties.eb");
+	unless ( $d_mutaties ) {
+	    warn("?".__x("De mutatiegegevens ontbreken in bestand {file}",
+			 file => $inp)."\n");
+	    $fail++;
+	}
+
+	close($zipf);
+
+	die("?"._T("DE IMPORT IS NIET UITGEVOERD")."\n") if $fail;
+
+	foreach ( $d_mutaties, $d_relaties, $d_opening, $d_schema ) {
+	    $_ = [ split(/[\n\r]+/, $_) ];
+	}
+
+	eval {
+	    # Create DB.
+	    $dbh->cleardb if $opts->{clean};
+
+	    # Schema.
+	    EB::Tools::Schema->_create(sub { shift(@$d_schema) });
+	    $cmdobj->_plug_cmds;
+
+	    # Relaties, Opening, Mutaties. In reverse order.
+	    $cmdobj->attach_lines($d_mutaties);
+	    $cmdobj->attach_lines($d_opening );
+	    $cmdobj->attach_lines($d_relaties);
+	};
+	return $@;
     }
+
+    die("?ASSERT ERROR: missing --dir / --file in Import\n");
 }
 
 1;
