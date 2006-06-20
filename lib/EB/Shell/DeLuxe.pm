@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.12 2006/05/05 15:35:11 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.13 2006/06/20 19:46:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May  5 16:20:56 2006
-# Update Count    : 230
+# Last Modified On: Tue Jun 20 20:10:30 2006
+# Update Count    : 245
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -46,7 +46,7 @@ sub new {
 	$self->{readline} = \&readline_interactive;
     }
     else {
-	$self->{readline} = sub { $self->readline_file(*STDIN) };
+	$self->{readline} = sub { $self->readline_file(sub { <STDIN> }) };
     }
     $self->{inputstack} = [];
     $self->{unicode} = $cfg->unicode;
@@ -61,13 +61,13 @@ sub readline_interactive {
 use Encode;
 
 sub readline_file {
-    my ($self, $fd) = @_;
+    my ($self, $rl) = @_;
     # binmode($fd, ":utf8") conflicts with UNICODE checking.
     #binmode($fd, ":utf8") if $cfg->unicode;
     my $line;
     my $pre = "";
     while ( 1 ) {
-	$line = <$fd>;
+	$line = $rl->();
 	return unless $line;
 
 	if ( $line =~ /^#\s*content-type:\s+text;\s*charset\s*=\s*(\S+)\s*$/i ) {
@@ -126,7 +126,18 @@ sub readline_file {
 sub attach_file {
     my ($self, $file) = @_;
     push(@{$self->{inputstack}}, [$self->{readline}, $self->{unicode}]);
-    $self->{readline} = sub { shift->readline_file($file) };
+    $self->{readline} = sub { shift->readline_file(sub { <$file> }) };
+}
+
+sub attach_lines {
+    my ($self, $lines) = @_;
+    push(@{$self->{inputstack}}, [$self->{readline}, $self->{unicode}]);
+    my @lines = @$lines;
+    $self->{readline} = sub {
+	shift->readline_file(sub {
+				 shift(@lines);
+			     })
+    };
 }
 
 sub readline_command {
