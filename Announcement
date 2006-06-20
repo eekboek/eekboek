@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.60 is beschikbaar
+Subject: EekBoek versie 0.61 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,32 +9,38 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.60 van EekBoek is beschikbaar op de bekende sites:
+Release 0.61 van EekBoek is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.60.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.61.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.60.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.61.tar.gz
 
 De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Lokatie van de 'example' directory:
+* Import naar en Export van files.
 
-  - In geval van Build install: <site_perl>/EB/example
-  - In geval van RPM   install: <share_doc>/EekBoek-x.xx/example
-  - In geval van PPM   install: <site_perl>/EB/example
+    $ ebshell --export --file data.ebx
+    $ ebshell --import --file data.ebx
 
-* Het sample database script is vervallen. Met de nieuwe import
-  functionaliteit kan de sample database eenvoudig worden opgezet met
+  Dit vereist het beschikbaar zijn van de module Archive::Zip.
 
-  $ ebshell --db=sample --import --dir=<example>
+* Voor inkoop- en verkoopboekingen mag de boekstukomschrijving of de
+  boekstukregelomschrijving (maar niet beide) leeg zijn. De waarde van
+  de andere omschrijving wordt dan overgenomen.
 
-  waarin <example> de 'example' directory is.
+  Dit is met name handig voor simpele inkoop-/verkoopboekingen waarbij
+  normaalgesproken beide beschrijvingen toch hetzelfde zouden zijn:
+
+    inkopen 10-10 "Internetkosten" XS4ALL "" 10,00
+
+* Fix een (overigens onschuldige) "undefined" warning bij verwijderen
+  van een partiële boeking.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
