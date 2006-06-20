@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.44 2006/06/01 15:37:55 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.45 2006/06/20 19:46:50 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jun  1 15:42:03 2006
-# Update Count    : 604
+# Last Modified On: Tue Jun 20 20:26:25 2006
+# Update Count    : 609
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,7 +42,6 @@ use Encode;
 ################ Schema Loading ################
 
 my $schema;
-my $fh;
 
 sub create {
     shift;			# singleton class method
@@ -63,13 +62,17 @@ sub create {
     }
 
     die("?".__x("Onbekend schema: {schema}", schema => $name)."\n") unless $file;
-    open($fh, "<$file") or die("?".__x("Toegangsfout schema data: {err}", err => $!)."\n");
-    # binmode($fh, ":utf8") conflicts with our UNICODE checks.
-    #binmode($fh, ":utf8") if $cfg->unicode;
+    open(my $fh, "<$file") or die("?".__x("Toegangsfout schema data: {err}", err => $!)."\n");
     $schema = $name;
-    $dbh = EB::DB->new(trace => $trace) unless $sql;
-    load_schema();
+    _create(undef, sub { <$fh> });
     __x("Schema {schema} geïnitialiseerd", schema => $name);
+}
+
+sub _create {
+    shift;			# singleton class method
+    my ($rl) = @_;
+    $dbh = EB::DB->new(trace => $trace) unless $sql;
+    load_schema($rl);
 }
 
 my @hvdi;			# hoofdverdichtingen
@@ -330,6 +333,7 @@ sub scan_result {
 }
 
 sub load_schema {
+    my ($rl) = shift;
 
     init_vars();
     my $scanner;		# current scanner
@@ -339,8 +343,7 @@ sub load_schema {
     my $unicode = $cfg->unicode;
 
     %std = map { $_ => 0 } qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih);
-    $fh ||= *ARGV;
-    while ( <$fh> ) {
+    while ( $_ = $rl->() ) {
 
 	if ( /^#\s*content-type:\s+text;\s*charset\s*=\s*(\S+)\s*$/i ) {
 	    my $charset = lc($1);
@@ -649,6 +652,7 @@ sub dump_sql {
 }
 
 my %kopp;
+my $fh;
 
 sub dump_schema {
     my ($self, $fh) = @_;
