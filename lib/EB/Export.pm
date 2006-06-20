@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.19 2006/06/20 19:48:36 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.20 2006/06/20 20:39:09 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 21:28:32 2006
-# Update Count    : 177
+# Last Modified On: Tue Jun 20 22:25:04 2006
+# Update Count    : 179
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -125,7 +125,7 @@ sub _relaties {
 		  what => _T("Relaties"), adm => $dbh->adm("name")) . "\n" .
 	      __x("# Aangemaakt door {id} op {date}",
 		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
-	      "# Content-Type: text; charset = " .
+	      "# Content-Type: text/plain; charset = " .
 	      ($cfg->unicode ? "UTF-8" : "ISO-8859.1");
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($code, $desc, $debcrd, $btw, $dbk, $acct) = @$rr;
@@ -156,7 +156,7 @@ sub _opening {
 		  what => _T("Openingsgegevens"), adm => $dbh->adm("name")) . "\n" .
 	      __x("# Aangemaakt door {id} op {date}",
 		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
-	      "# Content-Type: text; charset = " .
+	      "# Content-Type: text/plain; charset = " .
 	      ($cfg->unicode ? "UTF-8" : "ISO-8859.1") .
 	      "\n\n";
 
@@ -276,7 +276,7 @@ sub _mutaties {
 		  what => _T("Boekingen"), adm => $dbh->adm("name")) . "\n" .
 	      __x("# Aangemaakt door {id} op {date}",
 		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
-	      "# Content-Type: text; charset = " .
+	      "# Content-Type: text/plain; charset = " .
 	      ($cfg->unicode ? "UTF-8" : "ISO-8859.1") .
 	      "\n\n";
 

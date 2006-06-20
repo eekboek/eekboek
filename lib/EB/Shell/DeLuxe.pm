@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.13 2006/06/20 19:46:23 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.14 2006/06/20 20:39:09 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 20:10:30 2006
-# Update Count    : 245
+# Last Modified On: Tue Jun 20 22:34:16 2006
+# Update Count    : 249
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -70,7 +70,11 @@ sub readline_file {
 	$line = $rl->();
 	return unless $line;
 
-	if ( $line =~ /^#\s*content-type:\s+text;\s*charset\s*=\s*(\S+)\s*$/i ) {
+	if ( $line =~ /^\# \s*
+		       content-type: \s*
+                       text (?: \s* \/ \s* plain)? \s* ; \s*
+                       charset \s* = \s* (\S+) \s* $/ix ) {
+
 	    my $charset = lc($1);
 	    if ( $charset =~ /^(?:latin[19]|iso-?8859[-.]15?)$/i ) {
 		$self->{unicode} = 0;

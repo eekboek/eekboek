@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.45 2006/06/20 19:46:50 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.46 2006/06/20 20:39:08 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 20:26:25 2006
-# Update Count    : 609
+# Last Modified On: Tue Jun 20 22:33:04 2006
+# Update Count    : 618
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -344,8 +344,10 @@ sub load_schema {
 
     %std = map { $_ => 0 } qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih);
     while ( $_ = $rl->() ) {
-
-	if ( /^#\s*content-type:\s+text;\s*charset\s*=\s*(\S+)\s*$/i ) {
+	if ( /^\# \s*
+	      content-type: \s*
+              text (?: \s* \/ \s* plain)? \s* ; \s*
+              charset \s* = \s* (\S+) \s* $/ix ) {
 	    my $charset = lc($1);
 	    if ( $charset =~ /^(?:latin[19]|iso-?8859[-.]15?)$/i ) {
 		$unicode = 0;
@@ -665,7 +667,7 @@ sub dump_schema {
 	  "# Aangemaakt door ", __PACKAGE__, " $my_version");
     my @t = localtime(time);
     printf {$fh} ("op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
-    printf {$fh} ("# Content-Type: text; charset = %s\n",
+    printf {$fh} ("# Content-Type: text/plain; charset = %s\n",
 		  $cfg->unicode ? "UTF-8" : "ISO-8859.1");
     print {$fh}  <<EOD;
 
