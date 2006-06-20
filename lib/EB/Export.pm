@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.18 2006/05/05 15:37:57 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.19 2006/06/20 19:48:36 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue May  2 15:22:51 2006
-# Update Count    : 152
+# Last Modified On: Tue Jun 20 21:28:32 2006
+# Update Count    : 177
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -26,7 +26,7 @@ sub export {
     my ($self, $opts) = @_;
 
     my $dir = $opts->{dir};
-    if ( $dir ) {
+    if ( defined $dir ) {
 	mkdir($dir, 0777) unless -d $dir;
 	die("?".__x("Fout bij aanmaken directory {dir}: {err}",
 		    dir => $dir, err => $!)."\n") unless -d $dir;
@@ -37,11 +37,48 @@ sub export {
 	$self->_write("$dir/relaties.eb", sub { print { shift } $self->_relaties });
 	$self->_write("$dir/opening.eb",  sub { print { shift } $self->_opening  });
 	$self->_write("$dir/mutaties.eb", sub { print { shift } $self->_mutaties($opts) });
+	return;
 
     }
-    else {
-	die("?"._T("Export naar bestand is nog niet geïmplementeerd")."\n");
+
+    my $out = $opts->{file};
+    if ( defined $out ) {
+	eval { require Archive::Zip }
+	  or die("?"._T("Module Archive::Zip, nodig voor export naar file, is niet beschikbaar")."\n");
+
+	my $zip = Archive::Zip->new();
+	$zip->zipfileComment(__x("Export van dataset {db} aangemaakt door {id} op {date}",
+				 id => $EB::ident,
+				 db => $cfg->val(qw(database name)),
+				 date => datefmt_full(iso8601date())));
+	my $m;
+
+	# For the schema, we need a temp file.
+	my ($fh, $tmpname) = Archive::Zip::tempFile();
+	if ( $cfg->unicode ) {
+	    binmode($fh, ":utf8");
+	}
+	$self->_schema($fh);
+	$fh->close;
+	$m = $zip->addFile($tmpname, "schema.dat");
+	$m->desiredCompressionMethod(8);
+
+	# The others can be added directly.
+	$m = $zip->addString($self->_relaties, "relaties.eb");
+	$m->desiredCompressionMethod(8);
+	$m = $zip->addString($self->_opening, "opening.eb");
+	$m->desiredCompressionMethod(8);
+	$m = $zip->addString($self->_mutaties, "mutaties.eb");
+	$m->desiredCompressionMethod(8);
+	my $status = $zip->writeToFileNamed($out);
+	unlink($tmpname);
+	die("?", __x("Fout {status} tijdens het aanmaken van exportbestand {name}",
+		     status => $status,
+		     name => $out)."\n") if $status;
+	return;
     }
+
+    die("?ASSERT ERROR: missing --dir / --file in Export\n");
 }
 
 sub _write {
