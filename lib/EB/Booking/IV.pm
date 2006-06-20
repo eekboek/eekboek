@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.43 2006/05/19 10:41:36 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.44 2006/06/20 13:31:17 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May 19 12:37:36 2006
-# Update Count    : 276
+# Last Modified On: Tue Jun 20 15:11:24 2006
+# Update Count    : 279
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -85,7 +85,7 @@ sub perform {
 	return;
     }
 
-    my $gdesc;
+    my $gdesc = "";
     my $debcode;
     my $rr;
 
@@ -100,7 +100,7 @@ sub perform {
 	unless ( defined($rr) ) {
 	    unshift(@$args, $debcode);
 	    $debcode = $gdesc;
-	    undef $gdesc;
+	    $gdesc = "";
 	    $rr = $dbh->do("SELECT rel_code, rel_acc_id, rel_btw_status FROM Relaties" .
 			   " WHERE UPPER(rel_code) = ?" .
 			   "  AND " . ($iv ? "NOT " : "") . "rel_debcrd" .
@@ -152,11 +152,17 @@ sub perform {
 	return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
 	  unless @$args >= 2;
 	my ($desc, $amt, $acct) = splice(@$args, 0, 3);
+	$desc = $gdesc if $desc !~ /\S/;
+	$gdesc = $desc if $gdesc !~ /\S/;
 	$acct ||= $rel_acc_id;
 	if ( $did++ || @$args || $opts->{verbose} ) {
 	    my $t = $desc;
 	    $t = '"' . $desc . '"' if $t =~ /\s/;
 	    warn(" "._T("boekstuk").": $t $amt $acct\n");
+	}
+	unless ( $desc =~ /\S/ ) {
+	    warn("?"._T("De omschrijving van de boekstukregel ontbreekt")."\n");
+	    return;
 	}
 
 	if  ( $acct !~ /^\d+$/ ) {
@@ -192,7 +198,6 @@ sub perform {
 	if ( $nr == 1 ) {
 	    $bsk_nr = $self->bsk_nr($opts);
 	    return unless defined($bsk_nr);
-	    $gdesc ||= $desc;
 	    $dbh->sql_insert("Boekstukken",
 			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
 			     $bsk_nr, $gdesc, $dagboek, $date, $bky);
