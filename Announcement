@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek versie 0.61 is beschikbaar
+Subject: EekBoek 1.0 Release Candidate 1 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,38 +9,32 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release 0.61 van EekBoek is beschikbaar op de bekende sites:
+Release Candidate 1 voor EekBoek 1.0 is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.61.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.91.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.61.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.91.tar.gz
 
 De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Import naar en Export van files.
+* UNICODE is nu default, de ebshell 'banner' toont nu in voorkomende
+  gevallen (Latin1) in plaats van (UNICODE).
 
-    $ ebshell --export --file data.ebx
-    $ ebshell --import --file data.ebx
+* De tekensetaanduiding in bestanden is gewijzigd van
 
-  Dit vereist het beschikbaar zijn van de module Archive::Zip.
+   # Content-Type: text; charset = ...
+  in
+   # Content-Type: text/plain; charset = ...
 
-* Voor inkoop- en verkoopboekingen mag de boekstukomschrijving of de
-  boekstukregelomschrijving (maar niet beide) leeg zijn. De waarde van
-  de andere omschrijving wordt dan overgenomen.
+  De oude vorm blijft vooralsnog herkend.
 
-  Dit is met name handig voor simpele inkoop-/verkoopboekingen waarbij
-  normaalgesproken beide beschrijvingen toch hetzelfde zouden zijn:
-
-    inkopen 10-10 "Internetkosten" XS4ALL "" 10,00
-
-* Fix een (overigens onschuldige) "undefined" warning bij verwijderen
-  van een partiële boeking.
+* De automigratie-bestanden zijn verwijderd.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
