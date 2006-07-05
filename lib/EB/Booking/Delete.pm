@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Delete.pm,v 1.6 2006/03/03 21:43:40 jv Exp $ ';
+my $RCS_Id = '$Id: Delete.pm,v 1.7 2006/07/05 20:43:47 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Delete;
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  3 22:41:32 2006
-# Update Count    : 65
+# Last Modified On: Wed Jul  5 22:29:14 2006
+# Update Count    : 76
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -38,7 +38,7 @@ sub perform {
     # Check if this boekstuk is used by others. This can only be the
     # case if has been paid.
 
-    my ($amt, $open) = @{$dbh->do("SELECT bsk_amount,bsk_open".
+    my ($amt, $open, $dbk) = @{$dbh->do("SELECT bsk_amount,bsk_open,bsk_dbk_id".
 				  " FROM Boekstukken".
 				  " WHERE bsk_id = ?", $bsk)};
     if ( defined($open) && $amt != $open ) {
@@ -60,7 +60,7 @@ sub perform {
 	}
     }
 
-    # Collect list of affectec boekstukken.
+    # Collect list of affected boekstukken.
     $sth = $dbh->sql_exec("SELECT bsr_paid,bsr_amount".
 			  " FROM Boekstukregels".
 			  " WHERE bsr_paid IS NOT NULL AND bsr_bsk_id = ?", $bsk);
@@ -101,6 +101,13 @@ sub perform {
 	# Delete boekstuk.
 	$dbh->sql_exec("DELETE FROM Boekstukken".
 		       " WHERE bsk_id = ?", $bsk)->finish;
+
+	# Adjust saldi van boekingen na deze.
+	$dbh->sql_exec("UPDATE Boekstukken".
+		       " SET bsk_saldo = bsk_saldo - ?".
+		       " WHERE bsk_saldo IS NOT NULL AND".
+		       " bsk_dbk_id = ? AND bsk_id > ?",
+		       $amt, $dbk, $bsk)->finish;
 
 	# If we get here, all went okay.
 	$dbh->commit;
