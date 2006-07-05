@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.78 2006/06/20 19:48:08 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.79 2006/07/05 14:59:44 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 20:45:36 2006
-# Update Count    : 811
+# Last Modified On: Wed Jul  5 16:59:37 2006
+# Update Count    : 812
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -201,7 +201,7 @@ sub app_options {
 		     'schema=s' => \$schema,
 		     'echo|e!'	=> \$echo,
 		     'ident'	=> \$ident,
-		     'journaal|journal'	=> \$journal,
+		     'journaal'	=> \$journal,
 		     'boekjaar=s'	=> \$bky,
 		     'verbose'	=> \$verbose,
 		     'db|dataset=s' => \$dataset,
