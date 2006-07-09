@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 27 11:35:46 2006
-# Update Count    : 82
+# Last Modified On: Thu Jul  6 07:52:54 2006
+# Update Count    : 83
 # Status          : Experimental
 
 use strict;
@@ -58,7 +58,7 @@ my $build = $class->new
 	 }
      },
    meta_add            => {
-     no_index          => { dir => [ qw(inc) ] },
+     no_index          => { directory => [ qw(inc) ] },
    },
   );
 
