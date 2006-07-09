@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.51 2006/05/19 10:41:36 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.52 2006/07/09 16:45:58 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May 19 12:36:59 2006
-# Update Count    : 372
+# Last Modified On: Sun Jul  9 16:57:39 2006
+# Update Count    : 393
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -43,7 +43,9 @@ sub perform {
     my $dagboek_type = $opts->{dagboek_type};
     my $totaal = $opts->{totaal};
     my $saldo = $opts->{saldo};
+    my $beginsaldo = $opts->{beginsaldo};
     my $does_btw = $dbh->does_btw;
+    my $verbose = $opts->{verbose};
 
     if ( defined($totaal) ) {
 	my $t = amount($totaal);
@@ -57,6 +59,13 @@ sub perform {
 	return "?".__x("Ongeldig saldo: {saldo}", saldo => $saldo)
 	  unless defined $t;
 	$saldo = $t;
+    }
+
+    if ( defined($beginsaldo) ) {
+	my $t = amount($beginsaldo);
+	return "?".__x("Ongeldig beginsaldo: {saldo}", saldo => $beginsaldo)
+	  unless defined $t;
+	$beginsaldo = $t;
     }
 
     my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
@@ -82,16 +91,34 @@ sub perform {
 
     my $gdesc = shift(@$args);
 
+    my $bsk_nr = $self->bsk_nr($opts);
+    return unless defined($bsk_nr);
+
     my $nr = 1;
     my $bsk_id;
     my $gacct = $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_acc_id));
 
-    print(__x("Huidig saldo: {bal}",
-	      bal => numfmt($dbh->lookup($gacct, qw(Accounts acc_id acc_balance)))), "\n")
-      if $gacct;
+    if ( $gacct ) {
+	my $vsaldo = saldo_for($dagboek, $bsk_nr-1);
+	if ( defined $beginsaldo ) {
+	    return "?".__x("Beginsaldo komt niet overeen met het eindsaldo van de voorgaande boeking",
+			   s1 => numfmt($beginsaldo), s2 => numfmt($vsaldo))."\n"
+			     if defined($vsaldo) && $vsaldo != $beginsaldo;
+	    print(__x("Beginsaldo: {bal}", bal => numfmt($beginsaldo)), "\n")
+	      if $verbose;
+	}
+	elsif ( defined $vsaldo ) {
+	    $beginsaldo = $vsaldo;
+	    print(__x("Saldo voorgaande boeking: {bal}", bal => numfmt($beginsaldo)), "\n")
+	      if $verbose;
+	}
+	else {
+	    $beginsaldo = $dbh->lookup($gacct, qw(Accounts acc_id acc_balance));
+	    print(__x("Huidig saldo: {bal}", bal => numfmt($beginsaldo)), "\n")
+	      if $verbose;
+	}
+    }
 
-    my $bsk_nr = $self->bsk_nr($opts);
-    return unless defined($bsk_nr);
     $dbh->sql_insert("Boekstukken",
 		     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
 		     $bsk_nr, $gdesc, $dagboek, $date, $bky);
@@ -125,7 +152,7 @@ sub perform {
 	      unless @$args >= 3;
 
 	    my ($desc, $amt, $acct) = splice(@$args, 0, 3);
-	    if ( $did++ || @$args || $opts->{verbose} ) {
+	    if ( $opts->{verbose} ) {
 		my $t = $desc;
 		$t = '"' . $desc . '"' if $t =~ /\s/;
 		warn(" "._T("boekstuk").": std $t $amt $acct\n");
@@ -262,7 +289,7 @@ sub perform {
 
 	    my ($rel, $amt) = splice(@$args, 0, 2);
 	    warn(" "._T("boekstuk").": $type $rel $amt\n")
-	      if $did++ || @$args || $opts->{verbose};
+	      if $verbose;
 
 	    my $oamt = $amt;
 	    $amt = amount($amt);
@@ -362,10 +389,14 @@ sub perform {
     if ( $gacct ) {
 	warn("update $gacct with ".numfmt($tot)."\n") if $trace_updates;
 	$dbh->upd_account($gacct, $tot);
-	my $new = $dbh->lookup($gacct, qw(Accounts acc_id acc_balance));
-	print(__x("Nieuw saldo: {bal}", bal => numfmt($new)), "\n");
-	$dbh->sql_exec("UPDATE Boekstukken SET bsk_saldo = ? WHERE bsk_id = ?",
-		       $new, $bsk_id)->finish;
+#	my $new = $dbh->lookup($gacct, qw(Accounts acc_id acc_balance));
+	my $new = $beginsaldo + $tot;
+	print(__x("Nieuw saldo: {bal}", bal => numfmt($new)), "\n")
+	  if $verbose;
+	$dbh->sql_exec("UPDATE Boekstukken".
+		       " SET bsk_saldo = ?, bsk_isaldo = ?".
+		       " WHERE bsk_id = ?",
+		       $new, $beginsaldo, $bsk_id)->finish;
 	if ( defined $saldo ) {
 	    unless ( $saldo == $new ) {
 		warn("?".__x("Saldo {new} klopt niet met de vereiste waarde {act}",
@@ -375,9 +406,14 @@ sub perform {
 	}
 	if ( defined($totaal) and $tot != $totaal ) {
 	    $fail++;
-	    return "?"._T("Opdracht niet uitgevoerd.")." ".
-	      __x(" Boekstuk totaal is {act} in plaats van {exp}",
-		  act => numfmt($tot), exp => numfmt($totaal)) . ".";
+	    warn("?".__x(" Boekstuk totaal is {act} in plaats van {exp}",
+			 act => numfmt($tot), exp => numfmt($totaal)) . "\n");
+	}
+	my $isaldo = saldo_for($dagboek, $bsk_nr+1, "isaldo");
+	if ( defined($isaldo) and $isaldo != $new ) {
+	    $fail++;
+	    warn("?".__x("Saldo {new} klopt niet met beginsaldo eropvolgende boekstuk {isaldo}",
+			 new => numfmt($new), isaldo => numfmt($isaldo)) . "\n");
 	}
     }
     elsif ( $tot ) {
@@ -405,7 +441,22 @@ sub perform {
     }
     $dbh->commit;
 
-    join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr);
+    $verbose
+      ? join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr)
+	: "";
+}
+
+sub saldo_for {
+    my ($dbk, $nr, $ww) = (@_, "saldo");
+    my $sth = $dbh->sql_exec("SELECT bsk_$ww FROM Boekstukken".
+			     " WHERE bsk_dbk_id = ? AND bsk_nr = ?",
+			     $dbk, $nr);
+    my $rr = $sth->fetchrow_arrayref;
+    $sth->finish;
+    if ( $rr && defined($rr->[0]) ) {
+	return $rr->[0];
+    }
+    return;
 }
 
 1;

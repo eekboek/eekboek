@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.0 Release Candidate 1 is beschikbaar
+Subject: EekBoek 0.62 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,32 +9,44 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release Candidate 1 voor EekBoek 1.0 is beschikbaar op de bekende sites:
+Na 1.0RC1 toch nog een 'gewone' ontwikkelrelease...
+
+EekBoek 0.62 is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.91.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.62.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.91.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.62.tar.gz
 
 De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* UNICODE is nu default, de ebshell 'banner' toont nu in voorkomende
-  gevallen (Latin1) in plaats van (UNICODE).
+* Bank- en kasboekingen kunnen ook een --beginsaldo meekrijgen.
 
-* De tekensetaanduiding in bestanden is gewijzigd van
+  Saldobepaling gaat op volgorde van boekstuknummer (was:
+  invoervolgorde).
 
-   # Content-Type: text; charset = ...
-  in
-   # Content-Type: text/plain; charset = ...
+  Het beginsaldo moet overeenkoment met het eindsaldo van het eraan
+  voorafgaande boekstuk (indien aanwezig).
 
-  De oude vorm blijft vooralsnog herkend.
+  Het eindsaldo moet overeenkoment met het beginsaldo van het erop
+  volgende boekstuk (indien aanwezig).
 
-* De automigratie-bestanden zijn verwijderd.
+  Dit lost tevens een im/exportprobleem op met boekstukken die worden
+  verwijderd en later opnieuw ingevoerd.
+
+* Export van boekstukken gaat nu per dagboek, op volgorde van
+  boekstuknummer.
+
+* Database structuur is gewijzigd -- automigratie is beschikbaar.
+
+* Boekingen laten geen informatie meer zien tenzij de optie --verbose
+  wordt meegegeven.
+  (Is dit een goed idee?)
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.44 2006/06/20 13:31:17 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.45 2006/07/09 16:45:57 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 15:11:24 2006
-# Update Count    : 279
+# Last Modified On: Sun Jul  9 18:11:43 2006
+# Update Count    : 281
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -155,7 +155,7 @@ sub perform {
 	$desc = $gdesc if $desc !~ /\S/;
 	$gdesc = $desc if $gdesc !~ /\S/;
 	$acct ||= $rel_acc_id;
-	if ( $did++ || @$args || $opts->{verbose} ) {
+	if ( $opts->{verbose} ) {
 	    my $t = $desc;
 	    $t = '"' . $desc . '"' if $t =~ /\s/;
 	    warn(" "._T("boekstuk").": $t $amt $acct\n");
@@ -301,7 +301,9 @@ sub perform {
 	$dbh->commit;
     }
 
-    join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr);
+    $opts->{verbose}
+      ? join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr)
+	: "";
 }
 
 1;

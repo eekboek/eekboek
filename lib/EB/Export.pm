@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.20 2006/06/20 20:39:09 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.21 2006/07/09 16:45:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 22:25:04 2006
-# Update Count    : 179
+# Last Modified On: Sat Jul  8 21:25:05 2006
+# Update Count    : 181
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -332,7 +332,7 @@ sub _mutaties {
 			      " FROM Boekstukken, Dagboeken".
 			      " WHERE bsk_dbk_id = dbk_id".
 			      " AND bsk_bky = ?".
-			      " ORDER BY dbk_type, bsk_id", $bky);
+			      " ORDER BY dbk_type, bsk_dbk_id, bsk_nr", $bky);
 
 	my $cur_dbk = "";
 	while ( my $rr = $sth->fetchrow_arrayref ) {

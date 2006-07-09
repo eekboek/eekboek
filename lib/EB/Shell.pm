@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.79 2006/07/05 14:59:44 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.80 2006/07/09 16:45:58 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul  5 16:59:37 2006
-# Update Count    : 812
+# Last Modified On: Sun Jul  9 18:36:00 2006
+# Update Count    : 820
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -57,6 +57,9 @@ my $createdb;			# create database
 my $schema;			# initialise w/ schema
 my $confirm = 0;
 my $journal = 0;
+my $inexport;			# in/export
+my $inex_file;			# file voor in/export
+my $inex_dir;			# directory voor in/export
 my $verbose = 0;		# verbose processing
 my $bky;
 
@@ -100,6 +103,22 @@ $cfg->newval(qw(database name), $dataset);
 
 use EB::DB;
 our $dbh = EB::DB->new(trace => $trace);
+
+if ( defined $inexport ) {
+    if ( $inexport ) {
+	$command = 1;
+	$createdb = 1;
+	@ARGV = qw(import --noclean);
+	push(@ARGV, "--file", $inex_file) if defined $inex_file;
+	push(@ARGV, "--dir", $inex_dir) if defined $inex_dir;
+    }
+    else {
+	$command = 1;
+	@ARGV = qw(export);
+	push(@ARGV, "--file", $inex_file) if defined $inex_file;
+	push(@ARGV, "--dir", $inex_dir) if defined $inex_dir;
+    }
+}
 
 if ( $createdb ) {
     $dbh->createdb($dataset);
@@ -177,15 +196,10 @@ sub app_options {
 			 die("!FINISH\n");
 		     },
 		     'import' => sub {
-			 $command = 1;
-			 $createdb = 1;
-			 unshift(@ARGV, "import", "--noclean");
-			 die("!FINISH\n");
+			 $inexport = 1;
 		     },
 		     'export' => sub {
-			 $command = 1;
-			 unshift(@ARGV, "export");
-			 die("!FINISH\n");
+			 $inexport = 0;
 		     },
 		     'createdb' => \$createdb,
 		     'define|D=s%' => sub {
@@ -205,6 +219,8 @@ sub app_options {
 		     'boekjaar=s'	=> \$bky,
 		     'verbose'	=> \$verbose,
 		     'db|dataset=s' => \$dataset,
+		     'dir=s'	=> \$inex_dir,
+		     'file=s'	=> \$inex_file,
 		     'trace'	=> \$trace,
 		     'help|?'	=> \$help,
 		     'debug'	=> \$debug,
@@ -237,8 +253,10 @@ Gebruik: {prog} [options] [file ...]
     --boekjaar=XXX	specificeer boekjaar
     --createdb		maak nieuwe database aan
     --schema=XXX        initialisser database met schema
-    --import --dir=XXX  importeer een nieuwe administratie
-    --export --dir=XXX  exporteer een administratie
+    --import            importeer een nieuwe administratie
+    --export            exporteer een administratie
+    --dir=XXX           directory voor im/export
+    --file=XXX          bestand voor im/export
     --define=XXX -D     definieer configuratiesetting
     --help		deze hulpboodschap
     --ident		toon identificatie
@@ -614,6 +632,7 @@ sub _add {
 		 d_boekjaar   => $bky || $dbh->adm("bky"),
 		 journal      => $self->{journal},
 		 totaal	      => undef,
+		 verbose      => $self->{verbose},
 		 confirm      => $self->{confirm},
 	       };
 
@@ -626,7 +645,7 @@ sub _add {
 		 'totaal=s',
 		 'confirm!',
 		 ( $dagboek_type == DBKTYPE_BANK
-		   || $dagboek_type == DBKTYPE_KAS ) ? ( 'saldo=s' ) : (),
+		   || $dagboek_type == DBKTYPE_KAS ) ? ( 'saldo=s', 'beginsaldo=s' ) : (),
 	       ], $opts);
 
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};

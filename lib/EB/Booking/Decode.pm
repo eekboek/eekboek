@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.18 2006/04/15 09:08:35 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.19 2006/07/09 16:45:58 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:45:18 2006
-# Update Count    : 152
+# Last Modified On: Sat Jul  8 21:33:41 2006
+# Update Count    : 155
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -56,7 +56,7 @@ sub decode {
     $bsk = $dbh->bskid($bsk);
 
     my $rr = $dbh->do("SELECT bsk_id, bsk_nr, bsk_desc, ".
-		      "bsk_dbk_id, bsk_date, bsk_amount, bsk_saldo, bsk_bky ".
+		      "bsk_dbk_id, bsk_date, bsk_amount, bsk_saldo, bsk_isaldo, bsk_bky ".
 		      ($dbver lt "001000002" ? ", bsk_paid" : ", bsk_open").
 		      " FROM Boekstukken".
 		      " WHERE bsk_id = ?", $bsk);
@@ -67,7 +67,7 @@ sub decode {
     }
 
     my ($bsk_id, $bsk_nr, $bsk_desc, $bsk_dbk_id,
-	$bsk_date, $bsk_amount, $bsk_saldo, $bsk_bky, $bsk_open) = @$rr;
+	$bsk_date, $bsk_amount, $bsk_saldo, $bsk_isaldo, $bsk_bky, $bsk_open) = @$rr;
 
     my $tot = 0;
     my ($dbktype, $acct, $dbk_desc) = @{$dbh->do("SELECT dbk_type, dbk_acc_id, dbk_desc".
@@ -93,6 +93,7 @@ sub decode {
 		$cmd .= " --totaal=" . numfmt_plain($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
 		  if $ex_tot && $acct;
 	    }
+	    $cmd .= " --beginsaldo=" . numfmt_plain($bsk_isaldo) if $ex_tot && defined $bsk_isaldo;
 	    $cmd .= " --saldo=" . numfmt_plain($bsk_saldo) if $ex_tot && defined $bsk_saldo;
 	}
 	else {

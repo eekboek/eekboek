@@ -21,7 +21,7 @@ sub N__($) { $_[0] }
 BEGIN {
     _newconst("SCM_MAJVERSION", 1);
     _newconst("SCM_MINVERSION", 0);
-    _newconst("SCM_REVISION",   8);
+    _newconst("SCM_REVISION",   9);
 
     _newconst("AMTPRECISION",   2);
     _newconst("AMTWIDTH",       9);

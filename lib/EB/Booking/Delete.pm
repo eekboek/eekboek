@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Delete.pm,v 1.7 2006/07/05 20:43:47 jv Exp $ ';
+my $RCS_Id = '$Id: Delete.pm,v 1.8 2006/07/09 16:45:58 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Delete;
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul  5 22:29:14 2006
-# Update Count    : 76
+# Last Modified On: Sat Jul  8 12:39:59 2006
+# Update Count    : 77
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -102,12 +102,12 @@ sub perform {
 	$dbh->sql_exec("DELETE FROM Boekstukken".
 		       " WHERE bsk_id = ?", $bsk)->finish;
 
-	# Adjust saldi van boekingen na deze.
-	$dbh->sql_exec("UPDATE Boekstukken".
-		       " SET bsk_saldo = bsk_saldo - ?".
-		       " WHERE bsk_saldo IS NOT NULL AND".
-		       " bsk_dbk_id = ? AND bsk_id > ?",
-		       $amt, $dbk, $bsk)->finish;
+#	# Adjust saldi van boekingen na deze.
+#	$dbh->sql_exec("UPDATE Boekstukken".
+#		       " SET bsk_saldo = bsk_saldo - ?".
+#		       " WHERE bsk_saldo IS NOT NULL AND".
+#		       " bsk_dbk_id = ? AND bsk_id > ?",
+#		       $amt, $dbk, $bsk)->finish;
 
 	# If we get here, all went okay.
 	$dbh->commit;
