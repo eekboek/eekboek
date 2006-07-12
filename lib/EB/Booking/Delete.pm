@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Delete.pm,v 1.8 2006/07/09 16:45:58 jv Exp $ ';
+my $RCS_Id = '$Id: Delete.pm,v 1.9 2006/07/12 14:20:42 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Delete;
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul  8 12:39:59 2006
-# Update Count    : 77
+# Last Modified On: Wed Jul 12 16:14:54 2006
+# Update Count    : 81
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,6 +21,7 @@ use strict;
 use warnings;
 
 use EB;
+use base qw(EB::Booking);
 
 sub new {
     return bless {};
@@ -32,8 +33,22 @@ sub perform {
     my $sth;
     my $rr;
     my $orig = $id;
-    my ($bsk, $dbsk, $err) = $dbh->bskid($id);
+    my $bky = $self->{bky} ||= $opts->{boekjaar} || $dbh->adm("bky");
+    my ($bsk, $dbsk, $err) = $dbh->bskid($id, $bky);
     die("?$err\n") unless defined $bsk;
+    my $does_btw = $dbh->does_btw;
+
+    my ($dd) = @{$dbh->do("SELECT bsk_date".
+			  " FROM Boekstukken".
+			  " WHERE bsk_id = ?", $bsk)};
+    my ($begin, $end);
+    return unless ($begin, $end) = $self->begindate;
+
+    return unless $self->in_bky($dd, $begin, $end);
+    if ( $does_btw && $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
+	warn("?"._T("Deze boeking valt in de periode waarover al BTW aangifte is gedaan en kan niet meer worden verwijderd")."\n");
+	return;
+    }
 
     # Check if this boekstuk is used by others. This can only be the
     # case if has been paid.
