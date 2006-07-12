@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.20 2006/06/01 15:38:49 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.21 2006/07/12 14:19:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jun  1 16:25:17 2006
-# Update Count    : 138
+# Last Modified On: Wed Jul 12 16:17:29 2006
+# Update Count    : 139
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,6 +16,7 @@ package EB::Report::GenBase;
 use strict;
 use EB;
 use IO::File;
+use EB::Format;
 
 sub new {
     my ($class, $opts) = @_;
