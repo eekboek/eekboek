@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.52 2006/07/09 16:45:58 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.53 2006/07/12 14:21:37 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul  9 16:57:39 2006
-# Update Count    : 393
+# Last Modified On: Wed Jul 12 11:15:07 2006
+# Update Count    : 395
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -99,7 +99,7 @@ sub perform {
     my $gacct = $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_acc_id));
 
     if ( $gacct ) {
-	my $vsaldo = saldo_for($dagboek, $bsk_nr-1);
+	my $vsaldo = saldo_for($dagboek, $bsk_nr-1, $bky);
 	if ( defined $beginsaldo ) {
 	    return "?".__x("Beginsaldo komt niet overeen met het eindsaldo van de voorgaande boeking",
 			   s1 => numfmt($beginsaldo), s2 => numfmt($vsaldo))."\n"
@@ -409,7 +409,7 @@ sub perform {
 	    warn("?".__x(" Boekstuk totaal is {act} in plaats van {exp}",
 			 act => numfmt($tot), exp => numfmt($totaal)) . "\n");
 	}
-	my $isaldo = saldo_for($dagboek, $bsk_nr+1, "isaldo");
+	my $isaldo = saldo_for($dagboek, $bsk_nr+1, $bky, "isaldo");
 	if ( defined($isaldo) and $isaldo != $new ) {
 	    $fail++;
 	    warn("?".__x("Saldo {new} klopt niet met beginsaldo eropvolgende boekstuk {isaldo}",
@@ -447,10 +447,11 @@ sub perform {
 }
 
 sub saldo_for {
-    my ($dbk, $nr, $ww) = (@_, "saldo");
+    my ($dbk, $nr, $bky, $ww) = (@_, "saldo");
     my $sth = $dbh->sql_exec("SELECT bsk_$ww FROM Boekstukken".
-			     " WHERE bsk_dbk_id = ? AND bsk_nr = ?",
-			     $dbk, $nr);
+			     " WHERE bsk_dbk_id = ? AND bsk_nr = ?".
+			     " AND bsk_bky = ?",
+			     $dbk, $nr, $bky);
     my $rr = $sth->fetchrow_arrayref;
     $sth->finish;
     if ( $rr && defined($rr->[0]) ) {
