@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.45 2006/07/09 16:45:57 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.46 2006/07/12 16:50:39 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul  9 18:11:43 2006
-# Update Count    : 281
+# Last Modified On: Wed Jul 12 17:24:58 2006
+# Update Count    : 282
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -301,7 +301,8 @@ sub perform {
 	$dbh->commit;
     }
 
-    $opts->{verbose}
+    # TODO -- need this to get a current booking.
+    $opts->{verbose} || 1
       ? join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr)
 	: "";
 }
