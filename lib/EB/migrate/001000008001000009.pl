@@ -34,12 +34,17 @@ my $sth1 = $dbh->sql_exec("SELECT dbk_id".
 			  DBKTYPE_BANK, DBKTYPE_KAS);
 while ( my $rr1 = $sth1->fetchrow_arrayref ) {
     my ($dbk_id) = @$rr1;
+  my $sth3 = $dbh->sql_exec("SELECT bky_code FROM Boekjaren");
+  while ( my $rb = $sth3->fetchrow_arrayref ) {
+    my $bky = $rb->[0];
+
     my %saldi;
     my %amt;
     my $sth2 = $dbh->sql_exec("SELECT bsk_nr,bsk_amount,bsk_saldo".
 			      " FROM Boekstukken".
-			      " WHERE bsk_dbk_id = ?",
-			      $dbk_id);
+			      " WHERE bsk_dbk_id = ?".
+			      " AND bsk_bky = ?",
+			      $dbk_id, $bky);
     while ( my $rr2 = $sth2->fetchrow_arrayref ) {
 	$amt{$rr2->[0]} = $rr2->[1];
 	$saldi{$rr2->[0]} = $rr2->[2];
@@ -51,16 +56,21 @@ while ( my $rr1 = $sth1->fetchrow_arrayref ) {
 	      unless $saldi{$bsk_nr-1} == $saldi{$bsk_nr} - $amt{$bsk_nr};
 	    $dbh->sql_exec("UPDATE Boekstukken".
 			   " SET bsk_isaldo = ?".
-			   " WHERE bsk_nr = ? AND bsk_dbk_id = ?",
-			   $saldi{$bsk_nr-1}, $bsk_nr, $dbk_id)->finish;
+			   " WHERE bsk_nr = ?".
+			   " AND bsk_dbk_id = ?".
+			   " AND bsk_bky = ?",
+			   $saldi{$bsk_nr-1}, $bsk_nr, $dbk_id, $bky)->finish;
 	}
 	else {
 	    $dbh->sql_exec("UPDATE Boekstukken".
 			   " SET bsk_isaldo = bsk_saldo - bsk_amount".
-			   " WHERE bsk_nr = ? AND bsk_dbk_id = ?",
-			   $bsk_nr, $dbk_id)->finish;
+			   " WHERE bsk_nr = ?".
+			   " AND bsk_dbk_id = ?".
+			   " AND bsk_bky = ?",
+			   $bsk_nr, $dbk_id, $bky)->finish;
 	}
     }
+  }
 }
 
 $en->process(<<EOS);
