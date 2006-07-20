@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 0.63 is beschikbaar
+Subject: EekBoek 1.0 Release Candidate 2 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,26 +9,21 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 0.63 is beschikbaar op de bekende sites:
+EekBoek 1.0 Release Candidate 2 is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.63.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.92.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.63.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.92.tar.gz
 
 De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Herstel ernstige fout in het hernieuwde saldoberekeningsmechanisme.
-
-  VERSIE 0.62 NIET GEBRUIKEN. RESTORE DE PRE-0.62 DATABASE!
-
-* Controleer bij het verwijderen van een boeking of het boekjaar of de
-  BTW periode niet is afgesloten.
+* Deze versie is identiek aan 0.63.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
