@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 0.62 is beschikbaar
+Subject: EekBoek 0.63 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,44 +9,26 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Na 1.0RC1 toch nog een 'gewone' ontwikkelrelease...
-
-EekBoek 0.62 is beschikbaar op de bekende sites:
+EekBoek 0.63 is beschikbaar op de bekende sites:
 
 * SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.62.tar.gz
+* http://www.squirrel.nl/eekboek/dl/EekBoek-0.63.tar.gz
 * http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
 
 En spoedig ook op:
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.62.tar.gz
+* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.63.tar.gz
 
 De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Bank- en kasboekingen kunnen ook een --beginsaldo meekrijgen.
+* Herstel ernstige fout in het hernieuwde saldoberekeningsmechanisme.
 
-  Saldobepaling gaat op volgorde van boekstuknummer (was:
-  invoervolgorde).
+  VERSIE 0.62 NIET GEBRUIKEN. RESTORE DE PRE-0.62 DATABASE!
 
-  Het beginsaldo moet overeenkoment met het eindsaldo van het eraan
-  voorafgaande boekstuk (indien aanwezig).
-
-  Het eindsaldo moet overeenkoment met het beginsaldo van het erop
-  volgende boekstuk (indien aanwezig).
-
-  Dit lost tevens een im/exportprobleem op met boekstukken die worden
-  verwijderd en later opnieuw ingevoerd.
-
-* Export van boekstukken gaat nu per dagboek, op volgorde van
-  boekstuknummer.
-
-* Database structuur is gewijzigd -- automigratie is beschikbaar.
-
-* Boekingen laten geen informatie meer zien tenzij de optie --verbose
-  wordt meegegeven.
-  (Is dit een goed idee?)
+* Controleer bij het verwijderen van een boeking of het boekjaar of de
+  BTW periode niet is afgesloten.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
