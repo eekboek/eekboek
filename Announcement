@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.0 Release Candidate 2 is beschikbaar
+Subject: EekBoek 1.0 Release Candidate 3 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,21 +9,29 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.0 Release Candidate 2 is beschikbaar op de bekende sites:
+EekBoek heeft nu een eigen web site: http://www.eekboek.nl .
 
-* SourceForge: http://sourceforge.net/project/showfiles.php?group_id=154512
-* http://www.squirrel.nl/eekboek/dl/EekBoek-0.92.tar.gz
-* http://www.squirrel.nl/eekboek/dl/EekBoek.ppd
+EekBoek 1.0 Release Candidate 3 is daar nu beschikbaar:
 
-En spoedig ook op:
+* http://www.eekboek.nl/dl/EekBoek-0.93-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-0.93-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-0.93.tar.gz
+* http://www.eekboek.nl/dl/EekBoek.ppd
 
-* http://search.cpan.org/CPAN/authors/id/J/JV/JV/EekBoek-0.92.tar.gz
+Alle kits zijn voorzien van een aparte digitale handtekening. De key
+ervan vind je op http://www.eekboek.nl/fedora/RPM-PGP-KEY-EekBoek.
+
+YUM liefhebbers kunnen een (experimentele) repository toevoegen door
+het installeren van
+http://www.eekboek.nl/fedora/EekBoek-yum-1.0-1.noarch.rpm.
+Zie voor meer informatie http://www.eekboek.nl/fedora/repodata .
 
 De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Deze versie is identiek aan 0.63.
+* Deze versie is identiek aan 0.92, met uitsluitend de gewijzigde web
+  site in sources en documentatie.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl

@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.70 2006/07/09 16:46:57 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.71 2006/08/05 12:48:06 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul  9 18:46:16 2006
-# Update Count    : 160
+# Last Modified On: Fri Aug  4 21:32:31 2006
+# Update Count    : 165
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ use strict;
 use base qw(Exporter);
 
 our $VERSION;
-$VERSION = "0.62";
+$VERSION = "0.93";
 
 our @EXPORT;
 our @EXPORT_OK;
@@ -71,7 +71,7 @@ our @month_names;
 our @days;
 our @day_names;
 our $ident;
-our $url = "http://www.squirrel.nl/eekboek";
+our $url = "http://www.eekboek.nl";
 
 INIT {
     # Banner. Wow! Static code!
@@ -137,7 +137,7 @@ Please use the eekboek-users mailing list at SourceForge.
 
 Johan Vromans (jvromans@squirrel.nl) wrote this module.
 
-Web site: L<http://www.squirrel.nl/eekboek>.
+Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
