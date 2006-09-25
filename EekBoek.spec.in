@@ -17,9 +17,11 @@ Version: %modversion
 Release: 1
 Source: http://www.squirrel.nl/eekboek/dl/%{name}-%{version}.tar.gz
 BuildArch: noarch
-URL: http://www.squirrel.nl/eekboek/
+URL: http://www.eekboek.nl/
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
 Prefix: %{_prefix}
+Vendor: Squirrel Consultancy
+Packager: Johan Vromans <jvromans@squirrel.nl>
 
 AutoReqProv: 0
 
@@ -135,6 +137,8 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell.1
 %endif
 
 %changelog
+* Wed Aug 02 2006 Johan Vromans <jvromans@squirrel.nl> 0.92
+- New URL. Add Vendor.
 * Fri Jun 09 2006 Johan Vromans <jvromans@squirrel.nl> 0.60
 - Remove man3.
 * Thu Jun 08 2006 Johan Vromans <jvromans@squirrel.nl> 0.60
