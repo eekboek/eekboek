@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.0 Release Candidate 3 is beschikbaar
+Subject: EekBoek 1.00 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,13 +9,13 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek heeft nu een eigen web site: http://www.eekboek.nl .
+Het is zover!
 
-EekBoek 1.0 Release Candidate 3 is daar nu beschikbaar:
+EekBoek 1.00 is beschikbaar:
 
-* http://www.eekboek.nl/dl/EekBoek-0.93-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-0.93-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-0.93.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.00-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.00-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.00.tar.gz
 * http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -30,8 +30,8 @@ De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Deze versie is identiek aan 0.92, met uitsluitend de gewijzigde web
-  site in sources en documentatie.
+* Deze versie is identiek aan 0.93, met alleen het versienummer
+  aangepast. 
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
