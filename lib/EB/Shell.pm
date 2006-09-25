@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.80 2006/07/09 16:45:58 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.81 2006/09/25 12:55:04 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul  9 18:36:00 2006
-# Update Count    : 820
+# Last Modified On: Wed Jul 12 17:24:09 2006
+# Update Count    : 821
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -650,7 +650,7 @@ sub _add {
 
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
     $bsk = $action->perform($args, $opts);
-    $bsk ? $bsk =~ /^\w+:\d+/ ? __x("Boekstuk: {bsk}", bsk => $bsk) : $bsk : "";
+    $bsk ? $bsk =~ /^\w+:\d+/ ? __x("Geboekt: {bsk}", bsk => $bsk) : $bsk : "";
 }
 
 ################ Reports ################
