@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.29 2006/09/25 13:01:03 jv Exp $
+-- $Id: eekboek.sql,v 1.30 2006/09/25 13:03:07 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -197,6 +197,6 @@ CREATE TABLE Metadata (
 
 -- Harde waarden, moeten overeenkomen met de code.
 INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision)
-  VALUES (1, 0, 9);
+  VALUES (1, 0, 10);
 
 UPDATE Metadata SET adm_bky = '<<<<'; -- Voorgaand boekjaar
