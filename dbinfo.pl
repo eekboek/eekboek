@@ -1,8 +1,9 @@
 #!/usr/bin/perl -w
 use strict;
 
-use EB::DB;
-
+#use EB::Config qw(dbinfo);
+#use EB::DB;
+use DBI;
 my $postgres = 1;		# PostgreSQL
 
 my $verbose = 0;
@@ -14,7 +15,7 @@ our $dbh = DBI::->connect("dbi:Pg:dbname=".$ENV{EB_DB_NAME})
 foreach my $table ( $dbh->tables ) {
     next unless $table =~ /^public\.(.*)/;
     $table = $1;
-    my $sth = $dbh->column_info(undef, undef, $table);
+    my $sth = $dbh->column_info(undef, undef, $table, "%");
     $sth->execute;
     my @columns;
     while ( $_ = $sth->fetchrow_hashref ) {
