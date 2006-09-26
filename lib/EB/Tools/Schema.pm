@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.47 2006/09/25 12:56:42 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.48 2006/09/26 12:25:39 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 22 19:15:10 2006
-# Update Count    : 632
+# Last Modified On: Tue Sep 26 14:25:34 2006
+# Update Count    : 633
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -629,7 +629,6 @@ ESQL
 	next unless defined;
 	$out .= "CREATE SEQUENCE bsk_nr_$_->[0]_seq;\n";
     }
-warn($out);
     $out;
 }
 
