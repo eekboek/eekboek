@@ -1,0 +1,11 @@
+Na het installeren middels de RPM kan een probeerdatabase worden
+aangemaakt met:
+
+  psql template1 < /usr/share/doc/eekboek-X.XX/example/sampledb.sql
+
+Deze kan dan vervolgens worden benaderd met:
+
+  ebshell --db=sample
+
+OPM: De juiste locatie van de examples directory kan afhangen van het
+gebruikte systeem.
