@@ -1,10 +1,10 @@
 # Import.pm -- Import EekBoek administratie
-# RCS Info        : $Id: Import.pm,v 1.6 2006/06/20 19:48:28 jv Exp $
+# RCS Info        : $Id: Import.pm,v 1.6.4.1 2006/09/27 13:20:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 21:25:01 2006
-# Update Count    : 46
+# Last Modified On: Wed Sep 27 15:19:26 2006
+# Update Count    : 53
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -51,6 +51,7 @@ sub do_import {
 
 	# Schema.
 	EB::Tools::Schema->create("$dir/schema.dat");
+	$dbh->setup;
 	$cmdobj->_plug_cmds;
 
 	# Relaties, Opening, Mutaties.
@@ -126,6 +127,7 @@ sub do_import {
 
 	    # Schema.
 	    EB::Tools::Schema->_create(sub { shift(@$d_schema) });
+	    $dbh->setup;
 	    $cmdobj->_plug_cmds;
 
 	    # Relaties, Opening, Mutaties. In reverse order.
