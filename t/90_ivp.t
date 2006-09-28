@@ -1,18 +1,29 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.5 2006/06/05 19:38:45 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.6 2006/09/28 13:21:17 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => 34);
+  : (tests => 41);
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
+BEGIN { use_ok('EB::Config', qw(ivp)) }
+BEGIN { use_ok('EB') }
+BEGIN { use_ok('File::Copy') }
 
 chdir("t") if -d "t";
 chdir("ivp") if -d "ivp";
-for ( qw(opening relaties mutaties reports ) ) {
-    die("=== IVP configuratiefout: $_ ===\n") unless -s "$_.eb";
+my $f;
+for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
+    ok(1, $_), next if -s $_;
+    if ( $f = findlib("example/$_") and -s $f ) {
+	copy($f, $_);
+    }
+    ok(-s $_, $_);
+}
+for ( qw(opening.eb relaties.eb mutaties.eb reports.eb schema.dat ) ) {
+    die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
 }
 
 # Cleanup old files.
@@ -32,7 +43,7 @@ unshift(@ebcmd, "perl");
 my $fail;
 
 for my $log ( "createdb.log" ) {
-    ok(syscmd([@ebcmd, qw(--createdb --schema=sample -c)], undef, $log), "createdb");
+    ok(syscmd([@ebcmd, qw(--createdb --schema=schema -c)], undef, $log), "createdb");
     checkerr($log);
 }
 
