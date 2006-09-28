@@ -146,7 +146,6 @@ lib/EB/example/opening.eb
 lib/EB/example/relaties.eb
 lib/EB/example/schema.dat
 lib/EB/migrate/001000008001000009.pl
-lib/EB/migrate/001000009001000010.pl
 lib/EB/schema/bvnv.dat
 lib/EB/schema/cleanup.sql
 lib/EB/schema/eekboek.sql
