@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.00 is beschikbaar
+Subject: EekBoek 1.00.01 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,13 +9,11 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Het is zover!
+EekBoek 1.00.01, de eerste bugfix release voor 1.00, is beschikbaar:
 
-EekBoek 1.00 is beschikbaar:
-
-* http://www.eekboek.nl/dl/EekBoek-1.00-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.00-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.00.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.00.01-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.00.01-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.00.01.tar.gz
 * http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -30,8 +28,12 @@ De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Deze versie is identiek aan 0.93, met alleen het versienummer
-  aangepast. 
+* Fix een bug waardoor de TAccounts tabel niet werd aangemaakt in
+  geval van --import. Over het algemeen onschadelijk, tenzij de
+  mutaties.eb een opdracht bevat die TAccounts nodig heeft, zoals een
+  jaareinde.
+
+* Fix detectie van Windows.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
