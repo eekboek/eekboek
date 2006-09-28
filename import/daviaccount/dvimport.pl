@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.20 2006/09/25 11:31:09 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.19 2006/05/05 15:38:24 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 22 13:41:09 2006
-# Update Count    : 319
+# Last Modified On: Tue May  2 21:56:53 2006
+# Update Count    : 317
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -163,7 +163,7 @@ sub read_dagboeken {
     open(my $f, ">dbk.sql") or die("Cannot create dbk.sql: $!\n");
 
     print $f ("-- Dagboeken\n\n",
-	      "COPY Dagboeken (dbk_id, dbk_desc, dbk_type, dbk_acc_id) FROM stdin;\n");
+	      "COPY Dagboeken FROM stdin;\n");
     my %dbmap = ("Kas"	      => DBKTYPE_KAS,
 		 "Bank/Giro"  => DBKTYPE_BANK,
 		 "Bank"       => DBKTYPE_BANK,

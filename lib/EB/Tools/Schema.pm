@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.48 2006/09/26 12:25:39 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.46 2006/06/20 20:39:08 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 26 14:25:34 2006
-# Update Count    : 633
+# Last Modified On: Tue Jun 20 22:33:04 2006
+# Update Count    : 618
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -117,7 +117,6 @@ sub scan_dagboeken {
     error(__x("Dubbel: dagboek {dbk}", dbk => $id)."\n") if defined($dbk{$id});
 
     my $type;
-    my $dcsplit,
     my $rek = 0;
     my $extra;
     while ( $desc =~ /^(.+?)\s+:([^\s:]+)\s*$/ ) {
@@ -136,9 +135,6 @@ sub scan_dagboeken {
 	elsif ( $extra =~ m/^rek(?:ening)?=(\d+)$/i ) {
 	    $rek = $1;
 	}
-	elsif ( $extra =~ m/^dc$/i ) {
-	    $dcsplit = 1;
-	}
 	else {
 	    error(__x("Dagboek {id}: onbekende info \"{info}\"",
 		      id => $id, info => $extra)."\n");
@@ -147,14 +143,12 @@ sub scan_dagboeken {
 
     error(__x("Dagboek {id}: het :type ontbreekt", id => $id)."\n") unless defined($type);
     error(__x("Dagboek {id}: het :rekening nummer ontbreekt", id => $id)."\n")
-      if ( $type == DBKTYPE_KAS || $type == DBKTYPE_BANK ) && !$type;
-    error(__x("Dagboek {id}: :dc is alleen toegestaan voor Kas en Bankboeken", id => $id)."\n")
-      if $dcsplit && !( $type == DBKTYPE_KAS || $type == DBKTYPE_BANK );
+      if ( $type == DBKTYPE_KAS || $type == DBKTYPE_BANK ) and !$type;
 #    error(__x("Dagboek {id}: rekeningnummer enkel toegestaan voor Kas en Bankboeken", id => $id)."\n")
 #      if $rek && !($type == DBKTYPE_KAS || $type == DBKTYPE_BANK || $type == DBKTYPE_MEMORIAAL);
 
     $dbk{$id} = $dbkid;
-    $dbk[$dbkid] = [ $id, $desc, $type, $dcsplit, $rek||undef ];
+    $dbk[$dbkid] = [ $id, $desc, $type, $rek||undef ];
 }
 
 sub scan_btw {
@@ -432,16 +426,16 @@ sub load_schema {
     my ($need_deb, $need_crd) = (0,0);
     foreach ( @dbk ) {
 	next unless defined($_); # sparse
-	my ($id, $desc, $type, $dc, $rek) = @$_;
+	my ($id, $desc, $type, $rek) = @$_;
 	next if defined($rek);
 	if ( $type == DBKTYPE_INKOOP ) {
 	    $need_crd++;
-	    $_->[4] = $std{"crd"};
+	    $_->[3] = $std{"crd"};
 	    #### Verify that it's a C acct.
 	}
 	elsif ( $type == DBKTYPE_VERKOOP ) {
 	    $need_deb++;
-	    $_->[4] = $std{"deb"};
+	    $_->[3] = $std{"deb"};
 	    #### Verify that it's a D acct.
 	}
 	elsif ( $type != DBKTYPE_MEMORIAAL ) {
@@ -611,13 +605,13 @@ ESQL
 sub sql_dbk {
     my $out = <<ESQL;
 -- Dagboeken
-COPY Dagboeken (dbk_id, dbk_desc, dbk_type, dbk_dcsplit, dbk_acc_id) FROM stdin;
+COPY Dagboeken (dbk_id, dbk_desc, dbk_type, dbk_acc_id) FROM stdin;
 ESQL
 
     foreach ( @dbk ) {
 	next unless defined;
-	$_->[4] ||= $std{deb} if $_->[2] == DBKTYPE_VERKOOP;
-	$_->[4] ||= $std{crd} if $_->[2] == DBKTYPE_INKOOP;
+	$_->[3] ||= $std{deb} if $_->[2] == DBKTYPE_VERKOOP;
+	$_->[3] ||= $std{crd} if $_->[2] == DBKTYPE_INKOOP;
 	$out .= join("\t",
 		     map { defined($_) ? $_ : "\\N" } @$_).
 		       "\n";
@@ -780,9 +774,6 @@ print {$fh}  <<EOD;
 # type het is. Voor dagboeken van het type Kas en Bank moet een
 # tegenrekening worden opgegeven, voor de overige dagboeken mag een
 # tegenrekening worden opgegeven.
-# De optie :dc kan worden gebruikt om aan te geven dat het journaal
-# voor dit dagboek de boekstuktotalen in gescheiden debet en credit
-# moet tonen.
 EOD
 
     dump_dbk($fh);			# Dagboeken
@@ -928,18 +919,16 @@ sub dump_btw {
 sub dump_dbk {
     my $fh = shift;
     print {$fh} ("\nDagboeken\n\n");
-    my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_desc, dbk_type, dbk_dcsplit, dbk_acc_id".
+    my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_desc, dbk_type, dbk_acc_id".
 			     " FROM Dagboeken".
 			     " ORDER BY dbk_id");
     while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($id, $desc, $type, $dc, $acc_id) = @$rr;
+	my ($id, $desc, $type, $acc_id) = @$rr;
 	$acc_id = 0 if $type == DBKTYPE_INKOOP  && $dbh->std_acc("crd", 0) == $acc_id;
 	$acc_id = 0 if $type == DBKTYPE_VERKOOP && $dbh->std_acc("deb", 0) == $acc_id;
 	my $t = sprintf("  %-4s  %-20s  :type=%-10s %s",
 			$id, $desc, lc(DBKTYPES->[$type]),
-			($acc_id ? ":rekening=$acc_id" : ""),
-			($dc ? ":dc" : ""),
-		       );
+			($acc_id ? ":rekening=$acc_id" : ""));
 	$t =~ s/\s+$//;
 	print {$fh} ($t, "\n");
     }

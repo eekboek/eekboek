@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.27 2006/09/25 13:02:01 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.26 2006/05/05 15:35:31 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Sep 25 14:13:28 2006
-# Update Count    : 268
+# Last Modified On: Thu May  4 15:49:16 2006
+# Update Count    : 248
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -26,7 +26,6 @@ use warnings;
 
 use EB;
 use EB::DB;
-use EB::Booking;		# for dcfromtd()
 use EB::Format;
 use EB::Report::GenBase;
 use EB::Report;
@@ -87,8 +86,7 @@ sub perform {
     while ( my $ar = $ah->fetchrow_arrayref ) {
 	my ($acc_id, $acc_desc, $acc_ibalance, $acc_balres) = @$ar;
 
-	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_damount,jnl_bsk_id,bsk_desc,".
-				 "bsk_nr,dbk_desc,dbk_dcsplit,jnl_bsr_date,jnl_desc,jnl_rel".
+	my $sth = $dbh->sql_exec("SELECT jnl_amount,jnl_bsk_id,bsk_desc,bsk_nr,dbk_desc,jnl_bsr_date,jnl_desc,jnl_rel".
 				 " FROM Journal, Boekstukken, Dagboeken".
 				 " WHERE jnl_dbk_id = dbk_id".
 				 " AND jnl_bsk_id = bsk_id".
@@ -127,46 +125,38 @@ sub perform {
 
 	my $dtot = 0;
 	my $ctot = 0;
-	my $dcsplit;		# any acct was DC split
 	while ( my $rr = $sth->fetchrow_arrayref ) {
-	    my ($amount, $damount, $bsk_id, $bsk_desc, $bsk_nr,
-		$dbk_desc, $dbk_dcsplit, $date, $desc, $rel) = @$rr;
+	    my ($amount, $bsk_id, $bsk_desc, $bsk_nr, $dbk_desc, $date, $desc, $rel) = @$rr;
 
-	    warn("?Internal error: delta amount while no DC split, acct = $acc_id ($acc_desc)\n")
-	      if defined($damount) && !$dbk_dcsplit;
-	    $dcsplit ||= $dbk_dcsplit;
-
-	    my ($deb, $crd) = EB::Booking::dcfromtd($amount, $damount);
-	    $ctot += $crd if $crd;
-	    $dtot += $deb if $deb;
+	    if ( $amount < 0 ) {
+		$ctot -= $amount;
+	    }
+	    else {
+		$dtot += $amount;
+	    }
 	    $rep->add({ _style => 'd',
 			desc   => $desc,
 			date   => datefmt($date),
-			deb    => numfmt($deb),
-			crd    => numfmt($crd),
+			$amount >= 0 ? ( deb => numfmt($amount), crd => $n0)
+				     : ( deb => $n0, crd => numfmt(-$amount)),
 			bsk    => join(":", $dbk_desc, $bsk_nr),
 			$rel ? ( rel => $rel) : (),
 		      }) if $detail > 1;
 	}
 
-	my $a = { _style => 't2', desc   => _T("Totaal mutaties") };
-	if ( $dcsplit ) {
-	    $a->{crd} = numfmt($ctot);
-	    $a->{deb} = numfmt($dtot);
-	    $mdgrand += $dtot if $dtot;
-	    $mcgrand += $ctot if $ctot;
-	}
-	elsif ( $ctot > $dtot ) {
-	    $a->{crd} = numfmt($ctot-$dtot);
+	$rep->add({ _style => 't2',
+		    desc   => _T("Totaal mutaties"),
+		    $ctot > $dtot ? ( crd => numfmt($ctot-$dtot) )
+				  : ( deb => numfmt($dtot-$ctot) ),
+		  })
+	  if $detail && ($dtot || $ctot || $acc_ibalance);
+
+	if ( $dtot > $ctot ) {
 	    $mdgrand += $dtot - $ctot;
 	}
 	else {
-	    $a->{deb} = numfmt($dtot-$ctot);
-	    $mdgrand += $dtot - $ctot;
+	    $mcgrand += $ctot - $dtot;
 	}
-
-	$rep->add($a)
-	  if $detail && ($dtot || $ctot || $acc_ibalance);
 
 	$rep->add({ _style => 't1',
 		    acct   => $acc_id,
