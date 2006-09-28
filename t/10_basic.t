@@ -1,4 +1,4 @@
-# $Id: 10_basic.t,v 1.4 2006/06/05 19:38:19 jv Exp $  -*-perl-*-
+# $Id: 10_basic.t,v 1.5 2006/09/28 13:20:43 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More tests => 10;
@@ -16,7 +16,7 @@ BEGIN {
 
 # Check some data files.
 
-foreach ( qw(eekboek.sql sample.dat) ) {
+foreach ( qw(eekboek.sql bvnv.dat) ) {
     my $t = findlib("schema/$_");
     ok(-s $t, $t);
 }
