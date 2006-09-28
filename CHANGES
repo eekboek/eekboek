@@ -1,9 +1,11 @@
-1.00.01	2006-09-27 21:55
+1.00.01	
 
 	Fix een bug waardoor de TAccounts tabel niet werd aangemaakt
 	in geval van --import. Over het algemeen onschadelijk, tenzij
 	de mutaties.eb een opdracht bevat die TAccounts nodig heeft,
 	zoals een jaareinde.
+
+	Fix detectie van Windows.
 
 1.00	2006-08-27 21:15
 
