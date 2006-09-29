@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.14 2006/06/02 10:07:47 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.15 2006/09/29 13:02:43 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  2 10:36:46 2006
-# Update Count    : 143
+# Last Modified On: Fri Sep 29 15:01:08 2006
+# Update Count    : 144
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -199,7 +199,6 @@ sub isql {
 
     for ( $cfg->val("database", "user", undef) ) {
 	next unless $_;
-	push(@cmd, "-O", $_);
 	push(@cmd, "-U", $_);
     }
 #    for ( $cfg->val("database", "password", undef) ) {
