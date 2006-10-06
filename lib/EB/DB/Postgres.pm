@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.14.4.1 2006/09/29 13:04:26 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.14.4.2 2006/10/06 13:05:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 29 15:04:23 2006
-# Update Count    : 144
+# Last Modified On: Fri Oct  6 14:39:42 2006
+# Update Count    : 145
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -135,7 +135,7 @@ sub clear {
     for my $tbl ( qw(Boekstukregels Journal Boekjaarbalans
 		     Metadata Standaardrekeningen Relaties
 		     Boekstukken Dagboeken Boekjaren Constants
-		     Accounts Btwtabel Verdichtingen) ) {
+		     Accounts Btwtabel Verdichtingen Taccounts) ) {
 	warn("+ DROP TABLE $tbl\n") if $trace;
 	eval { $dbh->do("DROP TABLE $tbl") };
     }
