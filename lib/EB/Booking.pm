@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.13 2006/09/25 13:02:01 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.14 2006/10/06 20:21:32 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Sep 25 13:42:35 2006
-# Update Count    : 62
+# Last Modified On: Fri Oct  6 22:13:25 2006
+# Update Count    : 63
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.13 2006/09/25 13:02:01 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.14 2006/10/06 20:21:32 jv Exp $ ';
 
 package main;
 
@@ -217,7 +217,7 @@ sub journalise {
       @{$::dbh->do("SELECT dbk_type, dbk_dcsplit, dbk_acc_id".
 		 " FROM Dagboeken".
 		 " WHERE dbk_id = ?", $bsk_dbk_id)};
-    my $sth = $::dbh->sql_exec("SELECT bsr_id, bsr_nr, bsr_date, ".
+    my $sth = $::dbh->sql_exec("SELECT bsr_nr, bsr_date, ".
 			     "bsr_desc, bsr_amount, bsr_btw_class, bsr_btw_id, ".
 			     "bsr_btw_acc, bsr_type, bsr_acc_id, bsr_rel_code ".
 			     " FROM Boekstukregels".
@@ -229,7 +229,7 @@ sub journalise {
     my $nr = 1;
 
     while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($bsr_id, $bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_class,
+	my ($bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_class,
 	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
 	my $bsr_bsk_id = $bsk_id;
 	my $btw = 0;

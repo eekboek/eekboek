@@ -9,6 +9,9 @@ UPDATE Dagboeken SET dbk_dcsplit = 'false';
 -- Table Journal
 ALTER TABLE ONLY Journal ADD COLUMN jnl_damount int8;
 
+-- Table Boekstukregels
+ALTER TABLE ONLY Boekstukregels DROP COLUMN bsr_id;
+
 -- Bump version.
 
 UPDATE Constants
