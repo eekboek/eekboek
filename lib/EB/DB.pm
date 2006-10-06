@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.45 2006/09/28 13:21:47 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.46 2006/10/06 20:24:04 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep 27 12:37:45 2006
-# Update Count    : 344
+# Last Modified On: Fri Oct  6 22:23:51 2006
+# Update Count    : 348
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -437,7 +437,7 @@ sub cleardb {
 sub createdb {
     my ($self, $dbname) = @_;
     $dbpkg ||= $self->_loaddbbackend;
-    Carp::confess("OOPS") unless $dbpkg;
+    Carp::confess("DB backend setup failed") unless $dbpkg;
     $dbpkg->create($dbname);
     $self->resetdbcache;
 }
@@ -457,13 +457,15 @@ sub isql {
 sub get_sequence {
     my ($self) = shift;
     $self->connectdb;
-    Carp::confess("OOPS") unless $dbpkg;
+    Carp::confess("DB backend setup failed") unless $dbpkg;
+    Carp::croak("INTERNAL ERROR: get_sequence takes only one argument") if @_ != 1;
     $dbpkg->get_sequence(@_);
 }
 
 sub set_sequence {
     my ($self) = shift;
     $self->connectdb;
+    Carp::confess("DB backend setup failed") unless $dbpkg;
     $dbpkg->set_sequence(@_);
 }
 
