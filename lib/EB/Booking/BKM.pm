@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.54 2006/07/12 16:50:39 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.55 2006/10/06 20:22:36 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 12 17:24:48 2006
-# Update Count    : 396
+# Last Modified On: Fri Oct  6 22:12:49 2006
+# Update Count    : 402
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -119,10 +119,10 @@ sub perform {
 	}
     }
 
+    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq");
     $dbh->sql_insert("Boekstukken",
-		     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
-		     $bsk_nr, $gdesc, $dagboek, $date, $bky);
-    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
+		     [qw(bsk_id bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
+		     $bsk_id, $bsk_nr, $gdesc, $dagboek, $date, $bky);
     my $tot = 0;
     my $did = 0;
     my $fail = 0;
@@ -369,7 +369,6 @@ sub perform {
 				 bsr_rel_code bsr_paid)],
 			     $nr++, $dd, $bsk_id, "*".$bsk_desc, -$amt, 0,
 			     $type eq "deb" ? 1 : 2, $acct, 0, $bsr_rel, $bskid);
-	    my $id = $dbh->get_sequence("boekstukregels_bsr_id_seq", "noincr");
 	    $dbh->sql_exec("UPDATE Boekstukken".
 			   " SET bsk_open = bsk_open - ?".
 			   " WHERE bsk_id = ?",

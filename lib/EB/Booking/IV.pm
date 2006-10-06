@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.46 2006/07/12 16:50:39 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.47 2006/10/06 20:22:12 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 12 17:24:58 2006
-# Update Count    : 282
+# Last Modified On: Fri Oct  6 21:49:06 2006
+# Update Count    : 284
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -198,10 +198,10 @@ sub perform {
 	if ( $nr == 1 ) {
 	    $bsk_nr = $self->bsk_nr($opts);
 	    return unless defined($bsk_nr);
+	    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq");
 	    $dbh->sql_insert("Boekstukken",
-			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
-			     $bsk_nr, $gdesc, $dagboek, $date, $bky);
-	    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr");
+			     [qw(bsk_id bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
+			     $bsk_id, $bsk_nr, $gdesc, $dagboek, $date, $bky);
 	}
 
 	# Amount can override BTW id with @X postfix.
