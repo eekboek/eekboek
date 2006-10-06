@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.00.02 is beschikbaar
+Subject: EekBoek 1.00.03 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,11 +9,11 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.00.02, bugfix release voor 1.00, is beschikbaar:
+EekBoek 1.00.03, bugfix release voor 1.00, is beschikbaar:
 
-* http://www.eekboek.nl/dl/EekBoek-1.00.02-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.00.02-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.00.02.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.00.03-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.00.03-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.00.03.tar.gz
 * http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -28,14 +28,9 @@ De aanbevolen manier van installeren is door middel van de RPM.
 
 Belangrijkste wijzigingen:
 
-* Forceer UNICODE onder Windows, tenzij locale:unicode dit
- overruled.
+* Fix bug met TAccounts tabel bij interactief commando import.
 
-* Fix een bug in de inputafhandeling waar regels die met
- whitespace geheel worden genegeerd.
-
-* Fix bug in het opstarten van het (ongedocumenteerde) sql
- commando.
+* Fix bug in --ident display.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
