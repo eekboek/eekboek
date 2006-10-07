@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.15 2006/09/29 13:02:43 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.16 2006/10/07 16:44:07 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 29 15:01:08 2006
-# Update Count    : 144
+# Last Modified On: Sat Oct  7 18:42:09 2006
+# Update Count    : 153
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -25,6 +25,19 @@ my $dataset;
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
 sub type { "Postgres" }
+
+sub feature {
+    my $self = shift;
+    my $feat = lc(shift);
+
+    if ( $feat eq "pgcopy" ) {
+	return 1 if ($DBD::Pg::VERSION||0) >= 1.41;
+	warn("%"."Not using PostgreSQL fast load. DBD::Pg::VERSION = ",
+	     ($DBD::Pg::VERSION||0), ", needs 1.41 or later\n");
+    }
+
+    return;
+}
 
 sub _dsn {
     my $dsn = "dbi:Pg:dbname=" . shift;
@@ -144,7 +157,7 @@ sub clear {
 	my $rr = $dbh->selectall_arrayref("SELECT relname".
 					  " FROM pg_class".
 					  " WHERE relkind = 'S'".
-					  ' AND relname LIKE \'bsk_%_seq\'');
+					  ' AND relname LIKE \'%bsk_%_seq\'');
 	foreach my $seq ( @$rr ) {
 	    warn("+ DROP SEQUENCE $seq->[0]\n") if $trace;
 	    eval { $dbh->do("DROP SEQUENCE $seq->[0]") };
@@ -171,12 +184,10 @@ sub list {
 }
 
 sub get_sequence {
-    my ($self, $seq, $noinc) = @_;
+    my ($self, $seq) = @_;
     croak("?INTERNAL ERROR: get sequence while not connected") unless $dbh;
 
-    my $rr = $dbh->selectall_arrayref("SELECT ".
-				      ($noinc ? "currval" : "nextval").
-				      "('$seq')");
+    my $rr = $dbh->selectall_arrayref("SELECT nextval('$seq')");
     return ($rr && defined($rr->[0]) && defined($rr->[0]->[0])? $rr->[0]->[0] : undef);
 }
 
