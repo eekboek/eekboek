@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.46 2006/10/06 20:24:04 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.47 2006/10/07 21:10:38 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  6 22:23:51 2006
-# Update Count    : 348
+# Last Modified On: Sat Oct  7 23:06:49 2006
+# Update Count    : 372
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -34,17 +34,17 @@ sub check_db {
     my $fail = 0;
 
     # Check the existence of the required tables.
-    my %tables = map { lc, 1 } $dbh->tables;
+    my %tables = map { $_, 1 } @{$self->tablesdb};
 
     foreach my $table ( qw(constants standaardrekeningen verdichtingen accounts
 			   relaties accounts boekstukken boekstukregels
 			   btwtabel journal metadata) ) {
-	next if $tables{$table} || $tables{"public.$table"};
+	next if $tables{$table};
 	$fail++;
 	 warn("?".__x("Tabel {table} ontbreekt in database {db}",
 		      table => $table, db => $dbh->{Name}) . "\n");
     }
-    # warn(join(" ", sort keys %tables)."\n") if $fail;
+    warn(join(" ", sort keys %tables)."\n") if $fail;
     die("?".__x("Ongeldige EekBoek database: {db}.",
 		db => $dbh->{Name}) . " " .
 	_T("Wellicht is de database nog niet geïnitialiseerd?")."\n") if $fail;
@@ -70,7 +70,7 @@ sub check_db {
 
 	    require EB::Tools::SQLEngine;
 	    eval {
-		EB::Tools::SQLEngine->new(dbh => $dbh, trace => $trace)->process($sql);
+		EB::Tools::SQLEngine->new(dbh => $self, trace => $trace)->process($sql);
 	    };
 	    warn("?".$@) if $@;
 	    $dbh->rollback if $@;
@@ -173,8 +173,12 @@ sub check_db {
 sub setup {
     my ($self) = @_;
 
+    setupdb();
+
     # Create temp table for account mangling.
-    $dbh->do("SELECT * INTO TEMP TAccounts FROM Accounts WHERE acc_id = 0");
+    my $sql = "SELECT * INTO TEMP TAccounts FROM Accounts WHERE acc_id = 0";
+    $sql = $self->feature("filter")->($sql) if $self->feature("filter");
+    $dbh->do($sql) if $sql;
     # Make it semi-permanent (this connection only).
     $dbh->commit;
 }
@@ -421,10 +425,28 @@ sub disconnect {
     undef $dbh;
 }
 
+sub feature {
+    my ($self) = shift;
+    $dbpkg ||= $self->_loaddbbackend;
+    $dbpkg->feature(@_);
+}
+
+sub setupdb {
+    my ($self) = shift;
+    $dbpkg ||= $self->_loaddbbackend;
+    $dbpkg->setup;
+}
+
 sub listdb {
     my ($self) = shift;
     $dbpkg ||= $self->_loaddbbackend;
     $dbpkg->list;
+}
+
+sub tablesdb {
+    my ($self) = shift;
+    $dbpkg ||= $self->_loaddbbackend;
+    $dbpkg->get_tables;
 }
 
 sub cleardb {
@@ -506,7 +528,8 @@ my $sql_prep_cache_miss;
 sub sql_prep {
     my ($self, $sql) = @_;
     $dbh ||= $self->connectdb();
-    if ( defined($sth{$sql}) ) {
+    $sql = $self->feature("filter")->($sql) if $self->feature("filter");
+    if ( defined($sth{$sql}) && $self->feature("prepcache") ) {
 	$sql_prep_cache_hits++;
 	return $sth{$sql};
     }
