@@ -1,10 +1,10 @@
 # SQLEngine.pm -- 
-# RCS Info        : $Id: SQLEngine.pm,v 1.6 2006/01/16 10:48:39 jv Exp $
+# RCS Info        : $Id: SQLEngine.pm,v 1.7 2006/10/07 20:43:45 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 16 11:44:44 2006
-# Update Count    : 47
+# Last Modified On: Sat Oct  7 15:16:42 2006
+# Update Count    : 62
 # Status          : Unknown, Use with caution!
 
 package EB::Tools::SQLEngine;
@@ -30,21 +30,20 @@ sub callback($%) {
 # Note that COPY status will not work across different \i providers.
 # COPY status need to be terminated on the same level it was started.
 
-# If we have PostgreSQL and it is of a suitable version, we can use
-# fast loading.
-my $postgres;
-
 sub process {
     my ($self, $cmd, $copy) = (@_, 0);
     my $sql = "";
-    my $dbh = $self->{dbh} || $::dbh->dbh;
+    my $dbh = $self->{dbh} || $::dbh;
 
-    # Check Pg version.
-    unless ( defined($postgres) ) {
-	$postgres = ($DBD::Pg::VERSION||0) >= 1.41;
-	warn("%Not using PostgreSQL fast load. DBD::Pg::VERSION = ",
-	     ($DBD::Pg::VERSION||0), "\n") unless $postgres;
-    }
+    # If we have PostgreSQL and it is of a suitable version, we can use
+    # fast loading.
+    my $pgcopy = $dbh->feature("pgcopy");
+
+    # Filter SQL, if needed.
+    my $filter = $dbh->feature("filter");
+
+    # Use raw handle from here.
+    $dbh = $dbh->dbh;
 
     foreach my $line ( split(/\n/, $cmd) ) {
 
@@ -61,10 +60,10 @@ sub process {
 	if ( $copy ) {
 	    if ( $line eq "\\." ) {
 		# End COPY.
-		$dbh->pg_endcopy if $postgres;
+		$dbh->pg_endcopy if $pgcopy;
 		$copy = 0;
 	    }
-	    elsif ( $postgres ) {
+	    elsif ( $pgcopy ) {
 		# Use PostgreSQL fast load.
 		$dbh->pg_putline($line."\n");
 	    }
@@ -82,6 +81,7 @@ sub process {
 		  } @args;
 		$s =~ s/\?/shift(@a)/eg;
 		warn("++ $s;\n");
+		$copy = $filter->($copy) if $filter;
 		my $sth = $dbh->prepare($copy);
 		$sth->execute(@args);
 		$sth->finish;
@@ -102,11 +102,11 @@ sub process {
 	$sql .= $line . " ";
 
 	# Execute if trailing ;
-	if ( $line =~ /(.+);$/ ) {
+	if ( $line =~ /.+;$/ ) {
 
 	    # Check for COPY/
 	    if ( $sql =~ /^copy\s(\S+)\s+(\([^\051]+\))/i ) {
-		if ( $postgres ) {
+		if ( $pgcopy ) {
 		    # Use PostgreSQL fast load.
 		    $copy = 1;
 		}
@@ -118,6 +118,10 @@ sub process {
 		    next;
 		}
 	    }
+
+	    # Postprocessing.
+	    $sql = $filter->($sql) if $filter;
+	    next unless $sql;
 
 	    # Intercept transaction commands. Must be handled by DBI calls.
 	    if ( $sql =~ /^begin\b/i ) {
@@ -141,7 +145,7 @@ sub process {
 	}
     }
 
-    die("?".__x("Incompleet SQL commando: {sql}", sql => $sql)."\n") if $sql;
+    die("?".__x("Incomplete SQL opdracht: {sql}", sql => $sql)."\n") if $sql;
 }
 
 1;
