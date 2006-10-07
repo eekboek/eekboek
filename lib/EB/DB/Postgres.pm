@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.17 2006/10/07 20:45:00 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.18 2006/10/07 21:08:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  7 21:58:01 2006
-# Update Count    : 155
+# Last Modified On: Sat Oct  7 23:07:36 2006
+# Update Count    : 157
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -187,6 +187,16 @@ sub list {
     # If the list cannot be established, @ds will be (undef).
     return [] unless defined($ds[0]);
     [ map { $_ =~ s/^.*?dbname=eekboek_// and $_ } @ds ];
+}
+
+sub get_tables {
+    my $self = shift;
+    my @t;
+    foreach ( $dbh->tables ) {
+	next unless /^public\.(.+)/i;
+	push(@t, lc($1));
+    }
+    \@t;
 }
 
 sub get_sequence {

@@ -1,10 +1,10 @@
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.1 2006/10/07 20:46:38 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.2 2006/10/07 21:08:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  7 22:46:11 2006
-# Update Count    : 74
+# Last Modified On: Sat Oct  7 23:07:18 2006
+# Update Count    : 77
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -109,6 +109,16 @@ sub setup {
     }
 
     # Caller will commit.
+}
+
+sub get_tables {
+    my $self = shift;
+    my @t;
+    foreach ( $dbh->tables ) {
+	next unless /^"([[:upper:]].+)"$/i;
+	push(@t, lc($1));
+    }
+    \@t;
 }
 
 sub list {
