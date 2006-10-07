@@ -1,10 +1,10 @@
 # Postgres.pm -- 
-# RCS Info        : $Id: Postgres.pm,v 1.16 2006/10/07 16:44:07 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.17 2006/10/07 20:45:00 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  7 18:42:09 2006
-# Update Count    : 153
+# Last Modified On: Sat Oct  7 21:58:01 2006
+# Update Count    : 155
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -34,7 +34,10 @@ sub feature {
 	return 1 if ($DBD::Pg::VERSION||0) >= 1.41;
 	warn("%"."Not using PostgreSQL fast load. DBD::Pg::VERSION = ",
 	     ($DBD::Pg::VERSION||0), ", needs 1.41 or later\n");
+	return;
     }
+
+    return 1 if $feat eq "prepcache";
 
     return;
 }
@@ -139,6 +142,9 @@ sub disconnect {
     $dbh->disconnect;
     undef $dbh;
     undef $dataset;
+}
+
+sub setup {
 }
 
 sub clear {
