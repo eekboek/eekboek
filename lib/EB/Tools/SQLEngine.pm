@@ -1,10 +1,10 @@
 # SQLEngine.pm -- 
-# RCS Info        : $Id: SQLEngine.pm,v 1.7 2006/10/07 20:43:45 jv Exp $
+# RCS Info        : $Id: SQLEngine.pm,v 1.8 2006/10/07 20:55:56 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  7 15:16:42 2006
-# Update Count    : 62
+# Last Modified On: Sat Oct  7 22:55:41 2006
+# Update Count    : 65
 # Status          : Unknown, Use with caution!
 
 package EB::Tools::SQLEngine;
@@ -80,7 +80,6 @@ sub process {
 		      /^[0-9]+$/ ? $_ : $dbh->quote($_)
 		  } @args;
 		$s =~ s/\?/shift(@a)/eg;
-		warn("++ $s;\n");
 		$copy = $filter->($copy) if $filter;
 		my $sth = $dbh->prepare($copy);
 		$sth->execute(@args);
