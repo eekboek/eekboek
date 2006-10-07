@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.31 2006/10/06 20:22:53 jv Exp $
+-- $Id: eekboek.sql,v 1.32 2006/10/07 14:22:42 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -118,7 +118,7 @@ INSERT INTO Boekjaren
 
 -- Boekstukken
 CREATE TABLE Boekstukken (
-    bsk_id       serial not null primary key,
+    bsk_id       int not null primary key,
     bsk_nr       int not null,	-- serienummer
     bsk_desc     text not null,
     bsk_dbk_id   varchar(4) references Dagboeken,
@@ -130,6 +130,9 @@ CREATE TABLE Boekstukken (
     bsk_saldo	 int8,		-- eindsaldo na boeking
     UNIQUE(bsk_nr, bsk_dbk_id, bsk_bky)
 );
+
+-- Sequence voor Boekstuknummers
+CREATE SEQUENCE boekstukken_bsk_id_seq;
 
 -- Boekstukregels
 CREATE TABLE Boekstukregels (
