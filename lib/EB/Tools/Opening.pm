@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.28 2006/04/15 09:08:34 jv Exp $
+# $Id: Opening.pm,v 1.29 2006/10/07 20:42:06 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:49:43 2006
-# Update Count    : 226
+# Last Modified On: Fri Oct  6 22:00:35 2006
+# Update Count    : 227
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -436,14 +436,14 @@ sub open {
 		$amt = -$amt;
 	    }
 
+	    my $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq");
 	    $dbh->sql_insert("Boekstukken",
-			     [qw(bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky bsk_open bsk_amount)],
-			     $nr, $desc, $dagboek, $date, $bky, $amt, $amt);
+			     [qw(bsk_id bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky bsk_open bsk_amount)],
+			     $bsk_id, $nr, $desc, $dagboek, $date, $bky, $amt, $amt);
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_rel_code bsr_amount
 				 bsr_type bsr_btw_class)],
-			     1, $date,
-			     $dbh->get_sequence("boekstukken_bsk_id_seq", "noincr"),
+			     1, $date, $bsk_id,
 			     $desc, $code, 0-$amt, 9, 0);
 	}
 #	my $highest = $dbh->get_sequence("bsk_nr_0_seq") + 1;
