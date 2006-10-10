@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.20 2006/10/06 20:21:15 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.21 2006/10/10 18:42:51 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  6 22:14:18 2006
-# Update Count    : 156
+# Last Modified On: Sun Oct  8 19:20:12 2006
+# Update Count    : 158
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -128,13 +128,14 @@ sub decode {
 			     " WHERE bsr_bsk_id = ?".
 			     " ORDER BY bsr_nr", $bsk);
 
-    unless ( $sth->rows ) {
+    $rr = $sth->fetchrow_arrayref;
+    unless ( $rr ) {
 	# Special case for boekstuk zonder boekstukregels.
 	$setup->(undef);
 	return $cmd;
     }
 
-    while ( $rr = $sth->fetchrow_arrayref ) {
+    while ( $rr ) {
 	my ($bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_id,
 	    $bsr_btw_class, $bsr_type, $bsr_acc_id, $bsr_rel_code, $bsr_paid) = @$rr;
 	if ( $bsr_nr == 1) {
@@ -244,7 +245,7 @@ sub decode {
 		}
 	    }
 	}
-
+	$rr = $sth->fetchrow_arrayref;
     }
     return ($cmd, $tot, $bsk_amount, $acct)
       if wantarray;

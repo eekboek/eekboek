@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.81 2006/09/25 12:55:04 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.82 2006/10/10 18:42:42 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 12 17:24:09 2006
-# Update Count    : 821
+# Last Modified On: Sun Oct  8 19:18:45 2006
+# Update Count    : 825
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -376,11 +376,16 @@ sub eb_complete {
 	my $sth = $dbh->sql_exec("SELECT acc_id,acc_desc from Accounts".
 				 " WHERE acc_id LIKE ?".
 				 " ORDER BY acc_id", "$word%");
-	return () if $sth->rows == 0;
-	return ($sth->fetchrow_arrayref->[0]) if $sth->rows == 1;
+	my $rr = $sth->fetchrow_arrayref;
+	return () unless $rr;
+	my ($w, $d) = @$rr;
+	$rr = $sth->fetchrow_arrayref;
+	return ($w) unless $rr;
 	print STDERR ("\n");
-	while ( my $rr = $sth->fetchrow_arrayref ) {
+	printf STDERR ("%9d  %s\n", $w, $d);
+	while ( $rr ) {
 	    printf STDERR ("%9d  %s\n", @$rr);
+	    $rr = $sth->fetchrow_arrayref;
 	}
 	print STDERR ("$line");
 	return ();
@@ -395,14 +400,20 @@ sub eb_complete {
 				 " WHERE rel_code LIKE ?".
 				 " AND " . ($t eq "deb" ? "" : "NOT ") . "rel_debcrd".
 				 " ORDER BY rel_code", "$word%");
-	return () if $sth->rows == 0;
-	if ( $sth->rows == 1 && $word ne "" ) {
-	    $t = $sth->fetchrow_arrayref->[0];
-	    return ($t);
+	my $rr = $sth->fetchrow_arrayref;
+	return () unless $rr;
+
+	my ($w, $d) = @$rr;
+	$rr = $sth->fetchrow_arrayref;
+
+	if ( !$rr && $word ne "" ) {
+	    return ($w);
 	}
 	print STDERR ("\n");
-	while ( my $rr = $sth->fetchrow_arrayref ) {
+	printf STDERR ("  %s  %s\n", $w, $d);
+	while ( $rr  ) {
 	    printf STDERR ("  %s  %s\n", @$rr);
+	    $rr = $sth->fetchrow_arrayref;
 	}
 	print STDERR ("$line");
 	return ();
