@@ -1,10 +1,10 @@
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.2 2006/10/07 21:08:31 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.3 2006/10/10 18:43:41 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  7 23:07:18 2006
-# Update Count    : 77
+# Last Modified On: Tue Oct 10 20:05:42 2006
+# Update Count    : 123
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -23,33 +23,36 @@ my $dataset;
 
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
+# API: type  type of driver
 sub type { "SQLite" }
 
-sub feature {
-    my $self = shift;
-    my $feat = lc(shift);
+sub _dbname {
+    my ($dbname) = @_;
 
-    return \&sqlfilter if $feat eq "filter";
-    return 1 if $feat eq "prepcache";
+    $dbname =~ s;(^|.*[/\\])(ebsqlite_|eekboek_)?([^/\\]+)$;${1}ebsqlite_$3;;
 
-    return;
+    return $dbname;
 }
 
 sub _dsn {
     my $dsn = "dbi:SQLite:dbname=" . shift;
 }
 
+# API: create a new, empty database.
 sub create {
     my ($self, $dbname) = @_;
 
-    $dbname =~ s/^(ebsqlite_|eekboek_)//;
-    $dbname =~ s/^/ebsqlite_/;
+    $dbname = _dbname($dbname);
 
     # Create (empty) db file.
     open(my $db, '>', $dbname);
     close($db);
+    unlink("$db-journal")
+      or warn("%".__x("Database journal voor {db} verwijderd",
+		      db => $dbname)."\n");
 }
 
+# API: connect to an existing database.
 sub connect {
     my ($self, $dbname) = @_;
     croak("?INTERNAL ERROR: connect db without dataset name") unless $dbname;
@@ -60,8 +63,7 @@ sub connect {
 
     $self->disconnect;
 
-    $dbname =~ s/^(ebsqlite_|eekboek_)//;
-    $dbname =~ s/^/ebsqlite_/;
+    $dbname = _dbname($dbname);
 
     $cfg->newval(qw(database fullname), $dbname);
     unless ( -e $dbname ) {
@@ -73,9 +75,13 @@ sub connect {
 		     err => $DBI::errstr)."\n");
     $dataset = $dbname;
 
+    # Create some missing functions.
+    register_functions();
+
     return $dbh;
 }
 
+# API: Disconnect from a database.
 sub disconnect {
     my ($self) = @_;
     return unless $dbh;
@@ -84,7 +90,11 @@ sub disconnect {
     undef $dataset;
 }
 
+# API: Setup whatever is needed.
 sub setup {
+    # setup will be called after the connection to the database has
+    # been established.
+
     # Create table for sequences.
     unless ( $dbh->selectrow_arrayref("SELECT name".
 				      " FROM sqlite_master".
@@ -111,91 +121,80 @@ sub setup {
     # Caller will commit.
 }
 
+# API: Get a array ref with table names (lowcased).
 sub get_tables {
     my $self = shift;
     my @t;
     foreach ( $dbh->tables ) {
+	# SQLite returns table names with quotes.
+	# Our tables all start with an uppercase letter.
 	next unless /^"([[:upper:]].+)"$/i;
 	push(@t, lc($1));
     }
     \@t;
 }
 
-sub list {
-    my @ds;
+# API: List available data sources.
+sub list { [] }
 
-    eval {
-	@ds = DBI->data_sources("Pg");
-    };
-    # If the list cannot be established, @ds will be (undef).
-    return [] unless defined($ds[0]);
-    [ map { $_ =~ s/^.*?dbname=ebsqlite_// and $_ } @ds ];
+################ Sequences ################
+
+# Currently non-atomic, restricting to single user mode.
+
+sub _create_sequence {
+    my ($sn, $value) = (@_, 1);
+
+    $dbh->do("INSERT INTO eb_seq (name, value) VALUES (?, ?)",
+	     {}, $sn, $value);
+
+    $value;
 }
 
-sub _check_sequence {
-    my $sn = shift;
+sub _get_sequence {
+    my ($seq) = @_;
 
-    # Create sequence if it does not exist.
-    unless ( $dbh->selectrow_arrayref("SELECT name".
+    # Get the current (=next) value.
+    my $rr = $dbh->selectrow_arrayref("SELECT value".
 				      " FROM eb_seq".
-				      " WHERE name = ?", {},
-				      $sn) ) {
-	$dbh->do("INSERT INTO eb_seq".
-		 " (name, value)".
-		 " VALUES (?,?)", {}, $sn, 1);
-    }
+				      " WHERE name = ?", {}, $seq);
+
+    $rr ? $rr->[0] : undef;
 }
 
-my $dummy;
+sub _set_sequence {
+    my ($seq, $value) = @_;
 
-sub get_sequence {
-    my ($self, $seq) = @_;
-    croak("?INTERNAL ERROR: get sequence while not connected") unless $dbh;
+    $dbh->do("UPDATE eb_seq SET value = ? WHERE name = ?", {}, $value, $seq);
 
-    _check_sequence($seq);
-    my $value = $dbh->selectrow_arrayref("SELECT value".
-					 " FROM eb_seq".
-					 " WHERE name = ?", {}, $seq)->[0];
-    $dbh->do("UPDATE eb_seq".
-	     " SET value = ?".
-	     " WHERE name = ?", {}, $value+1, $seq);
-
-    $value + 1;
-}
-
-sub set_sequence {
-    my ($self, $seq, $value) = @_;
-    croak("?INTERNAL ERROR: set sequence while not connected") unless $dbh;
-
-    _check_sequence($seq);
-    $dbh->do("UPDATE eb_seq".
-	     " SET value = ?".
-	     " WHERE name = ?", {}, $value, $seq);
     return;
 }
 
-sub sqlfilter {
-    local $_ = shift;
-    my (@args) = @_;
+# API: Get the next value for a sequence, incrementing it.
+sub get_sequence {
+    my ($self, $seq) = @_;
 
-    # No sequences.
-    return if /^(?:create|drop)\s+sequence\b/i;
-
-    # Constraints are ignored in table defs, but an explicit alter needs to be skipped.
-    return if /^alter\s+table\b.*\badd\s+constraint\b/i;
-
-    # UNSOLVED: No insert into temp tables.
-    return if /^select\s+\*\s+into\s+temp\b/i;
-
-    # In-line now().
-    s/\(select\s+now\(\)\)/iso8601date()/ie;
-
-    # Fortunately, LIKE behaves mostly like ILIKE.
-    s/\bilike\b/like/gi;
-
-    return $_;
+    if ( my $v = _get_sequence($seq) ) {
+	_set_sequence($seq, $v+1);
+	return $v;
+    }
+    _create_sequence($seq, 2);
+    1;
 }
 
+# API: Set the next value for a sequence.
+sub set_sequence {
+    my ($self, $seq, $value) = @_;
+
+    _get_sequence($seq)
+      ? _set_sequence($seq, $value)
+      : _create_sequence($seq, $value);
+
+    return;
+}
+
+################ Interactive SQL ################
+
+# API: Interactive SQL.
 sub isql {
     my ($self, @args) = @_;
 
@@ -213,5 +212,63 @@ sub isql {
     # warn(sprintf("=> ret = %02x", $res)."\n") if $res;
 
 }
+
+################ PostgreSQL Compatibility ################
+
+# API: feature  Can we?
+sub feature {
+    my ($self, $feat) = @_;
+    $feat = lc($feat);
+
+    # Known features:
+    #
+    # pgcopy	F PostgreSQL fast input copying
+    # prepcache T Statement handles may be cached
+    # filter    C SQL filter routine
+    #
+    # Unknown/unsupported features may be ignored.
+
+    return \&sqlfilter if $feat eq "filter";
+
+    return 1 if $feat eq "prepcache";
+
+    # Return false for all others.
+    return;
+}
+
+sub sqlfilter {
+    local $_ = shift;
+    my (@args) = @_;
+
+    # No sequences.
+    return if /^(?:create|drop)\s+sequence\b/i;
+
+    # Constraints are ignored in table defs, but an
+    # explicit alter needs to be skipped.
+    return if /^alter\s+table\b.*\badd\s+constraint\b/i;
+
+    # UNSOLVED: No insert into temp tables.
+    return if /^select\s+\*\s+into\s+temp\b/i;
+
+    # Fortunately, LIKE behaves mostly like ILIKE.
+    s/\bilike\b/like/gi;
+
+    return $_;
+}
+
+sub register_functions {
+
+    $dbh->func("now", 0,
+	       \&iso8601date,
+	       "create_function");
+
+    $dbh->func("sign", 1,
+	       sub {
+		   defined $_[0] ? $_[0] <=> 0 : 0
+	       },
+	       "create_function");
+}
+
+################ End PostgreSQL Compatibility ################
 
 1;
