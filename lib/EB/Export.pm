@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.21 2006/07/09 16:45:58 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.22 2006/10/10 18:42:26 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul  8 21:25:05 2006
-# Update Count    : 181
+# Last Modified On: Sun Oct  8 19:13:59 2006
+# Update Count    : 183
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -211,45 +211,18 @@ sub _opening {
       unless $dt == $ct;
     $out .= "\n# " .  _T("Totaal") . "\n" . "adm_balanstotaal " . numfmt_plain($dt) . "\n";
 
-=begin wrong
-
-    $sth = $dbh->sql_exec("SELECT dbk_desc, bsk_nr, bsr_rel_code, bsk_desc, bsk_amount, bsk_date, dbk_type".
-			  " FROM Boekstukken, Dagboeken, Boekstukregels".
-			  " WHERE dbk_id = bsk_dbk_id".
-			  " AND bsr_bsk_id = bsk_id".
-			  " AND bsr_nr = 1".
-			  " AND bsk_bky IS NULL".
-			  " ORDER BY dbk_id, bsk_nr, bsk_date");
-
-    if ( $sth->rows ) {
-	$out .= "\n# "._T("Openstaande posten")."\n\n";
-    }
-
-    while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($dbk_desc, $bsk_nr, $bsr_rel_code, $bsk_desc, $bsk_amount, $bsk_date, $dbk_type) = @$rr;
-	$dbk_desc = lc($dbk_desc);
-	$dbk_desc =~ s/[^[:alnum:]]/_/g;
-	$bsk_amount = 0-$bsk_amount if $dbk_type == DBKTYPE_INKOOP;
-	$out .= join(" ",
-		     "adm_relatie",
-		     $dbk_desc . ":" . $bsk_nr,
-		     $bsk_date, _quote($bsk_desc), _quote($bsr_rel_code),
-		     numfmt_plain($bsk_amount)). "\n";
-    }
-
-=cut
-
     $sth = $dbh->sql_exec("SELECT bsk_id".
 			  " FROM Boekstukken".
 			  " WHERE bsk_date <= ( SELECT bky_end FROM Boekjaren WHERE bky_code = ? )".
 			  " ORDER BY bsk_dbk_id, bsk_nr, bsk_date",
 			  BKY_PREVIOUS);
 
-    if ( $sth->rows ) {
+    my $rr = $sth->fetchrow_arrayref;
+    if ( $rr ) {
 	$out .= "\n# "._T("Openstaande posten")."\n\n";
     }
 
-    while ( my $rr = $sth->fetchrow_arrayref ) {
+    while ( $rr ) {
 	my ($bsk_id) = @$rr;
 	$out .= "adm_relatie " .
 	  EB::Booking::Decode->decode
@@ -262,6 +235,7 @@ sub _opening {
 		 total  => 0,
 		 noivbskdesc => 1,
 		 debcrd => 0 }) . "\n";
+	$rr = $sth->fetchrow_arrayref;
     }
 
     $out .= "\n# "._T("Openen van de administratie")."\n\nadm_open\n";
