@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.47 2006/10/07 21:10:38 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.48 2006/10/10 18:42:06 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  7 23:06:49 2006
-# Update Count    : 372
+# Last Modified On: Mon Oct  9 18:45:10 2006
+# Update Count    : 388
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -143,28 +143,6 @@ sub check_db {
 	  unless $rr->[0];
     }
 
-=begin notanymore
-
-    # Verify some grootboekrekeningen.
-    # We cannot do this anymore now we have free choice of accounts for ledgers.
-    my $sth = $self->sql_exec("SELECT acc_id, acc_desc, dbk_id, dbk_type, dbk_desc FROM Dagboeken, Accounts".
-			      " WHERE dbk_acc_id = acc_id");
-    while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($acc_id, $acc_desc, $dbk_id, $dbk_type, $dbk_desc) = @$rr;
-	if ( $dbk_type == DBKTYPE_INKOOP && $acc_id != $self->std_acc("crd") ) {
-	    $fail++;
-	    warn("?".__x("Verkeerde grootboekrekening {acct} ({adesc}) voor dagboek {dbk} ({ddesc})",
-			 acct => $acc_id, adesc => $acc_desc, dbk => $dbk_id, ddesc => $dbk_desc)."\n")
-	}
-	elsif ( $dbk_type == DBKTYPE_VERKOOP && $acc_id != $self->std_acc("deb") ) {
-	    $fail++;
-	    warn("?".__x("Verkeerde grootboekrekening {acct} ({adesc}) voor dagboek {dbk} ({ddesc})",
-			 acct => $acc_id, adesc => $acc_desc, dbk => $dbk_id, ddesc => $dbk_desc)."\n")
-	}
-    }
-
-=cut
-
     die("?"._T("CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT")."\n") if $fail;
 
     $self->setup;
@@ -179,6 +157,7 @@ sub setup {
     my $sql = "SELECT * INTO TEMP TAccounts FROM Accounts WHERE acc_id = 0";
     $sql = $self->feature("filter")->($sql) if $self->feature("filter");
     $dbh->do($sql) if $sql;
+
     # Make it semi-permanent (this connection only).
     $dbh->commit;
 }
@@ -418,9 +397,11 @@ sub connectdb {
     $dbh;
 }
 
-sub disconnect {
+sub disconnectdb {
     my ($self) = shift;
-    $dbpkg ||= $self->_loaddbbackend;
+    return unless $dbpkg;
+    return unless $dbh;
+    resetdbcache($self);
     $dbpkg->disconnect;
     undef $dbh;
 }
@@ -452,16 +433,16 @@ sub tablesdb {
 sub cleardb {
     my ($self) = shift;
     $dbpkg ||= $self->_loaddbbackend;
-    $dbpkg->clear;
     $self->resetdbcache;
+    $dbpkg->clear;
 }
 
 sub createdb {
     my ($self, $dbname) = @_;
     $dbpkg ||= $self->_loaddbbackend;
     Carp::confess("DB backend setup failed") unless $dbpkg;
-    $dbpkg->create($dbname);
     $self->resetdbcache;
+    $dbpkg->create($dbname);
 }
 
 sub driverdb {
@@ -529,7 +510,8 @@ sub sql_prep {
     my ($self, $sql) = @_;
     $dbh ||= $self->connectdb();
     $sql = $self->feature("filter")->($sql) if $self->feature("filter");
-    if ( defined($sth{$sql}) && $self->feature("prepcache") ) {
+    return $dbh->prepare($sql) unless $self->feature("prepcache");
+    if ( defined($sth{$sql}) ) {
 	$sql_prep_cache_hits++;
 	return $sth{$sql};
     }
@@ -537,7 +519,7 @@ sub sql_prep {
     $sth{$sql} = $dbh->prepare($sql);
 }
 
-END {
+sub prepstats {
     warn("SQL Prep Cache: number of hits = ",
 	 $sql_prep_cache_hits || 0, ", misses = ",
 	 $sql_prep_cache_miss || 0, "\n")
@@ -547,14 +529,9 @@ END {
 sub resetdbcache {
     my ($self) = @_;
     %sth = ();
+    return unless $self;
     $self->std_acc("");
     $self->adm("");
-}
-
-sub close {
-    my ($self) = @_;
-    $self->disconnectdb;
-    $self->resetdbcache;
 }
 
 sub show_sql($$@) {
@@ -633,14 +610,8 @@ sub commit {
     $dbh->commit;
 }
 
-sub disconnectdb {
-    my ($self) = @_;
-
-    return unless $dbh;
-    $dbh->disconnect;
-}
-
 END {
+    prepstats();
     disconnectdb();
 }
 
