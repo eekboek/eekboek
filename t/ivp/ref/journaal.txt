@@ -68,8 +68,8 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-03-18    Omzet cursussen                8300               3000,00    Perl Cursus 2e bet.
 
 2005-03-31  Postbank:8                                                   ADSL, Tel.
-2005-03-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-03-31    Crediteuren                    1600     101,52               *Telefoonkosten               KPN
+2005-03-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-03-31    Postbank                       1120                124,32    ADSL, Tel.
 
 2005-04-05  Inkoop:6                                                     Internet
@@ -112,8 +112,8 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 
 2005-05-31  Postbank:12                                                  ADSL, ACME, Tel.
 2005-05-31    Postbank                       1120     469,98               ADSL, ACME, Tel.
-2005-05-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-05-31    Crediteuren                    1600     102,22               *Telefoonkosten               KPN
+2005-05-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-05-31    Debiteuren                     1200                595,00    *Perl Cursus                  ACME
 
 2005-06-07  Inkoop:9                                                     Internet
@@ -150,8 +150,8 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-07-16    Omzet advisering BTW hoog      8000                600,00    Consultancy
 
 2005-07-31  Postbank:16                                                  ADSL, Tel.
-2005-07-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-07-31    Crediteuren                    1600     104,66               *Telefoonkosten               KPN
+2005-07-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-07-31    Postbank                       1120                127,46    ADSL, Tel.
 
 2005-08-09  Inkoop:12                                                    Internet
@@ -188,8 +188,8 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-09-17    Postbank                       1120                  2,70    Girotel
 
 2005-09-30  Postbank:20                                                  ADSL, Tel.
-2005-09-30    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-09-30    Crediteuren                    1600     108,72               *Telefoonkosten               KPN
+2005-09-30    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-09-30    Postbank                       1120                131,52    ADSL, Tel.
 
 2005-10-11  Inkoop:15                                                    Internet
@@ -217,8 +217,8 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-11-17    Crediteuren                    1600                109,67    Telefoonkosten
 
 2005-11-30  Postbank:23                                                  ADSL, Tel.
-2005-11-30    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-11-30    Crediteuren                    1600     109,67               *Telefoonkosten               KPN
+2005-11-30    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-11-30    Postbank                       1120                132,47    ADSL, Tel.
 
 2005-12-06  Inkoop:18                                                    Internet
