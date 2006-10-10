@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.6 2006/09/28 13:21:17 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.7 2006/10/10 18:47:24 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -33,7 +33,15 @@ unlink(<*.txt>);
 unlink(<*.html>);
 unlink(<*.csv>);
 
+if ( $0 =~ /\d+_ivp_(.+).t/ ) {
+    $ENV{EB_DBDRIVER} = $1;
+}
+$ENV{EB_DBDRIVER} ||= "postgres";
+#diag("$0: Using database driver: $ENV{EB_DBDRIVER}");
+
 my @ebcmd = qw(-MEB::Shell -e shell -- -X -f ivp.conf --echo);
+push(@ebcmd, "-D", "database:driver=$ENV{EB_DBDRIVER}")
+  if $ENV{EB_DBDRIVER};
 
 unshift(@ebcmd, map { ("-I",
 		       "../../$_"
