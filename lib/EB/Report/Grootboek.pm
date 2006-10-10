@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.27 2006/09/25 13:02:01 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.28 2006/10/10 18:44:04 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Sep 25 14:13:28 2006
-# Update Count    : 268
+# Last Modified On: Tue Oct 10 20:36:54 2006
+# Update Count    : 273
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -97,7 +97,8 @@ sub perform {
 				 " ORDER BY jnl_bsr_date, jnl_bsk_id, jnl_bsr_seq",
 				 $acc_id, $begin, $end);
 
-	if ( !$acc_ibalance && !$sth->rows ) {
+	my $rr = $sth->fetchrow_arrayref;
+	if ( !$acc_ibalance && !$rr ) {
 	    $sth->finish;
 	    next;
 	}
@@ -128,7 +129,7 @@ sub perform {
 	my $dtot = 0;
 	my $ctot = 0;
 	my $dcsplit;		# any acct was DC split
-	while ( my $rr = $sth->fetchrow_arrayref ) {
+	while ( $rr ) {
 	    my ($amount, $damount, $bsk_id, $bsk_desc, $bsk_nr,
 		$dbk_desc, $dbk_dcsplit, $date, $desc, $rel) = @$rr;
 
@@ -147,6 +148,7 @@ sub perform {
 			bsk    => join(":", $dbk_desc, $bsk_nr),
 			$rel ? ( rel => $rel) : (),
 		      }) if $detail > 1;
+	    $rr = $sth->fetchrow_arrayref;
 	}
 
 	my $a = { _style => 't2', desc   => _T("Totaal mutaties") };
@@ -158,7 +160,7 @@ sub perform {
 	}
 	elsif ( $ctot > $dtot ) {
 	    $a->{crd} = numfmt($ctot-$dtot);
-	    $mdgrand += $dtot - $ctot;
+	    $mcgrand += $ctot - $dtot;
 	}
 	else {
 	    $a->{deb} = numfmt($dtot-$ctot);
