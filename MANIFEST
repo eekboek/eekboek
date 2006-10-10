@@ -158,7 +158,9 @@ script/ebshell
 t/10_basic.t
 t/20_dates.t
 t/80_postgresql.t
+t/81_sqlite.t
 t/90_ivp.t
+t/91_ivp_sqlite.t
 t/ivp/ivp.conf
 t/ivp/ref/balans.html
 t/ivp/ref/balans.txt
