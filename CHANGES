@@ -1,10 +1,25 @@
+1.01.00
+
+	Support voor SQLite database. Inclusief IVP test.
+
+	Eliminatie PostgreSQL afhankelijkheden.
+
+	Stabiele sorteervolgorde voor Journaal.
+
+	IVP gebruikt nu de bestanden uit de example directory.
+
+	Database versie 1.0.10; migratie beschikbaar.
+
+	WAARSCHUWING: Bij teruggaan naar 1.0.9 moet de database eerst
+	fysiek worden verwijderd!
+
 1.00.04
 
 	Trace messages voor SET/GET SEQUENCE.
 
 	Update EekBoek.spec[.in] met goede URLs en zo.
 
-1.00.03
+1.00.03	2006-10-06 15:05
 
 	Fix bug met TAccounts tabel bij interactief commando import.
 
