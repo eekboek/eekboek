@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.14 2006/06/20 20:39:09 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.15 2006/10/11 12:33:21 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 22:34:16 2006
-# Update Count    : 249
+# Last Modified On: Fri Sep 29 12:53:41 2006
+# Update Count    : 252
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -165,6 +165,9 @@ sub readline {
 	return unless @{$self->{inputstack}};
 	($self->{readline}, $self->{unicode}) = @{pop(@{$self->{inputstack}})};
     }
+    # Command parsing gets stuck on leading blanks.
+    $ret =~ s/^\s+//;
+    $ret =~ s/\s+$//;
     return $ret;
 }
 

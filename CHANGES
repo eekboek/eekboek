@@ -1,3 +1,35 @@
+1.00.04
+
+	Trace messages voor SET/GET SEQUENCE.
+
+	Update EekBoek.spec[.in] met goede URLs en zo.
+
+1.00.03
+
+	Fix bug met TAccounts tabel bij interactief commando import.
+
+	Fix bug in --ident display.
+
+1.00.02	2006-09-30 13:54
+
+	Forceer UNICODE onder Windows, tenzij locale:unicode dit
+	overruled.
+
+	Fix een bug in de inputafhandeling waar regels die met
+	whitespace geheel worden genegeerd.
+
+	Fix bug in het opstarten van het (ongedocumenteerde) sql
+	commando.
+
+1.00.01	2006-09-28 15:43
+
+	Fix een bug waardoor de TAccounts tabel niet werd aangemaakt
+	in geval van --import. Over het algemeen onschadelijk, tenzij
+	de mutaties.eb een opdracht bevat die TAccounts nodig heeft,
+	zoals een jaareinde.
+
+	Fix detectie van Windows.
+
 1.00	2006-08-27 21:15
 
 	Op de kop af 18 maanden nadat ik de eerste regels intoetste tot wat nu

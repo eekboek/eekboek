@@ -15,9 +15,9 @@
 Name: %modname
 Version: %modversion
 Release: 1
-Source: http://www.squirrel.nl/eekboek/dl/%{name}-%{version}.tar.gz
+Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
 BuildArch: noarch
-URL: http://www.eekboek.nl/
+URL: http://www.eekboek.nl
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
 Prefix: %{_prefix}
 Vendor: Squirrel Consultancy

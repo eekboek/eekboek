@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.82 2006/10/10 18:42:42 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.83 2006/10/11 12:33:21 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  8 19:18:45 2006
-# Update Count    : 825
+# Last Modified On: Wed Oct 11 14:27:13 2006
+# Update Count    : 826
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,7 +24,7 @@ use strict;
 my $my_package; BEGIN { $my_package = 'EekBoek' }
 
 # Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
+my ($my_name, $my_version) = $RCS_Id =~ /: (.+),v ([\d.]+)/;
 # Tack '*' if it is not checked in into RCS.
 $my_version .= '*' if length('$Locker:  $ ') > 12;
 
