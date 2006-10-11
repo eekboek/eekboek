@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.73 2006/10/07 20:47:10 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.74 2006/10/11 12:16:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  7 12:22:35 2006
-# Update Count    : 167
+# Last Modified On: Wed Oct 11 14:15:59 2006
+# Update Count    : 168
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -17,8 +17,8 @@ package EB;
 use strict;
 use base qw(Exporter);
 
-our $VERSION;
-$VERSION = "1.01.00";
+use EekBoek;
+our $VERSION = $EekBoek::VERSION;
 
 our @EXPORT;
 our @EXPORT_OK;
