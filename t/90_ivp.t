@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.7 2006/10/10 18:47:24 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.8 2006/10/11 13:52:11 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -11,6 +11,28 @@ BEGIN { use_ok('IPC::Run3') }
 BEGIN { use_ok('EB::Config', qw(ivp)) }
 BEGIN { use_ok('EB') }
 BEGIN { use_ok('File::Copy') }
+
+my $dbdriver = $ENV{EB_DBDRIVER};
+if ( !$dbdriver && $0 =~ /\d+_ivp_(.+).t/ ) {
+    $dbdriver = $1;
+}
+
+my $dbddrv;
+if ( !$dbdriver ) {
+    $dbdriver = "postgres";
+    $dbddrv = "DBD::Pg";
+}
+elsif ( $dbdriver eq "sqlite" ) {
+    $dbddrv = "DBD::SQLite";
+}
+else {
+    BAIL_OUT("Unsupported database driver: $dbdriver");
+}
+
+SKIP: {
+
+eval "require $dbddrv";
+skip("DBI $dbdriver driver ($dbddrv) not installed", 37) if $@;
 
 chdir("t") if -d "t";
 chdir("ivp") if -d "ivp";
@@ -33,15 +55,8 @@ unlink(<*.txt>);
 unlink(<*.html>);
 unlink(<*.csv>);
 
-if ( $0 =~ /\d+_ivp_(.+).t/ ) {
-    $ENV{EB_DBDRIVER} = $1;
-}
-$ENV{EB_DBDRIVER} ||= "postgres";
-#diag("$0: Using database driver: $ENV{EB_DBDRIVER}");
-
 my @ebcmd = qw(-MEB::Shell -e shell -- -X -f ivp.conf --echo);
-push(@ebcmd, "-D", "database:driver=$ENV{EB_DBDRIVER}")
-  if $ENV{EB_DBDRIVER};
+push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
 
 unshift(@ebcmd, map { ("-I",
 		       "../../$_"
@@ -121,6 +136,8 @@ vfy([@ebcmd, qw(-c btwaangifte j)], "btw.html");
 
 # Verify: CSV generatie.
 vfy([@ebcmd, qw(-c balans --detail=2 --gen-csv)], "balans2.csv");
+
+}	# end SKIP section
 
 ################ subroutines ################
 
