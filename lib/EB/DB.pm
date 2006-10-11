@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.49 2006/10/11 12:33:21 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.50 2006/10/11 12:44:06 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 11 14:26:44 2006
-# Update Count    : 389
+# Last Modified On: Wed Oct 11 14:40:55 2006
+# Update Count    : 390
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -152,12 +152,6 @@ sub setup {
     my ($self) = @_;
 
     setupdb();
-
-    $self->setup;
-}
-
-sub setup {
-    my ($self) = @_;
 
     # Create temp table for account mangling.
     my $sql = "SELECT * INTO TEMP TAccounts FROM Accounts WHERE acc_id = 0";
