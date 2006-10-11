@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.9 2006/06/20 20:38:27 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.10 2006/10/11 12:31:16 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 20 22:04:08 2006
-# Update Count    : 46
+# Last Modified On: Wed Oct 11 14:15:10 2006
+# Update Count    : 47
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -21,7 +21,6 @@ $data =
     installtype     => 'site',
     modname         => 'EekBoek',
     distname        => 'EekBoek',
-    version_from    => File::Spec->catfile("lib", "EB.pm"),
     license         => "perl",
     script_files    => [ map { File::Spec->catfile("script", $_) }
 			 qw(ebshell) ],
