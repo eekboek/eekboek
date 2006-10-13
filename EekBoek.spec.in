@@ -1,4 +1,5 @@
 %define modname EekBoek
+%define modsuffix -unstable
 %define lcname eekboek
 %define modversion 0.59
 
@@ -12,13 +13,13 @@
 %{?_without_dbtests: %{expand: %%define dbtests 0}}
 ################ End Build Options ################
 
-Name: %modname
+Name: %modname%{modsuffix}
 Version: %modversion
 Release: 1
-Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
+Source: http://www.eekboek.nl/dl/%{modname}-%{version}.tar.gz
 BuildArch: noarch
 URL: http://www.eekboek.nl
-BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
+BuildRoot: %{_tmppath}/rpm-buildroot-%{modname}-%{version}-%{release}
 Prefix: %{_prefix}
 Vendor: Squirrel Consultancy
 Packager: Johan Vromans <jvromans@squirrel.nl>
@@ -33,7 +34,7 @@ Requires: perl(DBD::Pg) >= 1.41
 
 BuildRequires: perl >= 5.8
 
-#Provides: %{name}   = %{version}
+Provides: %{modname}   = %{version}
 #Provides: %{lcname} = %{version}
 
 Summary: Bookkeeping software for small and medium-size businesses
@@ -51,7 +52,7 @@ is in the works (help appreciated).
 
 %if %{gui}
 %package gui
-Summary: GUI enhancements for %{name}.
+Summary: GUI enhancements for %{modname}.
 Group: Applications/Productivity
 AutoReqProv: 0
 Requires: %{name} = %{version}
@@ -62,7 +63,7 @@ The wxWidgets extension for %{name}.
 %endif
 
 %prep
-%setup -q
+%setup -q -n %{modname}-%{modversion}
 
 %build
 %{__perl} Build.PL
@@ -81,7 +82,7 @@ mv blib/lib/EB/example .
 %install
 
 %define ebconf  %{_sysconfdir}/%{lcname}
-%define ebshare %{_datadir}/%{name}-%{version}
+%define ebshare %{_datadir}/%{modname}%{modsuffix}-%{version}
 
 %{__rm} -rf $RPM_BUILD_ROOT
 
