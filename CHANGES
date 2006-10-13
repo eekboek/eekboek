@@ -6,6 +6,9 @@
 
 	Stabiele sorteervolgorde voor Journaal.
 
+	IVP voor een database wordt overgeslagen wanneer geen driver
+	voor die database beschikbaar is.
+
 	IVP gebruikt nu de bestanden uit de example directory.
 
 	Database versie 1.0.10; migratie beschikbaar.
