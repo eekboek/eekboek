@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul  6 07:52:54 2006
-# Update Count    : 83
+# Last Modified On: Fri Oct 13 15:25:25 2006
+# Update Count    : 92
 # Status          : Experimental
 
 use strict;
@@ -53,7 +53,7 @@ my $build = $class->new
    meta_merge	       =>
      { resources =>
 	{
-	   homepage => 'http://www.squirrel.nl/eekboek',
+	   homepage => 'http://www.eekboek.nl',
 	   MailingList => 'http://lists.sourceforge.net/lists/listinfo/eekboek',
 	 }
      },
