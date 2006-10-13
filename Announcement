@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.01.00 (devel) is beschikbaar
+Subject: EekBoek 1.01.01 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,12 +9,12 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.01.00, eerste ontwikkel-release na 1.00 en voorbereidend op
-1.02, is beschikbaar.
+EekBoek 1.01.01, ontwikkel-release na 1.00 en voorbereidend op 1.02,
+is beschikbaar.
 
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.00-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.00-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.01.00.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.01-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.01-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.01.01.tar.gz
 * http://www.eekboek.nl/dl/EekBoek101.ppd
 
 LET OP: Dit is een ontwikkelversie. Garantie tot aan de voordeur.
@@ -32,24 +32,12 @@ De aanbevolen manier van installeren is door middel van de RPM
 
 Belangrijkste wijzigingen:
 
-* Support voor SQLite database. Inclusief IVP test.
-  LET OP: SINGLE USER ONLY!
-
-* Eliminatie PostgreSQL afhankelijkheden.
-
-* Stabiele sorteervolgorde voor Journaal.
-
-* IVP voor een database wordt overgeslagen wanneer geen driver voor
-  die database beschikbaar is.
-
-* IVP gebruikt nu de bestanden uit de example directory.
-
-* Database versie 1.0.10; migratie beschikbaar.
-
-* WAARSCHUWING: Bij teruggaan naar 1.0.9 moet de database eerst fysiek
-  worden verwijderd!
+* Database migratie 1.00.x -> 1.01.x 
 
 * Alle wijzigingen uit de 1.00 branch t/m 1.00.04.
+
+WAARSCHUWING: Bij teruggaan naar 1.00.x moet de database eerst fysiek
+worden verwijderd!
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl

@@ -1,4 +1,12 @@
-1.01.00
+1.01.01	2006-10-13 15:59
+
+	Fix migratieprobleem 1.0.9 -> 1.0.10.
+
+1.01.00	2006-10-13 14:34
+
+	Retrofit: Hernoem de rpm's naar EekBoek-unstable.
+
+1.01.00	2006-10-11 15:15
 
 	Support voor SQLite database. Inclusief IVP test.
 
@@ -16,7 +24,7 @@
 	WAARSCHUWING: Bij teruggaan naar 1.0.9 moet de database eerst
 	fysiek worden verwijderd!
 
-1.00.04
+1.00.04	2006-10-11 14:59
 
 	Trace messages voor SET/GET SEQUENCE.
 
