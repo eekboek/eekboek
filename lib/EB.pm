@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.76 2006/10/16 16:19:15 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.77 2006/10/16 16:43:56 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 16 15:00:43 2006
-# Update Count    : 188
+# Last Modified On: Mon Oct 16 18:42:30 2006
+# Update Count    : 189
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -72,7 +72,7 @@ our @month_names;
 our @days;
 our @day_names;
 our $ident;
-# our $url = "http://www.eekboek.nl";
+our $url = "http://www.eekboek.nl";
 
 # Most elegant (and correct) would be to use an INIT block here, but
 # currently PAR is not able to handle INIT blocks.
