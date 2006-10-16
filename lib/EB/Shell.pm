@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.84 2006/10/16 10:18:57 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.85 2006/10/16 16:19:48 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 16 12:17:35 2006
-# Update Count    : 827
+# Last Modified On: Mon Oct 16 15:01:55 2006
+# Update Count    : 829
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,7 +21,8 @@ use strict;
 # require 'common.pl';
 
 # Package name.
-my $my_package; BEGIN { $my_package = 'EekBoek' }
+use EekBoek;
+my $my_package; BEGIN { $my_package = $EekBoek::PACKAGE }
 
 # Program name and version.
 my ($my_name, $my_version) = $RCS_Id =~ /: (.+),v ([\d.]+)/;
