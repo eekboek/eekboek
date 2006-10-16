@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.83 2006/10/11 12:33:21 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.84 2006/10/16 10:18:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 11 14:27:13 2006
-# Update Count    : 826
+# Last Modified On: Mon Oct 16 12:17:35 2006
+# Update Count    : 827
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -438,10 +438,6 @@ sub parseline {
 ################ Subroutines ################
 
 use EB;
-
-# Standard options for report generating backends.
-my @outopts;
-INIT { @outopts = qw(html csv text output=s page=i) }
 
 # Plug in some commands dynamically.
 sub _plug_cmds {
