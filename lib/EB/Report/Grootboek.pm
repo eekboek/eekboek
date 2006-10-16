@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.29 2006/10/16 16:21:14 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.30 2006/10/16 16:44:22 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 16 18:15:33 2006
-# Update Count    : 280
+# Last Modified On: Mon Oct 16 18:40:49 2006
+# Update Count    : 282
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -112,13 +112,15 @@ sub perform {
 	if ( $acc_ibalance ) {
 	    if ( $acc_ibalance < 0 ) {
 		$a->{crd} = numfmt(-$acc_ibalance);
+		$a->{deb} = $n0;
 	    }
 	    else {
+		$a->{crd} = $n0;
 		$a->{deb} = numfmt($acc_ibalance);
 	    }
 	}
 	else {
-	    $a->{deb} = $n0;
+	    $a->{deb} = $a->{crd} = $n0;
 	}
 
 	$rep->add($a) if $detail > 0;
@@ -190,7 +192,7 @@ sub perform {
 		  });
 	$rep->add({ _style => 'tg',
 		    desc   => _T("Totaal"),
-		    $cgrand ? ( crd => numfmt($cgrand) ) : (),
+		    $cgrand || 1        ? ( crd => numfmt($cgrand) ) : (),
 		    $dgrand || !$cgrand ? ( deb => numfmt($dgrand) ) : (),
 		   });
     }
