@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.75 2006/10/11 12:33:21 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.76 2006/10/16 16:19:15 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 11 14:25:57 2006
-# Update Count    : 171
+# Last Modified On: Mon Oct 16 15:00:43 2006
+# Update Count    : 188
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -17,8 +17,9 @@ package EB;
 use strict;
 use base qw(Exporter);
 
-use EekBoek;
 our $VERSION = $EekBoek::VERSION;
+use EekBoek;
+BEGIN { $VERSION = $EekBoek::VERSION }
 
 our @EXPORT;
 our @EXPORT_OK;
@@ -71,18 +72,22 @@ our @month_names;
 our @days;
 our @day_names;
 our $ident;
-our $url = "http://www.eekboek.nl";
+# our $url = "http://www.eekboek.nl";
 
-INIT {
-    # Banner. Wow! Static code!
+# Most elegant (and correct) would be to use an INIT block here, but
+# currently PAR is not able to handle INIT blocks.
+BEGIN {
+    return if $ident;		# already done
+
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
     $year .= "-$thisyear" unless $year == $thisyear;
-    $ident = __x("EekBoek {version}", version => $VERSION);
-    my $u = $cfg->val(qw(locale unicode),0);
+    $ident = __x("{name} {version}",
+		 name    => $EekBoek::PACKAGE,
+		 version => $EekBoek::VERSION);
     my @locextra;
     push(@locextra, _T("Nederlands")) if LOCALISER;
-    push(@locextra, "Latin1") unless $u;
+    push(@locextra, "Latin1") unless $cfg->val(qw(locale unicode), 0);
     warn(__x("{ident}{extra}{locale} -- Copyright {year} Squirrel Consultancy",
 		 ident   => $ident,
 		 extra   => ($app ? " Wx " : ""),
