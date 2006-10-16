@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.49 2006/10/16 10:14:16 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.50 2006/10/16 10:37:21 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 16 12:12:52 2006
-# Update Count    : 634
+# Last Modified On: Mon Oct 16 12:36:43 2006
+# Update Count    : 635
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -508,7 +508,7 @@ sub _tsv {
 sub sql_eekboek {
     my $f = findlib("schema/eekboek.sql");
     open (my $fh, '<', $f)
-      or die("?"._T("Installatiefout -- geen schema")."\n");
+      or die("?"._T("Installatiefout -- geen database schema")."\n");
 
     local $/;
     my $sql = <$fh>;
