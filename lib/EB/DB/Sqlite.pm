@@ -1,10 +1,10 @@
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.3 2006/10/10 18:43:41 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.4 2006/10/16 16:20:34 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 10 20:05:42 2006
-# Update Count    : 123
+# Last Modified On: Sun Oct 15 14:53:30 2006
+# Update Count    : 134
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,14 @@ use warnings;
 use EB;
 use DBI;
 
+my $CONCURRENT;
+sub CONCURRENT() {
+    return $CONCURRENT if defined $CONCURRENT;
+    $CONCURRENT = $cfg->val(__PACKAGE__, "concurrent", 1);
+}
+
 my $dbh;			# singleton
+my $sdb;			# singleton, DB for sequences
 my $dataset;
 
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
@@ -47,8 +54,11 @@ sub create {
     # Create (empty) db file.
     open(my $db, '>', $dbname);
     close($db);
-    unlink("$db-journal")
+    unlink("$dbname-journal")
       or warn("%".__x("Database journal voor {db} verwijderd",
+		      db => $dbname)."\n");
+    unlink("$dbname-seq")
+      or warn("%".__x("Database sequences voor {db} verwijderd",
 		      db => $dbname)."\n");
 }
 
@@ -75,6 +85,17 @@ sub connect {
 		     err => $DBI::errstr)."\n");
     $dataset = $dbname;
 
+    if ( CONCURRENT ) {
+	$sdb = DBI::->connect(_dsn($dbname)."-seq")
+	  or die("?".__x("Database verbindingsprobleem: {err}",
+			 err => $DBI::errstr)."\n");
+	$sdb->{RaiseError} = 1;
+	$sdb->{AutoCommit} = 0;
+    }
+    else {
+	$sdb = $dbh;
+    }
+
     # Create some missing functions.
     register_functions();
 
@@ -86,7 +107,9 @@ sub disconnect {
     my ($self) = @_;
     return unless $dbh;
     $dbh->disconnect;
+    $sdb->disconnect if CONCURRENT;
     undef $dbh;
+    undef $sdb;
     undef $dataset;
 }
 
@@ -96,13 +119,14 @@ sub setup {
     # been established.
 
     # Create table for sequences.
-    unless ( $dbh->selectrow_arrayref("SELECT name".
+    unless ( $sdb->selectrow_arrayref("SELECT name".
 				      " FROM sqlite_master".
 				      " WHERE name = 'eb_seq'".
 				      " AND type = 'table'") ) {
-	$dbh->do("CREATE TABLE eb_seq".
+	$sdb->do("CREATE TABLE eb_seq".
 		 " (name TEXT PRIMARY KEY,".
 		 "  value INT)");
+	$sdb->commit if CONCURRENT;
     }
 
     # Clone Accounts table into TAccounts.
@@ -144,8 +168,9 @@ sub list { [] }
 sub _create_sequence {
     my ($sn, $value) = (@_, 1);
 
-    $dbh->do("INSERT INTO eb_seq (name, value) VALUES (?, ?)",
+    $sdb->do("INSERT INTO eb_seq (name, value) VALUES (?, ?)",
 	     {}, $sn, $value);
+    $sdb->commit if CONCURRENT;
 
     $value;
 }
@@ -154,7 +179,7 @@ sub _get_sequence {
     my ($seq) = @_;
 
     # Get the current (=next) value.
-    my $rr = $dbh->selectrow_arrayref("SELECT value".
+    my $rr = $sdb->selectrow_arrayref("SELECT value".
 				      " FROM eb_seq".
 				      " WHERE name = ?", {}, $seq);
 
@@ -164,7 +189,8 @@ sub _get_sequence {
 sub _set_sequence {
     my ($seq, $value) = @_;
 
-    $dbh->do("UPDATE eb_seq SET value = ? WHERE name = ?", {}, $value, $seq);
+    $sdb->do("UPDATE eb_seq SET value = ? WHERE name = ?", {}, $value, $seq);
+    $sdb->commit if CONCURRENT;
 
     return;
 }
