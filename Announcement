@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.01.01 (unstable) is beschikbaar
+Subject: EekBoek 1.01.02 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,12 +9,12 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.01.01, ontwikkel-release na 1.00 en voorbereidend op 1.02,
+EekBoek 1.01.02, ontwikkel-release na 1.00 en voorbereidend op 1.02,
 is beschikbaar.
 
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.01-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.01-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.01.01.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.02-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.02-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.01.02.tar.gz
 * http://www.eekboek.nl/dl/EekBoek101.ppd
 
 LET OP: Dit is een ontwikkelversie. Garantie tot aan de voordeur.
@@ -32,9 +32,16 @@ De aanbevolen manier van installeren is door middel van de RPM
 
 Belangrijkste wijzigingen:
 
-* Database migratie 1.00.x -> 1.01.x 
+* Fix bux in export van :dc property voor dagboeken.
 
-* Alle wijzigingen uit de 1.00 branch t/m 1.00.04.
+* Foutmelding "geen schema" is nu "geen database schema" om
+  onderscheid te maken met het rekening schema.
+
+* Kleine workarounds i.v.m. het INIT block probleem van PAR.
+
+* Multi-user implementatie van sequences voor SQLite. Deze
+  database zou daarom nu ook volledig multi-user moeten kunnen
+  worden gebruikt.
 
 WAARSCHUWING: Bij teruggaan naar 1.00.x moet de database eerst fysiek
 worden verwijderd!
