@@ -1,3 +1,19 @@
+1.01.03
+
+
+1.01.02 2006-10-16 22:36
+
+	Fix bux in export van :dc property voor dagboeken.
+
+	Foutmelding "geen schema" is nu "geen database schema" om
+	onderscheid te maken met het rekening schema.
+
+	Kleine workarounds i.v.m. het INIT block probleem van PAR.
+
+	Multi-user implementatie van sequences voor SQLite. Deze
+	database zou daarom nu ook volledig multi-user moeten kunnen
+	worden gebruikt.
+
 1.01.01	2006-10-13 15:59
 
 	Fix migratieprobleem 1.0.9 -> 1.0.10.
