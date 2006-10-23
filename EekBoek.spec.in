@@ -1,6 +1,6 @@
 # -*- rpm-spec -*-
 
-%define unstable 1
+%define unstable 0
 
 %define modname EekBoek
 %define modversion 0.59
