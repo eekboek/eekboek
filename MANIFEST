@@ -151,7 +151,6 @@ lib/EB/schema/bvnv.dat
 lib/EB/schema/cleanup.sql
 lib/EB/schema/eekboek.sql
 lib/EB/schema/eenmanszaak.dat
-lib/EB/schema/sample.dat
 lib/EekBoek.pm
 script/ebshell
 t/10_basic.t
