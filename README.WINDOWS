@@ -6,12 +6,16 @@ EekBoek is geverifieerd met de volgende componenten:
   * ActivePerl    5.8.8.816
   * DBD::Pg       1.47, 1.49
   * Crypt::SSLeay 0.51
+  * DBD::SQLite	  1.13
 
 Nieuwere/andere versies kunnen mogelijk problemen opleveren, deze
 liggen buiten de scope van EekBoek.
 
 Installatie d.m.v. PPM
 ======================
+
+****** RAADPLEEG DE ACTUELE INSTALLATIEAANWIJZINGEN OP
+****** http://www.eekboek.nl/install/windows.html
 
 Installeer als eerste ActivePerl (http://www.activestate.com).
 
