@@ -1,5 +1,11 @@
-1.01.03
+1.02.00	2006-10-23 12:15
 
+	Release 1.02.00.
+
+1.01.03 -> 1.02.00
+
+	Elimineer setting van environment variabelen in de lees-loop.
+	Foute opdrachten als "foo=bar" werden daardoor niet gezien.
 
 1.01.02 2006-10-16 22:36
 

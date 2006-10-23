@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.01.02 (unstable) is beschikbaar
+Subject: EekBoek 1.02.00 (stable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,15 +9,13 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.01.02, ontwikkel-release na 1.00 en voorbereidend op 1.02,
-is beschikbaar.
+EekBoek 1.02.00, de opvolger van 1.00 is beschikbaar.
+Ondersteuning van versie 1.00 is hiermee beëindigd.
 
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.02-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.01.02-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.01.02.tar.gz
-* http://www.eekboek.nl/dl/EekBoek101.ppd
-
-LET OP: Dit is een ontwikkelversie. Garantie tot aan de voordeur.
+* http://www.eekboek.nl/dl/EekBoek-1.02.00-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.02.00-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.02.00.tar.gz
+* http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
 ervan vind je op http://www.eekboek.nl/fedora/RPM-PGP-KEY-EekBoek.
@@ -32,19 +30,14 @@ De aanbevolen manier van installeren is door middel van de RPM
 
 Belangrijkste wijzigingen:
 
-* Fix bux in export van :dc property voor dagboeken.
+* Fix bux in commando-verwerking waar invoer in de vorm foo=bar niet
+  als fout werd gesignaleerd.
 
-* Foutmelding "geen schema" is nu "geen database schema" om
-  onderscheid te maken met het rekening schema.
+* Alle wijzigingen uit de 1.00.x en 1.01.x series.
 
-* Kleine workarounds i.v.m. het INIT block probleem van PAR.
-
-* Multi-user implementatie van sequences voor SQLite. Deze
-  database zou daarom nu ook volledig multi-user moeten kunnen
-  worden gebruikt.
-
-WAARSCHUWING: Bij teruggaan naar 1.00.x moet de database eerst fysiek
-worden verwijderd!
+WAARSCHUWING: Bij teruggaan naar 1.00.x moeten de PostgreSQL
+eekboek-databases eerst fysiek worden verwijderd d.m.v. de "dropdb"
+systeemopdracht!
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
