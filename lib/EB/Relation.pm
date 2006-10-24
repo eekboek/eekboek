@@ -127,6 +127,7 @@ sub add {
 	($dbk, $ddesc) = @$rr;
     }
 
+    $dbh->begin_work;
     $dbh->sql_insert("Relaties",
 		       [qw(rel_code rel_desc rel_debcrd rel_btw_status rel_ledger rel_acc_id)],
 		       $code, $desc, $debcrd, $bstate || 0, $dbk, $acct);

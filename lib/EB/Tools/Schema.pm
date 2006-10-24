@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.50 2006/10/16 10:37:21 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.51 2006/10/24 13:43:16 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 16 12:36:43 2006
-# Update Count    : 635
+# Last Modified On: Tue Oct 24 15:05:00 2006
+# Update Count    : 636
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -487,6 +487,7 @@ sub create_schema {
     use EB::Tools::SQLEngine;
     my $engine = EB::Tools::SQLEngine->new(trace => $trace);
     $engine->callback(map { $_, __PACKAGE__->can("sql_$_") } qw(constants vrd acc std btw dbk) );
+    $dbh->begin_work;
     $engine->process(sql_eekboek());
     $dbh->commit;
 }

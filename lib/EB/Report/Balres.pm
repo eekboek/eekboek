@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.24 2006/05/25 17:15:30 jv Exp $ ';
+my $RCS_Id = '$Id: Balres.pm,v 1.25 2006/10/24 13:43:17 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Balres;
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May 25 18:59:18 2006
-# Update Count    : 366
+# Last Modified On: Tue Oct 24 15:13:58 2006
+# Update Count    : 368
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -91,6 +91,7 @@ sub perform {
     my $sth;
     my $rr;
     my $table = "Accounts";
+    my $need_rollback = 0;
     if ( $balans < 0 ) {
 	my $date = $dbh->adm("begin");
 	$rep->start(_T("Openingsbalans"),
@@ -100,9 +101,13 @@ sub perform {
 	my $date = $begin;
 	$rep->start(_T("Openingsbalans"),
 		    __x("Datum: {date}", date => datefmt_full($date)));
+	$dbh->begin_work;
+	$need_rollback++;
 	$table = EB::Report->GetTAccountsBal($date, 1);
     }
     else {
+	$dbh->begin_work;
+	$need_rollback++;
 	if ( $balans ) {
 	    $table = EB::Report->GetTAccountsBal($end);
 	}
@@ -265,7 +270,7 @@ sub perform {
     $rep->finish;
 
     # Rollback temp table.
-    $dbh->rollback;
+    $dbh->rollback if $need_rollback;
 }
 
 package EB::Report::Balres::Text;

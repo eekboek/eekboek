@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.47 2006/10/06 20:22:12 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.48 2006/10/24 13:43:17 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  6 21:49:06 2006
-# Update Count    : 284
+# Last Modified On: Tue Oct 24 15:09:13 2006
+# Update Count    : 287
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -44,7 +44,6 @@ sub perform {
     unless ( $dagboek_type == DBKTYPE_INKOOP || $dagboek_type == DBKTYPE_VERKOOP) {
 	warn("?".__x("Ongeldige operatie (IV) voor dagboek type {type}",
 		     type => $dagboek_type)."\n");
-	$dbh->rollback;
 	return;
     }
 
@@ -110,7 +109,6 @@ sub perform {
 		warn("?".__x("Onbekende {what}: {who}",
 			     what => lc($iv ? _T("Crediteur") : _T("Debiteur")),
 			     who => $debcode)."\n");
-		$dbh->rollback;
 		return;
 	    }
 	}
@@ -134,7 +132,6 @@ sub perform {
 		warn("?".__x("Onbekende {what}: {who}",
 			     what => lc($iv ? _T("Crediteur") : _T("Debiteur")),
 			     who => $debcode)."\n");
-		$dbh->rollback;
 		return;
 	    }
 	}
@@ -179,7 +176,7 @@ sub perform {
 	unless ( $rr ) {
 	    warn("?".__x("Onbekende grootboekrekening: {acct}",
 			 acct => $acct)."\n");
-	    $dbh->rollback;
+	    $dbh->rollback if $dbh->in_transaction;
 	    return;
 	}
 	my ($adesc, $balres, $kstomz, $debcrd, $btw_id) = @$rr;
@@ -199,6 +196,7 @@ sub perform {
 	    $bsk_nr = $self->bsk_nr($opts);
 	    return unless defined($bsk_nr);
 	    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq");
+	    $dbh->begin_work;
 	    $dbh->sql_insert("Boekstukken",
 			     [qw(bsk_id bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
 			     $bsk_id, $bsk_nr, $gdesc, $dagboek, $date, $bky);

@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.29 2006/10/07 20:42:06 jv Exp $
+# $Id: Opening.pm,v 1.30 2006/10/24 13:43:16 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  6 22:00:35 2006
-# Update Count    : 227
+# Last Modified On: Tue Oct 24 15:00:30 2006
+# Update Count    : 229
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -229,6 +229,8 @@ sub open {
 	$adeb{0+$rr->[0]} = 0;
     }
 
+    $dbh->begin_work;
+
     if ( defined($o->{balanstotaal}) ) {
 	my $adeb;
 	my $acrd;
@@ -381,7 +383,10 @@ sub open {
 	    }
 	}
     }
-    return _T("DE OPENING IS NIET UITGEVOERD!")."\n" if $fail;
+    if ( $fail ) {
+	$dbh->rollback if $dbh->in_transaction;
+	return _T("DE OPENING IS NIET UITGEVOERD!")."\n";
+    }
 
     my $now = iso8601date();
 
@@ -496,6 +501,8 @@ sub reopen {
     return _T("HET NIEUWE BOEKJAAR IS NIET GEOPEND!")."\n" if $fail;
 
     my $now = iso8601date();
+
+    $dbh->begin_work;
 
     $dbh->sql_insert("Boekjaren",
 		     [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened)],

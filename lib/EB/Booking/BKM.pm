@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.55 2006/10/06 20:22:36 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.56 2006/10/24 13:43:17 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  6 22:12:49 2006
-# Update Count    : 402
+# Last Modified On: Tue Oct 24 14:57:29 2006
+# Update Count    : 403
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -120,6 +120,7 @@ sub perform {
     }
 
     $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq");
+    $dbh->begin_work;
     $dbh->sql_insert("Boekstukken",
 		     [qw(bsk_id bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
 		     $bsk_id, $bsk_nr, $gdesc, $dagboek, $date, $bky);

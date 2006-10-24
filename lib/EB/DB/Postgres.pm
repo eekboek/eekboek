@@ -1,10 +1,10 @@
 # Postgres.pm -- EekBoek driver for PostgreSQL dsatabase
-# RCS Info        : $Id: Postgres.pm,v 1.20 2006/10/11 12:33:21 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.21 2006/10/24 13:43:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 11 14:27:31 2006
-# Update Count    : 163
+# Last Modified On: Tue Oct 24 15:41:19 2006
+# Update Count    : 164
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -50,7 +50,7 @@ sub create {
 	$self->clear;
 	$dbh->{RaiseError} = 1;
 	$dbh->{PrintError} = 1;
-	$dbh->{AutoCommit} = 0;
+#	$dbh->{AutoCommit} = 0;
 	return;
     }
 

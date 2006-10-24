@@ -1,13 +1,13 @@
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.13 2006/04/15 09:08:34 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.14 2006/10/24 13:43:16 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:49:30 2006
-# Update Count    : 217
+# Last Modified On: Tue Oct 24 15:02:48 2006
+# Update Count    : 218
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Einde.pm,v 1.13 2006/04/15 09:08:34 jv Exp $ ';
+my $RCS_Id = '$Id: Einde.pm,v 1.14 2006/10/24 13:43:16 jv Exp $ ';
 
 package main;
 
@@ -75,6 +75,8 @@ sub perform {
 	}
 	return;
     }
+
+    $dbh->begin_work;
 
     $dbh->sql_exec("DELETE FROM Boekjaarbalans where bkb_bky = ?", $bky)->finish;
 

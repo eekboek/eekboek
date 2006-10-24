@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.85 2006/10/16 16:19:48 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.86 2006/10/24 13:43:17 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 16 15:01:55 2006
-# Update Count    : 829
+# Last Modified On: Tue Oct 24 14:55:17 2006
+# Update Count    : 830
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -333,7 +333,14 @@ sub intro {
     undef;
 }
 sub outro { undef }
-sub postcmd { shift; $dbh->rollback; shift }
+sub postcmd {
+    shift;
+    if ( $dbh->in_transaction ) {
+	warn("%"._T("Openstaande transactie teruggedraaid")."\n");
+	$dbh->rollback;
+    }
+    shift
+}
 
 sub bky_msg {
     my $sth = $dbh->sql_exec("SELECT bky_code".

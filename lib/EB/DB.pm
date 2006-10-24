@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.50 2006/10/11 12:44:06 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.51 2006/10/24 13:43:17 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 11 14:40:55 2006
-# Update Count    : 390
+# Last Modified On: Tue Oct 24 15:39:35 2006
+# Update Count    : 403
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -151,6 +151,8 @@ sub check_db {
 sub setup {
     my ($self) = @_;
 
+    $dbh->begin_work;
+
     setupdb();
 
     # Create temp table for account mangling.
@@ -283,6 +285,7 @@ sub adm {
     $name = lc($name);
 
     if ( @_ == 3 ) {
+	$self->begin_work;
 	$self->sql_exec("UPDATE Metadata".
 			" SET ".$adm{$name}->[0]." = ?", $value)->finish;
 	$self->commit;
@@ -374,6 +377,8 @@ sub does_btw {
 
 ################ API calls for database backend ################
 
+my $tx;
+
 my $dbpkg;
 
 sub connectdb {
@@ -391,9 +396,10 @@ sub connectdb {
     die($@) if $@;
     $dbpkg = $pkg;
     $dbh->{RaiseError} = 1;
-    $dbh->{AutoCommit} = 0;
+    #$dbh->{AutoCommit} = 0;
     $dbh->{ChopBlanks} = 1;
     $self->check_db unless $nocheck;
+    $tx = 0;
     $dbh;
 }
 
@@ -403,6 +409,7 @@ sub disconnectdb {
     return unless $dbh;
     resetdbcache($self);
     $dbpkg->disconnect;
+    $tx = 0;
     undef $dbh;
 }
 
@@ -550,6 +557,7 @@ sub sql_exec {
     my ($self, $sql, @args) = @_;
     $dbh ||= $self->connectdb();
     $self->show_sql($sql, @args) if $trace;
+    checktx($sql);
     my $sth = $self->sql_prep($sql);
     $sth->execute(@args);
     $sth;
@@ -591,10 +599,27 @@ sub errstr {
     $dbh->errstr;
 }
 
+sub in_transaction {
+    my $self = shift;
+    $tx;
+}
+
+sub checktx {
+    my ($sql, $allow) = @_;
+    return if $tx;
+    $sql =~ /^\s*(\w+)\s+(\S+)/i;
+    my $cmd = $1 ? uc($1) : die("?INTERNAL ERROR: Invalid SQL command: $sql\n");
+    return if $cmd eq "SELECT";
+    my $msg = "INTERNAL ERROR: $cmd $2 while not in transaction";
+    $allow ? warn("!$msg\n") : die("?$msg\n");
+}
+
 sub rollback {
     my ($self) = @_;
     warn("=> ROLLBACK WORK;", $dbh ? "" : " (ignored)", "\n") if $trace;
     return unless $dbh;
+    die("?INTERNAL ERROR: ROLLBACK while not in transaction\n") unless $tx;
+    $tx = 0;
     $dbh->rollback
 }
 
@@ -602,6 +627,7 @@ sub begin_work {
     my ($self) = @_;
     warn("=> BEGIN WORK;", $dbh ? "" : " (ignored)", "\n") if $trace;
     return unless $dbh;
+    die("?INTERNAL ERROR: BEGIN WORK while in transaction\n") if $tx++;
     $dbh->begin_work;
 }
 
@@ -609,6 +635,8 @@ sub commit {
     my ($self) = @_;
     warn("=> COMMIT WORK;", $dbh ? "" : " (ignored)", "\n") if $trace;
     return unless $dbh;
+    die("?INTERNAL ERROR: COMMIT while not in transaction\n") unless $tx;
+    $tx = 0;
     $dbh->commit;
 }
 

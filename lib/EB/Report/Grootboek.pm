@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.30 2006/10/16 16:44:22 jv Exp $ ';
+my $RCS_Id = '$Id: Grootboek.pm,v 1.31 2006/10/24 13:43:17 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 16 18:40:49 2006
-# Update Count    : 282
+# Last Modified On: Tue Oct 24 15:11:51 2006
+# Update Count    : 283
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -63,6 +63,8 @@ sub perform {
     }
 
     $rep->start(_T("Grootboek"));
+
+    $dbh->begin_work;
 
     my $table = EB::Report->GetTAccountsAll($begin, $end);
 
