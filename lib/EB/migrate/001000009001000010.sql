@@ -3,7 +3,8 @@
 BEGIN WORK;
 
 -- Table Dagboeken
-ALTER TABLE ONLY Dagboeken ADD COLUMN dbk_dcsplit BOOLEAN DEFAULT false;
+ALTER TABLE ONLY Dagboeken ADD COLUMN dbk_dcsplit BOOLEAN;
+ALTER TABLE ONLY Dagboeken ALTER COLUMN dbk_dcsplit SET DEFAULT false;
 UPDATE Dagboeken SET dbk_dcsplit = 'false';
 
 -- Table Journal
