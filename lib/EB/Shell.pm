@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.86 2006/10/24 13:43:17 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.87 2006/11/01 14:18:04 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 14:55:17 2006
-# Update Count    : 830
+# Last Modified On: Wed Nov  1 15:16:26 2006
+# Update Count    : 837
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,12 +22,6 @@ use strict;
 
 # Package name.
 use EekBoek;
-my $my_package; BEGIN { $my_package = $EekBoek::PACKAGE }
-
-# Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+),v ([\d.]+)/;
-# Tack '*' if it is not checked in into RCS.
-$my_version .= '*' if length('$Locker:  $ ') > 12;
 
 ################ Configuration ################
 
@@ -37,7 +31,7 @@ our $dbh;
 sub shell {
 
 # This will set up the config at 'use' time.
-use EB::Config $my_package;
+use EB::Config $EekBoek::PACKAGE;
 
 if ( @ARGV && ( $ARGV[0] eq '-P' || $ARGV[0] =~ /^--?printcfg$/ ) ) {
     shift(@ARGV);
@@ -84,7 +78,7 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 use EB;
 #use base qw(EB::Shell);
 
-my $app = $my_package;
+my $app = $EekBoek::PACKAGE;
 my $userdir = glob("~/.".lc($app));
 mkdir($userdir) unless -d $userdir;
 
@@ -234,10 +228,11 @@ sub app_options {
 }
 
 sub app_ident {
+    return;
     print STDERR (__x("Dit is {pkg} [{name} {version}]",
-		      pkg     => $my_package,
-		      name    => $my_name,
-		      version => $my_version) . "\n");
+		      pkg     => $EekBoek::PACKAGE,
+		      name    => "Shell",
+		      version => $EekBoek::VERSION) . "\n");
 }
 
 sub app_usage {
