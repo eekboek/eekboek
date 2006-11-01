@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.20 2006/09/25 11:31:09 jv Exp $ ';
+my $RCS_Id = '$Id: dvimport.pl,v 1.21 2006/11/01 14:03:56 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 22 13:41:09 2006
-# Update Count    : 319
+# Last Modified On: Wed Nov  1 15:03:39 2006
+# Update Count    : 321
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -487,54 +487,3 @@ sub app_options {
 	pod2usage(VERBOSE => 2) if $man;
     }
 }
-
-__END__
-
-################ Documentation ################
-
-=head1 NAME
-
-sample - skeleton for GetOpt::Long and Pod::Usage
-
-=head1 SYNOPSIS
-
-sample [options] [file ...]
-
- Options:
-   -ident		show identification
-   -help		brief help message
-   -man                 full documentation
-   -verbose		verbose information
-
-=head1 OPTIONS
-
-=over 8
-
-=item B<-help>
-
-Print a brief help message and exits.
-
-=item B<-man>
-
-Prints the manual page and exits.
-
-=item B<-ident>
-
-Prints program identification.
-
-=item B<-verbose>
-
-More verbose information.
-
-=item I<file>
-
-Input file(s).
-
-=back
-
-=head1 DESCRIPTION
-
-B<This program> will read the given input file(s) and do someting
-useful with the contents thereof.
-
-=cut
