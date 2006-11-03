@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.12 2006/10/21 11:36:04 jv Exp $
+# $Id: Base.pm,v 1.13 2006/11/03 16:58:14 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -25,8 +25,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$XXVERSION    = 0.05;   # $Date: 2006/10/21 11:36:04 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
+$XXVERSION    = 0.05;   # $Date: 2006/11/03 16:58:14 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -960,7 +960,7 @@ EB::Shell::Base - A generic class to build line-oriented command interpreters.
 =head1 DESCRIPTION
 
 EB::Shell::Base is a slightly modified version of L<Shell::Base>. It
-is modifed for the EekBoek program L<http://www.squirrel.nl/eekboek>
+is modifed for the EekBoek program L<http://www.eekboek.nl>
 and B<NOT> intended for general use. Please use L<Shell::Base>
 instead.
 
@@ -1815,7 +1815,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.12 $.
+This documentation describes C<Shell::Base>, $Revision: 1.13 $.
 
 =head1 COPYRIGHT
 
