@@ -95,6 +95,7 @@ lib/EB/Booking/Decode.pm
 lib/EB/Booking/Delete.pm
 lib/EB/Booking/IV.pm
 lib/EB/Config.pm
+lib/EB/Config/IniFiles.pm
 lib/EB/DB.pm
 lib/EB/DB/Postgres.pm
 lib/EB/DB/Sqlite.pm
