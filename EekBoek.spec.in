@@ -48,7 +48,7 @@ Packager: Johan Vromans <jvromans@squirrel.nl>
 AutoReqProv: 0
 
 Requires: perl >= 5.8
-Requires: perl(Config::IniFiles) >= 2.38
+#Requires: perl(Config::IniFiles) >= 2.38
 Requires: perl(Term::ReadLine)
 Requires: perl(DBI) >= 1.40
 #Requires: perl(DBD::Pg) >= 1.41

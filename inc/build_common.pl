@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.10 2006/10/11 12:31:16 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.11 2006/11/03 17:00:29 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 11 14:15:10 2006
-# Update Count    : 47
+# Last Modified On: Fri Nov  3 18:00:02 2006
+# Update Count    : 48
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -30,7 +30,7 @@ $data =
       $^O eq "linux" ? ('Term::ReadLine::Gnu' => 0) : (),
       'DBI'                 => 1.40,
       'DBD::Pg'             => 1.41,
-      'Config::IniFiles'    => 2.38,
+#     'Config::IniFiles'    => 2.38,
 #     'Text::CSV_XS'        => 0,
 #     'Locale::gettext'     => 1.05,
       #
