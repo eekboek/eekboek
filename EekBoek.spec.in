@@ -160,7 +160,6 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcmodsuf
 %endif
 
 %post
-echo prefix = %{_prefix}
 
 %changelog
 * Mon Oct 16 2006 Johan Vromans <jvromans@squirrel.nl> - 1.01.02
