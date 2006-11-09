@@ -1,10 +1,10 @@
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.4 2006/10/16 16:20:34 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.5 2006/11/09 14:06:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 15 14:53:30 2006
-# Update Count    : 134
+# Last Modified On: Thu Nov  9 15:06:38 2006
+# Update Count    : 135
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -55,11 +55,11 @@ sub create {
     open(my $db, '>', $dbname);
     close($db);
     unlink("$dbname-journal")
-      or warn("%".__x("Database journal voor {db} verwijderd",
-		      db => $dbname)."\n");
+      and warn("%".__x("Database journal voor {db} verwijderd",
+		       db => $dbname)."\n");
     unlink("$dbname-seq")
-      or warn("%".__x("Database sequences voor {db} verwijderd",
-		      db => $dbname)."\n");
+      and warn("%".__x("Database sequences voor {db} verwijderd",
+		       db => $dbname)."\n");
 }
 
 # API: connect to an existing database.
