@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.22 2006/10/10 18:42:26 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.23 2006/11/25 20:24:46 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  8 19:13:59 2006
-# Update Count    : 183
+# Last Modified On: Sat Nov 25 21:20:43 2006
+# Update Count    : 187
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -117,7 +117,7 @@ sub _relaties {
 			     " rel_btw_status, dbk_desc, rel_acc_id".
 			     " FROM Relaties, Dagboeken".
 			     " WHERE rel_ledger = dbk_id".
-			     " ORDER BY rel_ledger, rel_btw_status");
+			     " ORDER BY rel_ledger, rel_btw_status, rel_code");
 
     my $cur_dbk = "";
     my $cur_btw = -1;
@@ -139,7 +139,7 @@ sub _relaties {
 	    $out .= " --btw=".lc(BTWTYPES->[$btw]) unless $btw == BTWTYPE_NORMAAL;
 	}
 	$out .= " \\\n        ";
-	$out .= sprintf("%-10s %s %d", _quote($code), _quote($desc), $acct);
+	$out .= sprintf("%-12s %-40s %d", _quote($code), _quote($desc), $acct);
     }
 
     $out .= "\n\n# " . __x("Einde {what}", what => _T("Relaties")) . "\n";
