@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.51 2006/10/24 13:43:17 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.52 2006/11/25 20:11:29 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:39:35 2006
-# Update Count    : 403
+# Last Modified On: Sat Nov 25 21:10:08 2006
+# Update Count    : 406
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -262,7 +262,7 @@ sub _init {
 
 my %adm;
 sub adm {
-    my ($self, $name, $value) = @_;
+    my ($self, $name, $value, $notx) = @_;
     if ( $name eq "" ) {
 	%adm = ();
 	return;
@@ -284,11 +284,11 @@ sub adm {
 					  adm => $name)."\n");
     $name = lc($name);
 
-    if ( @_ == 3 ) {
-	$self->begin_work;
+    if ( @_ >= 3 ) {
+	$self->begin_work unless $notx;
 	$self->sql_exec("UPDATE Metadata".
 			" SET ".$adm{$name}->[0]." = ?", $value)->finish;
-	$self->commit;
+	$self->commit unless $notx;
 	$adm{$name}->[1] = $value;
     }
     else {
