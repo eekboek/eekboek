@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.30 2006/10/24 13:43:16 jv Exp $
+# $Id: Opening.pm,v 1.31 2006/11/25 20:11:56 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:00:30 2006
-# Update Count    : 229
+# Last Modified On: Sat Nov 25 21:08:24 2006
+# Update Count    : 230
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -512,7 +512,7 @@ sub reopen {
 		     defined $o->{btwperiode} ? $o->{btwperiode} : $dbh->adm("btwperiod"),
 		     $now);
 
-    $dbh->adm("bky", $o->{boekjaarcode});
+    $dbh->adm("bky", $o->{boekjaarcode}, "use_existing_transaction");
     $dbh->adm("");		# flush cache
 
     # Reset boekstuknummer sequences.
