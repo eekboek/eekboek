@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.14 2006/10/06 20:21:32 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.15 2006/12/07 17:37:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  6 22:13:25 2006
-# Update Count    : 63
+# Last Modified On: Thu Dec  7 18:36:45 2006
+# Update Count    : 71
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.14 2006/10/06 20:21:32 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.15 2006/12/07 17:37:02 jv Exp $ ';
 
 package main;
 
@@ -39,6 +39,23 @@ sub adm_open {
     1;
 }
 
+sub check_bsk_nr {
+    my ($self, $opts) = @_;
+    my $bsk_nr = $opts->{boekstuk};
+    my $bky = $opts->{boekjaar};
+    $bky = $dbh->adm("bky") unless defined($bky);
+    my $dbk = $opts->{dagboek};
+    my $rr = $dbh->do("SELECT count(*) FROM Boekstukken".
+		      " WHERE bsk_nr = ? AND bsk_dbk_id = ? AND bsk_bky = ?",
+		      $bsk_nr, $dbk, $bky);
+    return 1 if defined($rr) && $rr->[0] == 0;
+    warn("?".__x("Boekstuk {bsk} is reeds in gebruik",
+		 bsk => join(":",
+			     $dbh->lookup($dbk, qw(Dagboeken dbk_id dbk_desc)),
+			     $bsk_nr))."\n");
+    return;
+}
+
 sub bsk_nr {
     my ($self, $opts) = @_;
     my $bsk_nr;
@@ -48,6 +65,7 @@ sub bsk_nr {
 	    warn("?"._T("Het boekstuknummer moet een geheel getal (volgnummer) zijn")."\n");
 	    return;
 	}
+	return unless $self->check_bsk_nr($opts);
 	my $t = $prev ? "0" : $opts->{dagboek};
 	$dbh->set_sequence("bsk_nr_${t}_seq", $bsk_nr+1)
 #	  if $dbh->get_sequence("bsk_nr_${t}_seq", "noincr") < $bsk_nr;
@@ -59,6 +77,8 @@ sub bsk_nr {
     }
     else {
 	$bsk_nr = $dbh->get_sequence("bsk_nr_".$opts->{dagboek}."_seq");
+	$opts->{boekstuk} = $bsk_nr;
+	return unless $self->check_bsk_nr($opts);
     }
     $bsk_nr;
 }
