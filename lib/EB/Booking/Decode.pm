@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.21 2006/10/10 18:42:51 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.22 2006/12/13 20:36:34 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct  8 19:20:12 2006
-# Update Count    : 158
+# Last Modified On: Wed Dec 13 21:36:13 2006
+# Update Count    : 164
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -84,10 +84,10 @@ sub decode {
 	    $cmd .= ":$bsk_nr" if $ex_bsknr;
 	    $cmd .= " ".datefmt_full($bsk_date)." ";
 	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
-		$cmd .= $no_ivbskdesc ? "\"$rel_code\"" : "\"$bsk_desc\" \"$rel_code\"";
+		$cmd .= $no_ivbskdesc ? _quote($rel_code) : _quote($bsk_desc, $rel_code);
 	    }
 	    if ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS || $dbktype == DBKTYPE_MEMORIAAL) {
-		$cmd .= "\"$bsk_desc\"";
+		$cmd .= _quote($bsk_desc);
 	    }
 	    else {
 		$cmd .= " --totaal=" . numfmt_plain($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
@@ -110,7 +110,7 @@ sub decode {
 		$cmd .= $rt ? "deb " : "crd ";
 		$cmd .= "$rel_code ($rd), ";
 	    }
-	    $cmd .= "\"$bsk_desc\"";
+	    $cmd .= _quote($bsk_desc);
 	    if ( $dbver lt "001000002" ) {
 		$cmd .= $bsk_open ? ", *$bsk_open" : ", open"
 	    }
@@ -153,7 +153,7 @@ sub decode {
 	$dc = uc($dc) unless (($bsr_amount < 0) xor $rt);
 	$cmd .= join("",
 		     " Boekstukregel, nr $bsr_nr, datum $bsr_date, ",
-		     "\"$bsr_desc\"",
+		     _quote($bsr_desc),
 		     ", type $bsr_type (", $bsr_types[$dbktype][$bsr_type], ")\n",
 		     "  ",
 		     "bedrag ", numfmt_plain(abs($bsr_amount)), " ", $dc,
@@ -204,7 +204,7 @@ sub decode {
 	if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 	    $bsr_amount = -$bsr_amount if $dbktype == DBKTYPE_VERKOOP;
 	    $cmd .= $single ? " " : " \\\n\t";
-	    $cmd .= "\"$bsr_desc\" " .
+	    $cmd .= _quote($bsr_desc) . " " .
 	      numfmt_plain($bsr_amount) . $btw . " " .
 		$bsr_acc_id;
 	}
@@ -215,7 +215,7 @@ sub decode {
 	    $dd = " ".datefmt_full($bsr_date) unless $bsr_date eq $bsk_date;
 	    if ( $bsr_type == 0 ) {
 		$cmd .= $single ? " " : " \\\n\t";
-		$cmd .= "std$dd \"$bsr_desc\" " .
+		$cmd .= "std$dd " . _quote($bsr_desc) . " " .
 		  numfmt_plain($bsr_amount) . $btw . " " .
 		    $bsr_acc_id;
 	    }
@@ -232,7 +232,7 @@ sub decode {
 		$sth->finish;
 		if ( $paid == $bsr_amount) {
 		    # Matches -> Full payment
-		    $cmd .= "$type$dd \"$bsr_rel_code\" " .
+		    $cmd .= "$type$dd " . _quote($bsr_rel_code) . " " .
 		      numfmt_plain($bsr_amount);
 		}
 		else {
@@ -253,6 +253,18 @@ sub decode {
 }
 
 ################ Subroutines ################
+
+# Escape " quotes and \ so lines can be read in by parsewords. Note
+# that multiple arguments will be concatenated quoted, not quoted
+# concatenated.
+sub _quote {
+    my @res;
+    foreach my $t ( @_ ) {
+	$t =~ s/(["\\])/\\$1/g;
+	push(@res, "\"$t\"");
+    }
+    "@res";
+}
 
 my %btw_code;
 sub btw_code {
