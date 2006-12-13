@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.02.00 (stable) is beschikbaar
+Subject: EekBoek 1.03.00 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,12 +9,16 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.02.00, de opvolger van 1.00 is beschikbaar.
-Ondersteuning van versie 1.00 is hiermee beëindigd.
+EekBoek 1.03.00, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
-* http://www.eekboek.nl/dl/EekBoek-1.02.00-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.02.00-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.02.00.tar.gz
+Sources:
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.00-2.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.03.00.tar.gz
+
+Kits:
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.00-2.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.00-2.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.00-2.noarch.rpm
 * http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -26,18 +30,23 @@ http://www.eekboek.nl/fedora/EekBoek-yum-1.0-1.noarch.rpm.
 Zie voor meer informatie http://www.eekboek.nl/fedora/repodata .
 
 De aanbevolen manier van installeren is door middel van de RPM
-"EekBoek-unstable".
+"EekBoek-unstable" samen met tenminste een van de "db" rpms.
 
 Belangrijkste wijzigingen:
 
-* Fix bux in commando-verwerking waar invoer in de vorm foo=bar niet
-  als fout werd gesignaleerd.
+* RPM installatie is gesplitst in een 'common' deel en een 'db'
+  (database) deel. Naast de gewone rpm dient tenminste een van de 'db'
+  rpms te worden geïnstalleerd. Er zijn 'db' rpms voor PostgreSQL en
+  SQLite.
 
-* Alle wijzigingen uit de 1.00.x en 1.01.x series.
+* Expliciete controle of een nieuw boekstuknummer nog vrij is, ter
+  voorkoming van een onvriendelijke "dup key" melding.
 
-WAARSCHUWING: Bij teruggaan naar 1.00.x moeten de PostgreSQL
-eekboek-databases eerst fysiek worden verwijderd d.m.v. de "dropdb"
-systeemopdracht!
+* Fix bug met strings in de export die " en \ bevatten.
+
+* Redesign van het interne transactiemechanisme. Dit is een van die
+  veranderingen waarvan de gebruiker niets behoort te merken, maar je
+  weet nooit.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
