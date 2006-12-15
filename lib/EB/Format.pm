@@ -47,6 +47,49 @@ sub numround_posix {
     }
 }
 
+use POSIX qw(floor);
+
+my $_half;
+
+sub numround_bankers {
+
+    # Based on Math::Round::round_even.
+
+    my $x = shift;
+    return 0 unless $x;
+
+    my $sign = ($x >= 0) ? 1 : -1;
+    $x = abs($x);
+    my $in = int($x);
+
+    # Round to next even if exactly 0.5.
+    if ( ($x - $in) == 0.5 ) {
+	return $sign * (($in % 2 == 0) ? $in : $in + 1);
+    }
+
+    unless ( defined($_half) ) {
+
+	# Determine what value to use for "one-half". Because of the
+	# perversities of floating-point hardware, we must use a value
+	# slightly larger than 1/2. We accomplish this by determining
+	# the bit value of 0.5 and increasing it by a small amount in
+	# a lower-order byte. Since the lowest-order bits are still
+	# zero, the number is mathematically exact.
+
+	my $halfhex = unpack('H*', pack('d', 0.5));
+	if ( substr($halfhex,0,2) ne '00' && substr($halfhex, -2) eq '00' ) {
+	    # Big-endian.
+	    substr($halfhex, -4) = '1000';
+	} else {
+	    # Little-endian.
+	    substr($halfhex, 0, 4) = '0010';
+	}
+	$_half = unpack('d', pack('H*', $halfhex));
+    }
+
+    $sign * POSIX::floor($x + $_half);
+}
+
 sub _setup  {
 
     ################ BTW display format ################
