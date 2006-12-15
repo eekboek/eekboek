@@ -1,10 +1,10 @@
 # Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.9 2006/10/11 12:33:21 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.10 2006/12/15 21:41:24 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 29 11:46:09 2006
-# Update Count    : 71
+# Last Modified On: Wed Dec 13 21:44:06 2006
+# Update Count    : 76
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -15,7 +15,7 @@ package EB::Config;
 
 use strict;
 use warnings;
-use Config::IniFiles;
+use EB::Config::IniFiles;
 
 my $unicode;
 
@@ -68,9 +68,9 @@ sub init_config {
 	}
 	next unless -s $file;
 	#warn("Config: $file\n");
-	$cfg = EB::Config::IniFiles->new
+	$cfg = EB::Config::IniFiles::Wrapper->new
 	  ( -file => $file, -nocase => 1,
-	    $Config::IniFiles::VERSION >= 2.39 ? (-allowcode => 0) : (),
+	    $EB::Config::IniFiles::VERSION >= 2.39 ? (-allowcode => 0) : (),
 	    $cfg ? (-import => $cfg) : () );
 	unless ( $cfg ) {
 	    # Too early for localisation.
@@ -79,7 +79,7 @@ sub init_config {
     }
 
     # Make sure we have an object, even if no config files.
-    $cfg ||= EB::Config::IniFiles->new;
+    $cfg ||= EB::Config::IniFiles::Wrapper->new;
 
     $ENV{EB_LANG} = $cfg->val('locale','lang',
 			      $ENV{EB_LANG}||$ENV{LANG}||
@@ -131,9 +131,9 @@ sub import {
     $cfg = init_config($app);
 }
 
-package EB::Config::IniFiles;
+package EB::Config::IniFiles::Wrapper;
 
-use base qw(Config::IniFiles);
+use base qw(EB::Config::IniFiles);
 use constant ATTR_PREF => __PACKAGE__."::"."pref";
 
 sub _plug {
