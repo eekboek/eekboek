@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.87 2006/11/01 14:18:04 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.88 2006/12/24 18:41:38 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov  1 15:16:26 2006
-# Update Count    : 837
+# Last Modified On: Sun Dec 24 19:40:37 2006
+# Update Count    : 842
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -124,6 +124,7 @@ if ( $schema ) {
     require EB::Tools::Schema;
     $dbh->connectdb(1);
     EB::Tools::Schema->create($schema);
+    $dbh->setup;
 }
 
 exit(0) if $command && !@ARGV;
