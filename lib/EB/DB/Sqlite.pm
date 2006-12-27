@@ -1,10 +1,10 @@
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.5 2006/11/09 14:06:52 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.6 2006/12/27 14:13:30 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Nov  9 15:06:38 2006
-# Update Count    : 135
+# Last Modified On: Wed Dec 27 15:13:08 2006
+# Update Count    : 139
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -271,7 +271,7 @@ sub sqlfilter {
 
     # Constraints are ignored in table defs, but an
     # explicit alter needs to be skipped.
-    return if /^alter\s+table\b.*\badd\s+constraint\b/i;
+    return if /^alter\s+table\b.*\b(add|drop)\s+constraint\b/i;
 
     # UNSOLVED: No insert into temp tables.
     return if /^select\s+\*\s+into\s+temp\b/i;
@@ -291,6 +291,12 @@ sub register_functions {
     $dbh->func("sign", 1,
 	       sub {
 		   defined $_[0] ? $_[0] <=> 0 : 0
+	       },
+	       "create_function");
+
+    $dbh->func("int2", 1,
+	       sub {
+		   0+$_[0]
 	       },
 	       "create_function");
 }
