@@ -1,28 +1,28 @@
 # -*- rpm-spec -*-
 
-%define unstable 0
+%define unstable 1
 
-%define modname EekBoek
-%define modversion 0.59
+%define pkgname EekBoek
+%define pkgversion 1.02.00
 %define lcname eekboek
 
 #%if %{unstable}
-#%define modsuffix -Unstable
-#%define lcmodsuffix -unstable
+#%define pkgsuffix -Unstable
+#%define lcpkgsuffix -unstable
 #%else
-#%define modsuffix %{nil}
-#%define lcmodsuffix %{nil}
+#%define pkgsuffix %{nil}
+#%define lcpkgsuffix %{nil}
 #%endif
 
 %if %{unstable}
-%define modsuffix -unstable
-%define lcmodsuffix %{nil}
+%define pkgsuffix -unstable
+%define lcpkgsuffix %{nil}
 %else
-%define modsuffix %{nil}
-%define lcmodsuffix %{nil}
+%define pkgsuffix %{nil}
+%define lcpkgsuffix %{nil}
 %endif
 
-%define lcmod  %{lcname}%{lcmodsuffix}
+%define lcpkg  %{lcname}%{lcpkgsuffix}
 
 ################ Build Options ################
 %define gui 0
@@ -34,13 +34,13 @@
 %{?_without_dbtests: %{expand: %%define dbtests 0}}
 ################ End Build Options ################
 
-Name: %modname%{modsuffix}
-Version: %modversion
+Name: %pkgname%{pkgsuffix}
+Version: %pkgversion
 Release: 1
-Source: http://www.eekboek.nl/dl/%{modname}-%{version}.tar.gz
+Source: http://www.eekboek.nl/dl/%{pkgname}-%{version}.tar.gz
 BuildArch: noarch
 URL: http://www.eekboek.nl
-BuildRoot: %{_tmppath}/rpm-buildroot-%{modname}-%{version}-%{release}
+BuildRoot: %{_tmppath}/rpm-buildroot-%{pkgname}-%{version}-%{release}
 Prefix: %{_prefix}
 Vendor: Squirrel Consultancy
 Packager: Johan Vromans <jvromans@squirrel.nl>
@@ -51,12 +51,11 @@ Requires: perl >= 5.8
 #Requires: perl(Config::IniFiles) >= 2.38
 Requires: perl(Term::ReadLine)
 Requires: perl(DBI) >= 1.40
-#Requires: perl(DBD::Pg) >= 1.41
-#Requires: perl(DBD::SQLite) >= 1.13
+Requires: %{name}-db
 
 BuildRequires: perl >= 5.8
 
-Provides: %{modname}%{modsuffix} = %{version}
+Provides: %{pkgname}%{pkgsuffix} = %{version}
 #Provides: %{lcname} = %{version}
 
 Summary: Bookkeeping software for small and medium-size businesses
@@ -72,9 +71,35 @@ own custom applications. EekBoek is designed for the Dutch/European
 market and currently available in Dutch only. An English translation
 is in the works (help appreciated).
 
+%package db-postgresql
+Summary: PostgreSQL database driver for %{pkgname}.
+Group: Applications/Productivity
+AutoReqProv: 0
+Requires: %{name} = %{version}
+Requires: perl-DBD-Pg >= 1.41
+Provides: %{name}-db
+
+%description db-postgresql
+EekBoek can make use of several database systems for its storage.
+This package contains the PostgreSQL database driver for %{name}.
+You need to install at least one of the available database packages.
+
+%package db-sqlite
+Summary: SQLite database driver for %{pkgname}.
+Group: Applications/Productivity
+AutoReqProv: 0
+Requires: %{name} = %{version}
+Requires: perl-DBD-SQLite >= 1.12
+Provides: %{name}-db
+
+%description db-sqlite
+EekBoek can make use of several database systems for its storage.
+This package contains the SQLite database driver for %{name}.
+You need to install at least one of the available database packages.
+
 %if %{gui}
 %package gui
-Summary: GUI enhancements for %{modname}.
+Summary: GUI enhancements for %{pkgname}.
 Group: Applications/Productivity
 AutoReqProv: 0
 Requires: %{name} = %{version}
@@ -85,7 +110,7 @@ The wxWidgets extension for %{name}.
 %endif
 
 %prep
-%setup -q -n %{modname}-%{modversion}
+%setup -q -n %{pkgname}-%{pkgversion}
 
 %build
 %{__perl} Build.PL
@@ -100,16 +125,17 @@ The wxWidgets extension for %{name}.
 %endif
 
 mv blib/lib/EB/example .
+( cd example; zip -q ../blib/lib/EB/schema/sampledb.ebz *.eb *.dat )
 
 %install
 
-%define ebconf  %{_sysconfdir}/%{lcmod}
-%define ebshare %{_datadir}/%{modname}%{modsuffix}-%{version}
+%define ebconf  %{_sysconfdir}/%{lcpkg}
+%define ebshare %{_datadir}/%{pkgname}%{pkgsuffix}-%{version}
 
 %{__rm} -rf $RPM_BUILD_ROOT
 
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{ebconf}
-%{__install} -m 0644 example/%{lcname}.conf ${RPM_BUILD_ROOT}%{ebconf}/%{lcmod}.conf
+%{__install} -m 0644 example/%{lcname}.conf ${RPM_BUILD_ROOT}%{ebconf}/%{lcpkg}.conf
 
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{ebshare}/lib
 
@@ -118,11 +144,26 @@ find blib/lib ! -type d -printf "%{__install} -m 0444 %p ${RPM_BUILD_ROOT}%{ebsh
 
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{_bindir}
 
-echo "#!%{__perl}" > ${RPM_BUILD_ROOT}%{_bindir}/ebshell%{lcmodsuffix}
+echo "#!%{__perl}" > ${RPM_BUILD_ROOT}%{_bindir}/ebshell%{lcpkgsuffix}
 
 sed -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
-	< script/ebshell >> ${RPM_BUILD_ROOT}%{_bindir}/ebshell%{lcmodsuffix}
-%{__chmod} 0755 ${RPM_BUILD_ROOT}%{_bindir}/ebshell%{lcmodsuffix}
+	< script/ebshell >> ${RPM_BUILD_ROOT}%{_bindir}/ebshell%{lcpkgsuffix}
+%{__chmod} 0755 ${RPM_BUILD_ROOT}%{_bindir}/ebshell%{lcpkgsuffix}
+
+cat <<EOD > .files
+%defattr(-,root,root)
+%doc CHANGES README INSTALL QUICKSTART example doc/html TODO
+%dir %{_sysconfdir}/%{lcpkg}
+%config(noreplace) %{_sysconfdir}/%{lcpkg}/%{lcpkg}.conf
+%dir %{ebshare}
+%{_bindir}/ebshell%{lcpkgsuffix}
+%{_mandir}/man1/*
+EOD
+
+( cd $RPM_BUILD_ROOT;
+  find ./%{ebshare} -type d -printf "%%%%dir %{ebshare}/%%P\n";
+  find ./%{ebshare} -type f -printf "%{ebshare}/%%P\\n" | grep -v "lib/EB/DB/.*pm"
+) >> .files
 
 %if %{gui}
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{ebshare}/script
@@ -135,20 +176,26 @@ echo 'exec $^X "perl", "-Mlib=$share/lib", "-Mlib=$share/libgui", "$share/script
 %endif
 
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{_mandir}/man1
-pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcmodsuffix}.1
+pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcpkgsuffix}.1
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
 
-%files
-%defattr(-,root,root)
-%doc CHANGES README INSTALL QUICKSTART example doc/html TODO
-%dir %{_sysconfdir}/%{lcmod}
-%config(noreplace) %{_sysconfdir}/%{lcmod}/%{lcmod}.conf
+%files -f .files
+
+%files db-postgresql
 %dir %{ebshare}
-%{ebshare}/lib
-%{_bindir}/ebshell%{lcmodsuffix}
-%{_mandir}/man1/*
+%dir %{ebshare}/lib
+%dir %{ebshare}/lib/EB
+%dir %{ebshare}/lib/EB/DB
+%{ebshare}/lib/EB/DB/Postgres.pm
+
+%files db-sqlite
+%dir %{ebshare}
+%dir %{ebshare}/lib
+%dir %{ebshare}/lib/EB
+%dir %{ebshare}/lib/EB/DB
+%{ebshare}/lib/EB/DB/Sqlite.pm
 
 %if %{gui}
 %files gui
@@ -162,6 +209,8 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcmodsuf
 %post
 
 %changelog
+* Sun Nov 05 2006 Johan Vromans <jvromans@squirrel.nl> - 1.03.00
+- Move DB drivers to separate package, and adjust req/prov.
 * Mon Oct 16 2006 Johan Vromans <jvromans@squirrel.nl> - 1.01.02
 - Prepare (but don't use) suffixes to separate production and unstable versions.
 * Wed Aug 02 2006 Johan Vromans <jvromans@squirrel.nl> 0.92
