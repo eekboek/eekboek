@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.88 2006/12/24 18:41:38 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.89 2006/12/27 12:40:09 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Dec 24 19:40:37 2006
-# Update Count    : 842
+# Last Modified On: Wed Dec 27 13:35:28 2006
+# Update Count    : 850
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -49,6 +49,7 @@ my $command;
 my $echo;
 my $dataset;
 my $createdb;			# create database
+my $createsampledb;		# create demo database
 my $schema;			# initialise w/ schema
 my $confirm = 0;
 my $journal = 0;
@@ -83,8 +84,12 @@ my $userdir = glob("~/.".lc($app));
 mkdir($userdir) unless -d $userdir;
 
 $echo = "eb> " if $echo;
-
-$dataset ||= $cfg->val(qw(database name), undef);
+if ( $createsampledb ) {
+    $dataset = "sample" unless defined $dataset;
+}
+else {
+    $dataset ||= $cfg->val(qw(database name), undef);
+}
 
 unless ( $dataset ) {
     die("?"._T("Geen dataset opgegeven.".
@@ -113,6 +118,16 @@ if ( defined $inexport ) {
 	push(@ARGV, "--file", $inex_file) if defined $inex_file;
 	push(@ARGV, "--dir", $inex_dir) if defined $inex_dir;
     }
+}
+
+if ( $createsampledb ) {
+    $command = 1;
+    $createdb = 1;
+    my $file = findlib("schema/sampledb.ebz");
+    die("?".__x("Geen demo gegevens: {ebz}",
+	       ebz => "schema/sampledb.ebz")."\n") unless $file;
+    @ARGV = qw(import --noclean);
+    push(@ARGV, "--file", $file);
 }
 
 if ( $createdb ) {
@@ -198,6 +213,7 @@ sub app_options {
 			 $inexport = 0;
 		     },
 		     'createdb' => \$createdb,
+		     'createsampledb' => \$createsampledb,
 		     'define|D=s%' => sub {
 			 my ($opt, $key, $arg) = @_;
 			 if ( $key =~ /^(.+?)::?([^:]+)$/ ) {
@@ -249,6 +265,7 @@ Gebruik: {prog} [options] [file ...]
     --db=DB             specificeer database
     --boekjaar=XXX	specificeer boekjaar
     --createdb		maak nieuwe database aan
+    --createsampledb	maak nieuwe demo database aan
     --schema=XXX        initialisser database met schema
     --import            importeer een nieuwe administratie
     --export            exporteer een administratie
