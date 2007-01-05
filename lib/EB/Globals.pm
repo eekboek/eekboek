@@ -21,7 +21,7 @@ sub N__($) { $_[0] }
 BEGIN {
     _newconst("SCM_MAJVERSION", 1);
     _newconst("SCM_MINVERSION", 0);
-    _newconst("SCM_REVISION",  10);
+    _newconst("SCM_REVISION",  11);
 
     _newconst("AMTPRECISION",   2);
     _newconst("AMTWIDTH",       9);
@@ -41,6 +41,7 @@ BEGIN {
     map { _newconst("BTWTARIEF_$_", $i++) }
       qw(NUL HOOG LAAG);
     _newconst("BTWTARIEVEN", "[qw(".N__("Nul Hoog Laag").")]");
+    _newconst("BTWPERIODES", "[qw(".N__("Geen Jaar 2 3 Kwartaal 5 6 7 8 9 10 11 Maand").")]");
     _newconst("BTWPER_GEEN", 0);
     _newconst("BTWPER_JAAR", 1);
     _newconst("BTWPER_KWARTAAL", 4);
