@@ -1,10 +1,10 @@
 # Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.11 2006/06/02 13:33:02 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.12 2007/01/18 15:12:15 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  2 15:32:16 2006
-# Update Count    : 55
+# Last Modified On: Thu Jan 18 16:11:17 2007
+# Update Count    : 57
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -151,10 +151,10 @@ sub copy_style {
     my ($out, $css) = @_;
     my $in;
     unless ( open($in, "<", $css) ) {
-	print {$out} ("<!-- stylesheet $css: $! -->\n");
+	print {$out} ("/**** stylesheet $css: $! ****/\n");
 	return;
     }
-    print {$out} ("<!-- begin stylesheet $css -->\n");
+    print {$out} ("/** begin stylesheet $css */\n");
     while ( <$in> ) {
 	if ( /^\s*\@import\s*(["']?)(.*?)\1\s*;/ ) {
 	    use File::Basename;
@@ -166,7 +166,7 @@ sub copy_style {
 	}
     }
     close($in);
-    print {$out} ("<!-- end   stylesheet $css -->\n");
+    print {$out} ("/** end   stylesheet $css */\n");
 }
 
 1;
