@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.00 (unstable) is beschikbaar
+Subject: EekBoek 1.03.01 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,16 +9,16 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.00, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.01, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.00-2.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.03.00.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.01-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.03.01.tar.gz
 
 Kits:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.00-2.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.00-2.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.00-2.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.01-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.01-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.01-1.noarch.rpm
 * http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -34,19 +34,26 @@ De aanbevolen manier van installeren is door middel van de RPM
 
 Belangrijkste wijzigingen:
 
-* RPM installatie is gesplitst in een 'common' deel en een 'db'
-  (database) deel. Naast de gewone rpm dient tenminste een van de 'db'
-  rpms te worden geïnstalleerd. Er zijn 'db' rpms voor PostgreSQL en
-  SQLite.
+* *** DATABASE STRUCTUUR IS GEWIJZIGD ***
+  Export de data voor de upgrade! Database migratie werkt alleen
+  met PostgreSQL.
 
-* Expliciete controle of een nieuw boekstuknummer nog vrij is, ter
-  voorkoming van een onvriendelijke "dup key" melding.
+* Optie: --createsampledb. Geen gezeur meer over de plaats van
+  de demo data, of gecompresste data files.
 
-* Fix bug met strings in de export die " en \ bevatten.
+* Debiteuren en crediteuren kunnen nu per dagboek verschillend
+  worden opgegeven.
 
-* Redesign van het interne transactiemechanisme. Dit is een van die
-  veranderingen waarvan de gebruiker niets behoort te merken, maar je
-  weet nooit.
+* Fix probleem met jaareinde van BTW-loze administratie.
+
+* Fix probleem met rapportbreedte jaareinde.
+
+* Fix probleem met SQLite en opdrachten die direct na een
+  createdb/schema worden uitgevoerd, zoals b.v.:
+
+    $ cat relaties.eb opening.eb | ebshell --createdb --schema=schema
+
+* Fix probleem met het opruimen van de directories na (rpm) uninstall.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
