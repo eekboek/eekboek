@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.11 2006/11/03 17:00:29 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.12 2007/02/02 10:09:27 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Nov  3 18:00:02 2006
-# Update Count    : 48
+# Last Modified On: Wed Dec 13 21:54:10 2006
+# Update Count    : 52
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -111,8 +111,8 @@ sub WriteSpecfile {
 	my $newfh;
 	open ($newfh, ">$name.spec");
 	while ( <$fh> ) {
-	    s/%define modname \w+/%define modname $name/;
-	    s/%define modversion \d+\.\d+/%define modversion $version/;
+	    s/%define pkgname \w+/%define pkgname $name/;
+	    s/%define pkgversion [\d.]+/%define pkgversion $version/;
 	    print $newfh $_;
 	}
 	close($newfh);
