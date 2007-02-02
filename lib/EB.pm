@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.77 2006/10/16 16:43:56 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.78 2007/02/02 10:10:06 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 16 18:42:30 2006
-# Update Count    : 189
+# Last Modified On: Wed Jan 24 11:01:40 2007
+# Update Count    : 203
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -76,8 +76,9 @@ our $url = "http://www.eekboek.nl";
 
 # Most elegant (and correct) would be to use an INIT block here, but
 # currently PAR is not able to handle INIT blocks.
-BEGIN {
+INIT {
     return if $ident;		# already done
+    my $incompatibleOS = 0;
 
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
@@ -93,6 +94,22 @@ BEGIN {
 		 extra   => ($app ? " Wx " : ""),
 		 locale  => (@locextra ? " (".join(", ", @locextra).")" : ""),
 		 year    => $year)."\n") unless @ARGV && $ARGV[0] =~ /-(P|-?printcfg)$/;
+
+    eval {
+	require Win32;
+	my @a = Win32::GetOSVersion(); 
+	my ($id, $major) = @a[4,1];
+	die unless defined $id;
+	warn(_T("EekBoek is VRIJE software, ontwikkeld om vrij over uw eigen gegevens te kunnen beschikken.")."\n");
+	if ( $id <= 1 || ( $id == 2 && $major <= 5) || $id >= 3 ) {
+	    warn(_T("Met uw keuze voor het Microsoft Windows besturingssysteem geeft u echter alle vrijheden weer uit handen. Dat is erg triest.")."\n");
+	}
+	else {
+	    $incompatibleOS++;
+	    warn(_T("Dit is niet te verenigen met uw keuze voor dit Microsoft Windows besturingssysteem.")."\n");
+	}
+    };
+
     @months =
       split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
     @month_names =
@@ -101,6 +118,7 @@ BEGIN {
       split(" ", _T("Zon Maa Din Woe Don Vri Zat"));
     @day_names =
       split(" ", _T("Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag"));
+    die("?"._T("FATALE FOUT: Ongeschikt besturingssysteem")."\n") if $incompatibleOS;
 }
 
 sub findlib {
