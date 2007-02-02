@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.24 2007/01/05 15:34:08 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.25 2007/02/02 10:04:44 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan  5 16:30:31 2007
-# Update Count    : 193
+# Last Modified On: Wed Jan 31 18:07:06 2007
+# Update Count    : 197
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -171,7 +171,7 @@ sub _opening {
     $out .= "adm_begindatum   " . substr($begin, 0, 4) . "\n";
     $out .= "adm_boekjaarcode " . _quote($dbh->lookup($begin, qw(Boekjaren bky_begin bky_code))) . "\n";
     $out .= "adm_btwperiode   " .
-      (qw(geen jaar x x kwartaal x x x x x x x maand)[$dbh->adm("btwperiod")]).
+      (qw(geen jaar x x kwartaal x x x x x x x maand)[$dbh->lookup($begin, qw(Boekjaren bky_begin bky_btwperiod))]).
 	"\n" if $dbh->does_btw;
 
     $out .= "\n# " . _T("Openingsbalans") . "\n";
