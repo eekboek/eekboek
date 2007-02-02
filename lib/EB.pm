@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.78 2007/02/02 10:10:06 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.79 2007/02/02 10:11:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 24 11:01:40 2007
-# Update Count    : 203
+# Last Modified On: Fri Feb  2 11:11:51 2007
+# Update Count    : 204
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -164,7 +164,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2006 by Squirrel Consultancy. All
+This program is Copyright 2005-2007 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify

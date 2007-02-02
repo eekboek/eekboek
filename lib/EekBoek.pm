@@ -38,7 +38,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2006 by Squirrel Consultancy. All
+This program is Copyright 2005-2007 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -56,4 +56,4 @@ GNU General Public License or the Artistic License for more details.
 
 1;
 
-# $Id: EekBoek.pm,v 1.49 2007/02/02 10:11:28 jv Exp $
+# $Id: EekBoek.pm,v 1.50 2007/02/02 10:11:40 jv Exp $
