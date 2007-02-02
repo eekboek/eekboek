@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.32 2006/10/07 14:22:42 jv Exp $
+-- $Id: eekboek.sql,v 1.33 2007/02/02 10:12:52 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -87,12 +87,14 @@ CREATE SEQUENCE bsk_nr_0_seq;
 -- matches acc_debcrd of rec_acc_id.
 
 CREATE TABLE Relaties (
-    rel_code      char(10) not null primary key,
+    rel_code      char(10) not null,
     rel_desc 	  text not null,
     rel_debcrd    boolean,		     -- t: debiteur f: crediteur
     rel_btw_status smallint default 0, 	     -- BTWTYPE NORMAAL, VERLEGD, INTRA, EXTRA.
     rel_ledger    varchar(4) references Dagboeken,  -- verkoop/inkoopdagboek
     rel_acc_id    int references Accounts,   -- standaard grootboekrekening
+    CONSTRAINT "relaties_pkey"
+        PRIMARY KEY (rel_code, rel_ledger),
     CONSTRAINT "rel_btw_status"
 	CHECK (rel_btw_status >= 0 AND rel_btw_status <= 3)
 );
@@ -156,12 +158,15 @@ CREATE TABLE Boekstukregels (
                   -- V
 --  #bsr_art_id   I: Artikel (levering van)
 --  #bsr_art_num  I: Artikel (levering van)
-    bsr_rel_code  CHAR(10) references Relaties,
+    bsr_rel_code  CHAR(10),
                   -- BKM: Debiteur (betaling van), Crediteur (betaling aan)
                   -- I: Crediteur, V: Debiteur (alle bsrs dezelfde)
+    bsr_dbk_id    VARCHAR(4) references Dagboeken,
     bsr_paid	  int references Boekstukken,
 		  -- Boekstuknummer dat door deze bsr wordt betaald
     UNIQUE(bsr_nr, bsr_bsk_id),
+    CONSTRAINT "bsr_fk_rel"
+	FOREIGN KEY (bsr_rel_code, bsr_dbk_id) REFERENCES Relaties,
     CONSTRAINT "bsr_type"
 	CHECK (bsr_type >= 0 AND bsr_type <= 2 OR bsr_type = 9)
 );
@@ -177,7 +182,10 @@ CREATE TABLE Journal (
     jnl_amount	int8,	-- total amount
     jnl_damount	int8,	-- debet portion
     jnl_desc	text,
-    jnl_rel	CHAR(10) references Relaties,
+    jnl_rel	CHAR(10),
+    jnl_rel_dbk	varchar(4) references Dagboeken,
+    CONSTRAINT "jnl_fk_rel"
+	FOREIGN KEY (jnl_rel, jnl_rel_dbk) REFERENCES Relaties,
     UNIQUE(jnl_bsk_id, jnl_dbk_id, jnl_bsr_seq)
 );
 
@@ -199,6 +207,6 @@ CREATE TABLE Metadata (
 
 -- Harde waarden, moeten overeenkomen met de code.
 INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision)
-  VALUES (1, 0, 10);
+  VALUES (1, 0, 11);
 
 UPDATE Metadata SET adm_bky = '<<<<'; -- Voorgaand boekjaar

@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.15 2006/12/07 17:37:02 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.16 2007/02/02 10:13:14 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Dec  7 18:36:45 2006
-# Update Count    : 71
+# Last Modified On: Sat Dec 16 17:36:20 2006
+# Update Count    : 72
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.15 2006/12/07 17:37:02 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.16 2007/02/02 10:13:14 jv Exp $ ';
 
 package main;
 
@@ -239,7 +239,7 @@ sub journalise {
 		 " WHERE dbk_id = ?", $bsk_dbk_id)};
     my $sth = $::dbh->sql_exec("SELECT bsr_nr, bsr_date, ".
 			     "bsr_desc, bsr_amount, bsr_btw_class, bsr_btw_id, ".
-			     "bsr_btw_acc, bsr_type, bsr_acc_id, bsr_rel_code ".
+			     "bsr_btw_acc, bsr_type, bsr_acc_id, bsr_rel_code, bsr_dbk_id".
 			     " FROM Boekstukregels".
 			     " WHERE bsr_bsk_id = ?", $bsk_id);
 
@@ -250,7 +250,7 @@ sub journalise {
 
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_class,
-	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code) = @$rr;
+	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code, $bsr_rel_dbk) = @$rr;
 	my $bsr_bsk_id = $bsk_id;
 	my $btw = 0;
 	my $amt = $bsr_amount;
@@ -267,26 +267,26 @@ sub journalise {
 	push(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
 		     $bsr_acc_id,
 		     $bsr_amount - $btw, undef, $bsr_desc,
-		     $bsr_type ? $bsr_rel_code : undef]);
+		     $bsr_type ? ($bsr_rel_code, $bsr_rel_dbk) : (undef, undef)]);
 	push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
 		     $bsr_btw_acc,
 		     $btw, undef, "BTW ".$bsr_desc,
-		     undef]) if $btw;
+		     undef, undef]) if $btw;
     }
 
     if ( $dbk_acc_id ) {
 	if ( $dbkdcsplit ) {
 	    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
-			 -$tot, -$dtot, $bsk_desc, undef]);
+			 -$tot, -$dtot, $bsk_desc, undef, undef]);
 	}
 	else {
 	    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
-			 -$tot, undef, $bsk_desc, undef]);
+			 -$tot, undef, $bsk_desc, undef, undef]);
 	}
     }
 
     unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsk_date, 0, undef,
-		    undef, undef, $bsk_desc, undef]);
+		    undef, undef, $bsk_desc, undef, undef]);
 
     $ret;
 }
