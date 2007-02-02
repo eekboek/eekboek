@@ -49,6 +49,7 @@ AutoReqProv: 0
 
 Requires: perl >= 5.8
 #Requires: perl(Config::IniFiles) >= 2.38
+Requires: perl(Archive::Zip)
 Requires: perl(Term::ReadLine)
 Requires: perl(DBI) >= 1.40
 Requires: %{name}-db
@@ -125,7 +126,8 @@ The wxWidgets extension for %{name}.
 %endif
 
 mv blib/lib/EB/example .
-( cd example; zip -q ../blib/lib/EB/schema/sampledb.ebz *.eb *.dat )
+( cd example;
+  zip -q ../blib/lib/EB/schema/sampledb.ebz *.eb schema.dat )
 
 %install
 
