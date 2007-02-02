@@ -125,8 +125,8 @@ The wxWidgets extension for %{name}.
 %{__install} -m 0755 script/ebgui blib/script/ebgui
 %endif
 
-mv blib/lib/EB/example .
-( cd example;
+mv blib/lib/EB/examples .
+( cd examples;
   zip -q ../blib/lib/EB/schema/sampledb.ebz *.eb schema.dat )
 
 %install
@@ -137,7 +137,7 @@ mv blib/lib/EB/example .
 %{__rm} -rf $RPM_BUILD_ROOT
 
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{ebconf}
-%{__install} -m 0644 example/%{lcname}.conf ${RPM_BUILD_ROOT}%{ebconf}/%{lcpkg}.conf
+%{__install} -m 0644 examples/%{lcname}.conf ${RPM_BUILD_ROOT}%{ebconf}/%{lcpkg}.conf
 
 %{__mkdir_p} ${RPM_BUILD_ROOT}%{ebshare}/lib
 
@@ -154,7 +154,7 @@ sed -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
 
 cat <<EOD > .files
 %defattr(-,root,root)
-%doc CHANGES README INSTALL QUICKSTART example doc/html TODO
+%doc CHANGES README INSTALL QUICKSTART examples doc/html TODO
 %dir %{_sysconfdir}/%{lcpkg}
 %config(noreplace) %{_sysconfdir}/%{lcpkg}/%{lcpkg}.conf
 %dir %{ebshare}
