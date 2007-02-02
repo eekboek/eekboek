@@ -1,10 +1,10 @@
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.6 2006/05/05 15:37:41 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.7 2007/02/02 10:14:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May  5 17:16:39 2006
-# Update Count    : 88
+# Last Modified On: Wed Nov  8 22:37:02 2006
+# Update Count    : 95
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -28,20 +28,48 @@ BEGIN {
 
 # This module supports three different gettext implementations.
 
-# First alternative: no gettext.
+use POSIX;			# for setlocale
 
-if ( $cfg->val(qw(locale unicode), 0) ) {
-    require Encode;
-    eval 'sub _T($) { Encode::decode("ISO-8859-1", $_[0]) };';
-    binmode(STDIN,  ":utf8");
-    binmode(STDOUT, ":utf8");
-    binmode(STDERR, ":utf8");
-}
-else {
-    eval 'sub _T($) { $_[0] };';
+my $gotone = 0;
+
+unless ( $gotone ) {
+    eval {
+	require Locale::gettext;
+	# Use outer settings.
+	setlocale(LC_MESSAGES, $ENV{EB_LANG}||"");
+
+	our $core_localiser;
+	unless ( $core_localiser ) {
+	    $core_localiser = Locale::gettext->domain(COREPACKAGE);
+	    $core_localiser->dir($ENV{EB_LIB} . "EB/locale");
+	}
+
+	eval 'sub _T($) {
+	    $core_localiser->get($_[0]);
+	}';
+
+	eval 'sub LOCALISER() { "Locale::gettext" }';
+
+	$gotone++;
+    }
 }
 
-sub LOCALISER() { "" }
+unless ( $gotone ) {
+
+    if ( $cfg->val(qw(locale unicode), 0) ) {
+	require Encode;
+	eval 'sub _T($) { Encode::decode("ISO-8859-1", $_[0]) };';
+	binmode(STDIN,  ":utf8");
+	binmode(STDOUT, ":utf8");
+	binmode(STDERR, ":utf8");
+    }
+    else {
+	eval 'sub _T($) { $_[0] };';
+    }
+
+    eval 'sub LOCALISER() { "" }';
+
+}
 
 # Second alternative: Locale-gettext 1.05 (on CPAN).
 # Simple and light-weight.
@@ -120,4 +148,5 @@ sub LOCALISER() { "Locale::TextDomain" }
 # *_=\&_T;
 
 # More Perl magic.
+
 1;
