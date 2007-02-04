@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.25 2007/02/02 10:04:44 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.26 2007/02/04 20:14:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 31 18:07:06 2007
-# Update Count    : 197
+# Last Modified On: Sun Feb  4 21:01:44 2007
+# Update Count    : 207
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -64,11 +64,12 @@ sub export {
 	$m->desiredCompressionMethod(8);
 
 	# The others can be added directly.
-	$m = $zip->addString($self->_relaties, "relaties.eb");
+	# Note that the encoding needs to be fixed since there's no IO involved.
+	$m = $zip->addString(_enc($self->_relaties), "relaties.eb");
 	$m->desiredCompressionMethod(8);
-	$m = $zip->addString($self->_opening, "opening.eb");
+	$m = $zip->addString(_enc($self->_opening), "opening.eb");
 	$m->desiredCompressionMethod(8);
-	$m = $zip->addString($self->_mutaties, "mutaties.eb");
+	$m = $zip->addString(_enc($self->_mutaties), "mutaties.eb");
 	$m->desiredCompressionMethod(8);
 	my $status = $zip->writeToFileNamed($out);
 	unlink($tmpname);
@@ -108,6 +109,18 @@ sub _quote {
     my ($t) = @_;
     $t =~ s/(\\")/\\$1/g;
     '"'.$t.'"';
+}
+
+sub _enc {
+    my $line = shift;
+    return $line if $cfg->unicode;
+    # Encode to latin1.
+    eval {
+	my $s = $line;
+	$line = Encode::encode('latin1', $s, 1);
+    };
+    warn("?".__x("Geen geldige {cs} tekens in uitvoerregel", cs => "UTF-8")."\n") if $@;
+    $line;
 }
 
 sub _relaties {
