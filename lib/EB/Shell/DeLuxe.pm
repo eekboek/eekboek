@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.15 2006/10/11 12:33:21 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.16 2007/02/04 20:52:57 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 29 12:53:41 2006
-# Update Count    : 252
+# Last Modified On: Fri Feb  2 16:21:36 2007
+# Update Count    : 255
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -131,11 +131,13 @@ sub attach_file {
     my ($self, $file) = @_;
     push(@{$self->{inputstack}}, [$self->{readline}, $self->{unicode}]);
     $self->{readline} = sub { shift->readline_file(sub { <$file> }) };
+    $self->{unicode} = $cfg->unicode;
 }
 
 sub attach_lines {
     my ($self, $lines) = @_;
     push(@{$self->{inputstack}}, [$self->{readline}, $self->{unicode}]);
+    $self->{unicode} = $cfg->unicode;
     my @lines = @$lines;
     $self->{readline} = sub {
 	shift->readline_file(sub {
