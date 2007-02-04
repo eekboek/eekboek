@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.01 (unstable) is beschikbaar
+Subject: EekBoek 1.03.02 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,16 +9,16 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.01, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.02, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.01-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.03.01.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.02-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.03.02.tar.gz
 
 Kits:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.01-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.01-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.01-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.02-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.02-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.02-1.noarch.rpm
 * http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -32,28 +32,24 @@ Zie voor meer informatie http://www.eekboek.nl/fedora/repodata .
 De aanbevolen manier van installeren is door middel van de RPM
 "EekBoek-unstable" samen met tenminste een van de "db" rpms.
 
-Belangrijkste wijzigingen:
+Belangrijkste wijzigingen t.o.v. 1.03.01:
 
-* *** DATABASE STRUCTUUR IS GEWIJZIGD ***
-  Export de data voor de upgrade! Database migratie werkt alleen
-  met PostgreSQL.
+* Fix probleem met foutieve export van adm_btwperiode in
+  multi-jaar admin (issue 1628783).
 
-* Optie: --createsampledb. Geen gezeur meer over de plaats van
-  de demo data, of gecompresste data files.
+* HTML reports: Use normal comments /* */ instead of <!-- -->
+  for included styles.
 
-* Debiteuren en crediteuren kunnen nu per dagboek verschillend
-  worden opgegeven.
+* Voorbeeldschema's verplaatst van lib/EB/schema naar
+  lib/EB/example. 
 
-* Fix probleem met jaareinde van BTW-loze administratie.
+* Voorbeelden verplaatst van lib/EB/example naar
+  lib/EB/examples.
 
-* Fix probleem met rapportbreedte jaareinde.
+* Nieuw voorbeeldschema voor een vereniging, met dank aan Edwin
+  Hakkennes.
 
-* Fix probleem met SQLite en opdrachten die direct na een
-  createdb/schema worden uitgevoerd, zoals b.v.:
-
-    $ cat relaties.eb opening.eb | ebshell --createdb --schema=schema
-
-* Fix probleem met het opruimen van de directories na (rpm) uninstall.
+* Fix probleem met UTF-8 data in Latin1 files in export zip.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
