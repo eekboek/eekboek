@@ -1,3 +1,63 @@
+1.03.02
+
+	Fix probleem met foutieve export van adm_btwperiode in
+	multi-jaar admin (issue 1628783).
+
+	HTML reports: Use normal comments /* */ instead of <!-- -->
+	for included styles.
+
+	Voorbeeldschema's verplaatst van lib/EB/schema naar
+	lib/EB/example. 
+
+	Voorbeelden verplaatst van lib/EB/example naar
+	lib/EB/examples.
+
+	Nieuw voorbeeldschema voor een vereniging, met dank aan Edwin
+	Hakkennes.
+
+	Fix probleem met UTF-8 data in Latin1 files in export zip.
+
+1.03.01
+
+	*** DATABASE STRUCTUUR IS GEWIJZIGD ***
+	Export de data voor de upgrade! Database migratie werkt alleen
+	met PostgreSQL.
+
+	Optie: --createsampledb. Geen gezeur meer over de plaats van
+	de demo data, of gecompresste data files.
+
+	Debiteuren en crediteuren kunnen nu per dagboek verschillend
+	worden opgegeven.
+
+	Fix probleem met jaareinde van BTW-loze administratie.
+
+	Fix probleem met rapportbreedte jaareinde.
+
+	Fix probleem met SQLite en opdrachten die direct na een
+	createdb/schema worden uitgevoerd, zoals b.v.:
+
+	  $ cat relaties.eb opening.eb | ebshell --createdb --schema=schema
+
+	Fix probleem met het opruimen van de directories na (rpm) uninstall.
+
+1.03.00
+
+	Expliciete controle of een nieuw boekstuknummer nog vrij is,
+	ter voorkoming van een onvriendelijke "dup key" melding.
+
+	Fix bug met strings in de export die " en \ bevatten.
+
+	Expliciete(re) sorteervolgorde voor alle uitvoer.
+
+	Afronding mogelijk via 'bankers rounding'.
+
+1.02.01
+
+	Config::IniFiles is nu onderdeel van EekBoek en hoeft niet
+	langer apart te worden geïnstalleerd.
+
+	Fix migratieprobleem 1.0.9 -> 1.0.10 voor PostgreSQL 7.x of zo.
+
 1.02.00	2006-10-23 12:15
 
 	Release 1.02.00.
@@ -9,7 +69,7 @@
 
 1.01.02 2006-10-16 22:36
 
-	Fix bux in export van :dc property voor dagboeken.
+	Fix bug in export van :dc property voor dagboeken.
 
 	Foutmelding "geen schema" is nu "geen database schema" om
 	onderscheid te maken met het rekening schema.
