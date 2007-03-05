@@ -10,11 +10,12 @@ our $config;
 our $app;
 our $dbh;
 
-package RepBalRes;
+package EB::Wx::Report::BalResProof;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
+use EB;
 
 # begin wxGlade: ::dependencies
 # end wxGlade
@@ -28,30 +29,35 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: RepBalRes::new
+# begin wxGlade: EB::Wx::Report::BalResProof::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{b_refresh} = Wx::Button->new($self, wxID_REFRESH, "");
-	$self->{b_props} = Wx::Button->new($self, wxID_PREFERENCES, "");
+	$self->{b_props} = Wx::Button->new($self, wxID_PROPERTIES, "");
 	$self->{l_detail} = Wx::StaticText->new($self, -1, _T("Detail:"), wxDefaultPosition, wxDefaultSize, );
 	$self->{bd_less} = Wx::BitmapButton->new($self, -1, Wx::Bitmap->new("edit_remove.png", wxBITMAP_TYPE_ANY));
 	$self->{bd_more} = Wx::BitmapButton->new($self, -1, Wx::Bitmap->new("edit_add.png", wxBITMAP_TYPE_ANY));
+	$self->{b_print} = Wx::Button->new($self, wxID_PRINT, "");
 	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, "");
-	$self->{gr_report} = Wx::Grid->new($self, -1);
+	$self->{w_report} = Wx::HtmlWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, );
 
 	$self->__set_properties();
 	$self->__do_layout();
 
 	Wx::Event::EVT_BUTTON($self, wxID_REFRESH, \&OnRefresh);
-	Wx::Event::EVT_BUTTON($self, wxID_PREFERENCES, \&OnProps);
+	Wx::Event::EVT_BUTTON($self, wxID_PROPERTIES, \&OnProps);
 	Wx::Event::EVT_BUTTON($self, $self->{bd_less}->GetId, \&OnLess);
 	Wx::Event::EVT_BUTTON($self, $self->{bd_more}->GetId, \&OnMore);
+	Wx::Event::EVT_BUTTON($self, wxID_PRINT, \&OnPrint);
 	Wx::Event::EVT_BUTTON($self, wxID_CLOSE, \&OnClose);
 
 # end wxGlade
+
+	$self->{_PRINTER} =  Wx::HtmlEasyPrinting->new('Print');
+
 	return $self;
 
 }
@@ -59,8 +65,11 @@ sub new {
 sub init {
     my ($self, $me) = @_;
     $self->{mew} = "r${me}w";
-    $self->SetTitle($me eq "bal" ? "Balans" : 
-		    $me eq "prf" ? "Proef- en Saldibalans" : "Resultaatrekening");
+    $self->SetTitle($me eq "bal" 
+		    ? _T("Balans")
+		    : $me eq "prf"
+		      ? _T("Proef- en Saldibalans")
+		      : _T("Resultaatrekening"));
     $self->{detail} = 2;
     $self->{bd_more}->Enable(0);
     $self->{bd_less}->Enable(1);
@@ -69,37 +78,36 @@ sub init {
 
 sub refresh {
     my ($self) = @_;
-    require EB::Report::Balres::Grid;
-    my $gr = $self->{gr_report};
-    $gr->SetRowLabelSize(0);
-    $gr->SetColLabelSize(22);
-    $gr->EnableEditing(0);
-    $gr->EnableDragRowSize(0);
-    $gr->SetSelectionMode(wxGridSelectRows);
-
+    my $output;
     if ( $self->{mew} eq "rprfw" ) {
-	$gr->CreateGrid(0, 6);
 	require EB::Report::Proof;
 	EB::Report::Proof->new->perform
-	    ({ reporter => EB::Report::Balres::Grid->new( grid => $gr, saldi => 1,
-							  detail => $self->{detail} ),
+	    ({ backend => "EB::Wx::Report::BalResProof::WxHtml",
+	       saldi => 1,
+	       output => \$output,
 	       detail => $self->{detail} });
     }
     else {
-	$gr->CreateGrid(0, 4);
 	require EB::Report::Balres;
 	my $fun = $self->{mew} eq "rbalw" ? "balans" : "result";
 	EB::Report::Balres->new->$fun
-	    ({ reporter => EB::Report::Balres::Grid->new( grid => $gr,
-							  detail => $self->{detail} ),
-	       detail => $self->{detail} });
+	    ( { backend => "EB::Wx::Report::BalResProof::WxHtml",
+	        detail => $self->{detail},
+		output => \$output,
+	      } );
     }
+    $self->html->SetPage($output);
+    $self->{_HTMLTEXT} = $output;
 }
+
+sub html     { $_[0]->{w_report}  }
+sub htmltext { $_[0]->{_HTMLTEXT} }
+sub printer  { $_[0]->{_PRINTER}  }
 
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: RepBalRes::__set_properties
+# begin wxGlade: EB::Wx::Report::BalResProof::__set_properties
 
 	$self->SetTitle(_T("Balans/Resultaat"));
 	$self->{b_refresh}->SetToolTipString(_T("Bijwerken naar laatste gegevens"));
@@ -108,6 +116,7 @@ sub __set_properties {
 	$self->{bd_less}->SetSize($self->{bd_less}->GetBestSize());
 	$self->{bd_more}->SetToolTipString(_T("Meer uitgebreid"));
 	$self->{bd_more}->SetSize($self->{bd_more}->GetBestSize());
+	$self->{b_print}->SetToolTipString(_T("Overzicht afdrukken"));
 	$self->{b_close}->SetToolTipString(_T("Venster sluiten"));
 
 # end wxGlade
@@ -116,7 +125,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: RepBalRes::__do_layout
+# begin wxGlade: EB::Wx::Report::BalResProof::__do_layout
 
 	$self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
@@ -128,62 +137,136 @@ sub __do_layout {
 	$self->{sizer_3}->Add($self->{bd_less}, 0, wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{bd_more}, 0, wxTOP|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sizer_3}->Add($self->{b_print}, 0, wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{b_close}, 0, wxRIGHT|wxTOP|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sizer_2}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
-	$self->{sizer_2}->Add($self->{gr_report}, 1, wxALL|wxEXPAND, 5);
+	$self->{sizer_2}->Add($self->{sizer_3}, 0, wxBOTTOM|wxEXPAND, 5);
+	$self->{sizer_2}->Add($self->{w_report}, 1, wxEXPAND, 0);
 	$self->{sizer_1}->Add($self->{sizer_2}, 1, wxEXPAND, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sizer_1});
 	$self->{sizer_1}->Fit($self);
-	$self->{sizer_1}->SetSizeHints($self);
 	$self->Layout();
+
+# end wxGlade
+
+}
+
+
+sub OnRefresh {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::Report::BalResProof::OnRefresh <event_handler>
+
+    $self->refresh;
 
 # end wxGlade
 }
 
-
-# wxGlade: RepBalRes::OnRefresh <event_handler>
-sub OnRefresh {
-    my ($self, $event) = @_;
-    $self->refresh;
-}
-
-# wxGlade: RepBalRes::OnProps <event_handler>
 sub OnProps {
     my ($self, $event) = @_;
+# wxGlade: EB::Wx::Report::BalResProof::OnProps <event_handler>
+
     $event->Skip;
+
+# end wxGlade
 }
 
-# wxGlade: RepBalRes::OnMore <event_handler>
 sub OnMore {
     my ($self, $event) = @_;
+# wxGlade: EB::Wx::Report::BalResProof::OnMore <event_handler>
+
     if ( $self->{detail} < 2 ) {
 	$self->{detail}++;
 	$self->refresh;
     }
     $self->{bd_more}->Enable($self->{detail} < 2);
     $self->{bd_less}->Enable($self->{detail} >= 0);
+
+# end wxGlade
 }
 
-# wxGlade: RepBalRes::OnLess <event_handler>
+# wxGlade: EB::Wx::Report::BalResProof::OnLess <event_handler>
 sub OnLess {
     my ($self, $event) = @_;
+# wxGlade: EB::Wx::Report::BalResProof::OnLess <event_handler>
+
     if ( $self->{detail} >= 0 ) {
 	$self->{detail}--;
 	$self->refresh;
     }
     $self->{bd_more}->Enable($self->{detail} < 2);
     $self->{bd_less}->Enable($self->{detail} >= 0);
+
+# end wxGlade
 }
 
-# wxGlade: RepBalRes::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
+# wxGlade: EB::Wx::Report::BalResProof::OnClose <event_handler>
+
     @{$config->get($self->{mew})}{qw(xpos ypos xwidth ywidth)} = ($self->GetPositionXY, $self->GetSizeWH);
     $self->Show(0);
+
+# end wxGlade
+}
+
+sub OnPrint {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::Report::BalResProof::OnPrint <event_handler>
+
+    #$self->printer->SetHeader('@TITLE@');
+    #$self->printer->SetFooter('@DATE@ @TIME@ '._T("Blad:").' @PAGENUM@');
+    $self->printer->SetFooter(_T("Blad:").' @PAGENUM@');
+    $self->printer->PrintText($self->htmltext);
+
+# end wxGlade
 }
 
 # end of class RepBalRes
+
+################ Report handler for Balans/Report ################
+
+package EB::Wx::Report::BalResProof::WxHtml;
+
+use EB;
+use base qw(EB::Report::Reporter::WxHtml);
+
+sub style {
+    my ($self, $row, $cell) = @_;
+
+    my $stylesheet = {
+	d2    => {
+	    desc   => { indent => 2      },
+	},
+	h1    => {
+	    _style => { colour => 'red',
+			size   => '+2',
+		      }
+	},
+	h2    => {
+	    _style => { colour => 'red'  },
+	    desc   => { indent => 1,},
+	},
+	t1    => {
+	    _style => { colour => 'blue',
+			size   => '+1',
+		      }
+	},
+	t2    => {
+	    _style => { colour => 'blue' },
+	    desc   => { indent => 1      },
+	},
+	v     => {
+	    _style => { colour => 'red',
+			size   => '+2',
+		      }
+	},
+	grand => {
+	    _style => { colour => 'blue' }
+	},
+    };
+
+    $cell = "_style" unless defined($cell);
+    return $stylesheet->{$row}->{$cell};
+}
 
 1;
 
