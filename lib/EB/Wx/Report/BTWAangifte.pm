@@ -8,11 +8,12 @@ our $dbh;
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-package RepBtw;
+package EB::Wx::Report::BTWAangifte;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
+use EB;
 
 # begin wxGlade: ::dependencies
 # end wxGlade
@@ -26,23 +27,25 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: RepBtw::new
+# begin wxGlade: EB::Wx::Report::BTWAangifte::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{b_refresh} = Wx::Button->new($self, wxID_REFRESH, _T("Refresh"));
-	$self->{b_props} = Wx::Button->new($self, wxID_PREFERENCES, _T("Preferences"));
+	$self->{b_refresh} = Wx::Button->new($self, wxID_REFRESH, "");
+	$self->{b_props} = Wx::Button->new($self, wxID_PREFERENCES, "");
 	$self->{l_periode} = Wx::StaticText->new($self, -1, _T("Periode"), wxDefaultPosition, wxDefaultSize, );
-	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, _T("Close"));
-	$self->{gr_report} = Wx::Grid->new($self, -1);
+	$self->{b_print} = Wx::Button->new($self, wxID_PRINT, "");
+	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, "");
+	$self->{w_report} = Wx::HtmlWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, );
 
 	$self->__set_properties();
 	$self->__do_layout();
 
 	Wx::Event::EVT_BUTTON($self, wxID_REFRESH, \&OnRefresh);
 	Wx::Event::EVT_BUTTON($self, wxID_PREFERENCES, \&OnProps);
+	Wx::Event::EVT_BUTTON($self, wxID_PRINT, \&OnPrint);
 	Wx::Event::EVT_BUTTON($self, wxID_CLOSE, \&OnClose);
 
 # end wxGlade
@@ -50,6 +53,8 @@ sub new {
 	$self->{mew} = "rbtww";
 	$self->{year} = substr($dbh->adm("begin"), 0, 4);
 	$self->{btwp} = $dbh->adm("btwperiod");
+
+	$self->{_PRINTER} =  Wx::HtmlEasyPrinting->new('Print');
 
 	$self->refresh;
 
@@ -60,16 +65,12 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: RepBtw::__set_properties
+# begin wxGlade: EB::Wx::Report::BTWAangifte::__set_properties
 
 	$self->SetTitle(_T("BTW  aangifte"));
 	$self->{b_refresh}->SetToolTipString(_T("Bijwerken naar laatste gegevens"));
 	$self->{b_props}->SetToolTipString(_T("Instellingsgegevens"));
 	$self->{b_close}->SetToolTipString(_T("Venster sluiten"));
-	$self->{gr_report}->CreateGrid(10, 4);
-	$self->{gr_report}->SetRowLabelSize(0);
-	$self->{gr_report}->SetColLabelSize(0);
-	$self->{gr_report}->SetSelectionMode(wxGridSelectRows);
 
 # end wxGlade
 }
@@ -77,7 +78,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: RepBtw::__do_layout
+# begin wxGlade: EB::Wx::Report::BTWAangifte::__do_layout
 
 	$self->{sz_outer} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_report} = Wx::BoxSizer->new(wxVERTICAL);
@@ -85,66 +86,69 @@ sub __do_layout {
 	$self->{sz_tools}->Add($self->{b_refresh}, 0, wxLEFT|wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_tools}->Add($self->{b_props}, 0, wxLEFT|wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_tools}->Add(5, 1, 0, wxADJUST_MINSIZE, 0);
-	$self->{sz_tools}->Add($self->{l_periode}, 1, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_tools}->Add($self->{l_periode}, 1, wxTOP|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_tools}->Add(5, 1, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sz_tools}->Add($self->{b_print}, 0, wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 	$self->{sz_tools}->Add($self->{b_close}, 0, wxRIGHT|wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_report}->Add($self->{sz_tools}, 0, wxBOTTOM|wxEXPAND, 5);
-	$self->{sz_report}->Add($self->{gr_report}, 1, wxEXPAND, 0);
+	$self->{sz_report}->Add($self->{w_report}, 1, wxEXPAND, 0);
 	$self->{sz_outer}->Add($self->{sz_report}, 1, wxEXPAND, 0);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_outer});
 	$self->{sz_outer}->Fit($self);
-	$self->{sz_outer}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
 }
 
+sub init {
+    my ($self, $me) = @_;
+    $self->{mew} = "r${me}w";
+    $self->refresh;
+}
+
 sub refresh {
     my ($self) = @_;
-    require EB::BTWAangifte;
-    require EB::BTWAangifte::Grid;
-    my $gr = $self->{gr_report};
-    $gr->SetRowLabelSize(0);
-    $gr->SetColLabelSize(0);
-    $gr->EnableEditing(0);
-    $gr->EnableDragRowSize(0);
-    $gr->SetSelectionMode(wxGridSelectRows);
-
-    $gr->CreateGrid(0, 4);
-    EB::BTWAangifte->new->perform
-	({ reporter => EB::BTWAangifte::Grid->new( grid => $gr ),
+    require EB::Report::BTWAangifte;
+    my $output;
+    EB::Report::BTWAangifte->new->perform
+	({ backend => 'EB::Report::BTWAangifte::WxHtml',
+	   output => \$output,
 	   detail => $self->{detail} });
+    $self->{w_report}->SetPage($output);
+    $self->{_HTMLTEXT} = $output;
 }
+
+sub html     { $_[0]->{w_report}  }
+sub htmltext { $_[0]->{_HTMLTEXT} }
+sub printer  { $_[0]->{_PRINTER}  }
 
 sub set_periode {
    my ($self, $p) = @_;
    if ( $p eq "j" ) {
-       $self->{l_periode}->SetLabel("Gehele jaar");
+       $p = "Gehele jaar";
    }
    elsif ( $p =~ /^k(\d+)$/ ) {
-       $self->{l_periode}->SetLabel(qw(Eerste Tweede Derde Vierde)[$1-1] . " kwartaal");
+       $p = (qw(Eerste Tweede Derde Vierde)[$1-1] . " kwartaal");
    }
    elsif ( $p =~ /^m(\d+)$/ ) {
-       $self->{l_periode}->SetLabel(qw(Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December)[$1-1]);
+       $p = (qw(Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December)[$1-1]);
    }
-   else {
-       $self->{l_periode}->SetLabel($p);
-   }
+   $self->{l_periode}->SetLabel(_T("Periode:")." ".$p);
    $self->Layout;
 }
 
-# wxGlade: RepBtw::OnRefresh <event_handler>
+# wxGlade: EB::Wx::Report::BTWAangifte::OnRefresh <event_handler>
 sub OnRefresh {
     my ($self, $event) = @_;
     $self->refresh;
 }
 
-# wxGlade: RepBtw::OnProps <event_handler>
+# wxGlade: EB::Wx::Report::BTWAangifte::OnProps <event_handler>
 sub OnProps {
     my ($self, $event) = @_;
-    use BtwPrefsDialog;
-    my $d = BtwPrefsDialog->new($self, -1, "Selecteer", wxDefaultPosition, wxDefaultSize,);
+    use EB::Wx::Report::BTWAangifte::Preferences;
+    my $d = EB::Wx::Report::BTWAangifte::Preferences->new
+      ($self, -1, "Selecteer", wxDefaultPosition, wxDefaultSize,);
     my $ret = $d->ShowModal;
     if ( $ret == wxID_OK ) {
 	$self->set_periode($d->{periode});
@@ -152,14 +156,77 @@ sub OnProps {
     $d->Destroy;
 }
 
-# wxGlade: RepBtw::OnClose <event_handler>
+# wxGlade: EB::Wx::Report::BTWAangifte::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     @{$config->get($self->{mew})}{qw(xpos ypos xwidth ywidth)} = ($self->GetPositionXY, $self->GetSizeWH);
     $self->Show(0);
 }
 
-# end of class RepBtw
+# wxGlade: EB::Wx::Report::BTWAangifte::OnPrint <event_handler>
+sub OnPrint {
+    my ($self, $event) = @_;
+    $self->printer->SetFooter(_T("Blad:").' @PAGENUM@');
+    $self->printer->PrintText($self->htmltext);
+}
+
+# end of class EB::Wx::Report::BTWAangifte
+
+################ Report handler ################
+
+package EB::Report::BTWAangifte::WxHtml;
+
+use EB;
+use base qw(EB::Report::Reporter::WxHtml);
+
+sub new {
+    my ($class, $opts) = @_;
+    my $self = $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
+    $self->{overall_font_size} = "-2";
+    $self->{_OUT} = $opts->{output} if $opts->{output};
+    return $self;
+}
+
+sub outline {
+}
+
+sub style {
+    my ($self, $row, $cell) = @_;
+
+    my $stylesheet = {
+	d2    => {
+	    desc   => { indent => 2      },
+	},
+	h1    => {
+	    _style => { colour => 'red',
+			size   => '+2',
+		      }
+	},
+	h2    => {
+	    _style => { colour => 'red'  },
+	    desc   => { indent => 1,},
+	},
+	t1    => {
+	    _style => { colour => 'blue',
+			size   => '+1',
+		      }
+	},
+	t2    => {
+	    _style => { colour => 'blue' },
+	    desc   => { indent => 1      },
+	},
+	v     => {
+	    _style => { colour => 'red',
+			size   => '+2',
+		      }
+	},
+	grand => {
+	    _style => { colour => 'blue' }
+	},
+    };
+
+    $cell = "_style" unless defined($cell);
+    return $stylesheet->{$row}->{$cell};
+}
 
 1;
-

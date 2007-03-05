@@ -8,11 +8,12 @@ our $dbh;
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-package MainFrame;
+package EB::Wx::MainFrame;
 
 use Wx qw[:everything];
 use base qw(Wx::Frame);
 use strict;
+use EB;
 
 # begin wxGlade: ::dependencies
 # end wxGlade
@@ -28,7 +29,7 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: MainFrame::new
+# begin wxGlade: EB::Wx::MainFrame::new
 
 	$style = wxDEFAULT_FRAME_STYLE 
 		unless defined $style;
@@ -55,11 +56,12 @@ sub new {
 	use constant MENU_R_GBK => Wx::NewId();
 	use constant MENU_R_JNL => Wx::NewId();
 	use constant MENU_R_BTW => Wx::NewId();
+	use constant MENU_R_OP => Wx::NewId();
 	use constant MENU_R_DEB => Wx::NewId();
 	use constant MENU_R_CRD => Wx::NewId();
 	my $wxglade_tmp_menu;
 	$wxglade_tmp_menu = Wx::Menu->new();
-	$wxglade_tmp_menu->Append(wxID_NEW, _T("Nieuw ..."), _T("Aanmaken nieuwe administartie"));
+	$wxglade_tmp_menu->Append(wxID_NEW, _T("Nieuw ..."), _T("Aanmaken nieuwe administratie"));
 	$wxglade_tmp_menu->Append(MENU_NEW, _T("Nieuw (Wizard) ..."), _T("Test wizard"));
 	$wxglade_tmp_menu->Append(wxID_OPEN, _T("Open ..."), _T("Open een bestaande administratie"));
 	$wxglade_tmp_menu->Append(wxID_CLOSE, _T("Sluiten"), _T("Beëindig het werken met deze administratie"));
@@ -94,18 +96,19 @@ sub new {
 	$wxglade_tmp_menu->Append(MENU_R_JNL, _T("Journaal"), _T("Opmaken Journaal"));
 	$wxglade_tmp_menu->Append(MENU_R_BTW, _T("BTW aangifte"), _T("Opmaken BTW aangifte"));
 	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(MENU_R_OP, _T("Openstaande posten"), _T("Opmaken overzicht openstaande posten"));
 	$wxglade_tmp_menu->Append(MENU_R_DEB, _T("Debiteuren"), _T("Opmaken Debiteurenoverzicht"));
 	$wxglade_tmp_menu->Append(MENU_R_CRD, _T("Crediteuren"), _T("Opmaken Crediteurenoverzicht"));
-	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("Rapportages"));
+	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("Ra&pportages"));
 	$wxglade_tmp_menu = Wx::Menu->new();
-	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("&Info"), _T("Informatie"));
+	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("&Info ..."), _T("Informatie"));
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Hulp"));
 	
 # Menu Bar end
 
 	$self->{mainframe_statusbar} = $self->CreateStatusBar(1, 0);
-	$self->{eb_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("/home/jv/src/eekboek/GUI/eb.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxDOUBLE_BORDER);
-	$self->{bitmap_1} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("/home/jv/src/eekboek/GUI/perl_powered.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, );
+	$self->{eb_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("eb.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxDOUBLE_BORDER);
+	$self->{pp_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("perl_powered.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_log} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
 
 	$self->__set_properties();
@@ -130,6 +133,7 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_R_GBK, \&OnRGbk);
 	Wx::Event::EVT_MENU($self, MENU_R_JNL, \&OnRJnl);
 	Wx::Event::EVT_MENU($self, MENU_R_BTW, \&OnRBtw);
+	Wx::Event::EVT_MENU($self, MENU_R_OP, \&OnROpen);
 	Wx::Event::EVT_MENU($self, MENU_R_DEB, \&OnRDeb);
 	Wx::Event::EVT_MENU($self, MENU_R_CRD, \&OnRCrd);
 	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
@@ -171,7 +175,7 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: MainFrame::__set_properties
+# begin wxGlade: EB::Wx::MainFrame::__set_properties
 
 	$self->SetTitle(_T("EekBoek"));
 	$self->SetBackgroundColour(Wx::Colour->new(255, 255, 255));
@@ -192,20 +196,18 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: MainFrame::__do_layout
+# begin wxGlade: EB::Wx::MainFrame::__do_layout
 
 	$self->{sz_main} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sizer_4} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_4}->Add(150, 20, 1, wxADJUST_MINSIZE, 0);
 	$self->{sizer_4}->Add($self->{eb_logo}, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 40);
-	$self->{sizer_4}->Add($self->{bitmap_1}, 0, wxRIGHT|wxTOP|wxBOTTOM|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 40);
+	$self->{sizer_4}->Add($self->{pp_logo}, 0, wxRIGHT|wxTOP|wxBOTTOM|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 40);
 	$self->{sizer_4}->Add(150, 20, 1, wxADJUST_MINSIZE, 0);
 	$self->{sz_main}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
 	$self->{sz_main}->Add($self->{tx_log}, 1, wxALL|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_main});
 	$self->{sz_main}->Fit($self);
-	$self->{sz_main}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
@@ -251,23 +253,26 @@ sub dagboekenmenu {
 	my ($id, $desc, $type) = @$rr;
 	# This consumes Ids, but we do not expect to do this often.
 	my $m = Wx::NewId();
-	$tmp->Append($m, "$desc\tAlt-$id", "Dagboek $desc");
-	$type = qw(X IV IV BKM BKM BKM)[$type];
+	$tmp->Append($m, "$desc\tAlt-$id",
+		     __x("Dagboek {dbk}", dbk => $desc)."\n");
+	my $tp = qw(X IV IV BKM BKM BKM)[$type];
 	undef($self->{"d_dbkpanel$id"});
 	EVT_MENU($self, $m,
-		 sub {
-		       ::set_status(">>> [$id] Dagboek $desc, id = $id, type = $type");
-		       require "${type}Panel.pm";
+		 sub { require "${tp}Panel.pm";
+		       my $cfg = $config->get(lc($tp)."w");
 		       $self->{"d_dbkpanel$id"} ||=
-			 "${type}Panel"->new($self, -1,
-					     "Dagboek $desc");
+			 "${tp}Panel"->new($self, -1,
+					   __x("Dagboek {dbk}", dbk => $desc)."\n",
+					   [$cfg->{xpos}, $cfg->{ypos}],
+					   [$cfg->{xwidth}, $cfg->{ywidth}]);
 		       ### TODO: How to save/restore geometry?
-		       $self->{"d_dbkpanel$id"}->init($id, $desc);
+		       $self->{"d_dbkpanel$id"}->init($id, $desc, $type);
 		       $self->{"d_dbkpanel$id"}->Show(1);
+		       $self->{"d_dbkpanel$id"}->SetSize([$cfg->{xwidth}, $cfg->{ywidth}]);
 		   });
     }
 
-    my $ix = $self->{mainframe_menubar}->FindMenu("Dagboeken");
+    my $ix = $self->{mainframe_menubar}->FindMenu(_T("&Dagboeken"));
     $tmp = $self->{mainframe_menubar}->Replace
       ($ix, $tmp,
        $self->{mainframe_menubar}->GetLabelTop($ix));
@@ -279,7 +284,7 @@ sub DESTROY {
     Wx::Log::SetActiveTarget($self->{OLDLOG})->Destroy;
 }
 
-# wxGlade: MainFrame::OnNew <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnNew <event_handler>
 sub OnNew {
     my ($self, $event) = @_;
     use NewDialog;
@@ -303,7 +308,7 @@ sub OnNew {
     $self->{d_newdialog} = undef;
 }
 
-# wxGlade: MainFrame::OnNewWiz <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnNewWiz <event_handler>
 sub OnNewWiz {
     my ($self, $event) = @_;
     require NewDialogWiz;
@@ -341,7 +346,7 @@ sub OnNewXxx {
     $self->{d_xxxdialog} = undef;
 }
 
-# wxGlade: MainFrame::OnOpen <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnOpen <event_handler>
 sub OnOpen {
     my ($self, $event) = @_;
     require DbOpenDialog;
@@ -371,19 +376,19 @@ sub OnOpen {
     }
 }
 
-# wxGlade: MainFrame::OnClose <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     $event->Skip;
 }
 
-# wxGlade: MainFrame::OnPreferences <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnPreferences <event_handler>
 sub OnPreferences {
 	my ($self, $event) = @_;
 	$event->Skip;
 }
 
-# wxGlade: MainFrame::OnLogw <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnLogw <event_handler>
 sub OnLogw {
     my ($self, $event) = @_;
     if ( $self->{tx_log}->IsShown ) {
@@ -397,13 +402,13 @@ sub OnLogw {
     $self->Layout;
 }
 
-# wxGlade: MainFrame::OnLogClean <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnLogClean <event_handler>
 sub OnLogClean {
     my ($self, $event) = @_;
     $self->{tx_log}->Clear;
 }
 
-# wxGlade: MainFrame::OnRestart <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRestart <event_handler>
 sub OnRestart {
     my ($self, $event) = @_;
     $self->closehandler(@_);
@@ -411,14 +416,14 @@ sub OnRestart {
     $self->Close(1);
 }
 
-# wxGlade: MainFrame::OnExit <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnExit <event_handler>
 sub OnExit {
     my ($self, $event) = @_;
     $self->closehandler(@_);
     $self->Destroy;
 }
 
-# wxGlade: MainFrame::OnMGbk <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnMGbk <event_handler>
 sub OnMGbk {
     my ($self, $event) = @_;
     require AccPanel;
@@ -433,7 +438,7 @@ sub OnMGbk {
     $self->{$p}->Show(1);
 }
 
-# wxGlade: MainFrame::OnMRel <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnMRel <event_handler>
 sub OnMRel {
     my ($self, $event) = @_;
     require RelPanel;
@@ -447,7 +452,7 @@ sub OnMRel {
     $self->{$p}->Show(1);
 }
 
-# wxGlade: MainFrame::OnMBtw <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnMBtw <event_handler>
 sub OnMBtw {
     my ($self, $event) = @_;
     require BtwPanel;
@@ -461,7 +466,7 @@ sub OnMBtw {
     $self->{$p}->Show(1);
 }
 
-# wxGlade: MainFrame::OnMStdAcc <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnMStdAcc <event_handler>
 sub OnMStdAcc {
     my ($self, $event) = @_;
     require MStdAccPanel;
@@ -475,116 +480,127 @@ sub OnMStdAcc {
     $self->{$p}->Show(1);
 }
 
-# wxGlade: MainFrame::OnRPrf <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRPrf <event_handler>
 sub OnRPrf {
     my ($self, $event) = @_;
-    require RepBalRes;
-    $self->{d_rprfpanel} ||= RepBalRes->new($self, -1,
-					    "Resultaat",
-					    [$config->rprfw->{xpos},$config->rprfw->{ypos}],
-					    [$config->rprfw->{xwidth},$config->rprfw->{ywidth}],
-					   );
+    require EB::Wx::Report::BalResProof;
+    $self->{d_rprfpanel} ||= EB::Wx::Report::BalResProof->new
+      ($self, -1,
+       "Proef & Saldibalans",
+       [$config->rprfw->{xpos},$config->rprfw->{ypos}],
+       [$config->rprfw->{xwidth},$config->rprfw->{ywidth}],
+      );
     $self->{d_rprfpanel}->SetSize([$config->rprfw->{xwidth},$config->rprfw->{ywidth}]);
     $self->{d_rprfpanel}->init("prf");
     $self->{d_rprfpanel}->Show(1);
 }
 
-# wxGlade: MainFrame::OnRBal <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRBal <event_handler>
 sub OnRBal {
     my ($self, $event) = @_;
-    require RepBalRes;
-    $self->{d_rbalpanel} ||= RepBalRes->new($self, -1,
-					    "Balans",
-					    [$config->rbalw->{xpos},$config->rbalw->{ypos}],
-					    [$config->rbalw->{xwidth},$config->rbalw->{ywidth}],
-					   );
+    require EB::Wx::Report::BalResProof;
+    $self->{d_rbalpanel} ||= EB::Wx::Report::BalResProof->new
+      ($self, -1,
+       "Balans",
+       [$config->rbalw->{xpos},$config->rbalw->{ypos}],
+       [$config->rbalw->{xwidth},$config->rbalw->{ywidth}],
+      );
     $self->{d_rbalpanel}->SetSize([$config->rbalw->{xwidth},$config->rbalw->{ywidth}]);
     $self->{d_rbalpanel}->init("bal");
     $self->{d_rbalpanel}->Show(1);
 }
 
-# wxGlade: MainFrame::OnRRes <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRRes <event_handler>
 sub OnRRes {
     my ($self, $event) = @_;
-    require RepBalRes;
-    $self->{d_rrespanel} ||= RepBalRes->new($self, -1,
-					    "Resultaat",
-					    [$config->rresw->{xpos},$config->rresw->{ypos}],
-					    [$config->rresw->{xwidth},$config->rresw->{ywidth}],
-					   );
+    require EB::Wx::Report::BalResProof;
+    $self->{d_rrespanel} ||= EB::Wx::Report::BalResProof->new
+      ($self, -1,
+       "Resultaat",
+       [$config->rresw->{xpos},$config->rresw->{ypos}],
+       [$config->rresw->{xwidth},$config->rresw->{ywidth}],
+      );
     $self->{d_rrespanel}->SetSize([$config->rresw->{xwidth},$config->rresw->{ywidth}]);
     $self->{d_rrespanel}->init("res");
     $self->{d_rrespanel}->Show(1);
 }
 
-# wxGlade: MainFrame::OnRGbk <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRGbk <event_handler>
 sub OnRGbk {
     my ($self, $event) = @_;
-    require RepGrootboek;
-    $self->{d_rgbkpanel} ||= RepGrootboek->new($self, -1,
-					       "Grootboek",
-					       [$config->rgbkw->{xpos},$config->rgbkw->{ypos}],
-					       [$config->rgbkw->{xwidth},$config->rgbkw->{ywidth}],
-					      );
+    require EB::Wx::Report::Grootboek;
+    $self->{d_rgbkpanel} ||= EB::Wx::Report::Grootboek->new
+      ($self, -1,
+       "Grootboek",
+       [$config->rgbkw->{xpos},$config->rgbkw->{ypos}],
+       [$config->rgbkw->{xwidth},$config->rgbkw->{ywidth}],
+      );
     $self->{d_rgbkpanel}->SetSize([$config->rgbkw->{xwidth},$config->rgbkw->{ywidth}]);
+    $self->{d_rgbkpanel}->init("gbk");
     $self->{d_rgbkpanel}->Show(1);
 }
 
-# wxGlade: MainFrame::OnRJnl <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRJnl <event_handler>
 sub OnRJnl {
     my ($self, $event) = @_;
-    require RepJournaal;
-    $self->{d_rjnlpanel} ||= RepJournaal->new($self, -1,
-					      "Journaal",
-					      [$config->rjnlw->{xpos},$config->rjnlw->{ypos}],
-					      [$config->rjnlw->{xwidth},$config->rjnlw->{ywidth}],
-					     );
+    require EB::Wx::Report::Journaal;
+    $self->{d_rjnlpanel} ||= EB::Wx::Report::Journaal->new
+      ($self, -1,
+       "Journaal",
+       [$config->rjnlw->{xpos},$config->rjnlw->{ypos}],
+       [$config->rjnlw->{xwidth},$config->rjnlw->{ywidth}],
+      );
     $self->{d_rjnlpanel}->SetSize([$config->rjnlw->{xwidth},$config->rjnlw->{ywidth}]);
+    $self->{d_rjnlpanel}->init("jnl");
     $self->{d_rjnlpanel}->Show(1);
 }
 
-# wxGlade: MainFrame::OnRBtw <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRBtw <event_handler>
 sub OnRBtw {
     my ($self, $event) = @_;
-    require RepBtw;
-    $self->{d_rbtwpanel} ||= RepBtw->new($self, -1,
-					 "BTW aangifte",
-					 [$config->rbtww->{xpos},$config->rbtww->{ypos}],
-					 [$config->rbtww->{xwidth},$config->rbtww->{ywidth}],
-					);
+    require EB::Wx::Report::BTWAangifte;
+    $self->{d_rbtwpanel} ||= EB::Wx::Report::BTWAangifte->new
+      ($self, -1,
+       "BTW aangifte",
+       [$config->rbtww->{xpos},$config->rbtww->{ypos}],
+       [$config->rbtww->{xwidth},$config->rbtww->{ywidth}],
+      );
     $self->{d_rbtwpanel}->SetSize([$config->rbtww->{xwidth},$config->rbtww->{ywidth}]);
+    $self->{d_rbtwpanel}->init("btw");
     $self->{d_rbtwpanel}->Show(1);
 }
 
-# wxGlade: MainFrame::OnRDeb <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRDeb <event_handler>
 sub OnRDeb {
     my ($self, $event) = @_;
-    require RepDebCrd;
-    $self->{d_rdebpanel} ||= RepDebCrd->new($self, -1,
-					    "Debiteuren",
-					    [$config->rdebw->{xpos},$config->rdebw->{ypos}],
-					    [$config->rdebw->{xwidth},$config->rdebw->{ywidth}],
-					   );
+    require EB::Wx::Report::DebCrd;
+    $self->{d_rdebpanel} ||= EB::Wx::Report::DebCrd->new
+      ($self, -1,
+       "Debiteuren",
+       [$config->rdebw->{xpos},$config->rdebw->{ypos}],
+       [$config->rdebw->{xwidth},$config->rdebw->{ywidth}],
+      );
     $self->{d_rdebpanel}->SetSize([$config->rdebw->{xwidth},$config->rdebw->{ywidth}]);
     $self->{d_rdebpanel}->init("deb");
     $self->{d_rdebpanel}->Show(1);
 }
 
-# wxGlade: MainFrame::OnRCrd <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnRCrd <event_handler>
 sub OnRCrd {
     my ($self, $event) = @_;
-    require RepDebCrd;
-    $self->{d_rcrdpanel} ||= RepDebCrd->new($self, -1,
-					    "Crediteuren",
-					    [$config->rcrdw->{xpos},$config->rcrdw->{ypos}],
-					    [$config->rcrdw->{xwidth},$config->rcrdw->{ywidth}],
-					   );
+    require EB::Wx::Report::DebCrd;
+    $self->{d_rcrdpanel} ||= EB::Wx::Report::DebCrd->new
+      ($self, -1,
+       "Crediteuren",
+       [$config->rcrdw->{xpos},$config->rcrdw->{ypos}],
+       [$config->rcrdw->{xwidth},$config->rcrdw->{ywidth}],
+      );
     $self->{d_rcrdpanel}->SetSize([$config->rcrdw->{xwidth},$config->rcrdw->{ywidth}]);
     $self->{d_rcrdpanel}->init("crd");
     $self->{d_rcrdpanel}->Show(1);
 }
 
-# wxGlade: MainFrame::OnAbout <event_handler>
+# wxGlade: EB::Wx::MainFrame::OnAbout <event_handler>
 sub OnAbout {
     my ($self, $event) = @_;
     Wx::MessageBox("$::appname -- Squirrel Consultancy\n".
@@ -595,7 +611,15 @@ sub OnAbout {
 		   $self);
 }
 
-# end of class MainFrame
+# wxGlade: EB::Wx::MainFrame::OnROpen <event_handler>
+sub OnROpen {
+    my ($self, $event) = @_;
+
+    warn "Event handler (OnROpen) not implemented";
+    $event->Skip;
+}
+
+# end of class EB::Wx::MainFrame
 
 1;
 

@@ -3,11 +3,12 @@
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-package BtwPrefsDialog;
+package EB::Wx::Report::BTWAangifte::Preferences;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
+use EB;
 
 # begin wxGlade: ::dependencies
 # end wxGlade
@@ -21,7 +22,7 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: BtwPrefsDialog::new
+# begin wxGlade: EB::Wx::Report::BTWAangifte::Preferences::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
@@ -47,8 +48,8 @@ sub new {
 	$self->{b_m11} = Wx::ToggleButton->new($self, -1, _T("Nov"));
 	$self->{b_m12} = Wx::ToggleButton->new($self, -1, _T("Dec"));
 	$self->{l_default} = Wx::StaticText->new($self, -1, _T("Standaardinstelling"), wxDefaultPosition, wxDefaultSize, );
-	$self->{b_ok} = Wx::Button->new($self, wxID_OK, _T("OK"));
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, _T("Cancel"));
+	$self->{b_ok} = Wx::Button->new($self, wxID_OK, "");
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -108,9 +109,9 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: BtwPrefsDialog::__set_properties
+# begin wxGlade: EB::Wx::Report::BTWAangifte::Preferences::__set_properties
 
-	$self->SetTitle(_T("dialog_1"));
+	$self->SetTitle(_T("Instellingen Aangifte BTW"));
 	$self->{b_jaar}->SetToolTipString(_T("Gehele jaar"));
 	$self->{b_kw1}->SetToolTipString(_T("Eerste kwartaal"));
 	$self->{b_m1}->SetToolTipString(_T("Januari"));
@@ -136,7 +137,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: BtwPrefsDialog::__do_layout
+# begin wxGlade: EB::Wx::Report::BTWAangifte::Preferences::__do_layout
 
 	$self->{sz_outer} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_prefs}= Wx::StaticBoxSizer->new($self->{sz_prefs_staticbox}, wxVERTICAL);
@@ -173,28 +174,26 @@ sub __do_layout {
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs}->Add($self->{sz_buttons}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
 	$self->{sz_outer}->Add($self->{sz_prefs}, 1, wxALL|wxEXPAND, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_outer});
 	$self->{sz_outer}->Fit($self);
-	$self->{sz_outer}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
 }
 
-# wxGlade: BtwPrefsDialog::OnOk <event_handler>
+# wxGlade: EB::Wx::Report::BTWAangifte::Preferences::OnOk <event_handler>
 sub OnOk {
     my ($self, $event) = @_;
     $event->Skip;
 }
 
-# wxGlade: BtwPrefsDialog::OnCancel <event_handler>
+# wxGlade: EB::Wx::Report::BTWAangifte::Preferences::OnCancel <event_handler>
 sub OnCancel {
     my ($self, $event) = @_;
     $self->EndModal(-1);
 }
 
-# end of class BtwPrefsDialog
+# end of class EB::Wx::Report::BTWAangifte::Preferences
 
 1;
 
