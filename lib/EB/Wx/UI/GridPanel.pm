@@ -1,23 +1,24 @@
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.1 2005/09/16 20:31:09 jv Exp $
+# RCS Info        : $Id: GridPanel.pm,v 1.2 2007/03/08 18:14:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 16 18:35:23 2005
-# Update Count    : 292
+# Last Modified On: Mon Mar  5 17:57:39 2007
+# Update Count    : 296
 # Status          : Unknown, Use with caution!
 
 use Wx 0.15 qw[:allclasses];
 use strict;
 
-package GridPanel;
+package EB::Wx::UI::GridPanel;
 
 use Wx qw[:everything];
 use base qw(Wx::Panel);
 use strict;
 use Carp;
+use EB;
 
-use GridPanel::RemoveButton;
+use EB::Wx::UI::GridPanel::RemoveButton;
 
 ################ API: new ################
 #
@@ -187,7 +188,7 @@ sub changed {
 	return 1 if $self->is_deleted($row) || $self->is_new($row);
 	foreach my $col ( 0 .. $self->{cols}-1 ) {
 	    my $item = $self->item($row, $col);
-	    warn("changed: INDEFINED ITEM @ $row $col\n") unless $item;
+	    warn("changed: UNDEFINED ITEM @ $row $col\n") unless $item;
 	    next unless $item->changed;
 	    return 1;
 	}
@@ -260,7 +261,7 @@ sub reset_changes {
 	}
 	foreach my $col ( 0 .. $self->{cols}-1 ) {
 	    $item = $self->item($row, $col);
-	    warn("reset: INDEFINED ITEM @ $row $col\n") unless $item;
+	    warn("reset: UNDEFINED ITEM @ $row $col\n") unless $item;
 	    $item->reset;
 	}
     }
@@ -346,7 +347,7 @@ sub new_or_append {
 	}
 	push(@args, shift(@values)) unless $new;
 
-	if ( $f eq GridPanel::RemoveButton:: ) {
+	if ( $f eq EB::Wx::UI::GridPanel::RemoveButton:: ) {
 	    $w = $self->rembut($r) = $f->new($self->{panel}, $new);
 	    #$w->SetToolTip(rx("b", $r));
 	    $self->is_deleted($r) = $new;

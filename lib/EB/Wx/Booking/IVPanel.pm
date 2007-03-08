@@ -9,7 +9,11 @@ our $app;
 
 use Wx 0.15 qw[:allclasses];
 use strict;
+
 package IVPanel;
+
+use EB;
+use EB::Format;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
@@ -35,7 +39,7 @@ sub new {
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{gr_main} = Wx::Grid->new($self, -1);
-	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, _T("Close"));
+	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -43,6 +47,9 @@ sub new {
 	Wx::Event::EVT_BUTTON($self, wxID_CLOSE, \&OnClose);
 
 # end wxGlade
+
+	Wx::Event::EVT_GRID_CELL_LEFT_DCLICK($self->{gr_main}, \&OnDClick);
+
 	$self->{mew} = "ivw";
 	$self->SetTitle($title);
 	return $self;
@@ -55,13 +62,19 @@ sub __set_properties {
 
 # begin wxGlade: IVPanel::__set_properties
 
-	$self->SetTitle(_T("iv_dialog"));
-	$self->{gr_main}->CreateGrid(1, 9);
+	$self->SetTitle(_T("Inkoop/Verkoop Boeking"));
+	$self->{gr_main}->CreateGrid(0, 6);
 	$self->{gr_main}->SetRowLabelSize(0);
 	$self->{gr_main}->SetColLabelSize(22);
 	$self->{gr_main}->EnableEditing(0);
 	$self->{gr_main}->EnableDragRowSize(0);
 	$self->{gr_main}->SetSelectionMode(wxGridSelectRows);
+	$self->{gr_main}->SetColLabelValue(0, _T("Nr"));
+	$self->{gr_main}->SetColLabelValue(1, _T("Datum"));
+	$self->{gr_main}->SetColLabelValue(2, _T("Relatie"));
+	$self->{gr_main}->SetColLabelValue(3, _T("Omschrijving"));
+	$self->{gr_main}->SetColLabelValue(4, _T("Bedrag"));
+	$self->{gr_main}->SetColLabelValue(5, _T("Voldaan"));
 
 # end wxGlade
 }
@@ -77,18 +90,97 @@ sub __do_layout {
 	$self->{sz_main}->Add($self->{gr_main}, 1, wxEXPAND, 0);
 	$self->{sz_buttons}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add($self->{b_close}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_main}->Add($self->{sz_buttons}, 0, wxEXPAND, 0);
+	$self->{sz_main}->Add($self->{sz_buttons}, 0, wxTOP|wxEXPAND, 5);
 	$self->{sz_outer}->Add($self->{sz_main}, 1, wxALL|wxEXPAND, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_outer});
 	$self->{sz_outer}->Fit($self);
-	$self->{sz_outer}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
 }
 
 sub init {
+    my ($self, $id, $desc, $type) = @_;
+    $self->SetTitle(__x("Dagboek: {dbk}", dbk => $desc));
+    $self->{dbk_id} = $id;
+    $self->{dbk_desc} = $desc;
+    $self->{dbk_type} = $type;
+    $self->refresh;
+}
+
+sub refresh {
+    my ($self) = @_;
+
+    my $sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc,".
+			     " bsk_date, bsk_amount, bsk_open, bsr_rel_code".
+			     " From Boekstukken, Boekstukregels".
+			     " WHERE bsk_dbk_id = ?".
+			     " AND bsr_bsk_id = bsk_id AND bsr_nr = 1".
+			     " ORDER BY bsk_date, bsk_id",
+			     $self->{dbk_id});
+
+    my $gr = $self->{gr_main};
+    $gr->DeleteRows(0, $gr->GetNumberRows);
+    $gr->AppendRows($sth->rows);
+
+    my $row = 0;
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	my ($bsk_id, $bsk_nr, $bsk_desc, $bsk_date, $bsk_amount, $bsk_open, $bsr_rel) = @$rr;
+	$bsk_nr =~ s/\s+$//;
+	$bsr_rel =~ s/\s+$//;
+	$bsk_amount = -$bsk_amount if $self->{dbk_type} == DBKTYPE_INKOOP;
+
+	my $col = 0;
+	$gr->SetCellValue($row, $col, $bsk_nr);
+	$gr->SetCellAlignment($row, $col, wxALIGN_RIGHT, wxALIGN_CENTER);
+	$col++;
+	$gr->SetCellValue($row, $col, $bsk_date);
+	$gr->SetCellAlignment($row, $col, wxALIGN_LEFT, wxALIGN_CENTER);
+	$col++;
+	$gr->SetCellValue($row, $col, $bsr_rel);
+	$gr->SetCellAlignment($row, $col, wxALIGN_LEFT, wxALIGN_CENTER);
+	$col++;
+	$gr->SetCellValue($row, $col, $bsk_desc);
+	$gr->SetCellAlignment($row, $col, wxALIGN_LEFT, wxALIGN_CENTER);
+	$col++;
+	$gr->SetCellValue($row, $col, numfmt($bsk_amount));
+	$gr->SetCellAlignment($row, $col, wxALIGN_RIGHT, wxALIGN_CENTER);
+	$col++;
+	$gr->SetCellValue($row, $col, $bsk_open ? _T("Nee") : _T("Ja"));
+	$gr->SetCellAlignment($row, $col, wxALIGN_CENTER, wxALIGN_CENTER);
+	$row++;
+    }
+
+    $self->resize;
+}
+
+sub resize {
+    my ($self) = @_;
+    my $gr = $self->{gr_main};
+
+    # Calculate minimal fit.
+    $gr->AutoSizeColumns(1);
+
+    # Get the total minimal width.
+    my $w = 0;
+    my @w;
+    my $cols = $gr->GetNumberCols;
+    for ( 0 .. $cols-1 ) {
+	push(@w, $gr->GetColSize($_));
+	$w += $w[-1];
+    }
+
+    # Get available width.
+    my $width = ($gr->GetSizeWH)[0];
+    $width -= 20;			# scrollbar
+
+    # Scale columns if possible.
+    if ( $w < $width ) {
+	my $r = $width / $w;
+	for ( 0 .. $cols-1 ) {
+	    $gr->SetColSize($_, int($r*$w[$_]));
+	}
+    }
 }
 
 # wxGlade: IVPanel::OnClose <event_handler>
@@ -100,7 +192,13 @@ sub OnClose {
     $self->Show(0);
 }
 
+# wxGlade: IVPanel::OnDClick <event_handler>
+sub OnDClick {
+    my ($self, $event) = @_;
+    my $row = $event->GetRow;
+    warn("row = $row\n");
+}
+
 # end of class IVPanel
 
 1;
-

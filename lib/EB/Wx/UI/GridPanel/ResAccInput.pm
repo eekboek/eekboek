@@ -1,5 +1,5 @@
-package GridPanel::ResAccInput;
+package EB::Wx::UI::GridPanel::ResAccInput;
 
-use base qw(GridPanel::AccInput);
+use base qw(EB::Wx::UI::GridPanel::AccInput);
 
 1;

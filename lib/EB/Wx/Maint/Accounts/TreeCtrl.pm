@@ -3,7 +3,7 @@
 use strict;
 
 use Wx;
-use EB::Globals;
+use EB;
 
 package main;
 
@@ -11,7 +11,7 @@ our $config;
 our $dbh;
 our $app;
 
-package AccTreeCtrl;
+package EB::Wx::Maint::Accounts::TreeCtrl;
 
 use strict;
 use base qw(Wx::TreeCtrl);

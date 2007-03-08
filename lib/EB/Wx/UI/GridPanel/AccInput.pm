@@ -1,7 +1,7 @@
-package GridPanel::AccInput;
+package EB::Wx::UI::GridPanel::AccInput;
 
 use Wx qw(:allclasses wxDefaultPosition wxDefaultSize);
-use base qw(AccInput);
+use base qw(EB::Wx::UI::AccInput);
 use strict;
 
 sub new {

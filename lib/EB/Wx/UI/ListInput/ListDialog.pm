@@ -7,11 +7,12 @@ our $config;
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-package ListDialog;
+package EB::Wx::UI::ListInput::ListDialog;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
+use EB;
 
 # begin wxGlade: ::dependencies
 # end wxGlade
@@ -25,15 +26,15 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: ListDialog::new
+# begin wxGlade: EB::Wx::UI::ListInput::ListDialog::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME|wxSTAY_ON_TOP 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{lb_lst} = Wx::ListBox->new($self, -1, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE|wxLB_HSCROLL);
-	$self->{b_accept} = Wx::Button->new($self, wxID_OK, _T("OK"));
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, _T("Cancel"));
+	$self->{b_accept} = Wx::Button->new($self, wxID_OK, "");
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -60,10 +61,10 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: ListDialog::__set_properties
+# begin wxGlade: EB::Wx::UI::ListInput::ListDialog::__set_properties
 
 	$self->SetTitle(_T("Selecteer"));
-	$self->SetSize(365, 240);
+	$self->SetSize(Wx::Size->new(365, 240));
 	$self->{lb_lst}->SetFocus();
 	$self->{lb_lst}->SetSelection(0);
 	$self->{b_accept}->SetDefault();
@@ -74,7 +75,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: ListDialog::__do_layout
+# begin wxGlade: EB::Wx::UI::ListInput::ListDialog::__do_layout
 
 	$self->{sz_lstd_outer} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_lstd_main} = Wx::BoxSizer->new(wxVERTICAL);
@@ -85,7 +86,6 @@ sub __do_layout {
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_lstd_main}->Add($self->{sz_buttons}, 0, wxTOP|wxEXPAND, 5);
 	$self->{sz_lstd_outer}->Add($self->{sz_lstd_main}, 1, wxALL|wxEXPAND, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_lstd_outer});
 	$self->Layout();
 
@@ -111,21 +111,21 @@ sub fill {
     $self->{lb_lst}->InsertItems($self->{list} = $aref, 0);
 }
 
-# wxGlade: ListDialog::OnOk <event_handler>
+# wxGlade: EB::Wx::UI::ListInput::ListDialog::OnOk <event_handler>
 sub OnOk {
     my ($self, $event) = @_;
     my $v = $1 if $self->{lb_lst}->GetString($self->value) =~ /^(\d+)/;
     $self->closehandler(0+$v);
 }
 
-# wxGlade: ListDialog::OnSelect <event_handler>
+# wxGlade: EB::Wx::UI::ListInput::ListDialog::OnSelect <event_handler>
 sub OnSelect {
     my ($self, $event) = @_;
     my $v = $1 if $self->{lb_lst}->GetString($self->value) =~ /^(\d+)/;
     $self->closehandler(0+$v);
 }
 
-# wxGlade: ListDialog::OnCancel <event_handler>
+# wxGlade: EB::Wx::UI::ListInput::ListDialog::OnCancel <event_handler>
 sub OnCancel {
     my ($self, $event) = @_;
     $self->closehandler(-1);
@@ -240,7 +240,7 @@ sub OnChar {
 #    $event->Skip;
 }
 
-# end of class ListDialog
+# end of class EB::Wx::UI::ListInput::ListDialog
 
 1;
 

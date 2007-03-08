@@ -9,14 +9,15 @@ our $dbh;
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-package StdAccPanel;
+package EB::Wx::UI::StdAccPanel;
 
 use Wx qw[:everything];
 use base qw(Wx::Panel);
 use strict;
+use EB;
 
 # begin wxGlade: ::dependencies
-use BalAccInput;
+use EB::Wx::UI::BalAccInput;
 # end wxGlade
 
 sub new {
@@ -27,7 +28,7 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: StdAccPanel::new
+# begin wxGlade: EB::Wx::UI::StdAccPanel.pm::new
 
 	$style = wxTAB_TRAVERSAL 
 		unless defined $style;
@@ -35,23 +36,23 @@ sub new {
 	$self = $self->SUPER::new( $parent, $id, $pos, $size, $style, $name );
 	$self->{main_panel} = Wx::ScrolledWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL|wxCLIP_CHILDREN);
 	$self->{l_deb} = Wx::StaticText->new($self->{main_panel}, -1, _T("Debiteuren"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_deb} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_deb} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_crd} = Wx::StaticText->new($self->{main_panel}, -1, _T("Crediteuren"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_crd} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_crd} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_winst} = Wx::StaticText->new($self->{main_panel}, -1, _T("Winst"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_winst} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_winst} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_btw_ih} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Inkoop Hoog"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_ih} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_btw_ih} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_btw_vh} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Verkoop Hoog"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_vh} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_btw_vh} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_btw_il} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Inkoop Laag"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_il} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_btw_il} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_btw_vl} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Verkoop Laag"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_vl} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{tx_btw_vl} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_btw_ok} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Betaald"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_ok} = BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{b_apply} = Wx::Button->new($self, wxID_APPLY, _T("Apply"));
-	$self->{b_reset} = Wx::Button->new($self, wxID_UNDO, _T("Undo"));
+	$self->{tx_btw_ok} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{b_apply} = Wx::Button->new($self, wxID_APPLY, "");
+	$self->{b_reset} = Wx::Button->new($self, wxID_UNDO, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -84,7 +85,7 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: StdAccPanel::__set_properties
+# begin wxGlade: EB::Wx::UI::StdAccPanel.pm::__set_properties
 
 	$self->{main_panel}->SetScrollRate(10, 10);
 
@@ -94,7 +95,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: StdAccPanel::__do_layout
+# begin wxGlade: EB::Wx::UI::StdAccPanel.pm::__do_layout
 
 	$self->{sz_std} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sz_std_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
@@ -118,19 +119,14 @@ sub __do_layout {
 	$self->{sz_g_stdacc}->Add($self->{tx_btw_ok}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sz_g_stdacc}->AddGrowableCol(1);
 	$self->{sz_stdacc}->Add($self->{sz_g_stdacc}, 0, wxALL|wxEXPAND, 5);
-	$self->{main_panel}->SetAutoLayout(1);
 	$self->{main_panel}->SetSizer($self->{sz_stdacc});
-	$self->{sz_stdacc}->Fit($self->{main_panel});
-	$self->{sz_stdacc}->SetSizeHints($self->{main_panel});
 	$self->{sz_std}->Add($self->{main_panel}, 1, wxEXPAND, 0);
 	$self->{sz_std_buttons}->Add($self->{b_apply}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_std_buttons}->Add(20, 20, 1, wxADJUST_MINSIZE, 0);
 	$self->{sz_std_buttons}->Add($self->{b_reset}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_std}->Add($self->{sz_std_buttons}, 0, wxALL|wxEXPAND, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_std});
 	$self->{sz_std}->Fit($self);
-	$self->{sz_std}->SetSizeHints($self);
 
 # end wxGlade
 }
@@ -181,13 +177,13 @@ sub changed {
     return 0;
 }
 
-# wxGlade: StdAccPanel::OnChanged <event_handler>
+# wxGlade: EB::Wx::UI::StdAccPanel.pm::OnChanged <event_handler>
 sub OnChanged {
     my ($self, $event) = @_;
     $self->{_check_changed}++;
 }
 
-# wxGlade: StdAccPanel::OnApply <event_handler>
+# wxGlade: EB::Wx::UI::StdAccPanel.pm::OnApply <event_handler>
 sub OnApply {
     my ($self, $event) = @_;
     eval { $self->apply };
@@ -230,13 +226,13 @@ sub apply {
     }
 }
 
-# wxGlade: StdAccPanel::OnReset <event_handler>
+# wxGlade: EB::Wx::UI::StdAccPanel.pm::OnReset <event_handler>
 sub OnReset {
     my ($self, $event) = @_;
     $self->refresh;
 }
 
-# end of class StdAccPanel
+# end of class EB::Wx::UI::StdAccPanel.pm
 
 1;
 

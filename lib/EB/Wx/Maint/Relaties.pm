@@ -9,16 +9,16 @@ our $dbh;
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-package RelPanel;
+package EB::Wx::Maint::Relaties;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
 
-use EB::Globals;
+use EB;
 
 # begin wxGlade: ::dependencies
-use GridPanel;
+use EB::Wx::UI::GridPanel;
 # end wxGlade
 
 sub new {
@@ -30,7 +30,7 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: RelPanel::new
+# begin wxGlade: EB::Wx::Maint::Relaties::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
@@ -42,7 +42,7 @@ sub new {
 	$self->{ch_crd} = Wx::CheckBox->new($self, -1, _T("Crediteuren"), wxDefaultPosition, wxDefaultSize, );
 	$self->{panel} = Wx::Panel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{l_inuse} = Wx::StaticText->new($self, -1, _T("Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd."), wxDefaultPosition, wxDefaultSize, );
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, _T("Close"));
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -76,15 +76,15 @@ sub fill_grid {
     my $sth;
     if ( $deb && !$crd ) {
 	$asel = " WHERE rel_debcrd";
-	#$dsel = " WHERE dbk_type = " . DBKTYPE_VERKOOP;
+	$dsel = " WHERE dbk_type = " . DBKTYPE_VERKOOP;
     }
     elsif ( !$deb && $crd ) {
 	$asel = " WHERE NOT rel_debcrd";
-	#$dsel = " WHERE dbk_type = " . DBKTYPE_INKOOP;
+	$dsel = " WHERE dbk_type = " . DBKTYPE_INKOOP;
     }
     else {
-	#$dsel = " WHERE dbk_type = " . DBKTYPE_INKOOP .
-	#  " OR dbk_type = " . DBKTYPE_VERKOOP;
+	$dsel = " WHERE dbk_type = " . DBKTYPE_INKOOP .
+	  " OR dbk_type = " . DBKTYPE_VERKOOP;
     }
 
     $sth = $dbh->sql_exec("SELECT dbk_desc, dbk_id FROM Dagboeken".
@@ -103,21 +103,21 @@ sub fill_grid {
 			  $asel.
 			  " ORDER BY rel_code");
 
-    use GridPanel::TextCtrl;
-    use GridPanel::AccInput;
-    use GridPanel::Choice;
-    use GridPanel::DCButton;
-    use GridPanel::RemoveButton;
+    use EB::Wx::UI::GridPanel::TextCtrl;
+    use EB::Wx::UI::GridPanel::AccInput;
+    use EB::Wx::UI::GridPanel::Choice;
+    use EB::Wx::UI::GridPanel::DCButton;
+    use EB::Wx::UI::GridPanel::RemoveButton;
 
     $self->{panel}->create
-      ([ Code         => GridPanel::TextCtrl::,
-	 Omschrijving => GridPanel::TextCtrl::,
-	 "D/C"        => GridPanel::DCButton::,
-	 GrBkRek      => GridPanel::AccInput::,
-	 Dagboek      => [ GridPanel::Choice::, $dbks ],
-	 BTW          => [ GridPanel::Choice::,
+      ([ Code         => EB::Wx::UI::GridPanel::TextCtrl::,
+	 Omschrijving => EB::Wx::UI::GridPanel::TextCtrl::,
+	 "D/C"        => EB::Wx::UI::GridPanel::DCButton::,
+	 GrBkRek      => EB::Wx::UI::GridPanel::AccInput::,
+	 Dagboek      => [ EB::Wx::UI::GridPanel::Choice::, $dbks ],
+	 BTW          => [ EB::Wx::UI::GridPanel::Choice::,
 			   [ qw(Normaal Verlegd Intra Extra) ] ],
-	 ""           => GridPanel::RemoveButton::,
+	 ""           => EB::Wx::UI::GridPanel::RemoveButton::,
        ], 0, 0 );
     $self->{panel}->addgrowablecol(1);
     $self->{panel}->addgrowablecol(3);
@@ -137,7 +137,7 @@ sub fill_grid {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: RelPanel::__set_properties
+# begin wxGlade: EB::Wx::Maint::Relaties::__set_properties
 
 	$self->SetTitle(_T("Onderhoud Relaties"));
 	$self->{ch_deb}->SetValue(1);
@@ -154,9 +154,9 @@ sub __do_layout {
 	# Due to a small inconvenience in wxGlade 0.3 we have to
 	# replace the vanilla panel with out custom panel.
 	$self->{panel}->Destroy;
-	$self->{panel} = new GridPanel($self, -1, wxDefaultPosition, wxDefaultSize, 0,);
+	$self->{panel} = new EB::Wx::UI::GridPanel($self, -1, wxDefaultPosition, wxDefaultSize, 0,);
 
-# begin wxGlade: RelPanel::__do_layout
+# begin wxGlade: EB::Wx::Maint::Relaties::__do_layout
 
 	$self->{sz_outer} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sz_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
@@ -175,16 +175,14 @@ sub __do_layout {
 	$self->{sz_buttons}->Add(20, 20, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxALL|wxEXPAND|wxADJUST_MINSIZE|wxFIXED_MINSIZE, 5);
 	$self->{sz_outer}->Add($self->{sz_buttons}, 0, wxALL|wxEXPAND, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_outer});
 	$self->{sz_outer}->Fit($self);
-	$self->{sz_outer}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
 }
 
-# wxGlade: RelPanel::OnDeb <event_handler>
+# wxGlade: EB::Wx::Maint::Relaties::OnDeb <event_handler>
 sub OnDeb {
     my ($self, $event) = @_;
 
@@ -197,7 +195,7 @@ sub OnDeb {
     $self->fill_grid;
 }
 
-# wxGlade: RelPanel::OnCrd <event_handler>
+# wxGlade: EB::Wx::Maint::Relaties::OnCrd <event_handler>
 sub OnCrd {
     my ($self, $event) = @_;
 
@@ -209,7 +207,7 @@ sub OnCrd {
     $self->fill_grid;
 }
 
-# wxGlade: RelPanel::OnClose <event_handler>
+# wxGlade: EB::Wx::Maint::Relaties::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
 
@@ -226,14 +224,14 @@ sub OnClose {
     $self->Show(0);
 }
 
-# wxGlade: RelPanel::OnApply <pseudo event_handler>
+# wxGlade: EB::Wx::Maint::Relaties::OnApply <pseudo event_handler>
 sub OnApply {
     my ($self, $data) = @_;
     use Data::Dumper;
     warn(Dumper($data));
 }
 
-# end of class RelPanel
+# end of class EB::Wx::Maint::Relaties
 
 1;
 

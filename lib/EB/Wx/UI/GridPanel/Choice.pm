@@ -1,4 +1,4 @@
-package GridPanel::Choice;
+package EB::Wx::UI::GridPanel::Choice;
 
 use Wx qw(:allclasses wxDefaultPosition wxDefaultSize);
 use base qw(Wx::Choice);

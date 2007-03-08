@@ -1,4 +1,4 @@
-package GridPanel::RemoveButton;
+package EB::Wx::UI::GridPanel::RemoveButton;
 
 use Wx qw(:allclasses wxDefaultPosition wxDefaultSize wxBITMAP_TYPE_PNG);
 use base qw(Wx::BitmapButton);

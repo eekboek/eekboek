@@ -4,11 +4,12 @@ our $dbh;
 our $config;
 our $app;
 
-package ListInput;
+package EB::Wx::UI::ListInput;
 
 use Wx qw(wxDefaultPosition wxDefaultSize wxID_OK);
 use base qw(Wx::TextCtrl);
 use strict;
+use EB;
 
 sub new {
     my ($self, $parent, $id, $title, $pos, $size, $style, $list ) = @_;
@@ -106,8 +107,8 @@ sub OnChar {
 	}
     }
     elsif ( $c eq '?' ) {
-	use ListDialog;
-	my $d = ListDialog->new($self, -1, "Selecteer", wxDefaultPosition, wxDefaultSize,);
+	use EB::Wx::UI::ListInput::ListDialog;
+	my $d = EB::Wx::UI::ListInput::ListDialog->new($self, -1, "Selecteer", wxDefaultPosition, wxDefaultSize,);
 	$d->fill($self->{list});
 	$d->setvalue($self->SUPER::GetValue);
 	my $ret = $d->ShowModal;

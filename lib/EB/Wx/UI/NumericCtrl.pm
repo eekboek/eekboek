@@ -1,8 +1,9 @@
-package NumericCtrl;
+package EB::Wx::UI::NumericCtrl;
 
 use base qw(Wx::TextCtrl);
 use Wx qw[:everything];
 use strict;
+use EB;
 
 sub new {
     my ($class, @args) = @_;

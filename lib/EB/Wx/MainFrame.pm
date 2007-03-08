@@ -256,15 +256,17 @@ sub dagboekenmenu {
 	$tmp->Append($m, "$desc\tAlt-$id",
 		     __x("Dagboek {dbk}", dbk => $desc)."\n");
 	my $tp = qw(X IV IV BKM BKM BKM)[$type];
+	my $cl = "EB::Wx::Booking::$tp";
 	undef($self->{"d_dbkpanel$id"});
 	EVT_MENU($self, $m,
-		 sub { require "${tp}Panel.pm";
+		 sub { eval "require $cl";
+		       die($@) if $@;
 		       my $cfg = $config->get(lc($tp)."w");
 		       $self->{"d_dbkpanel$id"} ||=
-			 "${tp}Panel"->new($self, -1,
-					   __x("Dagboek {dbk}", dbk => $desc)."\n",
-					   [$cfg->{xpos}, $cfg->{ypos}],
-					   [$cfg->{xwidth}, $cfg->{ywidth}]);
+			 $cl->new($self, -1,
+				  __x("Dagboek {dbk}", dbk => $desc)."\n",
+				  [$cfg->{xpos}, $cfg->{ypos}],
+				  [$cfg->{xwidth}, $cfg->{ywidth}]);
 		       ### TODO: How to save/restore geometry?
 		       $self->{"d_dbkpanel$id"}->init($id, $desc, $type);
 		       $self->{"d_dbkpanel$id"}->Show(1);
@@ -287,7 +289,7 @@ sub DESTROY {
 # wxGlade: EB::Wx::MainFrame::OnNew <event_handler>
 sub OnNew {
     my ($self, $event) = @_;
-    use NewDialog;
+    use EB::Wx::Tools::NewDialog;
     foreach my $win ( grep(/^d_m\S+panel$/, keys(%$self)) ) {
 	next unless $self->{$win};
 	next unless $self->{$win}->IsShown;
@@ -297,11 +299,12 @@ sub OnNew {
 		       wxOK|wxICON_ERROR);
 	return;
     }
-    $self->{d_newdialog} ||= NewDialog->new($self, -1,
-					    "Nieuwe administratie",
-					    [$config->neww->{xpos},$config->neww->{ypos}],
-					    [$config->neww->{xwidth},$config->neww->{ywidth}],
-					   );
+    $self->{d_newdialog} ||= EB::Wx::Tools::NewDialog->new
+      ($self, -1,
+       "Nieuwe administratie",
+       [$config->neww->{xpos},$config->neww->{ypos}],
+       [$config->neww->{xwidth},$config->neww->{ywidth}],
+      );
     $self->{d_newdialog}->SetSize([$config->neww->{xwidth},$config->neww->{ywidth}]);
     my $ret = $self->{d_newdialog}->ShowModal;
     $self->{d_newdialog}->Destroy;
@@ -311,7 +314,7 @@ sub OnNew {
 # wxGlade: EB::Wx::MainFrame::OnNewWiz <event_handler>
 sub OnNewWiz {
     my ($self, $event) = @_;
-    require NewDialogWiz;
+    require EB::Wx::Tools::NewDialogWiz;
     foreach my $win ( grep(/^d_m\S+panel$/, keys(%$self)) ) {
 	next unless $self->{$win};
 	next unless $self->{$win}->IsShown;
@@ -321,35 +324,22 @@ sub OnNewWiz {
 		       wxOK|wxICON_ERROR);
 	return;
     }
-    $self->{d_newdialog} ||= NewDialogWiz->new($self, -1,
-					    "Nieuwe administratie",
-					    [$config->neww->{xpos},$config->neww->{ypos}],
-					    [$config->neww->{xwidth},$config->neww->{ywidth}],
-					   );
+    $self->{d_newdialog} ||= EB::Wx::Tools::NewDialogWiz->new
+      ($self, -1,
+       "Nieuwe administratie",
+       [$config->neww->{xpos},$config->neww->{ypos}],
+       [$config->neww->{xwidth},$config->neww->{ywidth}],
+      );
     $self->{d_newdialog}->SetSize([$config->neww->{xwidth},$config->neww->{ywidth}]);
     my $ret = $self->{d_newdialog}->ShowModal;
     $self->{d_newdialog}->Destroy;
     $self->{d_newdialog} = undef;
 }
 
-sub OnNewXxx {
-    my ($self, $event) = @_;
-    require AccDialog;
-    $self->{d_xxxdialog} ||= AccDialog->new($self, -1,
-					    "Nieuwe administratie",
-					    [$config->neww->{xpos},$config->neww->{ypos}],
-					    [$config->neww->{xwidth},$config->neww->{ywidth}],
-					   );
-    $self->{d_xxxdialog}->SetSize([$config->neww->{xwidth},$config->neww->{ywidth}]);
-    my $ret = $self->{d_xxxdialog}->ShowModal;
-    $self->{d_xxxdialog}->Destroy;
-    $self->{d_xxxdialog} = undef;
-}
-
 # wxGlade: EB::Wx::MainFrame::OnOpen <event_handler>
 sub OnOpen {
     my ($self, $event) = @_;
-    require DbOpenDialog;
+    require EB::Wx::Tools::DbOpenDialog;
     foreach my $win ( grep(/^d_m\S+panel$/, keys(%$self)) ) {
 	next unless $self->{$win};
 	next unless $self->{$win}->IsShown;
@@ -359,11 +349,12 @@ sub OnOpen {
 		       wxOK|wxICON_ERROR);
 	return;
     }
-    $self->{d_opendialog} ||= DbOpenDialog->new($self, -1,
-						"Openen database",
-						[$config->openw->{xpos},$config->openw->{ypos}],
-						[$config->openw->{xwidth},$config->openw->{ywidth}],
-					       );
+    $self->{d_opendialog} ||= EB::Wx::Tools::DbOpenDialog->new
+      ($self, -1,
+       "Openen database",
+       [$config->openw->{xpos},$config->openw->{ypos}],
+       [$config->openw->{xwidth},$config->openw->{ywidth}],
+      );
     $self->{d_opendialog}->SetSize([$config->openw->{xwidth},$config->openw->{ywidth}]);
     $self->{d_opendialog}->refresh;
     return unless $self->{d_opendialog}->ShowModal;
@@ -426,13 +417,14 @@ sub OnExit {
 # wxGlade: EB::Wx::MainFrame::OnMGbk <event_handler>
 sub OnMGbk {
     my ($self, $event) = @_;
-    require AccPanel;
+    require EB::Wx::Maint::Accounts;
     my $p = "d_maccpanel";
-    $self->{$p} ||= AccPanel->new($self, -1,
-				  "Onderhoud Grootboekrekeningen",
-				  [$config->accw->{xpos},$config->accw->{ypos}],
-				  [$config->accw->{xwidth},$config->accw->{ywidth}],
-				 );
+    $self->{$p} ||= EB::Wx::Maint::Accounts->new
+      ($self, -1,
+       "Onderhoud Grootboekrekeningen",
+       [$config->accw->{xpos},$config->accw->{ypos}],
+       [$config->accw->{xwidth},$config->accw->{ywidth}],
+      );
     $self->{$p}->Move([$config->accw->{xpos},$config->accw->{ypos}]);
     $self->{$p}->SetSize([$config->accw->{xwidth},$config->accw->{ywidth}]);
     $self->{$p}->Show(1);
@@ -441,13 +433,14 @@ sub OnMGbk {
 # wxGlade: EB::Wx::MainFrame::OnMRel <event_handler>
 sub OnMRel {
     my ($self, $event) = @_;
-    require RelPanel;
+    require EB::Wx::Maint::Relaties;
     my $p = "d_mrelpanel";
-    $self->{$p} ||= RelPanel->new($self, -1,
-				  "Onderhoud Relaties",
-				  [$config->relw->{xpos},$config->relw->{ypos}],
-				  [$config->relw->{xwidth},$config->relw->{ywidth}],
-				 );
+    $self->{$p} ||= EB::Wx::Maint::Relaties->new
+      ($self, -1,
+       "Onderhoud Relaties",
+       [$config->relw->{xpos},$config->relw->{ypos}],
+       [$config->relw->{xwidth},$config->relw->{ywidth}],
+      );
     $self->{$p}->SetSize([$config->relw->{xwidth},$config->relw->{ywidth}]);
     $self->{$p}->Show(1);
 }
@@ -455,13 +448,14 @@ sub OnMRel {
 # wxGlade: EB::Wx::MainFrame::OnMBtw <event_handler>
 sub OnMBtw {
     my ($self, $event) = @_;
-    require BtwPanel;
+    require EB::Wx::Maint::BTWTarieven;
     my $p = "d_mbtwpanel";
-    $self->{$p} ||= BtwPanel->new($self, -1,
-				  "Onderhoud BTW instellingen",
-				  [$config->btww->{xpos},$config->btww->{ypos}],
-				  [$config->btww->{xwidth},$config->btww->{ywidth}],
-				 );
+    $self->{$p} ||= EB::Wx::Maint::BTWTarieven->new
+      ($self, -1,
+       "Onderhoud BTW instellingen",
+       [$config->btww->{xpos},$config->btww->{ypos}],
+       [$config->btww->{xwidth},$config->btww->{ywidth}],
+      );
     $self->{$p}->SetSize([$config->btww->{xwidth},$config->btww->{ywidth}]);
     $self->{$p}->Show(1);
 }
@@ -469,13 +463,14 @@ sub OnMBtw {
 # wxGlade: EB::Wx::MainFrame::OnMStdAcc <event_handler>
 sub OnMStdAcc {
     my ($self, $event) = @_;
-    require MStdAccPanel;
+    require EB::Wx::Maint::StdAccounts;
     my $p = "d_mstdpanel";
-    $self->{$p} ||= MStdAccPanel->new($self, -1,
-				      "Onderhoud Koppelingen",
-				      [$config->stdw->{xpos},$config->stdw->{ypos}],
-				      [$config->stdw->{xwidth},$config->stdw->{ywidth}],
-				     );
+    $self->{$p} ||= EB::Wx::Maint::StdAccounts->new
+      ($self, -1,
+       "Onderhoud Koppelingen",
+       [$config->stdw->{xpos},$config->stdw->{ypos}],
+       [$config->stdw->{xwidth},$config->stdw->{ywidth}],
+      );
     $self->{$p}->SetSize([$config->stdw->{xwidth},$config->stdw->{ywidth}]);
     $self->{$p}->Show(1);
 }

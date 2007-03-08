@@ -2,10 +2,10 @@ package main;
 
 our $dbh;
 
-package AccInput;
+package EB::Wx::UI::AccInput;
 
 use Wx qw(wxDefaultPosition wxDefaultSize wxID_OK);
-use base qw(ListInput);
+use base qw(EB::Wx::UI::ListInput);
 use strict;
 
 sub new {

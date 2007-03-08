@@ -9,14 +9,15 @@ our $app;
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-package MStdAccPanel;
+package EB::Wx::Maint::StdAccounts;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
+use EB;
 
 # begin wxGlade: ::dependencies
-use StdAccPanel;
+use EB::Wx::UI::StdAccPanel;
 # end wxGlade
 
 sub new {
@@ -28,16 +29,16 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: MStdAccPanel::new
+# begin wxGlade: EB::Wx::Maint::StdAccounts::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{stdacc_title_staticbox} = Wx::StaticBox->new($self, -1, _T("Koppelingen") );
-	$self->{p_stdacc} = StdAccPanel->new($self, -1);
+	$self->{p_stdacc} = EB::Wx::UI::StdAccPanel->new($self, -1);
 	$self->{l_inuse} = Wx::StaticText->new($self, -1, _T("Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd."), wxDefaultPosition, wxDefaultSize, );
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, _T("Close"));
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -53,7 +54,7 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: MStdAccPanel::__set_properties
+# begin wxGlade: EB::Wx::Maint::StdAccounts::__set_properties
 
 	$self->SetTitle(_T("Koppelingen"));
 	$self->{b_cancel}->SetFocus();
@@ -65,7 +66,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: MStdAccPanel::__do_layout
+# begin wxGlade: EB::Wx::Maint::StdAccounts::__do_layout
 
 	$self->{stdacc_outer} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{stdacc_main} = Wx::BoxSizer->new(wxVERTICAL);
@@ -78,16 +79,14 @@ sub __do_layout {
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxEXPAND|wxADJUST_MINSIZE|wxFIXED_MINSIZE, 5);
 	$self->{stdacc_main}->Add($self->{sz_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->{stdacc_outer}->Add($self->{stdacc_main}, 1, wxALL|wxEXPAND, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{stdacc_outer});
 	$self->{stdacc_outer}->Fit($self);
-	$self->{stdacc_outer}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
 }
 
-# wxGlade: MStdAccPanel::OnClose <event_handler>
+# wxGlade: EB::Wx::Maint::StdAccounts::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     if ( $self->{p_stdacc}->changed ) {
@@ -104,7 +103,7 @@ sub OnClose {
     $self->Show(0);
 }
 
-# end of class MStdAccPanel
+# end of class EB::Wx::Maint::StdAccounts
 
 1;
 

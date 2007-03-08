@@ -1,4 +1,4 @@
-package GridPanel::TextCtrl;
+package EB::Wx::UI::GridPanel::TextCtrl;
 
 use Wx qw(:allclasses wxDefaultPosition wxDefaultSize);
 use base qw(Wx::TextCtrl);

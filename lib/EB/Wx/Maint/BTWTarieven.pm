@@ -10,19 +10,18 @@ our $app;
 use Wx 0.15 qw[:allclasses];
 use strict;
 
-package BtwPanel;
+package EB::Wx::Maint::BTWTarieven;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
 
-use EB::Globals;
-use EB::Finance;
+use EB;
+use EB::Format;
 
 # begin wxGlade: ::dependencies
 use Wx::Grid;
-use AccInput;
-use NumericCtrl;
+use EB::Wx::UI::NumericCtrl;
 # end wxGlade
 
 my $bm_edit_remove;
@@ -40,7 +39,7 @@ sub new {
 	$bm_edit_trash  ||= Wx::Bitmap->new("edittrash.png", wxBITMAP_TYPE_ANY);
 	$bm_edit_remove ||= Wx::Bitmap->new("edit_remove.png", wxBITMAP_TYPE_ANY);
 
-# begin wxGlade: BtwPanel::new
+# begin wxGlade: EB::Wx::Maint::BTWTarieven::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
@@ -54,11 +53,11 @@ sub new {
 	$self->{bl_group} = Wx::StaticText->new($self->{btwpanel}, -1, _T("Groep"), wxDefaultPosition, wxDefaultSize, );
 	$self->{bl_incl} = Wx::StaticText->new($self->{btwpanel}, -1, _T("In/Excl"), wxDefaultPosition, wxDefaultSize, );
 	$self->{bl_del} = Wx::StaticText->new($self->{btwpanel}, -1, _T("Verw"), wxDefaultPosition, wxDefaultSize, );
-	$self->{bw_apply} = Wx::Button->new($self, wxID_APPLY, _T("Apply"));
-	$self->{bw_new} = Wx::Button->new($self, wxID_NEW, _T("New"));
-	$self->{bw_reset} = Wx::Button->new($self, wxID_UNDO, _T("Undo"));
+	$self->{bw_apply} = Wx::Button->new($self, wxID_APPLY, "");
+	$self->{bw_new} = Wx::Button->new($self, wxID_NEW, "");
+	$self->{bw_reset} = Wx::Button->new($self, wxID_UNDO, "");
 	$self->{l_inuse} = Wx::StaticText->new($self, -1, _T("Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd."), wxDefaultPosition, wxDefaultSize, );
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, _T("Close"));
+	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -105,6 +104,7 @@ sub refresh {
 	$self->{"tx_btw_in_${id}"}->SetSelection(1-$incl);
     }
 
+    ###### DIT DEUGT NIET -- DOET COMMITS!
     goto &OnApply;
 }
 
@@ -129,7 +129,7 @@ sub changed {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: BtwPanel::__set_properties
+# begin wxGlade: EB::Wx::Maint::BTWTarieven::__set_properties
 
 	$self->SetTitle(_T("BTW Tarieven"));
 	$self->{btwpanel}->SetScrollRate(10, 10);
@@ -142,7 +142,7 @@ sub __set_properties {
 
 	$self->{busy} = 0;
 
-	$self->{_open} = $dbh->do("SELECT adm_opened FROM Metadata")->[0];
+	$self->{_open} = $dbh->adm_open;
 
 	$self->{_btw} = [];
 	my $sth = $dbh->sql_exec("SELECT btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
@@ -152,7 +152,7 @@ sub __set_properties {
 	    $rr->[-1] ||= 0;
 	    push(@{$self->{_btw}}, [@$rr]);
 	    my ($id, $desc, $perc, $tg, $incl) = @$rr;
-	    $self->{"tx_btw_id_$id"} = NumericCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	    $self->{"tx_btw_id_$id"} = EB::Wx::UI::NumericCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	    $self->{"tx_btw_dc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	    $self->{"tx_btw_pc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	    $self->{"tx_btw_tg_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, BTWTYPES);
@@ -167,7 +167,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: BtwPanel::__do_layout
+# begin wxGlade: EB::Wx::Maint::BTWTarieven::__do_layout
 
 	$self->{sz_btwpanel} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_btwmain} = Wx::BoxSizer->new(wxVERTICAL);
@@ -184,10 +184,7 @@ sub __do_layout {
 	$self->{sz_g_btw}->Add($self->{bl_del}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{sz_g_btw}->AddGrowableCol(1);
 	$self->{sz_btws}->Add($self->{sz_g_btw}, 0, wxALL|wxEXPAND, 5);
-	$self->{btwpanel}->SetAutoLayout(1);
 	$self->{btwpanel}->SetSizer($self->{sz_btws});
-	$self->{sz_btws}->Fit($self->{btwpanel});
-	$self->{sz_btws}->SetSizeHints($self->{btwpanel});
 	$self->{sz_btw}->Add($self->{btwpanel}, 1, wxEXPAND, 0);
 	$self->{sz_btw_buttons}->Add($self->{bw_apply}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_btw_buttons}->Add($self->{bw_new}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
@@ -201,10 +198,8 @@ sub __do_layout {
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxEXPAND|wxADJUST_MINSIZE|wxFIXED_MINSIZE, 5);
 	$self->{sz_btwmain}->Add($self->{sz_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->{sz_btwpanel}->Add($self->{sz_btwmain}, 1, wxALL|wxEXPAND, 5);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{sz_btwpanel});
 	$self->{sz_btwpanel}->Fit($self);
-	$self->{sz_btwpanel}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
@@ -289,7 +284,7 @@ sub flip_button {
     $self->{"tx_btw_xx_$id"}->SetBitmapLabel($state ? $bm_edit_remove : $bm_edit_trash);
 }
 
-# wxGlade: BtwPanel::OnNew <event_handler>
+# wxGlade: EB::Wx::Maint::BTWTarieven::OnNew <event_handler>
 sub OnNew {
     my ($self, $event) = @_;
     my ($id, $desc, $perc, $group, $in) = (0, "\0", 0, 0, 1);
@@ -298,7 +293,7 @@ sub OnNew {
     }
     $id++;
     push(@{$self->{_btw}}, [$id, $desc, $group, $in]);
-    $self->{"tx_btw_id_$id"} = NumericCtrl->new($self->{btwpanel}, -1, $id, wxDefaultPosition, wxDefaultSize, );
+    $self->{"tx_btw_id_$id"} = EB::Wx::UI::NumericCtrl->new($self->{btwpanel}, -1, $id, wxDefaultPosition, wxDefaultSize, );
     $self->{"tx_btw_dc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, $desc, wxDefaultPosition, wxDefaultSize, );
     $self->{"tx_btw_pc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, $perc, wxDefaultPosition, wxDefaultSize, );
     $self->{"tx_btw_tg_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, BTWTYPES);
@@ -325,7 +320,7 @@ sub OnNew {
     $self->{_check_changed}++;
 }
 
-# wxGlade: BtwPanel::OnApply <event_handler>
+# wxGlade: EB::Wx::Maint::BTWTarieven::OnApply <event_handler>
 sub OnApply {
     my ($self, $event) = @_;
     eval { $self->on_apply };
@@ -336,12 +331,12 @@ sub OnApply {
 		       wxOK|wxICON_ERROR);
     }
     else {
-	$dbh->commit;
+#	$dbh->commit;################################################################
     }
     $self->{_check_changed}++;
 }
 
-# wxGlade: BtwPanel::OnApply <event_handler>
+# wxGlade: EB::Wx::Maint::BTWTarieven::OnApply <event_handler>
 sub on_apply {
     my ($self, $event) = @_;
     my $i = 0;
@@ -353,7 +348,7 @@ sub on_apply {
 	if ( ($t = $self->{"tx_btw_id_$id"}->GetValue) != $id ) {
 	    $newid = $t;
 	}
-	if ( ($t = $self->{"tx_btw_pc_$id"}->GetValue) != $id ) {
+	if ( ($t = $self->{"tx_btw_pc_$id"}->GetValue) != $perc ) {
 	    $perc = $t;
 	}
 	if ( ($t = $self->{"tx_btw_tg_$id"}->GetSelection) != $group ) {
@@ -398,7 +393,7 @@ sub on_apply {
     }
 }
 
-# wxGlade: BtwPanel::OnReset <event_handler>
+# wxGlade: EB::Wx::Maint::BTWTarieven::OnReset <event_handler>
 sub OnReset {
     my ($self, $event) = @_;
 
@@ -406,7 +401,7 @@ sub OnReset {
     $self->{_check_changed}++;
 }
 
-# wxGlade: BtwPanel::OnClose <event_handler>
+# wxGlade: EB::Wx::Maint::BTWTarieven::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     if ( $self->changed ) {
@@ -424,7 +419,7 @@ sub OnClose {
 
 }
 
-# end of class BtwPanel
+# end of class EB::Wx::Maint::BTWTarieven
 
 1;
 

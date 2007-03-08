@@ -10,17 +10,18 @@ our $config;
 our $dbh;
 our $app;
 
-package AccPanel;
+package EB::Wx::Maint::Accounts;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
 
+use EB;
+use EB::Format;
+
 # begin wxGlade: ::dependencies
-use EB::Globals;
-use EB::Finance;
-use AccTreeCtrl;
-use NumericCtrl;
+use EB::Wx::Maint::Accounts::TreeCtrl;
+use EB::Wx::UI::NumericCtrl;
 # end wxGlade
 
 sub new {
@@ -31,7 +32,7 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: AccPanel::new
+# begin wxGlade: EB::Wx::Maint::Accounts::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
@@ -44,14 +45,14 @@ sub new {
 	$self->{sz_saldo_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, _T("Saldo") );
 	$self->{sz_acc_staticbox} = Wx::StaticBox->new($self->{maint_pane}, -1, _T("Grootboekrekening") );
 	$self->{tree_pane} = Wx::Panel->new($self->{w_acc_frame}, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{acc_tree} = AccTreeCtrl->new($self->{tree_pane}, -1, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
+	$self->{acc_tree} = EB::Wx::Maint::Accounts::TreeCtrl->new($self->{tree_pane}, -1, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
 	$self->{l_acc_id} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Nr."), wxDefaultPosition, wxDefaultSize, );
 	$self->{l_acc_desc} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Omschrijving"), wxDefaultPosition, wxDefaultSize, );
-	$self->{t_acc_id} = NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{t_acc_id} = EB::Wx::UI::NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{t_acc_desc} = Wx::TextCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{rb_balres} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Indeling"), wxDefaultPosition, wxDefaultSize, [_T("Balans"), _T("Resultaat")], 0, wxRA_SPECIFY_ROWS);
 	$self->{rb_debcrd} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Richting"), wxDefaultPosition, wxDefaultSize, [_T("Debet"), _T("Credit")], 0, wxRA_SPECIFY_ROWS);
-	$self->{rb_kstomz} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Soort"), wxDefaultPosition, wxDefaultSize, [_T("Kosten"), _T("Omzet")], 0, wxRA_SPECIFY_ROWS);
+	$self->{rb_kstomz} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Soort"), wxDefaultPosition, wxDefaultSize, [_T("Kosten"), _T("Omzet"), _T("Neutraal")], 0, wxRA_SPECIFY_ROWS);
 	$self->{l_saldo_opening} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Opening"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_saldo_opening} = Wx::StaticText->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Actueel"), wxDefaultPosition, wxDefaultSize, );
@@ -110,7 +111,7 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: AccPanel::__set_properties
+# begin wxGlade: EB::Wx::Maint::Accounts::__set_properties
 
 	$self->{rb_balres}->SetSelection(0);
 	$self->{rb_debcrd}->SetSelection(0);
@@ -127,7 +128,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: AccPanel::__do_layout
+# begin wxGlade: EB::Wx::Maint::Accounts::__do_layout
 
 	$self->{acc_frame_sizer} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_accx} = Wx::BoxSizer->new(wxVERTICAL);
@@ -140,10 +141,7 @@ sub __do_layout {
 	$self->{sz_id} = Wx::FlexGridSizer->new(2, 2, 5, 5);
 	$self->{sz_tree} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_tree}->Add($self->{acc_tree}, 1, wxEXPAND, 0);
-	$self->{tree_pane}->SetAutoLayout(1);
 	$self->{tree_pane}->SetSizer($self->{sz_tree});
-	$self->{sz_tree}->Fit($self->{tree_pane});
-	$self->{sz_tree}->SetSizeHints($self->{tree_pane});
 	$self->{sz_id}->Add($self->{l_acc_id}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_id}->Add($self->{l_acc_desc}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_id}->Add($self->{t_acc_id}, 0, wxADJUST_MINSIZE, 0);
@@ -162,10 +160,7 @@ sub __do_layout {
 	$self->{gr_saldo}->AddGrowableCol(1);
 	$self->{sz_saldo}->Add($self->{gr_saldo}, 1, wxBOTTOM|wxEXPAND, 5);
 	$self->{sz_acc}->Add($self->{sz_saldo}, 0, wxTOP|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{maint_pane}->SetAutoLayout(1);
 	$self->{maint_pane}->SetSizer($self->{sz_acc});
-	$self->{sz_acc}->Fit($self->{maint_pane});
-	$self->{sz_acc}->SetSizeHints($self->{maint_pane});
 	$self->{sz_accx}->Add($self->{maint_pane}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_accx}->Add(1, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_acccan}->Add($self->{b_accept}, 0, wxLEFT|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
@@ -173,16 +168,11 @@ sub __do_layout {
 	$self->{sz_acccan}->Add(5, 0, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_acccan}->Add($self->{b_cancel}, 0, wxRIGHT|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{sz_accx}->Add($self->{sz_acccan}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{maint_pane_outer}->SetAutoLayout(1);
 	$self->{maint_pane_outer}->SetSizer($self->{sz_accx});
-	$self->{sz_accx}->Fit($self->{maint_pane_outer});
-	$self->{sz_accx}->SetSizeHints($self->{maint_pane_outer});
 	$self->{w_acc_frame}->SplitVertically($self->{tree_pane}, $self->{maint_pane_outer}, );
 	$self->{acc_frame_sizer}->Add($self->{w_acc_frame}, 1, wxEXPAND, 0);
-	$self->SetAutoLayout(1);
 	$self->SetSizer($self->{acc_frame_sizer});
 	$self->{acc_frame_sizer}->Fit($self);
-	$self->{acc_frame_sizer}->SetSizeHints($self);
 	$self->Layout();
 
 # end wxGlade
@@ -193,8 +183,9 @@ sub __do_layout {
 
 sub _nf {
     my ($v, $debcrd) = @_;
-    numfmtw(abs($v)) . " " .
-      (($debcrd xor ($v < 0)) ? "Credit" : ($v ? "Debet" : ""));
+    my $t = numfmt(abs($v));
+    $t = (" " x (AMTWIDTH - length($t))) . $t;
+    $t . " " . (($debcrd xor ($v < 0)) ? "Credit" : ($v ? "Debet" : ""));
 }
 
 sub set_item {
@@ -224,11 +215,15 @@ sub set_acc {
     $self->{t_acc_id}->SetValue($self->{_id} = $id);
     $self->{t_acc_desc}->SetValue($self->{_desc} = $rr->[0]);
     $self->{rb_balres}->SetSelection(!($self->{_balres} = $rr->[1]));
-    $self->{rb_kstomz}->SetSelection(!($self->{_kstomz} = $rr->[2]));
+    $self->{_kstomz} = $rr->[2];
+    $self->{rb_kstomz}->SetSelection(defined($self->{_kstomz})
+				     ? 1+($self->{_kstomz}) : 2);
     $self->{rb_debcrd}->SetSelection(!($self->{_debcrd} = $rr->[3]));
-    $self->{rb_debcrd}->Show(1);
+    $self->{rb_debcrd}->Show($self->{_balres});
+    $self->{rb_kstomz}->Show(1);
     $self->{sz_properties}->Layout;
     $self->{ch_btw}->SetSelection($self->{_btw} = $rr->[4]);
+    $self->{ch_btw}->Enable(defined $self->{_kstomz});
     $self->{t_saldo_act}->SetLabel(_nf($rr->[5], $rr->[3]));
     $self->{t_saldo_opening}->SetLabel(_nf($rr->[6], $rr->[3]));
 
@@ -370,13 +365,13 @@ sub check_id {
     1;
 }
 
-# wxGlade: AccPanel::OnSashPosChanged <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnSashPosChanged <event_handler>
 sub OnSashPosChanged {
     my ($self, $event) = @_;
     $config->set("accsash", $event->GetEventObject->GetSashPosition);
 }
 
-# wxGlade: AccPanel::OnAccIdChanged <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnAccIdChanged <event_handler>
 sub OnAccIdChanged {
     my ($self, $event) = @_;
     return if $self->{busy};
@@ -385,13 +380,13 @@ sub OnAccIdChanged {
     $self->{b_reset}->Enable($ch);
 }
 
-# wxGlade: AccPanel::OnAccIdLosesFocus <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnAccIdLosesFocus <event_handler>
 sub OnAccIdLosesFocus {
     my ($self, $event) = @_;
     my $obj = $event->GetEventObject;
     return unless $obj->IsModified;
 
-    # This event is tied to t_acc_id, but we need the AccPanel frame.
+    # This event is tied to t_acc_id, but we need the EB::Wx::Maint::Accounts frame.
     my $p = $self->GetParent;
     until ( exists($p->{_id}) ) { $p = $p->GetParent }
 
@@ -402,13 +397,13 @@ sub OnAccIdLosesFocus {
     $p->{b_reset}->Enable($ch);
 }
 
-# wxGlade: AccPanel::OnIdle <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnIdle <event_handler>
 sub OnIdle {
     my ($self, $event) = @_;
     Wx::Window::SetFocus($self->{refocus}), undef $self->{refocus} if $self->{refocus};
 }
 
-# wxGlade: AccPanel::OnAccDescChanged <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnAccDescChanged <event_handler>
 sub OnAccDescChanged {
     my ($self, $event) = @_;
     return if $self->{busy};
@@ -418,7 +413,7 @@ sub OnAccDescChanged {
     $self->{b_reset}->Enable($ch);
 }
 
-# wxGlade: AccPanel::OnBalresClicked <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnBalresClicked <event_handler>
 sub OnBalresClicked {
     my ($self, $event) = @_;
     return if $self->{rb_balres}->GetSelection != $self->{_balres};
@@ -431,7 +426,7 @@ sub OnBalresClicked {
 		   wxOK|wxICON_ERROR);
 }
 
-# wxGlade: AccPanel::OnDebcrdClicked <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnDebcrdClicked <event_handler>
 sub OnDebcrdClicked {
     my ($self, $event) = @_;
     my $ch = $self->changed;
@@ -439,7 +434,7 @@ sub OnDebcrdClicked {
     $self->{b_reset}->Enable($ch);
 }
 
-# wxGlade: AccPanel::OnKstomzClicked <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnKstomzClicked <event_handler>
 sub OnKstomzClicked {
     my ($self, $event) = @_;
     my $ch = $self->changed;
@@ -447,7 +442,7 @@ sub OnKstomzClicked {
     $self->{b_reset}->Enable($ch);
 }
 
-# wxGlade: AccPanel::OnBtwChanged <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnBtwChanged <event_handler>
 sub OnBtwChanged {
     my ($self, $event) = @_;
     my $ch = $self->changed;
@@ -455,7 +450,7 @@ sub OnBtwChanged {
     $self->{b_reset}->Enable($ch);
 }
 
-# wxGlade: AccPanel::OnAccept <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnAccept <event_handler>
 sub OnAccept {
     my ($self, $event) = @_;
 
@@ -527,7 +522,7 @@ sub OnAccept {
     $self->{b_reset}->Enable($ch);
 }
 
-# wxGlade: AccPanel::OnReset <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnReset <event_handler>
 sub OnReset {
     my ($self, $event) = @_;
 
@@ -542,7 +537,7 @@ sub OnReset {
     $self->{b_reset}->Enable($ch);
 }
 
-# wxGlade: AccPanel::OnClose <event_handler>
+# wxGlade: EB::Wx::Maint::Accounts::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     if ( $self->changed ) {
@@ -558,7 +553,7 @@ sub OnClose {
     $self->Show(0);
 }
 
-# end of class AccPanel
+# end of class EB::Wx::Maint::Accounts
 
 1;
 

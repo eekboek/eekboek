@@ -1,4 +1,4 @@
-package GridPanel::DCButton;
+package EB::Wx::UI::GridPanel::DCButton;
 
 use Wx qw(:allclasses wxDefaultPosition wxDefaultSize wxBITMAP_TYPE_PNG);
 use base qw(Wx::BitmapButton);
