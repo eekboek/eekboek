@@ -10,7 +10,7 @@ our $app;
 use Wx 0.15 qw[:allclasses];
 use strict;
 
-package IVPanel;
+package EB::Wx::Booking::IVPanel;
 
 use EB;
 use EB::Format;
@@ -32,7 +32,7 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: IVPanel::new
+# begin wxGlade: EB::Wx::Booking::IVPanel::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
@@ -60,7 +60,7 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: IVPanel::__set_properties
+# begin wxGlade: EB::Wx::Booking::IVPanel::__set_properties
 
 	$self->SetTitle(_T("Inkoop/Verkoop Boeking"));
 	$self->{gr_main}->CreateGrid(0, 6);
@@ -82,7 +82,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: IVPanel::__do_layout
+# begin wxGlade: EB::Wx::Booking::IVPanel::__do_layout
 
 	$self->{sz_outer} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_main} = Wx::BoxSizer->new(wxVERTICAL);
@@ -183,7 +183,7 @@ sub resize {
     }
 }
 
-# wxGlade: IVPanel::OnClose <event_handler>
+# wxGlade: EB::Wx::Booking::IVPanel::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     # Remember position and size.
@@ -192,13 +192,13 @@ sub OnClose {
     $self->Show(0);
 }
 
-# wxGlade: IVPanel::OnDClick <event_handler>
+# wxGlade: EB::Wx::Booking::IVPanel::OnDClick <event_handler>
 sub OnDClick {
     my ($self, $event) = @_;
     my $row = $event->GetRow;
     warn("row = $row\n");
 }
 
-# end of class IVPanel
+# end of class EB::Wx::Booking::IVPanel
 
 1;

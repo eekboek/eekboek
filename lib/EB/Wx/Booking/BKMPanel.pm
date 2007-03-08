@@ -9,7 +9,7 @@ our $app;
 
 use Wx 0.15 qw[:allclasses];
 use strict;
-package BKMPanel;
+package EB::Wx::Booking::BKMPanel;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
@@ -30,7 +30,7 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: BKMPanel::new
+# begin wxGlade: EB::Wx::Booking::BKMPanel::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
@@ -58,7 +58,7 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: BKMPanel::__set_properties
+# begin wxGlade: EB::Wx::Booking::BKMPanel::__set_properties
 
 	$self->SetTitle(_T("Bank/Kas/Memoriaal Boeking"));
 	$self->{gr_main}->CreateGrid(0, 4);
@@ -78,7 +78,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: BKMPanel::__do_layout
+# begin wxGlade: EB::Wx::Booking::BKMPanel::__do_layout
 
 	$self->{sz_outer} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_main} = Wx::BoxSizer->new(wxVERTICAL);
@@ -170,7 +170,7 @@ sub resize {
     }
 }
 
-# wxGlade: BKMPanel::OnClose <event_handler>
+# wxGlade: EB::Wx::Booking::BKMPanel::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     # Remember position and size.
@@ -179,14 +179,14 @@ sub OnClose {
     $self->Show(0);
 }
 
-# wxGlade: BKMPanel::OnDClick <event_handler>
+# wxGlade: EB::Wx::Booking::BKMPanel::OnDClick <event_handler>
 sub OnDClick {
     my ($self, $event) = @_;
     my $row = $event->GetRow;
     warn("row = $row\n");
 }
 
-# end of class BKMPanel
+# end of class EB::Wx::Booking::BKMPanel
 
 1;
 
