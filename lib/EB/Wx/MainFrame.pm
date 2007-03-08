@@ -256,7 +256,7 @@ sub dagboekenmenu {
 	$tmp->Append($m, "$desc\tAlt-$id",
 		     __x("Dagboek {dbk}", dbk => $desc)."\n");
 	my $tp = qw(X IV IV BKM BKM BKM)[$type];
-	my $cl = "EB::Wx::Booking::$tp";
+	my $cl = "EB::Wx::Booking::${tp}Panel";
 	undef($self->{"d_dbkpanel$id"});
 	EVT_MENU($self, $m,
 		 sub { eval "require $cl";
