@@ -36,7 +36,7 @@ sub new {
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{stdacc_title_staticbox} = Wx::StaticBox->new($self, -1, _T("Koppelingen") );
-	$self->{p_stdacc} = EB::Wx::UI::StdAccPanel->new($self, -1);
+	$self->{p_stdacc} = EB::Wx::UI::StdAccPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{l_inuse} = Wx::StaticText->new($self, -1, _T("Sommige gegevens zijn in gebruik en\nkunnen niet meer worden gewijzigd."), wxDefaultPosition, wxDefaultSize, );
 	$self->{b_cancel} = Wx::Button->new($self, wxID_CLOSE, "");
 
