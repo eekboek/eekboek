@@ -103,32 +103,34 @@ sub fill_grid {
 			  $asel.
 			  " ORDER BY rel_code");
 
-    use EB::Wx::UI::GridPanel::TextCtrl;
-    use EB::Wx::UI::GridPanel::AccInput;
-    use EB::Wx::UI::GridPanel::Choice;
-    use EB::Wx::UI::GridPanel::DCButton;
-    use EB::Wx::UI::GridPanel::RemoveButton;
+    require EB::Wx::UI::GridPanel::TextCtrl;
+    require EB::Wx::UI::GridPanel::AccInput;
+    require EB::Wx::UI::GridPanel::Choice;
+    require EB::Wx::UI::GridPanel::RemoveButton;
 
     $self->{panel}->create
-      ([ Code         => EB::Wx::UI::GridPanel::TextCtrl::,
-	 Omschrijving => EB::Wx::UI::GridPanel::TextCtrl::,
-	 "D/C"        => EB::Wx::UI::GridPanel::DCButton::,
-	 GrBkRek      => EB::Wx::UI::GridPanel::AccInput::,
-	 Dagboek      => [ EB::Wx::UI::GridPanel::Choice::, $dbks ],
-	 BTW          => [ EB::Wx::UI::GridPanel::Choice::,
-			   [ qw(Normaal Verlegd Intra Extra) ] ],
-	 ""           => EB::Wx::UI::GridPanel::RemoveButton::,
+      ([ _T("Code")		  => EB::Wx::UI::GridPanel::TextCtrl::,
+	 _T("Omschrijving")	  => EB::Wx::UI::GridPanel::TextCtrl::,
+	 _T("Grootboekrekening")  => EB::Wx::UI::GridPanel::AccInput::,
+	 _T("Dagboek")	          => [ EB::Wx::UI::GridPanel::Choice::, $dbks ],
+	 $dbh->does_btw ? ( _T("BTW")
+			    => [ EB::Wx::UI::GridPanel::Choice::,
+		 	         [ qw(Normaal Verlegd Intra Extra) ] ] ) : (),
+	 ""		          => EB::Wx::UI::GridPanel::RemoveButton::,
        ], 0, 0 );
     $self->{panel}->addgrowablecol(1);
-    $self->{panel}->addgrowablecol(3);
+    $self->{panel}->addgrowablecol(2);
 
     my $p = $self->{panel};
 
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($code, $desc, $debcrd, $btw, $ledger, $acct) = @$rr;
-	$p->append($code, $desc, $debcrd, $acct, $dbkmap{0+$ledger}, $btw, 0, $code);
-	if ( $dbh->do("SELECT COUNT(*) FROM Boekstukregels WHERE bsr_rel_code = ?", $code)->[0] ) {
-	    $p->enable(    0,     1,       0,     1,                  1,    1, 0);
+	$p->append($code, $desc, $acct, $dbkmap{0+$ledger}, $btw, 0, $code);
+	if ( $dbh->do("SELECT COUNT(*) FROM Boekstukregels".
+		      " WHERE bsr_rel_code = ? AND bsr_dbk_id = ?",
+		      $code, $ledger)->[0] ) {
+	    $p->enable(    0,     1,       1,                  1,
+			   $dbh->does_btw ? 1 : (), 0);
 	    $self->{l_inuse}->Show(1);
 	}
     }
