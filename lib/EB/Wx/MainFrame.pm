@@ -42,10 +42,11 @@ sub new {
 	$self->{mainframe_menubar} = Wx::MenuBar->new();
 	$self->SetMenuBar($self->{mainframe_menubar});
 	use constant MENU_NEW => Wx::NewId();
-	use constant MENU_PREFS => Wx::NewId();
+	use constant MENU_PROPS => Wx::NewId();
 	use constant MENU_LOGW => Wx::NewId();
 	use constant MENU_LOGCLEAN => Wx::NewId();
 	use constant MENU_RESTART => Wx::NewId();
+	use constant MENU_PREFS => Wx::NewId();
 	use constant MENU_GBK => Wx::NewId();
 	use constant MENU_REL => Wx::NewId();
 	use constant MENU_BTW => Wx::NewId();
@@ -66,7 +67,7 @@ sub new {
 	$wxglade_tmp_menu->Append(wxID_OPEN, _T("Open ..."), _T("Open een bestaande administratie"));
 	$wxglade_tmp_menu->Append(wxID_CLOSE, _T("Sluiten"), _T("Beëindig het werken met deze administratie"));
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(MENU_PREFS, _T("Instellingen"), _T("Instellingen"));
+	$wxglade_tmp_menu->Append(MENU_PROPS, _T("Eigenschappen"), _T("Eigenschappen"));
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(MENU_LOGW, _T("Verberg log venster"), _T("Toon of verberg het log venster"));
 	$wxglade_tmp_menu->Append(MENU_LOGCLEAN, _T("Log venster schoonmaken"), "");
@@ -78,6 +79,8 @@ sub new {
 	$wxglade_tmp_menu->Append(wxID_CUT, _T("Knip"), "");
 	$wxglade_tmp_menu->Append(wxID_PASTE, _T("Plak"), "");
 	$wxglade_tmp_menu->Append(wxID_COPY, _T("Kopiëer"), "");
+	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(MENU_PREFS, _T("Instellingen"), _T("Instellingen"));
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Edit"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(MENU_GBK, _T("Grootboekrekeningen"), _T("Onderhoud rekeningschema en grootboekrekeningen"));
@@ -118,11 +121,12 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_NEW, \&OnNewWiz);
 	Wx::Event::EVT_MENU($self, wxID_OPEN, \&OnOpen);
 	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
-	Wx::Event::EVT_MENU($self, MENU_PREFS, \&OnPreferences);
+	Wx::Event::EVT_MENU($self, MENU_PROPS, \&OnProperties);
 	Wx::Event::EVT_MENU($self, MENU_LOGW, \&OnLogw);
 	Wx::Event::EVT_MENU($self, MENU_LOGCLEAN, \&OnLogClean);
 	Wx::Event::EVT_MENU($self, MENU_RESTART, \&OnRestart);
 	Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnExit);
+	Wx::Event::EVT_MENU($self, MENU_PREFS, \&OnPreferences);
 	Wx::Event::EVT_MENU($self, MENU_GBK, \&OnMGbk);
 	Wx::Event::EVT_MENU($self, MENU_REL, \&OnMRel);
 	Wx::Event::EVT_MENU($self, MENU_BTW, \&OnMBtw);
@@ -144,7 +148,7 @@ sub new {
 	Wx::Log::SetTimestamp("%T");
 	Wx::LogMessage("Administratie: " . $config->lastdb);
 
-	$self->dagboekenmenu;
+	$self->adapt_menus;
 
 	use Wx::Event qw(EVT_CLOSE);
 
@@ -200,10 +204,11 @@ sub __do_layout {
 
 	$self->{sz_main} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sizer_4} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sizer_4}->Add(150, 20, 1, wxADJUST_MINSIZE, 0);
+	$self->{sizer_4}->Add(150, 20, 2, wxADJUST_MINSIZE, 0);
 	$self->{sizer_4}->Add($self->{eb_logo}, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 40);
+	$self->{sizer_4}->Add(20, 20, 1, wxADJUST_MINSIZE, 0);
 	$self->{sizer_4}->Add($self->{pp_logo}, 0, wxRIGHT|wxTOP|wxBOTTOM|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 40);
-	$self->{sizer_4}->Add(150, 20, 1, wxADJUST_MINSIZE, 0);
+	$self->{sizer_4}->Add(150, 20, 2, wxADJUST_MINSIZE, 0);
 	$self->{sz_main}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
 	$self->{sz_main}->Add($self->{tx_log}, 1, wxALL|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->SetSizer($self->{sz_main});
@@ -240,8 +245,12 @@ sub command {
 
 }
 
-sub dagboekenmenu {
+sub adapt_menus {
     my $self = shift;
+
+    $self->{mainframe_menubar}->Enable(MENU_BTW,   $dbh->does_btw);
+    $self->{mainframe_menubar}->Enable(MENU_R_BTW, $dbh->does_btw);
+
     my $sth = $dbh->sql_exec("SELECT dbk_id,dbk_desc,dbk_type".
 			     " FROM Dagboeken".
 			     " ORDER BY dbk_desc");
@@ -272,6 +281,7 @@ sub dagboekenmenu {
 		       $self->{"d_dbkpanel$id"}->Show(1);
 		       $self->{"d_dbkpanel$id"}->SetSize([$cfg->{xwidth}, $cfg->{ywidth}]);
 		   });
+	Wx::LogMessage("Dagboek: $desc");
     }
 
     my $ix = $self->{mainframe_menubar}->FindMenu(_T("&Dagboeken"));
@@ -279,12 +289,15 @@ sub dagboekenmenu {
       ($ix, $tmp,
        $self->{mainframe_menubar}->GetLabelTop($ix));
     $tmp->Destroy if $tmp;
+    $self->{mainframe_menubar}->Refresh;
 }
 
 sub DESTROY {
     my $self = shift;
     Wx::Log::SetActiveTarget($self->{OLDLOG})->Destroy;
 }
+
+################ Menu: File ################
 
 # wxGlade: EB::Wx::MainFrame::OnNew <event_handler>
 sub OnNew {
@@ -309,6 +322,7 @@ sub OnNew {
     my $ret = $self->{d_newdialog}->ShowModal;
     $self->{d_newdialog}->Destroy;
     $self->{d_newdialog} = undef;
+    $self->adapt_menus;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnNewWiz <event_handler>
@@ -334,6 +348,7 @@ sub OnNewWiz {
     my $ret = $self->{d_newdialog}->ShowModal;
     $self->{d_newdialog}->Destroy;
     $self->{d_newdialog} = undef;
+    $self->adapt_menus;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnOpen <event_handler>
@@ -359,6 +374,7 @@ sub OnOpen {
     $self->{d_opendialog}->refresh;
     return unless $self->{d_opendialog}->ShowModal;
 
+    $self->adapt_menus;
     # Refresh existing reports.
     foreach my $win ( grep(/^d_m\S+panel$/, keys(%$self)) ) {
 	next unless $self->{$win};
@@ -373,10 +389,11 @@ sub OnClose {
     $event->Skip;
 }
 
-# wxGlade: EB::Wx::MainFrame::OnPreferences <event_handler>
-sub OnPreferences {
-	my ($self, $event) = @_;
-	$event->Skip;
+# wxGlade: EB::Wx::MainFrame::OnProperties <event_handler>
+sub OnProperties {
+    my ($self, $event) = @_;
+    Wx::LogMessage("Event handler (OnProperties) not implemented");
+    $event->Skip;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnLogw <event_handler>
@@ -413,6 +430,16 @@ sub OnExit {
     $self->closehandler(@_);
     $self->Destroy;
 }
+
+################ Menu: Edit ################
+
+# wxGlade: EB::Wx::MainFrame::OnPreferences <event_handler>
+sub OnPreferences {
+	my ($self, $event) = @_;
+	$event->Skip;
+}
+
+################ Maintenance ################
 
 # wxGlade: EB::Wx::MainFrame::OnMGbk <event_handler>
 sub OnMGbk {
@@ -474,6 +501,8 @@ sub OnMStdAcc {
     $self->{$p}->SetSize([$config->stdw->{xwidth},$config->stdw->{ywidth}]);
     $self->{$p}->Show(1);
 }
+
+################ Menu: Reports ################
 
 # wxGlade: EB::Wx::MainFrame::OnRPrf <event_handler>
 sub OnRPrf {
@@ -565,6 +594,14 @@ sub OnRBtw {
     $self->{d_rbtwpanel}->Show(1);
 }
 
+# wxGlade: EB::Wx::MainFrame::OnROpen <event_handler>
+sub OnROpen {
+    my ($self, $event) = @_;
+
+    warn "Event handler (OnROpen) not implemented";
+    $event->Skip;
+}
+
 # wxGlade: EB::Wx::MainFrame::OnRDeb <event_handler>
 sub OnRDeb {
     my ($self, $event) = @_;
@@ -595,6 +632,8 @@ sub OnRCrd {
     $self->{d_rcrdpanel}->Show(1);
 }
 
+################ Menu: Info ################
+
 # wxGlade: EB::Wx::MainFrame::OnAbout <event_handler>
 sub OnAbout {
     my ($self, $event) = @_;
@@ -606,13 +645,7 @@ sub OnAbout {
 		   $self);
 }
 
-# wxGlade: EB::Wx::MainFrame::OnROpen <event_handler>
-sub OnROpen {
-    my ($self, $event) = @_;
-
-    warn "Event handler (OnROpen) not implemented";
-    $event->Skip;
-}
+################ End of Menus ################
 
 # end of class EB::Wx::MainFrame
 
