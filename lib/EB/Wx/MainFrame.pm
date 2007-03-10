@@ -156,6 +156,7 @@ sub new {
 
 	%cmds = ( open	 => wxID_OPEN,
 		  new    => wxID_NEW,
+		  prop	 => MENU_PROPS,
 		  wiz    => MENU_NEW,
 		  gbk	 => MENU_GBK,
 		  rel	 => MENU_REL,
@@ -302,7 +303,7 @@ sub DESTROY {
 # wxGlade: EB::Wx::MainFrame::OnNew <event_handler>
 sub OnNew {
     my ($self, $event) = @_;
-    use EB::Wx::Tools::NewDialog;
+    require EB::Wx::Tools::NewDialog;
     foreach my $win ( grep(/^d_m\S+panel$/, keys(%$self)) ) {
 	next unless $self->{$win};
 	next unless $self->{$win}->IsShown;
@@ -392,8 +393,16 @@ sub OnClose {
 # wxGlade: EB::Wx::MainFrame::OnProperties <event_handler>
 sub OnProperties {
     my ($self, $event) = @_;
-    Wx::LogMessage("Event handler (OnProperties) not implemented");
-    $event->Skip;
+    require EB::Wx::Tools::PropertiesDialog;
+    $self->{d_prpdialog} ||= EB::Wx::Tools::PropertiesDialog->new
+      ($self, -1,
+       _T("Administratiegegevens"),
+       [$config->prpw->{xpos},$config->prpw->{ypos}],
+       [$config->prpw->{xwidth},$config->prpw->{ywidth}],
+      );
+    $self->{d_prpdialog}->SetSize([$config->prpw->{xwidth},$config->prpw->{ywidth}]);
+    $self->{d_prpdialog}->refresh;
+    $self->{d_prpdialog}->Show(1);
 }
 
 # wxGlade: EB::Wx::MainFrame::OnLogw <event_handler>
