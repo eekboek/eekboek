@@ -1,11 +1,29 @@
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.2 2007/03/08 18:14:59 jv Exp $
+# RCS Info        : $Id: GridPanel.pm,v 1.3 2007/03/12 14:43:18 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  5 17:57:39 2007
-# Update Count    : 296
+# Last Modified On: Mon Mar 12 15:27:19 2007
+# Update Count    : 298
 # Status          : Unknown, Use with caution!
+
+# GridPanel implements a widget that is row/column oriented, and
+# wehere each cell can contain an arbitrary other widget provided it
+# implements the GridPanel cell API. Wrappers are provided for some
+# common types of widgets.
+#
+# Why not Wx::Grid? Wx::Grid cell renderers are rather limited, and
+# you always need to select a cell first before it can be edited. This
+# means clicking twice to toggle a checkbox, which I find very
+# counter-intuitive.
+#
+# I considered Wx::List, but this can only cope with a limited set of
+# predefined celltypes.
+#
+# The biggest disadvantage of GridPanel is that since it provides
+# artificial column labels in the first row of the grid, these labels
+# scroll away when the grid needs scrolling. Maybe I can find a
+# solution for that some day...
 
 use Wx 0.15 qw[:allclasses];
 use strict;
