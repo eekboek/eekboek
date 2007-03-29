@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.89 2006/12/27 12:40:09 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.90 2007/03/29 21:05:46 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 27 13:35:28 2006
-# Update Count    : 850
+# Last Modified On: Thu Mar 29 23:05:34 2007
+# Update Count    : 852
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -233,6 +233,7 @@ sub app_options {
 		     'db|dataset=s' => \$dataset,
 		     'dir=s'	=> \$inex_dir,
 		     'file=s'	=> \$inex_file,
+		     'interactive!' => \$interactive,
 		     'trace'	=> \$trace,
 		     'help|?'	=> \$help,
 		     'debug'	=> \$debug,
@@ -272,6 +273,7 @@ Gebruik: {prog} [options] [file ...]
     --dir=XXX           directory voor im/export
     --file=XXX          bestand voor im/export
     --define=XXX -D     definieer configuratiesetting
+    --[no]interactive   forceer [non]interactieve modus
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
