@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.57 2007/02/02 10:14:26 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.58 2007/06/26 21:02:19 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 15 22:44:35 2006
-# Update Count    : 404
+# Last Modified On: Tue Jun 26 22:59:57 2007
+# Update Count    : 407
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -318,7 +318,9 @@ sub perform {
 		@sql_args = ( $id, $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP);
 		$rr = $dbh->do($sql, @sql_args);
 		unless ( defined($rr) ) {
-		    warn("?"._T("Geen bijbehorende open post gevonden")."\n");
+		    # Can this happen???
+		    warn("?".__x("Geen post gevonden voor boekstuk {bsk}",
+				 bsk => $rel)."\n");
 		    $fail++;
 		    next;
 		}
@@ -354,7 +356,9 @@ sub perform {
 			      $rel);
 		$rr = $dbh->do($sql, @sql_args);
 		unless ( defined($rr) ) {
-		    warn("?"._T("Geen bijbehorende open post gevonden")."\n");
+		    warn("?".__x("Geen open post van {amt} gevonden voor relatie {rel}",
+				amt => numfmt($amt),
+				rel => $rel)."\n");
 		    $fail++;
 		    next;
 		}
