@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.21 2006/07/12 14:19:49 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.22 2007/06/27 09:30:33 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 12 16:17:29 2006
-# Update Count    : 139
+# Last Modified On: Tue Feb 27 23:50:02 2007
+# Update Count    : 146
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -51,6 +51,9 @@ sub backend {
 	$gen = $1;
     }
 
+    # Override by explicit --generate option(s).
+    $gen = $opts->{generate} if $opts->{generate};
+
     # Infer from filename extension.
     my $t;
     if ( !defined($gen) && ($t = $opts->{output}) && $t =~ /\.([^.]+)$/ ) {
@@ -62,8 +65,8 @@ sub backend {
     # Fallback to text.
     $gen ||= "text";
 
-    # Build class and package name.
-    my $class = (ref($self)||$self) . "::" . ucfirst($gen);
+    # Build class and package name. Last chance to override...
+    my $class = $opts->{backend} || (ref($self)||$self) . "::" . ucfirst($gen);
     my $pkg = $class;
     $pkg =~ s;::;/;g;;
     $pkg .= ".pm";
