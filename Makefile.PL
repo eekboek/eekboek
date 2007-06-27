@@ -1,10 +1,10 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.9 2006/03/27 12:24:05 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.10 2007/06/27 09:23:48 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 27 11:35:33 2006
-# Update Count    : 87
+# Last Modified On: Sun Apr  1 16:19:38 2007
+# Update Count    : 88
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -33,7 +33,7 @@ WriteMakefile(
 	      INSTALLDIRS => $data->{installtype},
 	      DISTNAME    => $data->{distname},
 	      EXE_FILES   => $data->{script_files},
-	      VERSION_FROM => "lib/EB.pm",
+	      VERSION_FROM => "lib/EekBoek.pm",
 	      PREREQ_PM   => $data->{prereq_pm},
 	      PM          => filelist("lib", '$(INST_LIBDIR)'),
 	     );
