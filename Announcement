@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.02 (unstable) is beschikbaar
+Subject: EekBoek 1.03.03 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,16 +9,16 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.02, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.03, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.02-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.03.02.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.03-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.03.03.tar.gz
 
 Kits:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.02-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.02-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.02-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.03-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.03-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.03-1.noarch.rpm
 * http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -32,24 +32,23 @@ Zie voor meer informatie http://www.eekboek.nl/fedora/repodata .
 De aanbevolen manier van installeren is door middel van de RPM
 "EekBoek-unstable" samen met tenminste een van de "db" rpms.
 
-Belangrijkste wijzigingen t.o.v. 1.03.01:
+Belangrijkste wijzigingen t.o.v. 1.03.02:
 
-* Fix probleem met foutieve export van adm_btwperiode in
-  multi-jaar admin (issue 1628783).
+* Optie --errexit: Verwerking van invoer breekt direct af na
+  geconstateerde fouten.
 
-* HTML reports: Use normal comments /* */ instead of <!-- -->
-  for included styles.
+* Toon bedrag en relatie indien geen openstaande post kan worden
+  gevonden.
 
-* Voorbeeldschema's verplaatst van lib/EB/schema naar
-  lib/EB/example. 
+* Optie --[no]interactive om interactief gedrag te forceren ook al
+  komt de invoer niet van een terminal.
+  Niet bedoeld voor uitwendig gebruik.
 
-* Voorbeelden verplaatst van lib/EB/example naar
-  lib/EB/examples.
+* Redesign en implementatie van de reporter backends.
 
-* Nieuw voorbeeldschema voor een vereniging, met dank aan Edwin
-  Hakkennes.
+* eekboek-mode.el: Emacs major mode voor EekBoek data.
 
-* Fix probleem met UTF-8 data in Latin1 files in export zip.
+* Kleine bugfixes.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
