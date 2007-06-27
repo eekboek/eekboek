@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.16 2007/02/04 20:52:57 jv Exp $ ';
+my $RCS_Id = '$Id: DeLuxe.pm,v 1.17 2007/06/27 09:25:02 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb  2 16:21:36 2007
-# Update Count    : 255
+# Last Modified On: Tue Jun 26 18:22:59 2007
+# Update Count    : 256
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -50,6 +50,7 @@ sub new {
     }
     $self->{inputstack} = [];
     $self->{unicode} = $cfg->unicode;
+    $self->{errexit} = $opts->{errexit};
     $self;
 }
 

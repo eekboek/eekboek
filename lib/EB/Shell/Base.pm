@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.13 2006/11/03 16:58:14 jv Exp $
+# $Id: Base.pm,v 1.14 2007/06/27 09:25:02 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -25,8 +25,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$XXVERSION    = 0.05;   # $Date: 2006/11/03 16:58:14 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
+$XXVERSION    = 0.05;   # $Date: 2007/06/27 09:25:02 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -402,17 +402,31 @@ sub run {
 	    $meth = "do_$cmd";
 	    if ( $self->can($meth) ) {
 		eval {
+		    # Check warnings for ? (errors).
+		    my $fail = 0;
+		    local $SIG{__WARN__} = sub {
+			$fail++ if $_[0] =~ /^\?/;
+			warn(@_);
+		    };
 		    $output = $self->$meth(@args);
+		    # Throw error if errors detected.
+		    die(bless {}, 'FatalError') if $fail && $self->{errexit};
 		};
 		if ($@) {
 # jv                $output = sprintf "%s: Bad command or filename", $self->progname;
-		    my $err = $@;
-		    chomp $err;
-# jv                warn "$output ($err)\n";
-		    warn "?$err\n";
+		    unless ( UNIVERSAL::isa($@, 'FatalError') ) {
+			my $err = $@;
+			chomp $err;
+			# jv                warn "$output ($err)\n";
+			warn "?$err\n";
+		    }
 		    eval {
 			$output = $self->default($cmd, @args);
 		    };
+		    if ( $self->{errexit} ) {
+			warn("?"._T(" ****** Afgebroken wegens fouten in de invoer ******")."\n");
+			last;
+		    }
 		}
 	    }
 	    else {
@@ -1815,7 +1829,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.13 $.
+This documentation describes C<Shell::Base>, $Revision: 1.14 $.
 
 =head1 COPYRIGHT
 

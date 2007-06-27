@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.90 2007/03/29 21:05:46 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.91 2007/06/27 09:25:02 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar 29 23:05:34 2007
-# Update Count    : 852
+# Last Modified On: Tue Jun 26 18:22:02 2007
+# Update Count    : 855
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -56,6 +56,7 @@ my $journal = 0;
 my $inexport;			# in/export
 my $inex_file;			# file voor in/export
 my $inex_dir;			# directory voor in/export
+my $errexit = 0;		# disallow errors in batch
 my $verbose = 0;		# verbose processing
 my $bky;
 
@@ -148,6 +149,7 @@ my $shell = EB::Shell->new
   ({ HISTFILE	  => $userdir."/history",
      command	  => $command,
      interactive  => $interactive,
+     errexit      => $errexit,
      verbose	  => $verbose,
      trace	  => $trace,
      journal	  => $journal,
@@ -234,6 +236,7 @@ sub app_options {
 		     'dir=s'	=> \$inex_dir,
 		     'file=s'	=> \$inex_file,
 		     'interactive!' => \$interactive,
+		     'errexit'  => \$errexit,
 		     'trace'	=> \$trace,
 		     'help|?'	=> \$help,
 		     'debug'	=> \$debug,
@@ -274,6 +277,7 @@ Gebruik: {prog} [options] [file ...]
     --file=XXX          bestand voor im/export
     --define=XXX -D     definieer configuratiesetting
     --[no]interactive   forceer [non]interactieve modus
+    --errexit           stop direct na een fout in de invoer
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
