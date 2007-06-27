@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.48 2006/10/24 13:43:17 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.49 2007/06/27 20:41:41 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:09:13 2006
-# Update Count    : 287
+# Last Modified On: Wed Jun 27 21:27:28 2007
+# Update Count    : 288
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -291,7 +291,9 @@ sub perform {
 
     if ( $fail ) {
 	$dbh->rollback;
-	return "?"._T("De boeking is niet uitgevoerd!")." ".
+	return "?"._T("Boeking ".
+		      join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr).
+		      " is niet uitgevoerd!")." ".
 	  __x(" Boekstuk totaal is {act} in plaats van {exp}",
 	      act => numfmt($tot), exp => numfmt($totaal)) . ".";
     }

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.58 2007/06/26 21:02:19 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.59 2007/06/27 20:41:50 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 26 22:59:57 2007
-# Update Count    : 407
+# Last Modified On: Wed Jun 27 21:26:09 2007
+# Update Count    : 410
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -439,7 +439,9 @@ sub perform {
     }
 
     if ( $fail ) {
-	warn("?"._T("De boeking is niet uitgevoerd!")."\n");
+	warn("?"._T("Boeking ".
+		    join(":", ($dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr)).
+		    " is niet uitgevoerd!")."\n");
 	$dbh->rollback;
 	return undef;
     }
