@@ -1,10 +1,10 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.51 2006/10/24 13:43:16 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.52 2007/07/04 17:26:31 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:05:00 2006
-# Update Count    : 636
+# Last Modified On: Wed Jul  4 17:10:25 2007
+# Update Count    : 637
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -843,7 +843,7 @@ sub dump_acc {
 	    printf {$fh} ("     %-2d  %s\n", $id, $desc);
 	    print {$fh} ("# ".__x("VERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
 			   min => $max_hvd+1, max => $max_vrd)."\n")
-	      if $id < 10 || $id > 99;
+	      if $id <= $max_hvd || $id > $max_vrd;
 	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz,".
 				     " acc_btw, btw_tariefgroep, btw_incl".
 				     " FROM Accounts, BTWTabel ".
