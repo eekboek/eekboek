@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.37 2007/07/18 15:10:51 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.38 2007/07/18 15:22:10 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul 14 20:49:54 2007
-# Update Count    : 517
+# Last Modified On: Wed Jul 18 17:21:25 2007
+# Update Count    : 518
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -596,7 +596,8 @@ sub report {
     else {
 	$rep->outline('', "5g", "Totaal terug te vragen", undef, 0-$data->{tot});
 	if ( $data->{delta} ) {
-	    $rep->outline('', "  ", "Totaal terug te vragen (onafgerond)", numfmt($data->{sub1}*AMTSCALE+$data->{delta}));
+	    $rep->outline('', "  ", "Totaal terug te vragen (onafgerond)",
+			  numfmt(-($data->{sub1}*AMTSCALE+$data->{delta})));
 	    $rep->outline('', "  ", "Afrondingsverschil", numfmt($data->{delta}));
 	}
     }
