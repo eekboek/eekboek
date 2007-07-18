@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.14 2006/05/05 15:38:15 jv Exp $ ';
+my $RCS_Id = '$Id: eximut.pl,v 1.15 2007/07/18 15:08:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
@@ -32,6 +32,7 @@ use Getopt::Long 2.13;
 my $verbose = 0;		# verbose processing
 my $ac5 = 0;			# DaviDOS compatible
 my $auto = 0;			# auto gen missing relations
+my $renumber = 0;		# renumber per dagboek
 
 # Development options (not shown with -help).
 my $debug = 0;			# debugging
@@ -73,10 +74,12 @@ while ( <DATA> ) {
 }
 
 my @dagboeken;
+my @dbkvolgnr;
 my $sth = $dbh->sql_exec("SELECT dbk_id,dbk_desc FROM Dagboeken");
 my $rr;
 while ( $rr = $sth->fetchrow_arrayref ) {
     $dagboeken[$rr->[0]] = lc($rr->[1]);
+    $dbkvolgnr[$rr->[0]] = 1;
 }
 
 my $csv = new Text::CSV_XS ({binary => 1});
@@ -135,7 +138,8 @@ sub flush {
 	foreach my $r ( @$mut ) {
 	    check_rel($r0->{crdnr}, $r->{reknr}, "D");
 	}
-	print($cmd, ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
+	my $bkstnr = $renumber ? $dbkvolgnr[$dbk]++ : $mut->[0]->{bkstnr};
+	print($cmd, ":", $bkstnr, " ", dd($mut->[0]->{Date}),
 	      ' "' . ($r0->{oms25}||$mut->[0]->{oms25}) . '"',
 	      ' "' . uc($r0->{crdnr}) . '" --totaal=' . (0+$r0->{bedrag}));
 	foreach my $r ( @$mut ) {
@@ -152,7 +156,8 @@ sub flush {
 	foreach my $r ( @$mut ) {
 	    check_rel($r0->{debnr}, $r->{reknr}, "C");
 	}
-	print($cmd, ":", $mut->[0]->{bkstnr}, " ", dd($mut->[0]->{Date}),
+	my $bkstnr = $renumber ? $dbkvolgnr[$dbk]++ : $mut->[0]->{bkstnr};
+	print($cmd, ":", $bkstnr, " ", dd($mut->[0]->{Date}),
 	      ' "' . ($r0->{oms25}||$mut->[0]->{oms25}) . '"',
 	      ' "' . uc($r0->{debnr}) . '" --totaal=' . ($ac5 ? 0+$r0->{bedrag} : 0-$r0->{bedrag}));
 	foreach my $r ( @$mut ) {
@@ -189,7 +194,8 @@ sub flush {
 	    }
 	}
 
-	print($cmd, ":", $r0->{bkstnr}, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
+	my $bkstnr = $renumber ? $dbkvolgnr[$dbk]++ : $r0->{bkstnr};
+	print($cmd, ":", $bkstnr, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
 	my $tot = 0;
 	foreach my $r ( @$mut ) {
 	    if ( $r->{crdnr} ) {
@@ -241,7 +247,8 @@ sub flush {
 	    }
 	}
 
-	print($cmd, ":", $r0->{bkstnr}, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
+	my $bkstnr = $renumber ? $dbkvolgnr[$dbk]++ : $r0->{bkstnr};
+	print($cmd, ":", $bkstnr, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
 	my $tot = 0;
 	foreach my $r ( @$mut ) {
 	    if ( $r->{crdnr} ) {
@@ -293,7 +300,8 @@ sub flush {
 	    }
 	}
 
-	print($cmd, ":", $r0->{bkstnr}, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
+	my $bkstnr = $renumber ? $dbkvolgnr[$dbk]++ : $r0->{bkstnr};
+	print($cmd, ":", $bkstnr, " ", dd($mut->[0]->{Date}), ' "', $r0->{oms25} ||"Diverse boekingen", '"');
 	my $tot = 0;
 	foreach my $r ( @$mut ) {
 	    if ( $r->{crdnr} ) {
@@ -453,6 +461,7 @@ sub app_options {
 		     'ident'	=> \$ident,
 		     'ac5'	=> \$ac5,
 		     'auto'	=> \$auto,
+		     'renumber'	=> \$renumber,
 		     'verbose'	=> \$verbose,
 		     'trace'	=> \$trace,
 		     'help|?'	=> \$help,
