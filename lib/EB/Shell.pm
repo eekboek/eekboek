@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.91 2007/06/27 09:25:02 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.92 2007/07/18 15:09:04 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 26 18:22:02 2007
-# Update Count    : 855
+# Last Modified On: Wed Jul 11 17:44:36 2007
+# Update Count    : 859
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -952,6 +952,7 @@ sub _do_btwaangifte {
 		 "definitief" => sub { $opts->{close} = 1 },
 		 EB::Report::GenBase->backend_options(EB::Report::BTWAangifte::, $opts),
 		 "noreport",
+		 "noround",
 	       ], $opts)
       or goto &_help_btwaangifte;
 
@@ -1350,40 +1351,8 @@ EOS
 sub do_dump_schema {
     my ($self, @args) = @_;
 
-    my $opts = { sql => 0,
-	       };
-
-    return unless
-    parse_args(\@args,
-	       [ 'sql!',
-	       ], $opts)
-      or goto &help_dump_schema;
-
-    require EB::Tools::Schema;
-
-    if ( $opts->{sql} ) {
-	return unless argcnt(scalar(@args), 1);
-	EB::Tools::Schema->dump_sql(@args);
-    }
-    else {
-	return unless argcnt(scalar(@args), 0);
-	EB::Tools::Schema->dump_schema;
-    }
-    "";
-}
-
-sub help_dump_schema {
     <<EOS;
-Reproduceert het schema van de huidige database en schrijft deze naar
-standaard uitvoer.
-
-  dump_schema                 Reproduceert het schema van de huidige database
-                              en schrijft deze naar standaard uitvoer.
-
-  dump_schema --sql <naam>    Creëert losse SQL bestandjes om het genoemde
-                              schema aan te kunnen maken.
-
-Zie ook "help export".
+Deze opdracht is vervallen. Gebruik in plaats daarvan "export".
 EOS
 }
 
