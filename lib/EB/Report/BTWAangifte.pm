@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.36 2006/09/25 12:55:52 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.37 2007/07/18 15:10:51 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Aug 11 11:59:05 2006
-# Update Count    : 472
+# Last Modified On: Sat Jul 14 20:49:54 2007
+# Update Count    : 517
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -26,6 +26,7 @@ use EB::Booking;		# for norm_btw()
 use POSIX qw(floor ceil);
 
 my $trace = $cfg->val(__PACKAGE__, "trace", undef);
+my $noround;
 
 my @periodetabel;
 
@@ -70,6 +71,8 @@ use EB::Report::GenBase;
 
 sub perform {
     my ($self, $opts) = @_;
+
+    $noround = $opts->{noround} || 0;
 
     # Determine the period to be used.
 
@@ -318,7 +321,7 @@ sub collect {
     my $sth = $dbh->sql_exec
       ("SELECT bsr_amount,bsr_acc_id,bsr_btw_id,bsr_btw_acc,bsr_btw_class,rel_debcrd,rel_btw_status".
        " FROM Boekstukregels, Relaties".
-       " WHERE bsr_rel_code = rel_code".
+       " WHERE bsr_rel_code = rel_code AND bsr_dbk_id = rel_ledger".
        " AND bsr_date >= ? AND bsr_date <= ?".
        " AND bsr_type = 0".
        " UNION ALL ".
@@ -415,10 +418,19 @@ sub collect {
     }
 
     my %data;
+    my $delta = 0;
+
+    my $ad = sub {
+	my ($a, $b) = @_;
+	$b *= AMTSCALE unless $noround;
+	$delta += $a - $b;
+    };
+
     # 1. Door mij verrichte leveringen/diensten
     # 1a. Belast met hoog tarief
     $v = rounddown($deb_btw_h);
     $data{deb_btw_h} = $v;
+    $ad->($deb_btw_h, $v);
     $data{deb_h} = rounddown($deb_h);
     $tot += $v;
 
@@ -426,11 +438,13 @@ sub collect {
     $v = rounddown($deb_btw_l);
     $data{deb_l} = rounddown($deb_l);
     $data{deb_btw_l} = $v;
+    $ad->($deb_btw_l, $v);
     $tot += $v;
 
     # 1c. Belast met ander, niet-nul tarief
     $v = rounddown($deb_btw_x);
     $data{deb_x} = $v;
+    $ad->($deb_btw_x, $v);
     $tot += $v;
 
     # 1d. Eigen gebruik
@@ -446,7 +460,9 @@ sub collect {
 
     # 3b. Binnen de EU
     $data{intra_deb} = rounddown($intra_deb);
-    $data{intra_deb_btw} = rounddown($intra_deb_btw); # TODO
+    $v = rounddown($intra_deb_btw);
+    $data{intra_deb_btw} = $v; # TODO
+    $ad->($intra_deb_btw, $v);
 
     # 4. Aan mij verrichte leveringen
     # 4a. Van buiten de EU
@@ -456,6 +472,7 @@ sub collect {
     $data{intra_crd} = rounddown($intra_crd);
     $v = roundup($intra_crd_btw);
     $data{intra_crd_btw} = $v;
+    $ad->($intra_crd_btw, $v);
     $tot += $v;
 
     # 5 Berekening totaal
@@ -469,11 +486,12 @@ sub collect {
 			  " AND jnl_bsr_date >= ? AND jnl_bsr_date <= ?",
 			  $dbh->std_acc("btw_ih"), $dbh->std_acc("btw_il"),
 			  $begin, $end)};
-    my $btw_delta = $vb - $crd_btw - $intra_crd_btw;
 
-    $vb = roundup($vb);
-    $data{vb} = $vb;
-    $tot -= $vb;
+    my $btw_delta = $vb - $crd_btw - $intra_crd_btw;
+    $v = roundup($vb);
+    $data{vb} = $v;
+    $tot -= $v;
+    $ad->(-$vb, -$v);
 
     # 5c Subtotaal / 5g Totaal
     $data{sub1} = $data{tot} = $tot;
@@ -487,6 +505,7 @@ sub collect {
     }
 
     $data{btw_delta} = $btw_delta if $btw_delta;
+    $data{delta} = $delta if $delta;
 
     return \%data;
 }
@@ -569,11 +588,19 @@ sub report {
     # 5g Subtotaal
     if ( $data->{tot} >= 0 ) {
 	$rep->outline('', "5g", "Totaal te betalen", undef, $data->{tot});
+	if ( $data->{delta} ) {
+	    $rep->outline('', "  ", "Totaal te betalen (onafgerond)", numfmt($data->{sub1}*AMTSCALE+$data->{delta}));
+	    $rep->outline('', "  ", "Afrondingsverschil", numfmt($data->{delta}));
+	}
     }
     else {
 	$rep->outline('', "5g", "Totaal terug te vragen", undef, 0-$data->{tot});
+	if ( $data->{delta} ) {
+	    $rep->outline('', "  ", "Totaal terug te vragen (onafgerond)", numfmt($data->{sub1}*AMTSCALE+$data->{delta}));
+	    $rep->outline('', "  ", "Afrondingsverschil", numfmt($data->{delta}));
+	}
     }
-    $rep->outline('X', "xx", "Onbekend", undef, numfmt($data->{onbekend})) if $data->{onbekend};
+    $rep->outline('X', "  ", "Onbekend", undef, numfmt($data->{onbekend})) if $data->{onbekend};
 
     my @msg;
     if ( $data->{btw_delta} ) {
@@ -593,6 +620,7 @@ sub report {
 sub rounddown {
     my ($vb) = @_;
     return 0 unless $vb;
+    return $vb if $noround;
     $vb /= AMTSCALE;
     if ( $vb >= 0 ) {
 	$vb = floor($vb);
@@ -606,6 +634,7 @@ sub rounddown {
 sub roundup {
     my ($vb) = @_;
     return 0 unless $vb;
+    return $vb if $noround;
     $vb /= AMTSCALE;
     if ( $vb >= 0 ) {
 	$vb = ceil($vb);
@@ -619,6 +648,7 @@ sub roundup {
 sub roundtozero {
     my ($vb) = @_;
     return 0 unless $vb;
+    return $vb if $noround;
     $vb /= AMTSCALE;
     if ( $vb >= 0 ) {
 	$vb = floor($vb);
@@ -645,11 +675,15 @@ sub kleine_ondernemers {
     return unless exists $mmtab{$year};
 
     my ($min, $max) = @{$mmtab{$year}};
+    if ( $noround ) {
+	$min *= AMTSCALE;
+	$max *= AMTSCALE;
+    }
     if ( $amount <= $min ) {
 	return $amount;
     }
     elsif ( $amount > $min && $amount <= $max ) {
-	return roundup(250 * ($max - $amount));
+	return roundup(250 * ($max - $amount)) / ($noround ? AMTSCALE : 1);
     }
     return 0;
 }
@@ -658,7 +692,7 @@ package EB::Report::BTWAangifte::Text;
 
 use strict;
 use EB;
-use EB::Format qw($amount_width);
+use EB::Format qw($amount_width numfmt);
 
 use base qw(EB::Report::GenBase);
 
@@ -689,8 +723,16 @@ sub outline {
     my $w = $amount_width + 1;
     $self->{fh}->printf("%-5s%-40s%${w}s%${w}s\n",
 			$tag0, $tag1,
-			defined($sub) ? $sub : "",
-			defined($amt) ? $amt : "");
+			defined($sub)
+			? ($noround
+			   ? numfmt($sub)
+			   : $sub)
+			: "",
+			defined($amt)
+			? ($noround
+			   ? numfmt($amt)
+			   : $amt)
+                        : "");
 }
 
 sub start {
