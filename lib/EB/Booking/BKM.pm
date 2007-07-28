@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.60 2007/07/18 15:09:58 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.61 2007/07/28 16:53:04 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul  5 22:10:36 2007
-# Update Count    : 481
+# Last Modified On: Wed Jul 18 19:04:52 2007
+# Update Count    : 482
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -366,6 +366,7 @@ sub perform {
 			push(@$res, [@$rr]);
 		    }
 		}
+		$sth->finish;
 
 		my $wmsg;
 		if ( @$res == 0 ) {
