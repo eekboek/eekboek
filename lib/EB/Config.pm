@@ -1,10 +1,10 @@
 # Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.10 2006/12/15 21:41:24 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.11 2007/07/28 16:53:50 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 13 21:44:06 2006
-# Update Count    : 76
+# Last Modified On: Sat Jul 28 18:50:47 2007
+# Update Count    : 83
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -80,6 +80,20 @@ sub init_config {
 
     # Make sure we have an object, even if no config files.
     $cfg ||= EB::Config::IniFiles::Wrapper->new;
+
+    $i = 0;
+    while ( $i < @ARGV ) {
+	if ( $ARGV[$i] eq "-D" &&
+	     $i+1 < @ARGV && $ARGV[$i+1] =~ /^(\w+)::?(\w+)=(.*)/ ) {
+	    $cfg->newval($1, $2, $3);
+	    splice(@ARGV, $i, 2);
+	}
+	elsif ( $ARGV[$i] =~ /^--define=(\w+)::?(\w+)=(.*)/ ) {
+	    $cfg->newval($1, $2, $3);
+	    splice(@ARGV, $i, 1);
+	}
+	$i++;
+    }
 
     $ENV{EB_LANG} = $cfg->val('locale','lang',
 			      $ENV{EB_LANG}||$ENV{LANG}||

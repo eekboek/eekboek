@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.92 2007/07/18 15:09:04 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.93 2007/07/28 16:53:50 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 11 17:44:36 2007
-# Update Count    : 859
+# Last Modified On: Sat Jul 28 18:51:38 2007
+# Update Count    : 862
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -217,14 +217,8 @@ sub app_options {
 		     'createdb' => \$createdb,
 		     'createsampledb' => \$createsampledb,
 		     'define|D=s%' => sub {
-			 my ($opt, $key, $arg) = @_;
-			 if ( $key =~ /^(.+?)::?([^:]+)$/ ) {
-			     $cfg->newval($1, $2, $arg);
-			 }
-			 else {
-			     die(__x("Ongeldige aanduiding voor config setting: {arg}",
-				    arg => $key)."\n");
-			 }
+			 die(__x("Ongeldige aanduiding voor config setting: {arg}",
+				 arg => $_[1])."\n");
 		     },
 		     'schema=s' => \$schema,
 		     'echo|e!'	=> \$echo,
