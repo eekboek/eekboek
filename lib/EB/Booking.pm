@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.17 2007/10/27 20:16:01 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.18 2007/10/27 20:34:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 27 21:49:05 2007
-# Update Count    : 114
+# Last Modified On: Sat Oct 27 22:33:49 2007
+# Update Count    : 115
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.17 2007/10/27 20:16:01 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.18 2007/10/27 20:34:59 jv Exp $ ';
 
 package main;
 
@@ -301,7 +301,7 @@ sub journalise {
 			     "BTW Afr. ".$bsk_desc,
 			     undef, undef]);
 		warn("!".__x("BTW rek. nr. {acct}, correctie van {amt} uitgevoerd",
-			     acct => $k, amt => numfmt($v->{btw}-$t))."\n");
+			     acct => $k, amt => numfmt($t-$v->{btw}))."\n");
 	    }
 	}
     }
