@@ -1,5 +1,5 @@
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.7 2007/02/02 10:14:05 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.8 2007/10/27 20:20:38 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
@@ -56,7 +56,7 @@ unless ( $gotone ) {
 
 unless ( $gotone ) {
 
-    if ( $cfg->val(qw(locale unicode), 0) ) {
+    if ( !$cfg || $cfg->val(qw(locale unicode), 0) ) {
 	require Encode;
 	eval 'sub _T($) { Encode::decode("ISO-8859-1", $_[0]) };';
 	binmode(STDIN,  ":utf8");
