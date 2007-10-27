@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.16 2007/02/02 10:13:14 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.17 2007/10/27 20:16:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 16 17:36:20 2006
-# Update Count    : 72
+# Last Modified On: Sat Oct 27 21:49:05 2007
+# Update Count    : 114
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.16 2007/02/02 10:13:14 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.17 2007/10/27 20:16:01 jv Exp $ ';
 
 package main;
 
@@ -189,7 +189,7 @@ sub norm_btw {
     my ($self, $bsr_amt, $bsr_btw_id) = @_;
     my ($btw_perc, $btw_incl);
     if ( $bsr_btw_id ) {
-	my $rr = $dbh->do("SELECT btw_perc, btw_incl".
+	my $rr = $dbh->do("SELECT btw_perc, btw_incl, btw_tariefgroep".
 			  " FROM BTWTabel".
 			  " WHERE btw_id = ?", $bsr_btw_id);
 	($btw_perc, $btw_incl) = @$rr;
@@ -207,7 +207,7 @@ sub norm_btw {
 	$bruto = numround($netto * (1 + $btw_perc/BTWSCALE));
     }
 
-    [ $bruto, $bruto - $netto ];
+    [ $bruto, $bruto - $netto, $btw_perc ];
 }
 
 #### Class method
@@ -221,7 +221,8 @@ sub dcfromtd {
 
 #### Class method
 sub journalise {
-    my ($self, $bsk_id) = @_;
+    my ($self, $bsk_id, $iv, $total) = @_;
+    $total = -$total if defined($total) && !$iv;
 
     # date  bsk_id  bsr_seq(0)   dbk_id  (acc_id) amount debcrd desc(bsk) (rel)
     # date (bsk_id) bsr_seq(>0) (dbk_id)  acc_id  amount debcrd desc(bsr) rel(acc=1200/1600)
@@ -246,7 +247,9 @@ sub journalise {
     my $ret = [];
     my $tot = 0;
     my ($dtot, $ctot) = (0, 0);
+    my ($vhtot, $vltot) = (0, 0);
     my $nr = 1;
+    my $vat; 			# for automatic roundig VAT calc
 
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_class,
@@ -256,9 +259,12 @@ sub journalise {
 	my $amt = $bsr_amount;
 
 	if ( ($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id && $bsr_btw_acc ) {
-	    ( $bsr_amount, $btw ) =
+	    ( $bsr_amount, $btw, my $perc ) =
 	      @{$self->norm_btw($bsr_amount, $bsr_btw_id)};
 	    $amt = $bsr_amount - $btw;
+	    $vat->{$bsr_btw_acc}->{amt} += $amt;
+	    $vat->{$bsr_btw_acc}->{btw} += $btw;
+	    $vat->{$bsr_btw_acc}->{prc} = $perc;
 	}
 	$tot += $bsr_amount;
 	$dtot += $bsr_amount if $bsr_amount < 0;
@@ -272,6 +278,32 @@ sub journalise {
 		     $bsr_btw_acc,
 		     $btw, undef, "BTW ".$bsr_desc,
 		     undef, undef]) if $btw;
+    }
+
+    if ( defined($total) && $tot != $total
+	 && $cfg->val(qw(strategy iv_vc), 1)
+       ) { # mismatch!
+	#warn("=> $tot <-> $total\n");
+	# Vaak het gevolg van verschil in BTW berekening per
+	# boekingsregel versus per boekstuktotaal.
+
+	while ( my($k,$v) = each(%$vat) ) {
+	    # Bereken BTW over totaal van deze tariefgroep.
+	    my $t = numround($v->{amt} * ($v->{prc}/BTWSCALE));
+	    if ( $t != $v->{btw} ) { # Aha!
+		#warn("=> [$k] $v->{btw} <-> $t\n");
+		# Corrigeer het totaal, en maak een correctieboekstukregel.
+		$tot -= $v->{btw} - $t;
+		push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++,
+			     $k,
+			     $t - $v->{btw},
+			     undef,
+			     "BTW Afr. ".$bsk_desc,
+			     undef, undef]);
+		warn("!".__x("BTW rek. nr. {acct}, correctie van {amt} uitgevoerd",
+			     acct => $k, amt => numfmt($v->{btw}-$t))."\n");
+	    }
+	}
     }
 
     if ( $dbk_acc_id ) {
