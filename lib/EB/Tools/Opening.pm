@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.32 2007/02/02 10:12:36 jv Exp $
+# $Id: Opening.pm,v 1.33 2007/11/28 10:20:26 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 15 22:45:55 2006
-# Update Count    : 233
+# Last Modified On: Tue Nov 27 20:18:16 2007
+# Update Count    : 244
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -161,11 +161,22 @@ sub set_relatie {
 	$dbk = $sth->fetchrow_arrayref->[0];
 	$sth->finish;
     }
+    else {
+	my $sth = $dbh->sql_exec("SELECT dbk_id".
+				 " FROM Dagboeken".
+				 " WHERE UPPER(dbk_desc) = ?",
+				 uc($dbk));
+	$dbk = $sth->fetchrow_arrayref->[0];
+    }
 
-    my $debcrd = $dbh->lookup($code, qw(Relaties rel_code rel_debcrd));
-    return __x("Onbekende relatie: {rel}", rel => $code)."\n" unless defined $debcrd;
-    return __x("Ongeldige relatie: {rel}", rel => $code)."\n"
-      if $type  ^ $debcrd;
+    my $rr = $dbh->do("SELECT rel_code FROM Relaties" .
+			   " WHERE UPPER(rel_code) = ?" .
+			   "  AND " . ($type ? "" : "NOT ") . "rel_debcrd" .
+		           "  AND rel_ledger = ?",
+		      uc($code), $dbk);
+
+    return __x("Onbekende relatie: {rel}", rel => $code)."\n"
+      unless defined $rr;
 
     my $anew;
     return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($anew = amount($amt));
