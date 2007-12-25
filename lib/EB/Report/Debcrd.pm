@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.11 2006/04/15 09:08:35 jv Exp $ ';
+my $RCS_Id = '$Id: Debcrd.pm,v 1.12 2007/12/25 16:17:50 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:47:16 2006
-# Update Count    : 174
+# Last Modified On: Tue Dec 25 17:16:41 2007
+# Update Count    : 175
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -166,7 +166,7 @@ sub _perform {
 				      " AND bsr_date >= ? AND bsr_date <= ?".
 				      " AND bsr_paid = ?".
 				      " AND bsr_bsk_id = bsk_id AND bsk_dbk_id = dbk_id".
-				      " ORDER BY bsr_date",
+				      " ORDER BY bsr_date, bsk_nr",
 				      $debcrd ? 1 : 2, @{$rep->{periode}}, $bsk_id);
 		while ( my $rr = $sth->fetchrow_arrayref ) {
 		    my ($x_bsr_date, $x_bsr_desc, $x_bsr_amount,
@@ -195,7 +195,7 @@ sub _perform {
 			      " AND bsr_type = 0".
 			      " AND bsr_nr = 1".
 			      " AND bsr_rel_code = ?".
-			      " ORDER BY bsk_date",
+			      " ORDER BY bsk_date, bsk_nr",
 			      @{$rep->{periode}},
 			      $rel);
 
@@ -235,7 +235,7 @@ sub _perform {
 				     " AND bsr_date >= ? AND bsr_date <= ?".
 				     " AND bsr_paid = ?".
 				     " AND bsr_bsk_id = bsk_id AND bsk_dbk_id = dbk_id".
-				     " ORDER BY bsr_date",
+				     " ORDER BY bsr_date, bsk_nr",
 				     $debcrd ? 1 : 2, @{$rep->{periode}}, $bsk_id);
 	    while ( my $rr = $sth->fetchrow_arrayref ) {
 		my ($x_bsr_date, $x_bsr_desc, $x_bsr_amount,
