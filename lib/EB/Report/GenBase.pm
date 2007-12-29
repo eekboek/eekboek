@@ -1,9 +1,9 @@
-# RCS Info        : $Id: GenBase.pm,v 1.22 2007/06/27 09:30:33 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.23 2007/12/29 18:27:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb 27 23:50:02 2007
-# Update Count    : 146
+# Last Modified On: Sat Dec 29 19:25:11 2007
+# Update Count    : 147
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -160,7 +160,7 @@ sub backend {
     if ( $be->{per_begin} lt $opendate ) {
 	die("?".__x("Datum {per} valt vóór het begin van de administratie {begin}",
 		    per   => datefmt_full($be->{per_begin}),
-		    begin => datfmt_full($opendate))."\n");
+		    begin => datefmt_full($opendate))."\n");
     }
     if ( $be->{per_end} lt $opendate ) {
 	die("?".__x("Datum {per} valt vóór het begin van de administratie {begin}",
