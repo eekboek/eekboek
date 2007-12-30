@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.62 2007/12/30 20:16:58 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.63 2007/12/30 21:05:26 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Dec 30 21:16:29 2007
-# Update Count    : 483
+# Last Modified On: Sun Dec 30 22:01:26 2007
+# Update Count    : 490
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -378,7 +378,8 @@ sub perform {
 		    # Exact match. Use it.
 		    $rr = $res->[0];
 		}
-		else {
+		# Knapsack slows down terribly with large search sets. Limit it.
+		elsif ( @$res <= $cfg->val(qw(strategy bkm_multi_max), 15) ) {
 		    # Use exact knapsack matching to find possible components.
 		    my @amts = map { $_->[0] } @$res;
 		    if ( my @k = knapsack($amt, \@amts) ) {
@@ -416,6 +417,10 @@ sub perform {
 		    else {
 			undef $rr;
 		    }
+		}
+		else {
+		    $wmsg = __x("Geen alternatieven beschikbaar (teveel open posten)");
+		    undef $rr;
 		}
 
 		unless ( defined($rr) ) {
