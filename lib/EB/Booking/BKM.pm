@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.61 2007/07/28 16:53:04 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.62 2007/12/30 20:16:58 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 18 19:04:52 2007
-# Update Count    : 482
+# Last Modified On: Sun Dec 30 21:16:29 2007
+# Update Count    : 483
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -350,7 +350,8 @@ sub perform {
 			  "  AND bsk_dbk_id = dbk_id".
 			    "  AND bsr_bsk_id = bsk_id".
 			      "  AND bsr_rel_code = ?".
-				" ORDER BY bsk_id";
+				" AND bsr_nr = 1".
+				  " ORDER BY bsk_id";
 		@sql_args = ( $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP, $rel);
 
 		# Resultset of candidates.
