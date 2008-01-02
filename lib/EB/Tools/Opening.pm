@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.33 2007/11/28 10:20:26 jv Exp $
+# $Id: Opening.pm,v 1.34 2008/01/02 19:50:00 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov 27 20:18:16 2007
-# Update Count    : 244
+# Last Modified On: Sat Dec 29 20:02:21 2007
+# Update Count    : 249
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -57,11 +57,20 @@ sub set_btwperiode {
 
 sub set_begindatum {
     return shellhelp() unless @_ == 2;
-    my ($self, $jaar) = @_;
-    return __x("Ongeldige jaar-aanduiding: {year}", year => $jaar)."\n" unless $jaar =~ /^\d+$/
+    my ($self, $date) = @_;
+
+    if ( $date =~ /^\d{4}$/ ) {
+	$date .= "-01-01";
+    }
+    my $d = parse_date($date);
+
+    my ($jaar) = $d =~ /^(\d{4})/;
+    return __x("Ongeldige openingsdatum: {date}", date => $date)."\n" unless $jaar =~ /^\d+$/
       && $jaar >= 1990 && $jaar < 2099;	# TODO
     $self->check_open(0);
-    $self->{o}->{begindatum} = $jaar;
+    $self->{o}->{begindatum} = $d;
+    $d =~ s/^(\d{4})/$1+1/e;
+    $self->{o}->{einddatum} = parse_date($d, undef, -1);
     "";
 }
 
@@ -150,7 +159,7 @@ sub set_relatie {
     $date = $t;
     return __x("Datum {date} valt niet vóór het boekjaar",
 	       date => datefmt_full($date))."\n"
-      if $self->{o}->{begindatum} && $self->{o}->{begindatum} <= $1;
+      if $self->{o}->{begindatum} && $self->{o}->{begindatum} le $t;
     $bky = substr($date, 0, 4) unless defined $bky;
 
     unless ( defined($dbk) ) {
@@ -348,14 +357,14 @@ sub open {
 			}
 		    }
 		    else {
-			my $begin = substr($date, 0, 4) . "-01-01";	# TODO
-			my $end   = substr($date, 0, 4) . "-12-31";	# TODO
+			my $begin = $date;
+			my $t = $date;
+			$t =~ s/^(\d{4})/$1+1/e;
+			my $end   = parse_date($t, undef, -1);
+			$t = parse_date($date, undef, -1);
 			$dbh->sql_insert("Boekjaren",
 					 [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened bky_closed)],
-					 $bky, "$begin - $end", $begin, $end, 0,
-					 scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
-					 scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
-					);
+					 $bky, "$begin - $end", $begin, $end, 0, $t, $t);
 		    }
 		}
 		else {
@@ -404,18 +413,16 @@ sub open {
     $dbh->sql_insert("Boekjaren",
 		     [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened)],
 		     $o->{boekjaarcode}, $o->{naam},
-		     $o->{begindatum} . "-01-01", $o->{begindatum} . "-12-31", # TODO
+		     $o->{begindatum}, $o->{einddatum},
 		     $o->{btwperiode}||0, $now);
     $dbh->sql_exec("UPDATE Metadata".
 		   " SET adm_bky = ?, adm_btwbegin = ?",
 		   $o->{boekjaarcode},
-		   $does_btw ? $o->{begindatum} . "-01-01" : undef);
+		   $does_btw ? $o->{begindatum} : undef);
+    my $t = parse_date($o->{begindatum}, undef, -1);
     $dbh->sql_exec("UPDATE Boekjaren".
 		   " SET bky_closed = ?, bky_end = ?".
-		   " WHERE bky_code = ?",
-		   scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
-		   scalar(parse_date($o->{begindatum} . "-01-01", undef, -1)),
-		   BKY_PREVIOUS);
+		   " WHERE bky_code = ?", $t, $t, BKY_PREVIOUS);
 
     if ( defined $o->{balanstotaal} ) {
 	while ( my ($acct, $e) = each(%{$o->{balans}}) ) {
@@ -492,15 +499,16 @@ sub reopen {
     my $fail = 0;
 
     # New begin date is old + one year.
-    my $y = $dbh->adm("begin");
-    $y =~ s/^(\d\d\d\d)/sprintf("%04d", $1+1)/e;
+    my $y = parse_date($dbh->adm("end"), undef, 1);
     if ( $y gt iso8601date() ) {
 	warn(__x("Begindatum {year} komt in de toekomst te liggen",
-		 year => substr($y, 0, 4))."\n");
+		 year => $y)."\n");
 	$fail++;
     }
 
     $o->{begindatum} = $y;
+    $y =~ s/^(\d{4})/$1+1/e;
+    $o->{einddatum} = parse_date($y, undef, -1);
 
     warn(_T("Er is geen nieuwe BTW periode opgegeven, deze blijft ongewijzigd")."\n")
       if $dbh->does_btw && !$o->{btwperiode};
@@ -519,7 +527,7 @@ sub reopen {
 		     [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened)],
 		     $o->{boekjaarcode},
 		     defined $o->{naam} ? $o->{naam} : $dbh->adm("name"),
-		     $o->{begindatum}, substr($o->{begindatum}, 0, 4) . "-12-31",
+		     $o->{begindatum}, $o->{einddatum},
 		     defined $o->{btwperiode} ? $o->{btwperiode} : $dbh->adm("btwperiod"),
 		     $now);
 
