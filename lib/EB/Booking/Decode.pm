@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.22 2006/12/13 20:36:34 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.23 2008/01/02 19:56:11 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 13 21:36:13 2006
-# Update Count    : 164
+# Last Modified On: Wed Jan  2 20:54:17 2008
+# Update Count    : 170
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -55,7 +55,7 @@ sub decode {
 
     $bsk = $dbh->bskid($bsk);
 
-    my $rr = $dbh->do("SELECT bsk_id, bsk_nr, bsk_desc, ".
+    my $rr = $dbh->do("SELECT bsk_id, bsk_nr, bsk_ref, bsk_desc, ".
 		      "bsk_dbk_id, bsk_date, bsk_amount, bsk_saldo, bsk_isaldo, bsk_bky ".
 		      ($dbver lt "001000002" ? ", bsk_paid" : ", bsk_open").
 		      " FROM Boekstukken".
@@ -66,7 +66,7 @@ sub decode {
 	return;
     }
 
-    my ($bsk_id, $bsk_nr, $bsk_desc, $bsk_dbk_id,
+    my ($bsk_id, $bsk_nr, $bsk_ref, $bsk_desc, $bsk_dbk_id,
 	$bsk_date, $bsk_amount, $bsk_saldo, $bsk_isaldo, $bsk_bky, $bsk_open) = @$rr;
 
     my $tot = 0;
@@ -82,6 +82,7 @@ sub decode {
 	    $cmd =~ s/[^[:alnum:]]/_/g;
 	    $cmd .= ":$bsk_bky" if $ex_bky;
 	    $cmd .= ":$bsk_nr" if $ex_bsknr;
+	    $cmd .= " --ref=" . _quote($bsk_ref) if defined $bsk_ref;
 	    $cmd .= " ".datefmt_full($bsk_date)." ";
 	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 		$cmd .= $no_ivbskdesc ? _quote($rel_code) : _quote($bsk_desc, $rel_code);
@@ -224,13 +225,14 @@ sub decode {
 		$cmd .= $single ? " " : " \\\n\t";
 
 		# Check for a full payment.
-		my $sth = $dbh->sql_exec("SELECT bsk_amount, dbk_desc, bsk_nr, bsk_bky".
-					 " FROM Boekstukken, Dagboeken".
+		my $sth = $dbh->sql_exec("SELECT bsk_amount, dbk_desc, bsk_nr, bsk_ref, bsr_rel_code, bsr_ptype, bsk_bky".
+					 " FROM Boekstukken, Boekstukregels, Dagboeken".
 					 " WHERE bsk_dbk_id = dbk_id".
+					 " AND bsr_bsk_id = bsk_id".
 					 " AND bsk_id = ?", $bsr_paid);
-		my ($paid, $dbk, $nr, $bky) = @{$sth->fetchrow_arrayref};
+		my ($paid, $dbk, $nr, $ref, $rel, $ptype, $bky) = @{$sth->fetchrow_arrayref};
 		$sth->finish;
-		if ( $paid == $bsr_amount) {
+		if ( $paid == $bsr_amount && !$ptype ) {
 		    # Matches -> Full payment
 		    $cmd .= "$type$dd " . _quote($bsr_rel_code) . " " .
 		      numfmt_plain($bsr_amount);
@@ -239,9 +241,18 @@ sub decode {
 		    # Partial payment. Use boekstuknummer.
 		    $dbk = lc($dbk);
 		    $dbk =~ s/[^[:alnum:]]/_/g;
-		    $cmd .= "$type$dd $dbk";
-		    $cmd .= ":$bky" if ($opts->{boekjaar}||$opts->{d_boekjaar}) ne $bky;
-		    $cmd .= ":$nr " . numfmt_plain($bsr_amount);
+		    my $t;
+		    if ( defined $ref ) {
+			$t = $rel;
+			$t .= ":$bky" if ($opts->{boekjaar}||$opts->{d_boekjaar}) ne $bky;
+			$t .= ":$ref";
+		    }
+		    else {
+			$t = $dbk;
+			$t .= ":$bky" if ($opts->{boekjaar}||$opts->{d_boekjaar}) ne $bky;
+			$t .= ":$nr";
+		    }
+		    $cmd .= join(" ", $type.$dd, _quote($t), numfmt_plain($bsr_amount));
 		}
 	    }
 	}

@@ -1,13 +1,13 @@
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.18 2007/10/27 20:34:59 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.19 2008/01/02 19:56:11 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 27 22:33:49 2007
-# Update Count    : 115
+# Last Modified On: Wed Jan  2 20:47:32 2008
+# Update Count    : 134
 # Status          : Unknown, Use with caution!
 
-my $RCS_Id = '$Id: Booking.pm,v 1.18 2007/10/27 20:34:59 jv Exp $ ';
+my $RCS_Id = '$Id: Booking.pm,v 1.19 2008/01/02 19:56:11 jv Exp $ ';
 
 package main;
 
@@ -229,10 +229,10 @@ sub journalise {
     my ($jnl_date, $jnl_bsk_id, $jnl_bsr_seq, $jnl_dbk_id, $jnl_acc_id,
 	$jnl_amount, $jnl_desc, $jnl_rel);
 
-    my $rr = $::dbh->do("SELECT bsk_nr, bsk_desc, bsk_dbk_id, bsk_date".
+    my $rr = $::dbh->do("SELECT bsk_nr, bsk_desc, bsk_dbk_id, bsk_date, bsk_ref".
 		      " FROM boekstukken".
 		      " WHERE bsk_id = ?", $bsk_id);
-    my ($bsk_nr, $bsk_desc, $bsk_dbk_id, $bsk_date) = @$rr;
+    my ($bsk_nr, $bsk_desc, $bsk_dbk_id, $bsk_date, $bsk_ref) = @$rr;
 
     my ($dbktype, $dbkdcsplit, $dbk_acc_id) =
       @{$::dbh->do("SELECT dbk_type, dbk_dcsplit, dbk_acc_id".
@@ -249,14 +249,17 @@ sub journalise {
     my ($dtot, $ctot) = (0, 0);
     my ($vhtot, $vltot) = (0, 0);
     my $nr = 1;
-    my $vat; 			# for automatic roundig VAT calc
+    my $vat; 			# for automatic rounding VAT calc
+    my $g_bsr_rel_code;
 
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_class,
-	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code, $bsr_rel_dbk) = @$rr;
+	    $bsr_btw_id, $bsr_btw_acc, $bsr_type, $bsr_acc_id, $bsr_rel_code,
+	    $bsr_rel_dbk) = @$rr;
 	my $bsr_bsk_id = $bsk_id;
 	my $btw = 0;
 	my $amt = $bsr_amount;
+	$g_bsr_rel_code = $bsr_rel_code if defined $iv && $bsr_rel_code;
 
 	if ( ($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id && $bsr_btw_acc ) {
 	    ( $bsr_amount, $btw, my $perc ) =
@@ -273,11 +276,11 @@ sub journalise {
 	push(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
 		     $bsr_acc_id,
 		     $bsr_amount - $btw, undef, $bsr_desc,
-		     $bsr_type ? ($bsr_rel_code, $bsr_rel_dbk) : (undef, undef)]);
+		     $bsr_type ? ($bsr_rel_code, $bsr_rel_dbk) : (undef, undef), undef]);
 	push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
 		     $bsr_btw_acc,
 		     $btw, undef, "BTW ".$bsr_desc,
-		     undef, undef]) if $btw;
+		     undef, undef, undef]) if $btw;
     }
 
     if ( defined($total) && $tot != $total
@@ -299,7 +302,7 @@ sub journalise {
 			     $t - $v->{btw},
 			     undef,
 			     "BTW Afr. ".$bsk_desc,
-			     undef, undef]);
+			     undef, undef, undef]);
 		warn("!".__x("BTW rek. nr. {acct}, correctie van {amt} uitgevoerd",
 			     acct => $k, amt => numfmt($t-$v->{btw}))."\n");
 	    }
@@ -309,16 +312,16 @@ sub journalise {
     if ( $dbk_acc_id ) {
 	if ( $dbkdcsplit ) {
 	    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
-			 -$tot, -$dtot, $bsk_desc, undef, undef]);
+			 -$tot, -$dtot, $bsk_desc, undef, undef, undef]);
 	}
 	else {
 	    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
-			 -$tot, undef, $bsk_desc, undef, undef]);
+			 -$tot, undef, $bsk_desc, undef, undef, undef]);
 	}
     }
 
     unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsk_date, 0, undef,
-		    undef, undef, $bsk_desc, undef, undef]);
+		    undef, undef, $bsk_desc, $g_bsr_rel_code, undef, $bsk_ref]);
 
     $ret;
 }

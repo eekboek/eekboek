@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.32 2006/10/10 18:44:19 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.33 2008/01/02 19:56:11 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 10 15:43:04 2006
-# Update Count    : 294
+# Last Modified On: Wed Jan  2 20:44:25 2008
+# Update Count    : 298
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -79,7 +79,7 @@ sub journal {
 		return;
 	    }
 	    $sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
-				  "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel".
+				  "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
 				  " FROM Journal, Boekstukken, Dagboeken".
 				  " WHERE bsk_nr = ?".
 				  " AND dbk_id = ?".
@@ -100,7 +100,7 @@ sub journal {
 		return;
 	    }
 	    $sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
-				  "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel".
+				  "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
 				  " FROM Journal, Boekstukken, Dagboeken".
 				  " WHERE dbk_id = ?".
 				  " AND jnl_bsk_id = bsk_id".
@@ -124,7 +124,7 @@ sub journal {
     }
     else {
 	$sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
-			      "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel".
+			      "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
 			      " FROM Journal, Boekstukken".
 			      " WHERE jnl_bsk_id = bsk_id".
 			      ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
@@ -137,14 +137,19 @@ sub journal {
 
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($jnl_date, $jnl_bsr_date, $jnl_dbk_id, $jnl_bsk_id, $bsk_nr, $jnl_bsr_seq, $jnl_acc_id,
-	    $jnl_amount, $jnl_damount, $jnl_desc, $jnl_rel) = @$rr;
+	    $jnl_amount, $jnl_damount, $jnl_desc, $jnl_rel, $jnl_bsk_ref) = @$rr;
 
 	if ( $jnl_bsr_seq == 0 ) {
 	    $nl++, next unless $detail;
+	    my $t = $jnl_rel;
+	    if ( $t && $jnl_bsk_ref ) {
+		$t .= ":" . $jnl_bsk_ref;
+	    }
 	    $rep->add({ _style => 'head',
 			date => datefmt($jnl_bsr_date),
 			desc => join(":", _dbk_desc($jnl_dbk_id), $bsk_nr),
 			bsk  => $jnl_desc,
+			rel  => $t,
 		      });
 	    next;
 	}
@@ -153,6 +158,10 @@ sub journal {
 	$totd += $deb;
 	$totc += $crd;
 	next unless $detail;
+	my $t = $jnl_rel;
+	if ( $t && $jnl_bsk_ref ) {
+	    $t .= ":" . $jnl_bsk_ref;
+	}
 	$rep->add({ _style => 'data',
 		    date => datefmt($jnl_bsr_date),
 		    desc => _acc_desc($jnl_acc_id),
@@ -160,7 +169,7 @@ sub journal {
 		    ($deb || defined $jnl_damount) ? (deb => numfmt($deb)) : (),
 		    ($crd || defined $jnl_damount) ? (crd => numfmt($crd)) : (),
 		    bsk  => $jnl_desc,
-		    $jnl_rel ? ( rel => $jnl_rel ) : (),
+		    $jnl_rel ? ( rel => $t ) : (),
 		  });
     }
     $rep->add({ _style => 'total',

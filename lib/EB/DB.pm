@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.53 2007/02/02 10:13:27 jv Exp $ ';
+my $RCS_Id = '$Id: DB.pm,v 1.54 2008/01/02 19:56:11 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 16 17:34:21 2006
-# Update Count    : 407
+# Last Modified On: Wed Jan  2 18:45:21 2008
+# Update Count    : 422
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -182,8 +182,8 @@ sub store_journal {
     my ($self, $jnl) = @_;
     foreach ( @$jnl ) {
 	$self->sql_insert("Journal",
-			  [qw(jnl_date jnl_dbk_id jnl_bsk_id jnl_bsr_date jnl_bsr_seq
-			      jnl_acc_id jnl_amount jnl_damount jnl_desc jnl_rel jnl_rel_dbk)],
+			  [qw(jnl_date jnl_dbk_id jnl_bsk_id jnl_bsr_date jnl_bsr_seq jnl_acc_id jnl_amount
+			      jnl_damount jnl_desc jnl_rel jnl_rel_dbk  jnl_bsk_ref)],
 			  @$_);
     }
 }
@@ -192,8 +192,41 @@ sub bskid {
     my ($self, $nr, $bky) = @_;
     return $nr if $nr =~ /^\d+$/ && !wantarray;
 
+    # Formats:
+    #   NNN
+    #   DBK:NNN
+    #   DBK:BKY:NNN
+    #   REL:REF
+    #   REL:BKY:REF
+
     my $rr;
     $bky = $self->adm("bky") unless defined($bky);
+
+    if ( $nr =~ /^([[:alpha:]][^:]+)(?::([^:]+))?:(.*?\D.*)$/
+	 and
+	 $rr = $self->do("SELECT rel_code, rel_desc".
+			 " FROM Relaties".
+			 " WHERE upper(rel_code) = ?", uc($1)) ) {
+	my ($rel_id, $rel_desc) = @$rr;
+	if ( defined($2) ) {
+	    unless ( defined $self->lookup($2, qw(Boekjaren bky_code bky_code)) ) {
+		return wantarray ? (undef, undef, __x("Onbekend boekjaar: {bky}", bky => $2)) : undef;
+	    }
+	    $bky = $2;
+	}
+	$rr = $self->do("SELECT bsk_id, bsk_dbk_id".
+			" FROM Boekstukken, Boekstukregels".
+			" WHERE bsr_rel_code = ?".
+			" AND bsr_bsk_id = bsk_id".
+			" AND upper(bsk_ref) = ?".
+			" AND bsk_bky = ?", $rel_id, uc($3), $bky);
+	unless ( $rr ) {
+	    return wantarray ? (undef, undef, __x("Onbekend boekstuk {ref} voor relatie {rel} ({desc})",
+						  rel => $rel_id, desc => $rel_desc, ref => $3)) : undef;
+	}
+	$bky = $bky eq $self->adm("bky") ? "" : ":$bky";
+	return wantarray ? ($rr->[0], $self->lookup($rr->[1], qw(Dagboeken dbk_id dbk_desc))."$bky:$3", undef) : $rr->[0];
+    }
 
     if ( $nr =~ /^([[:alpha:]][^:]+)(?::([^:]+))?:(\d+)$/ ) {
 	$rr = $self->do("SELECT dbk_id, dbk_desc".
@@ -221,7 +254,8 @@ sub bskid {
 	$bky = $bky eq $self->adm("bky") ? "" : ":$bky";
 	return wantarray ? ($rr->[0], "$dbk_desc$bky:$3", undef) : $rr->[0];
     }
-    elsif ( $nr =~ /^(\d+)$/ ) {
+
+    if ( $nr =~ /^(\d+)$/ ) {
 
 	$rr = $self->do("SELECT bsk_nr, dbk_id, dbk_desc, bsk_bky".
 			" FROM Boekstukken, Dagboeken".
@@ -236,9 +270,8 @@ sub bskid {
 	$bky = $bsk_bky eq $self->adm("bky") ? "" : ":$bsk_bky";
 	return wantarray ? ($nr, "$dbk_desc$bky:$bsk_nr", undef) : $nr;
     }
-    else {
-	die("?".__x("Ongeldige boekstukaanduiding: {bsk}", bsk => $nr)."\n");
-    }
+
+    die("?".__x("Ongeldige boekstukaanduiding: {bsk}", bsk => $nr)."\n");
 }
 
 ################ low level ################

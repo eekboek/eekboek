@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.51 2007/10/27 20:16:21 jv Exp $ ';
+my $RCS_Id = '$Id: IV.pm,v 1.52 2008/01/02 19:56:11 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 21 21:44:02 2007
-# Update Count    : 294
+# Last Modified On: Sat Dec 29 17:23:04 2007
+# Update Count    : 299
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -40,6 +40,12 @@ sub perform {
 
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
+    my $bsk_ref = $opts->{ref};
+
+    if ( defined $bsk_ref && $bsk_ref =~ /^\d+$/ ) {
+	warn("?".__x("Boekingsreferentie moet tenminste één niet-numeriek teken bevatten: {ref}", ref => $bsk_ref)."\n");
+	return;
+    }
 
     unless ( $dagboek_type == DBKTYPE_INKOOP || $dagboek_type == DBKTYPE_VERKOOP) {
 	warn("?".__x("Ongeldige operatie (IV) voor dagboek type {type}",
@@ -196,10 +202,23 @@ sub perform {
 	    $bsk_nr = $self->bsk_nr($opts);
 	    return unless defined($bsk_nr);
 	    $bsk_id = $dbh->get_sequence("boekstukken_bsk_id_seq");
+	    if ( $bsk_ref and $dbh->do("SELECT count(*)".
+				       " FROM Boekstukken, Boekstukregels".
+				       " WHERE bsk_id = bsr_bsk_id".
+				       " AND upper(bsk_ref) = ?".
+				       " AND upper(bsr_rel_code) = ?".
+				       " AND bsk_bky = ?",
+				       uc($bsk_ref), uc($debcode), $bky)->[0] ) {
+		warn("?".__x("Referentie {ref} bestaat al voor relatie {rel}",
+			     rel => $debcode, ref => $bsk_ref)."\n");
+		return;
+	    }
+
+
 	    $dbh->begin_work;
 	    $dbh->sql_insert("Boekstukken",
-			     [qw(bsk_id bsk_nr bsk_desc bsk_dbk_id bsk_date bsk_bky)],
-			     $bsk_id, $bsk_nr, $gdesc, $dagboek, $date, $bky);
+			     [qw(bsk_id bsk_nr bsk_ref bsk_desc bsk_dbk_id bsk_date bsk_bky)],
+			     $bsk_id, $bsk_nr, $bsk_ref, $gdesc, $dagboek, $date, $bky);
 	}
 
 	# Amount can override BTW id with @X postfix.
