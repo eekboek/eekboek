@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.63 2007/12/30 21:05:26 jv Exp $ ';
+my $RCS_Id = '$Id: BKM.pm,v 1.64 2008/01/02 19:51:59 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Dec 30 22:01:26 2007
-# Update Count    : 490
+# Last Modified On: Mon Dec 31 15:11:45 2007
+# Update Count    : 506
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -382,7 +382,7 @@ sub perform {
 		elsif ( @$res <= $cfg->val(qw(strategy bkm_multi_max), 15) ) {
 		    # Use exact knapsack matching to find possible components.
 		    my @amts = map { $_->[0] } @$res;
-		    if ( my @k = knapsack($amt, \@amts) ) {
+		    if ( my @k = partition($amt, \@amts) ) {
 			# We found something. Check strategy.
 			if ( $cfg->val(qw(strategy bkm_multi), 0) ) {
 			    # We may split.
@@ -403,14 +403,26 @@ sub perform {
 			}
 			else {
 			    undef $rr;
-			    my @t; # for reporting
-			    foreach ( @{$k[0]} ) {
-				push(@t, numfmt($amts[$_]));
+			    foreach my $k ( @k ) {
+				my @t; # for reporting
+				foreach ( @{$k} ) {
+				    push(@t, numfmt($amts[$_]));
+				}
+				my $t = shift(@t);
+				$wmsg .= "\n%" if $wmsg;
+#				$wmsg .= __x("Wellicht de betaling van de open posten {amtss} en {amts}?",
+#					     amtss => join(", ", @t),
+#					     amts => $t);
+				$wmsg .= _T("Wellicht de betaling van de volgende open posten:");
+				foreach ( @{$k} ) {
+				    my ($open, $bsknr, $bskid, $dbk_id, $bsk_desc, $bsk_amount) = @{$res->[$_]};
+				    $wmsg .= sprintf("\n%% %s %s %s",
+						     join(":",
+							  $dbh->lookup($dbk_id,
+								       qw(Dagboeken dbk_id dbk_desc)),
+							  $bsknr), numfmt($open), $bsk_desc);
+				}
 			    }
-			    my $t = shift(@t);
-			    $wmsg = __x("Wellicht de betaling van de open posten {amtss} en {amts}?",
-					amtss => join(", ", @t),
-					amts => $t);
 			}
 		    }
 		    # Punt it.
@@ -589,51 +601,20 @@ sub saldo_for {
     return;
 }
 
-# Straightforward implementation of the Knapsack algorithm.
-sub knapsack {
-    my ($capacity, $weights) = @_;
+# Adapted from 'Higher Order Perl' (Mark Jason Dominus),
+# sec 5.1.1 "Finding All Possible Partitions".
 
-    # Prepare for negative numbers.
-    if ( $capacity < 0 ) {
-	$capacity = -$capacity;
-	$weights = [ map { -$_ } @$weights ];
-    }
+sub partition {
+    my ($target, $values, $ix) = @_;
+    return [] if $target == 0;
 
-    my $solutions = [];
-    my $emptiness = $capacity;
+    $ix = [ 0 .. $#{$values} ] unless defined $ix;
+    return () if @$ix == 0;
 
-    # Helper.
-    my $knapsack;
-    $knapsack = sub {
-	my $capacity = shift;
-	my @indexes  = @{ shift() };
-	my @knapsack = @{ shift() };
-
-	while ( $#indexes >= 0 ) {
-	    my $index = shift(@indexes);
-	    next if $weights->[$index] > $capacity;
-
-	    if ( $capacity - $weights->[$index] < $emptiness ) {
-		$emptiness = $capacity - $weights->[$index];
-		$solutions = [];
-	    }
-	    # best fit  : $capacity - $weights->[$index] == $emptiness
-	    # exact fit : $capacity == $weights->[$index]
-	    if ( $capacity == $weights->[$index] ) {
-		push(@{ $solutions }, [ @knapsack, $index ])
-		  unless $emptiness;
-	    }
-
-	    $knapsack->($capacity - $weights->[$index],
-			\@indexes,
-			[ @knapsack, $index ]);
-	}
-    };
-
-    # Compute.
-    $knapsack->($capacity, [0 .. $#{ $weights }], []);
-
-    return @{ $solutions };
+    my ($first, @rest) = @$ix;
+    my @solutions = partition($target - $values->[$first], $values, \@rest);
+    return ( (map { [ $first, @$_ ] } @solutions),
+	     partition($target, $values, \@rest));
 }
 
 1;
