@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.38 2007/07/18 15:22:10 jv Exp $ ';
+my $RCS_Id = '$Id: BTWAangifte.pm,v 1.39 2008/01/02 19:21:54 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 18 17:21:25 2007
-# Update Count    : 518
+# Last Modified On: Wed Jan  2 20:21:44 2008
+# Update Count    : 519
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -671,6 +671,7 @@ sub kleine_ondernemers {
 		  2004 => [ 1345, 1883 ],
 		  2005 => [ 1345, 1883 ],
 		  2006 => [ 1345, 1883 ],
+		  2007 => [ 1345, 1883 ],
 		);
 
     return unless exists $mmtab{$year};
