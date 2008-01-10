@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.95 2008/01/10 14:35:41 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.96 2008/01/10 14:42:12 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 10 15:34:19 2008
-# Update Count    : 868
+# Last Modified On: Thu Jan 10 15:41:18 2008
+# Update Count    : 870
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -1269,7 +1269,7 @@ sub do_import {
 
     return unless argcnt(scalar(@args), 0);
 
-    if ( !$dbh->feature("import") ) {
+    if ( $opts->{clean} && !$dbh->feature("import") ) {
 	warn("?".__x("Database type {drv} ondersteunt niet het import commando. Gebruik de --import command line optie.",
 		     drv => $dbh->driverdb)."\n");
 	return;
