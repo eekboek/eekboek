@@ -1,10 +1,10 @@
 # Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.11 2007/07/28 16:53:50 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.12 2008/01/10 14:26:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jul 28 18:50:47 2007
-# Update Count    : 83
+# Last Modified On: Thu Jan 10 15:26:18 2008
+# Update Count    : 85
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -84,11 +84,11 @@ sub init_config {
     $i = 0;
     while ( $i < @ARGV ) {
 	if ( $ARGV[$i] eq "-D" &&
-	     $i+1 < @ARGV && $ARGV[$i+1] =~ /^(\w+)::?(\w+)=(.*)/ ) {
+	     $i+1 < @ARGV && $ARGV[$i+1] =~ /^(\w+(?:::\w+)*)::?(\w+)=(.*)/ ) {
 	    $cfg->newval($1, $2, $3);
 	    splice(@ARGV, $i, 2);
 	}
-	elsif ( $ARGV[$i] =~ /^--define=(\w+)::?(\w+)=(.*)/ ) {
+	elsif ( $ARGV[$i] =~ /^--define=(\w+(?:::\w+)*)::?(\w+)=(.*)/ ) {
 	    $cfg->newval($1, $2, $3);
 	    splice(@ARGV, $i, 1);
 	}
