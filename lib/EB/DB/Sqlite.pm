@@ -1,10 +1,10 @@
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.6 2006/12/27 14:13:30 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.7 2008/01/10 14:42:54 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 27 15:13:08 2006
-# Update Count    : 139
+# Last Modified On: Thu Jan 10 15:36:45 2008
+# Update Count    : 148
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -96,6 +96,9 @@ sub connect {
 	$sdb = $dbh;
     }
 
+    # ???
+    $dbh->{unicode} = 1 if $cfg->val(qw(locale unicode));
+
     # Create some missing functions.
     register_functions();
 
@@ -111,6 +114,17 @@ sub disconnect {
     undef $dbh;
     undef $sdb;
     undef $dataset;
+}
+
+# API: Clear database contents, including tables and such.
+sub clear {
+    my ($self) = @_;
+    croak("?INTERNAL ERROR: clear db while not connected") unless $dbh;
+    croak("?INTERNAL ERROR: clear db not supperted by this driver");
+    my $ds = $dataset;
+    $self->disconnect;
+    $self->create($ds);
+    $self->connect($ds);
 }
 
 # API: Setup whatever is needed.
@@ -257,6 +271,8 @@ sub feature {
     return \&sqlfilter if $feat eq "filter";
 
     return 1 if $feat eq "prepcache";
+
+    return 0 if $feat eq "import";
 
     # Return false for all others.
     return;
