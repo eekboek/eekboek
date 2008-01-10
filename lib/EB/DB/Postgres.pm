@@ -1,10 +1,10 @@
 # Postgres.pm -- EekBoek driver for PostgreSQL dsatabase
-# RCS Info        : $Id: Postgres.pm,v 1.21 2006/10/24 13:43:17 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.22 2008/01/10 14:35:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:41:19 2006
-# Update Count    : 164
+# Last Modified On: Thu Jan 10 15:34:47 2008
+# Update Count    : 166
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -268,6 +268,8 @@ sub feature {
     }
 
     return 1 if $feat eq "prepcache";
+
+    return 1 if $feat eq "import";
 
     # Return false for all others.
     return;
