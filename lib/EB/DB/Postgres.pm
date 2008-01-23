@@ -1,10 +1,10 @@
 # Postgres.pm -- EekBoek driver for PostgreSQL dsatabase
-# RCS Info        : $Id: Postgres.pm,v 1.22 2008/01/10 14:35:12 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.23 2008/01/23 16:30:46 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 10 15:34:47 2008
-# Update Count    : 166
+# Last Modified On: Wed Jan 23 17:30:30 2008
+# Update Count    : 168
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -71,7 +71,9 @@ sub create {
 
     $dbname =~ s/^(?!=eekboek_)/eekboek_/;
 
-    my $sql = "CREATE DATABASE $dbname";
+    # Normally, sql treats names as lowcased. By using " " we can
+    # maintain the case of the database name.
+    my $sql = "CREATE DATABASE \"$dbname\"";
     $sql .= " ENCODING 'UNICODE'";
     for ( $cfg->val("database", "user", undef) ) {
 	next unless $_;
