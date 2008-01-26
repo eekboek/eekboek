@@ -42,6 +42,8 @@ sub new {
 	$self->{mainframe_menubar} = Wx::MenuBar->new();
 	$self->SetMenuBar($self->{mainframe_menubar});
 	use constant MENU_NEW => Wx::NewId();
+	use constant MENU_EXPORT => Wx::NewId();
+	use constant MENU_IMPORT => Wx::NewId();
 	use constant MENU_PROPS => Wx::NewId();
 	use constant MENU_LOGW => Wx::NewId();
 	use constant MENU_LOGCLEAN => Wx::NewId();
@@ -60,14 +62,17 @@ sub new {
 	use constant MENU_R_OP => Wx::NewId();
 	use constant MENU_R_DEB => Wx::NewId();
 	use constant MENU_R_CRD => Wx::NewId();
+	use constant MENU_DOC => Wx::NewId();
 	my $wxglade_tmp_menu;
 	$wxglade_tmp_menu = Wx::Menu->new();
-	$wxglade_tmp_menu->Append(wxID_NEW, _T("Nieuw ..."), _T("Aanmaken nieuwe administratie"));
+	$wxglade_tmp_menu->Append(wxID_NEW, _T("Nieuw ...\tCtrl-N"), _T("Aanmaken nieuwe administratie"));
 	$wxglade_tmp_menu->Append(MENU_NEW, _T("Nieuw (Wizard) ..."), _T("Test wizard"));
-	$wxglade_tmp_menu->Append(wxID_OPEN, _T("Open ..."), _T("Open een bestaande administratie"));
-	$wxglade_tmp_menu->Append(wxID_CLOSE, _T("Sluiten"), _T("Beëindig het werken met deze administratie"));
+	$wxglade_tmp_menu->Append(wxID_OPEN, _T("Open ...\tCtrl-O"), _T("Open een bestaande administratie"));
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(MENU_PROPS, _T("Eigenschappen"), _T("Eigenschappen"));
+	$wxglade_tmp_menu->Append(MENU_EXPORT, _T("Export ..."), _T("Exporteer administratie"));
+	$wxglade_tmp_menu->Append(MENU_IMPORT, _T("Import ..."), _T("Importeer administratie"));
+	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(MENU_PROPS, _T("Eigenschappen ...\tAlt+Enter"), _T("Toon administratiegegevens"));
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(MENU_LOGW, _T("Verberg log venster"), _T("Toon of verberg het log venster"));
 	$wxglade_tmp_menu->Append(MENU_LOGCLEAN, _T("Log venster schoonmaken"), "");
@@ -104,7 +109,8 @@ sub new {
 	$wxglade_tmp_menu->Append(MENU_R_CRD, _T("Crediteuren"), _T("Opmaken Crediteurenoverzicht"));
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("Ra&pportages"));
 	$wxglade_tmp_menu = Wx::Menu->new();
-	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("&Info ..."), _T("Informatie"));
+	$wxglade_tmp_menu->Append(MENU_DOC, _T("Documentatie\tF1"), _T("Toon de EekBoek documentatie"));
+	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("&Info"), _T("Informatie"));
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Hulp"));
 	
 # Menu Bar end
@@ -120,7 +126,8 @@ sub new {
 	Wx::Event::EVT_MENU($self, wxID_NEW, \&OnNew);
 	Wx::Event::EVT_MENU($self, MENU_NEW, \&OnNewWiz);
 	Wx::Event::EVT_MENU($self, wxID_OPEN, \&OnOpen);
-	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
+	Wx::Event::EVT_MENU($self, MENU_EXPORT, \&OnExport);
+	Wx::Event::EVT_MENU($self, MENU_IMPORT, \&OnImport);
 	Wx::Event::EVT_MENU($self, MENU_PROPS, \&OnProperties);
 	Wx::Event::EVT_MENU($self, MENU_LOGW, \&OnLogw);
 	Wx::Event::EVT_MENU($self, MENU_LOGCLEAN, \&OnLogClean);
@@ -140,6 +147,7 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_R_OP, \&OnROpen);
 	Wx::Event::EVT_MENU($self, MENU_R_DEB, \&OnRDeb);
 	Wx::Event::EVT_MENU($self, MENU_R_CRD, \&OnRCrd);
+	Wx::Event::EVT_MENU($self, MENU_DOC, \&OnDoc);
 	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
 
 # end wxGlade
@@ -282,7 +290,6 @@ sub adapt_menus {
 		       $self->{"d_dbkpanel$id"}->Show(1);
 		       $self->{"d_dbkpanel$id"}->SetSize([$cfg->{xwidth}, $cfg->{ywidth}]);
 		   });
-	Wx::LogMessage("Dagboek: $desc");
     }
 
     my $ix = $self->{mainframe_menubar}->FindMenu(_T("&Dagboeken"));
@@ -291,6 +298,13 @@ sub adapt_menus {
        $self->{mainframe_menubar}->GetLabelTop($ix));
     $tmp->Destroy if $tmp;
     $self->{mainframe_menubar}->Refresh;
+
+    my $t = $::cfg->val(qw(database name));
+    $t =~ s/^eekboek_//;
+    ::set_status(__x("Administratie: {adm}",
+		     adm => $t));
+    $self->SetTitle(__x("EekBoek: {adm}",
+			adm => $dbh->adm("name")));
 }
 
 sub DESTROY {
@@ -358,12 +372,15 @@ sub OnOpen {
     require EB::Wx::Tools::DbOpenDialog;
     foreach my $win ( grep(/^d_m\S+panel$/, keys(%$self)) ) {
 	next unless $self->{$win};
-	next unless $self->{$win}->IsShown;
-	Wx::MessageBox("Er zijn nog onderhoudsvensters open op de huidige database.\n".
-		       "Deze dienen eerst te worden gesloten.",
-		       "Open vensters",
-		       wxOK|wxICON_ERROR);
-	return;
+	if ( $self->{$win}->IsShown ) {
+	    Wx::MessageBox("Er zijn nog onderhoudsvensters open op de huidige database.\n".
+			   "Deze dienen eerst te worden gesloten.",
+			   "Open vensters",
+			   wxOK|wxICON_ERROR);
+	    return;
+	}
+	$self->{$win}->Destroy;
+	delete($self->{$win});
     }
     $self->{d_opendialog} ||= EB::Wx::Tools::DbOpenDialog->new
       ($self, -1,
@@ -377,16 +394,24 @@ sub OnOpen {
 
     $self->adapt_menus;
     # Refresh existing reports.
-    foreach my $win ( grep(/^d_m\S+panel$/, keys(%$self)) ) {
+    foreach my $win ( grep(/^d_r\S+panel$/, keys(%$self)) ) {
 	next unless $self->{$win};
 	next unless $self->{$win}->IsShown;
 	$self->{$win}->refresh;
     }
 }
 
-# wxGlade: EB::Wx::MainFrame::OnClose <event_handler>
-sub OnClose {
+# wxGlade: EB::Wx::MainFrame::OnExport <event_handler>
+sub OnExport {
     my ($self, $event) = @_;
+    Wx::LogMessage("Event handler (OnExport) not implemented");
+    $event->Skip;
+}
+
+# wxGlade: EB::Wx::MainFrame::OnImport <event_handler>
+sub OnImport {
+    my ($self, $event) = @_;
+    Wx::LogMessage("Event handler (OnImport) not implemented");
     $event->Skip;
 }
 
@@ -444,8 +469,8 @@ sub OnExit {
 
 # wxGlade: EB::Wx::MainFrame::OnPreferences <event_handler>
 sub OnPreferences {
-	my ($self, $event) = @_;
-	$event->Skip;
+    my ($self, $event) = @_;
+    $event->Skip;
 }
 
 ################ Maintenance ################
@@ -478,6 +503,7 @@ sub OnMRel {
        [$config->relw->{xwidth},$config->relw->{ywidth}],
       );
     $self->{$p}->SetSize([$config->relw->{xwidth},$config->relw->{ywidth}]);
+    $self->{$p}->refresh;
     $self->{$p}->Show(1);
 }
 
@@ -642,6 +668,12 @@ sub OnRCrd {
 }
 
 ################ Menu: Info ################
+
+# wxGlade: EB::Wx::MainFrame::OnDoc <event_handler>
+sub OnDoc {
+    my ($self, $event) = @_;
+    Wx::LaunchDefaultBrowser("http:www.eekboek.nl/docs/index.html");
+}
 
 # wxGlade: EB::Wx::MainFrame::OnAbout <event_handler>
 sub OnAbout {

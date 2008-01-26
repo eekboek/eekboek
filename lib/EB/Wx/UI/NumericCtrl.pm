@@ -2,15 +2,20 @@ package EB::Wx::UI::NumericCtrl;
 
 use base qw(Wx::TextCtrl);
 use Wx qw[:everything];
+use Wx::Perl::TextValidator;
 use strict;
 use EB;
 
 sub new {
     my ($class, @args) = @_;
     my $self = $class->SUPER::new(@args);
-    Wx::Event::EVT_CHAR($self, \&OnKbdInput);
+    $self->SetValidator(Wx::Perl::TextValidator->new(qr/\d/));
     $self;
 }
+
+1;
+
+__END__
 
 sub OnKbdInput {
     my ($self, $event) = @_;

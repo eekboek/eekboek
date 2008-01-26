@@ -83,6 +83,7 @@ sub refresh {
 	require EB::Report::Proof;
 	EB::Report::Proof->new->perform
 	    ({ backend => "EB::Wx::Report::BalResProof::WxHtml",
+	       boekjaar => $config->bky,
 	       saldi => 1,
 	       output => \$output,
 	       detail => $self->{detail} });
@@ -92,6 +93,7 @@ sub refresh {
 	my $fun = $self->{mew} eq "rbalw" ? "balans" : "result";
 	EB::Report::Balres->new->$fun
 	    ( { backend => "EB::Wx::Report::BalResProof::WxHtml",
+		boekjaar => $config->bky,
 	        detail => $self->{detail},
 		output => \$output,
 	      } );

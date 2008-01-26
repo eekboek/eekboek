@@ -22,6 +22,7 @@ use EB::Format;
 # begin wxGlade: ::dependencies
 use Wx::Grid;
 use EB::Wx::UI::NumericCtrl;
+use EB::Wx::UI::AmountCtrl;
 # end wxGlade
 
 my $bm_edit_remove;
@@ -154,7 +155,7 @@ sub __set_properties {
 	    my ($id, $desc, $perc, $tg, $incl) = @$rr;
 	    $self->{"tx_btw_id_$id"} = EB::Wx::UI::NumericCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	    $self->{"tx_btw_dc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	    $self->{"tx_btw_pc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	    $self->{"tx_btw_pc_$id"} = EB::Wx::UI::AmountCtrl->new($self->{btwpanel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	    $self->{"tx_btw_tg_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, BTWTYPES);
 	    $self->{"tx_btw_in_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, [qw(Incl Excl)]);
 	    $self->{"tx_btw_xx_$id"} = Wx::BitmapButton->new($self->{btwpanel}, -1, $bm_edit_trash);
@@ -295,7 +296,7 @@ sub OnNew {
     push(@{$self->{_btw}}, [$id, $desc, $group, $in]);
     $self->{"tx_btw_id_$id"} = EB::Wx::UI::NumericCtrl->new($self->{btwpanel}, -1, $id, wxDefaultPosition, wxDefaultSize, );
     $self->{"tx_btw_dc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, $desc, wxDefaultPosition, wxDefaultSize, );
-    $self->{"tx_btw_pc_$id"} = Wx::TextCtrl->new($self->{btwpanel}, -1, $perc, wxDefaultPosition, wxDefaultSize, );
+    $self->{"tx_btw_pc_$id"} = EB::Wx::UI::AmountCtrl->new($self->{btwpanel}, -1, $perc, wxDefaultPosition, wxDefaultSize, );
     $self->{"tx_btw_tg_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, BTWTYPES);
     $self->{"tx_btw_tg_$id"}->SetSelection($group);
     $self->{"tx_btw_in_$id"} = Wx::Choice->new($self->{btwpanel}, -1, wxDefaultPosition, wxDefaultSize, [qw(Incl Excl)]);

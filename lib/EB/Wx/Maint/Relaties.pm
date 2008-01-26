@@ -64,6 +64,12 @@ sub new {
 
 }
 
+my @dbkmap;
+
+sub refresh {
+    goto &fill_grid;
+}
+
 sub fill_grid {
     my ($self) = @_;
 
@@ -72,7 +78,6 @@ sub fill_grid {
     my $asel = "";
     my $dsel = "";
     my $dbks;
-    my @dbkmap;
     my $sth;
     if ( $deb && !$crd ) {
 	$asel = " WHERE rel_debcrd";
@@ -89,6 +94,7 @@ sub fill_grid {
 
     $sth = $dbh->sql_exec("SELECT dbk_desc, dbk_id FROM Dagboeken".
 			 $dsel);
+    @dbkmap = ();
     foreach ( @{$sth->fetchall_arrayref} ) {
 	push(@$dbks, $_->[0]);
 	push(@dbkmap, $_->[1]);
@@ -125,10 +131,10 @@ sub fill_grid {
 
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($code, $desc, $debcrd, $btw, $ledger, $acct) = @$rr;
-	$p->append($code, $desc, $acct, $dbkmap{0+$ledger}, $btw, 0, $code);
-	if ( $dbh->do("SELECT COUNT(*) FROM Boekstukregels".
-		      " WHERE bsr_rel_code = ? AND bsr_dbk_id = ?",
-		      $code, $ledger)->[0] ) {
+	$p->append($code, $desc, $acct, $dbkmap{0+$ledger}, $btw, 0, $code, $ledger);
+	if ( defined $dbh->do("SELECT bsr_nr FROM Boekstukregels".
+			      " WHERE bsr_rel_code = ? AND bsr_dbk_id = ? LIMIT 1",
+			      $code, $ledger) ) {
 	    $p->enable(    0,     1,       1,                  1,
 			   $dbh->does_btw ? 1 : (), 0);
 	    $self->{l_inuse}->Show(1);
@@ -229,8 +235,82 @@ sub OnClose {
 # wxGlade: EB::Wx::Maint::Relaties::OnApply <pseudo event_handler>
 sub OnApply {
     my ($self, $data) = @_;
-    use Data::Dumper;
-    warn(Dumper($data));
+
+    #  ret -> [ [ <action>, <new contents>, <user data> ], ...]
+    #
+    #  action: 0 -> new row
+    #         -1 -> deleted row
+    #       else -> changed row, 1 bit per changed column
+
+    $dbh->begin_work;
+    my $error;
+    foreach my $op ( @$data ) {
+	my ($code, $key, $desc, $acct, $dbk, $btw, $del, $orig, $ledger) = @$op;
+	eval {
+	$dbk = $dbkmap[$dbk];
+	if ( $code == 0 ) {
+	    # New.
+	    my $debcrd = 0+($dbh->lookup($dbk, qw(Dagboeken dbk_id dbk_type)) == DBKTYPE_VERKOOP);
+	    $dbh->sql_insert("Relaties",
+			     [qw(rel_code rel_desc rel_debcrd rel_btw_status rel_ledger rel_acc_id)],
+			     $key, $desc, $debcrd, $btw, $dbk, $acct);
+	}
+	elsif ( $code < 0 || $code == 4294967295 ) {
+	    # Deleted.
+	    $dbh->sql_exec("DELETE FROM Relaties".
+			   " WHERE rel_code = ? and rel_ledger = ?",
+			   $orig, $ledger);
+	}
+	else {
+	    # Modified.
+	    my @fields = qw(rel_code rel_desc rel_acc_id rel_ledger rel_btw_status);
+	    my @sets;
+	    my @values;
+	    my $i = 1;
+	    foreach ( @fields ) {
+		if ( $code & 1 ) {
+		    push(@sets, "$_ = ?");
+		    if ( $i == 4 ) {
+			push(@values, $dbk);
+			push(@sets, "rel_debcrd = ?");
+			push(@values,
+			     0+($dbh->lookup($dbk,
+					     qw(Dagboeken dbk_id dbk_type)) == DBKTYPE_VERKOOP));
+		    }
+		    else {
+			push(@values, $op->[$i]);
+		    }
+		}
+		$code >>= 1;
+		$i++;
+	    }
+	    $dbh->sql_exec("UPDATE Relaties".
+			   " SET ". join(", ", @sets).
+			   " WHERE rel_code = ? AND rel_ledger = ?",
+			   @values, $orig, $ledger);
+	}
+	};
+	if ( $@ ) {
+	    $error++;
+	    $orig ||= $key;
+	    my $msg;
+	    if ( $dbh->dbh->state eq '23505' ) {
+		$msg = "Relatiecode $orig bestaat al in dit dagboek\n";
+	    }
+	    else {
+		$msg = "Fout tijdens het bijwerken van $orig:\n". $@;
+	    }
+	    Wx::MessageBox($msg, "Fout tijdens het bijwerken",
+			   wxOK|wxICON_ERROR);
+	}
+    }
+
+    if ( $error ) {
+	$dbh->rollback;
+	return;
+    }
+    $dbh->commit;
+    return 1;
 }
 
 # end of class EB::Wx::Maint::Relaties

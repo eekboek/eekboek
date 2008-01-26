@@ -108,6 +108,7 @@ sub __do_layout {
 sub init {
     my ($self, $me) = @_;
     $self->{mew} = "r${me}w";
+    $self->{detail} = 1;
     $self->{bd_more}->Enable(0);
     $self->{bd_less}->Enable(1);
     $self->refresh;
@@ -115,7 +116,16 @@ sub init {
 
 sub refresh {
     my ($self) = @_;
-    my $output = "<h1>Output</h1>";
+    my $output;
+
+    require EB::Report::Journal;
+    EB::Report::Journal->new->journal
+	({ backend => "EB::Wx::Report::Journaal::WxHtml",
+	   boekjaar => $config->bky,
+	   output => \$output,
+	   detail => $self->{detail} });
+
+
     $self->html->SetPage($output);
     $self->{_HTMLTEXT} = $output;
 }
@@ -142,24 +152,24 @@ sub OnProps {
 sub OnMore {
     my ($self, $event) = @_;
 
-    if ( $self->{detail} < 2 ) {
+    if ( $self->{detail} < 1 ) {
 	$self->{detail}++;
 	$self->refresh;
     }
-    $self->{bd_more}->Enable($self->{detail} < 2);
-    $self->{bd_less}->Enable($self->{detail} >= 0);
+    $self->{bd_more}->Enable($self->{detail} < 1);
+    $self->{bd_less}->Enable($self->{detail} > 0);
 }
 
 # wxGlade: EB::Wx::Report::Journaal::OnLess <event_handler>
 sub OnLess {
     my ($self, $event) = @_;
 
-    if ( $self->{detail} >= 0 ) {
+    if ( $self->{detail} > 0 ) {
 	$self->{detail}--;
 	$self->refresh;
     }
-    $self->{bd_more}->Enable($self->{detail} < 2);
-    $self->{bd_less}->Enable($self->{detail} >= 0);
+    $self->{bd_more}->Enable($self->{detail} < 1);
+    $self->{bd_less}->Enable($self->{detail} > 0);
 }
 
 # wxGlade: EB::Wx::Report::Journaal::OnPrint <event_handler>

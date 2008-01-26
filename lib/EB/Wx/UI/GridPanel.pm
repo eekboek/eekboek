@@ -1,10 +1,10 @@
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.3 2007/03/12 14:43:18 jv Exp $
+# RCS Info        : $Id: GridPanel.pm,v 1.4 2008/01/26 20:59:51 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 12 15:27:19 2007
-# Update Count    : 298
+# Last Modified On: Fri Jan 25 17:45:23 2008
+# Update Count    : 318
 # Status          : Unknown, Use with caution!
 
 # GridPanel implements a widget that is row/column oriented, and
@@ -308,7 +308,11 @@ sub perform_update {
 	    $action |= (1 << $col), $rowchanged++ if $item && $item->changed;
 	    $col++;
 	}
-	$act[0] = $self->is_new($row) ? 0 : $action;
+
+	if ( $self->is_new($row) ) {
+	    $action = 0;
+	}
+	$act[0] = $action;
 	my $data = $self->data($row);
 	push(@act, @$data) if $data;
 	push(@actions, [@act]) if $rowchanged;
@@ -329,7 +333,7 @@ sub expunge_rows {
     my ($self) = @_;
     foreach my $row ( 1 .. $self->{rows}-1 ) {
 	next unless $self->exists($row);
-	next unless $self->is_deleted($row);# && $self->is_new($row);
+	next unless ( $self->is_deleted($row) || $self->is_new($row) );
 	delete($self->{rx($_, $row)}) foreach qw(n b d x);
 	foreach my $col ( 0 .. $self->{cols}-1 ) {
 	    my $item = $self->item($row, $col);
@@ -366,15 +370,13 @@ sub new_or_append {
 	push(@args, shift(@values)) unless $new;
 
 	if ( $f eq EB::Wx::UI::GridPanel::RemoveButton:: ) {
-	    $w = $self->rembut($r) = $f->new($self->{panel}, $new);
-	    #$w->SetToolTip(rx("b", $r));
-	    $self->is_deleted($r) = $new;
+	    $w = $self->rembut($r) = $f->new($self->{panel}, 0);
+	    $self->is_deleted($r) = 0;
 	    $self->is_new($r) = $new;
 	    $w->registerchangecallback(sub { $self->OnRemoveButton($r) });
 	}
 	else {
 	    $w = $f->new($self->{panel}, @args);
-	    #$w->SetToolTip(rc($r, $c));
 	    $w->registerchangecallback(sub { $self->{_check_changed}++ });
 	}
 	$self->item($r, $c) = $w;

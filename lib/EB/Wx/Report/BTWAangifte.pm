@@ -112,6 +112,7 @@ sub refresh {
     my $output;
     EB::Report::BTWAangifte->new->perform
 	({ backend => 'EB::Report::BTWAangifte::WxHtml',
+	   boekjaar => $config->bky,
 	   output => \$output,
 	   detail => $self->{detail} });
     $self->{w_report}->SetPage($output);
