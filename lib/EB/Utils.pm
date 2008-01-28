@@ -15,7 +15,7 @@ my %rev_months;
 my %rev_month_names;
 
 sub parse_date {
-    my ($date, $default_year, $delta) = @_;
+    my ($date, $default_year, $delta_d, $delta_m, $delta_y) = @_;
 
     # Parse a date and return it in ISO format (scalar) or
     # (YYYY,MM,DD) list context.
@@ -51,9 +51,13 @@ sub parse_date {
     else {
 	return;		# invalid format
     }
+    $y = $y + $delta_y if $delta_y;
+    $m = $m + $delta_m if $delta_m;
+    $m = 1, $y++ if $m > 12;
+    $m = 12, $y-- if $m < 0;
     my $time = eval { timelocal(0, 0, 0, $d, $m-1, $y) };
     return unless $time;	# invalid date
-    $time += $delta * 24*60*60 if $delta;
+    $time += $delta_d * 24*60*60 if $delta_d;
     my @tm = localtime($time);
     @tm = (1900 + $tm[5], 1 + $tm[4], $tm[3]);
     wantarray ? @tm : sprintf("%04d-%02d-%02d", @tm);
