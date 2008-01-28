@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.34 2008/01/02 19:50:00 jv Exp $
+# $Id: Opening.pm,v 1.35 2008/01/28 11:44:39 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 29 20:02:21 2007
-# Update Count    : 249
+# Last Modified On: Mon Jan 28 12:43:25 2008
+# Update Count    : 256
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -351,20 +351,20 @@ sub open {
 		    $sth->finish;
 		    if ( defined($rr) ) {
 			my ($begin, $end) = @$rr;
-			if ( $date < $begin || $date > $end ) {
+			if ( $date lt $begin || $date ge $end ) {
 			    $fail++;
 			    warn(_T("Boekingsdatum valt niet binnen het boekjaar")."\n");
 			}
 		    }
 		    else {
-			my $begin = $date;
-			my $t = $date;
-			$t =~ s/^(\d{4})/$1+1/e;
-			my $end   = parse_date($t, undef, -1);
-			$t = parse_date($date, undef, -1);
+			# Add a (pseudo) boekjaar.
+			my $t = $o->{begindatum};
+			$t .= "-01-01" if length($t) == 4;
+			(my $begin = $t) =~ s/^(\d{4})/substr($date,0,4)/e;
+			my $end   = parse_date($begin, undef, -1, undef, +1);
 			$dbh->sql_insert("Boekjaren",
 					 [qw(bky_code bky_name bky_begin bky_end bky_btwperiod bky_opened bky_closed)],
-					 $bky, "$begin - $end", $begin, $end, 0, $t, $t);
+					 $bky, "$begin - $end", $begin, $end, 0, undef, undef);
 		    }
 		}
 		else {
