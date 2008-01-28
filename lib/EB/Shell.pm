@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.96 2008/01/10 14:42:12 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.97 2008/01/28 11:50:23 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 10 15:41:18 2008
-# Update Count    : 870
+# Last Modified On: Mon Jan 28 12:49:15 2008
+# Update Count    : 876
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -1010,6 +1010,7 @@ sub do_debiteuren {
 	       [ "boekjaar=s",
 		 EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
 		 'periode=s' => sub { periode_arg($opts, @_) },
+		 'openstaand',
 	       ], $opts);
 
     EB::Report::Debcrd->new->debiteuren(\@args, $opts);
@@ -1025,6 +1026,7 @@ Opties:
 
   --periode <periode>         Periode
   --boekjaar=<code>           Selecteer boekjaar
+  --openstaand                Alleen met openstaande posten
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -1044,6 +1046,7 @@ sub do_crediteuren {
 	       [ "boekjaar=s",
 		 EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
 		 'periode=s' => sub { periode_arg($opts, @_) },
+		 'openstaand',
 	       ], $opts);
 
     EB::Report::Debcrd->new->crediteuren(\@args, $opts);
@@ -1059,6 +1062,7 @@ Opties:
 
   --periode=<periode>         Periode
   --boekjaar=<code>           Selecteer boekjaar
+  --openstaand                Alleen met openstaande posten
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -1078,22 +1082,26 @@ sub do_openstaand {
 	       [ "boekjaar=s",
 		 EB::Report::GenBase->backend_options(EB::Report::Open::, $opts),
 		 'per=s' => sub { date_arg($opts, @_) },
+		 'deb|debiteuren',
+		 'crd|crediteuren',
 	       ], $opts);
 
-    return unless argcnt(@args, 0);
-    EB::Report::Open->new->perform($opts);
+    return unless argcnt(@args, 0, 1);
+    EB::Report::Open->new->perform($opts, \@args);
 }
 
 sub help_openstaand {
     <<EOS;
 Toont een overzicht van openstaande posten.
 
-  openstaand [ <opties> ]
+  openstaand [ <opties> ] [ <relatie> ]
 
 Opties:
 
   --per=<datum>               Einddatum
   --boekjaar=<code>           Selecteer boekjaar
+  --deb --debiteuren          Alleen debiteuren
+  --crd --crediteuren         Alleen crediteuren
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
