@@ -1,10 +1,10 @@
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.26 2007/02/04 20:14:20 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.27 2008/02/04 16:49:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Feb  4 21:01:44 2007
-# Update Count    : 207
+# Last Modified On: Mon Feb  4 17:48:42 2008
+# Update Count    : 218
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -69,7 +69,7 @@ sub export {
 	$m->desiredCompressionMethod(8);
 	$m = $zip->addString(_enc($self->_opening), "opening.eb");
 	$m->desiredCompressionMethod(8);
-	$m = $zip->addString(_enc($self->_mutaties), "mutaties.eb");
+	$m = $zip->addString(_enc($self->_mutaties($opts)), "mutaties.eb");
 	$m->desiredCompressionMethod(8);
 	my $status = $zip->writeToFileNamed($out);
 	unlink($tmpname);
@@ -335,7 +335,7 @@ sub _mutaties {
 	      ($bsk_id,
 	       { trail  => 1,
 		 d_boekjaar => $bky,
-		 bsknr  => 1,
+		 bsknr  => defined($opts->{bsknr}) ? $opts->{bsknr} : 1,
 		 single => $opts->{single}   || 0,
 		 btw    => $opts->{explicit} || 0,
 		 total  => defined($opts->{totals}) ? $opts->{totals} : 1,
