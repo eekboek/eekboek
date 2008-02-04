@@ -3,7 +3,7 @@
 
 <application path="BTWAangifte.pm" name="" class="" option="0" language="perl" top_window="mainframe" encoding="ISO-8859-1" use_gettext="1" overwrite="0" use_new_namespace="1" for_version="2.6" is_template="0">
     <object class="EB::Wx::Report::BTWAangifte" name="rbtw_panel" base="EditDialog">
-        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME</style>
+        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
         <title>BTW  aangifte</title>
         <object class="wxBoxSizer" name="sz_outer" base="EditBoxSizer">
             <orient>wxHORIZONTAL</orient>
@@ -95,6 +95,7 @@
                                     <stockitem>CLOSE</stockitem>
                                     <label>&amp;Close</label>
                                     <tooltip>Venster sluiten</tooltip>
+                                    <focused>1</focused>
                                     <id>wxID_CLOSE</id>
                                     <events>
                                         <handler event="EVT_BUTTON">OnClose</handler>

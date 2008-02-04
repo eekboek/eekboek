@@ -1,3 +1,7 @@
+#! perl
+
+# $Id: NumericCtrl.pm,v 1.4 2008/02/04 23:25:49 jv Exp $
+
 package EB::Wx::UI::NumericCtrl;
 
 use base qw(Wx::TextCtrl);

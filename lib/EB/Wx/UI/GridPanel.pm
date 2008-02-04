@@ -1,10 +1,11 @@
+#! perl
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.4 2008/01/26 20:59:51 jv Exp $
+# RCS Info        : $Id: GridPanel.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 25 17:45:23 2008
-# Update Count    : 318
+# Last Modified On: Mon Feb  4 18:49:25 2008
+# Update Count    : 321
 # Status          : Unknown, Use with caution!
 
 # GridPanel implements a widget that is row/column oriented, and
@@ -24,9 +25,6 @@
 # artificial column labels in the first row of the grid, these labels
 # scroll away when the grid needs scrolling. Maybe I can find a
 # solution for that some day...
-
-use Wx 0.15 qw[:allclasses];
-use strict;
 
 package EB::Wx::UI::GridPanel;
 
@@ -61,9 +59,9 @@ sub new {
 					     wxTAB_TRAVERSAL|wxVSCROLL);
     $self->{panel}->SetScrollRate(10, 10);
 
-    $self->{b_apply} = Wx::Button->new($self, wxID_APPLY, "Apply");
-    $self->{b_new}   = Wx::Button->new($self, wxID_NEW,   "New");
-    $self->{b_reset} = Wx::Button->new($self, wxID_UNDO,  "Undo");
+    $self->{b_apply} = Wx::Button->new($self, wxID_APPLY, "");
+    $self->{b_new}   = Wx::Button->new($self, wxID_NEW,   "");
+    $self->{b_reset} = Wx::Button->new($self, wxID_REVERT_TO_SAVED,  "");
 
     $self->{b_apply}->Enable(0);
     $self->{b_new}->Enable(1);

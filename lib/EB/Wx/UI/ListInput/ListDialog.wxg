@@ -3,7 +3,7 @@
 
 <application path="ListDialog.pm" name="" class="" option="0" language="perl" top_window="list_dialog" encoding="ISO-8859-1" use_gettext="1" overwrite="0" use_new_namespace="1" for_version="2.6" is_template="0">
     <object class="EB::Wx::UI::ListInput::ListDialog" name="list_dialog" base="EditDialog">
-        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME|wxSTAY_ON_TOP</style>
+        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxSTAY_ON_TOP</style>
         <title>Selecteer</title>
         <size>365, 240</size>
         <object class="wxBoxSizer" name="sz_lstd_outer" base="EditBoxSizer">

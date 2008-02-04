@@ -1,7 +1,11 @@
+#! perl
+
+# $Id: ListInput.pm,v 1.3 2008/02/04 23:25:49 jv Exp $
+
 package main;
 
 our $dbh;
-our $config;
+our $state;
 our $app;
 
 package EB::Wx::UI::ListInput;
@@ -27,6 +31,8 @@ sub new {
 
     Wx::Event::EVT_CHAR($self, \&OnChar);
     Wx::Event::EVT_LISTBOX($self, $self->GetId, \&OnSelect);
+
+    Wx::Event::EVT_IDLE($self, \&OnIdle);
 
     $self->{ctx} = "";
     $self->{ctx_type} = 0;	# 0 = alpha, 1 = numeric
@@ -79,7 +85,8 @@ sub OnChar {
 	my $cur = $self->SUPER::GetValue;
 	foreach ( @{$self->{list}} ) {
 	    if ( $v eq $cur ) {
-		$self->SUPER::SetValue($_);
+#		$self->SUPER::SetValue($_);
+		$self->{_pending} = $_;
 		last;
 	    }
 	    $v = $_;
@@ -147,6 +154,12 @@ sub OnChar {
 	$self->SetSelection(0,0);
     }
 #    $event->Skip;
+}
+
+sub OnIdle {
+    my ($self) = @_;
+    return unless defined $self->{_pending};
+    $self->SetValue(delete $self->{_pending});
 }
 
 # Value setter/getters. These use the numeric part only.

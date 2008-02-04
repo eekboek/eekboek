@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# $Id: TreeCtrl.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+
 use strict;
 
 use Wx;
@@ -7,7 +9,7 @@ use EB;
 
 package main;
 
-our $config;
+our $state;
 our $dbh;
 our $app;
 
@@ -27,17 +29,17 @@ sub new {
 	my $text = $handler->description;
 	my $item = $self->AppendItem($root, $text, -1, -1);
 	$handler->populate($self, $item);
-	$self->Expand($item) if $config->accexp->{$text};
+	$self->Expand($item) if $state->accexp->{$text};
     }
 
     Wx::Event::EVT_TREE_SEL_CHANGED   ($self, $self, \&OnSelChange);
     Wx::Event::EVT_TREE_ITEM_EXPANDED ($self, $self, \&OnExpand);
     Wx::Event::EVT_TREE_ITEM_COLLAPSED($self, $self, \&OnCollapse);
     Wx::Event::EVT_TREE_ITEM_ACTIVATED($self, $self, \&OnActivate);
-    Wx::Event::EVT_TREE_BEGIN_DRAG    ($self, $self, \&OnBeginDrag);
-    Wx::Event::EVT_TREE_END_DRAG      ($self, $self, \&OnEndDrag);
+#    Wx::Event::EVT_TREE_BEGIN_DRAG    ($self, $self, \&OnBeginDrag);
+#    Wx::Event::EVT_TREE_END_DRAG      ($self, $self, \&OnEndDrag);
 
-    Wx::Event::EVT_RIGHT_DOWN ($self, \&OnRightClick);
+#    Wx::Event::EVT_RIGHT_DOWN ($self, \&OnRightClick);
 
     Wx::Event::EVT_IDLE($self, \&OnIdle);
 
@@ -200,7 +202,7 @@ sub CopyChildren {
 	($item, $cookie) = $self->GetNextChild($src, $cookie);
     }
     $self->SetItemHasChildren($dst, 1);
-    $self->Expand($dst) if $config->accexp->{$self->GetItemText($dst)};
+    $self->Expand($dst) if $state->accexp->{$self->GetItemText($dst)};
 }
 
 sub OnCompareItems {
@@ -230,14 +232,14 @@ sub OnExpand {
     my ($self, $event) = @_;
     my $item = $event->GetItem;
     my $text = $self->GetItemText($item);
-    $config->accexp->{$text} = 1;
+    $state->accexp->{$text} = 1;
 }
 
 sub OnCollapse {
     my ($self, $event) = @_;
     my $item = $event->GetItem;
     my $text = $self->GetItemText($item);
-    $config->accexp->{$text} = 0;
+    $state->accexp->{$text} = 0;
 }
 
 use Wx qw(wxTREE_HITTEST_NOWHERE);
@@ -287,16 +289,16 @@ use Wx::Event qw(EVT_MENU EVT_TREE_END_LABEL_EDIT);
 sub ctxmenu {
     my ($self, $event, $ctl, $item) = @_; # (this instance, click event, tree ctrl, tree item)
     my $ctxmenu = Wx::Menu->new("");
-    $ctxmenu->Append(CTXMENU_OPEN,     "Wijzigen");
+    $ctxmenu->Append(CTXMENU_OPEN,     "Details");
     if ( $ctl->ItemHasChildren($item) ) {
 	$ctxmenu->Append(CTXMENU_EXPAND,   "Uitvouwen");
 	$ctxmenu->Append(CTXMENU_COLLAPSE, "Dichtvouwen");
     }
     $ctxmenu->Append(CTXMENU_RENAME,   "Omschrijving wijzigen");
-    $ctxmenu->AppendSeparator;
-    $ctxmenu->Append(CTXMENU_NEW,      "Nieuw ...");
-    $ctxmenu->AppendSeparator;
-    $ctxmenu->Append(CTXMENU_DELETE,   "Verwijderen");
+#    $ctxmenu->AppendSeparator;
+#    $ctxmenu->Append(CTXMENU_NEW,      "Nieuw ...");
+#    $ctxmenu->AppendSeparator;
+#    $ctxmenu->Append(CTXMENU_DELETE,   "Verwijderen");
 
     EVT_MENU($ctl, CTXMENU_OPEN,     sub { $self->activate($ctl, $item) });
     EVT_MENU($ctl, CTXMENU_EXPAND,   sub { $ctl->Expand($item) });
@@ -383,7 +385,7 @@ sub populate {
 	    my $item = $ctrl->AppendItem($parent, $text, -1, -1,
 					 Wx::TreeItemData->new(GrootboekHandler->new([@$rr,defined($id)])));
 	    $self->populate($ctrl, $item, $rr->[0]);
-	    $ctrl->Expand($item) if $config->accexp->{$text};
+	    $ctrl->Expand($item) if $state->accexp->{$text};
 	}
     }
     else {

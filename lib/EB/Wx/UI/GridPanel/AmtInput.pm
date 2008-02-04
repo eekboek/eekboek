@@ -1,6 +1,10 @@
+#! perl
+
+# $Id: AmtInput.pm,v 1.2 2008/02/04 23:25:49 jv Exp $
+
 package EB::Wx::UI::GridPanel::AmountInput;
 
-use Wx qw(:allclasses wxDefaultPosition wxDefaultSize);
+use Wx qw(wxDefaultPosition wxDefaultSize);
 use base qw(EB::Wx::UI::AmountCtrl);
 use strict;
 use EB::Format;

@@ -1,6 +1,10 @@
+#! perl
+
+# $Id: TextCtrl.pm,v 1.3 2008/02/04 23:25:49 jv Exp $
+
 package EB::Wx::UI::GridPanel::TextCtrl;
 
-use Wx qw(:allclasses wxDefaultPosition wxDefaultSize);
+use Wx qw(wxDefaultPosition wxDefaultSize);
 use base qw(Wx::TextCtrl);
 use strict;
 

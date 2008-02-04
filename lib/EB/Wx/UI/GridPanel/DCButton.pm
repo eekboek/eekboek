@@ -1,6 +1,10 @@
+#! perl
+
+# $Id: DCButton.pm,v 1.3 2008/02/04 23:25:49 jv Exp $
+
 package EB::Wx::UI::GridPanel::DCButton;
 
-use Wx qw(:allclasses wxDefaultPosition wxDefaultSize wxBITMAP_TYPE_PNG);
+use Wx qw(:everything wxDefaultPosition wxDefaultSize wxBITMAP_TYPE_PNG);
 use base qw(Wx::BitmapButton);
 use strict;
 
