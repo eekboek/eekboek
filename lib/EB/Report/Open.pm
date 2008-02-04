@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.17 2006/04/15 09:08:35 jv Exp $ ';
+my $RCS_Id = '$Id: Open.pm,v 1.18 2008/02/04 23:29:09 jv Exp $ ';
 
 package main;
 
@@ -12,8 +12,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Apr 15 10:48:01 2006
-# Update Count    : 192
+# Last Modified On: Mon Jan 28 15:06:23 2008
+# Update Count    : 199
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -33,7 +33,7 @@ sub new {
 }
 
 sub perform {
-    my ($self, $opts) = @_;
+    my ($self, $opts, $args) = @_;
 
     $opts->{STYLE} = "openstaand";
     $opts->{LAYOUT} =
@@ -49,6 +49,20 @@ sub perform {
 
     my $per = $rep->{per} = $rep->{periode}->[1];
     $rep->{periodex} = 1;	# force 'per'.
+    my $sel;
+    if ( $opts->{deb} && !$opts->{crd} ) {
+	$sel = " AND dbk_type = @{[DBKTYPE_VERKOOP]}";
+    }
+    elsif ( !$opts->{deb} && $opts->{crd} ) {
+	$sel = " AND dbk_type = @{[DBKTYPE_INKOOP]}";
+    }
+    else {
+	$sel = " AND dbk_type in (@{[DBKTYPE_INKOOP]},@{[DBKTYPE_VERKOOP]})";
+    }
+
+    if ( $args && @$args == 1 ) {
+	$sel .= " AND bsr_rel_code = ?";
+    }
 
     my $eb = $opts->{eb_handle};
 
@@ -60,10 +74,10 @@ sub perform {
 			     " FROM Boekstukken, Dagboeken, Boekstukregels".
 			     " WHERE bsk_dbk_id = dbk_id".
 			     " AND bsr_bsk_id = bsk_id AND bsr_nr = 1".
-			     " AND dbk_type in (@{[DBKTYPE_INKOOP]},@{[DBKTYPE_VERKOOP]})".
 			     " AND bsk_date <= ?".
+			     $sel.
 			     " ORDER BY dbk_acc_id, bsr_rel_code, bsk_date",
-			     $per);
+			     $per, @$args);
 
     $rep->start(_T("Openstaande posten"));
 
@@ -78,7 +92,7 @@ sub perform {
 	# Correct for future payments.
 	my $rop = $dbh->do("SELECT sum(bsr_amount)".
 			   " FROM Boekstukregels".
-			   " WHERE bsr_type IN (1,2)".
+			   " WHERE bsr_type IN (@{[DBKTYPE_INKOOP]},@{[DBKTYPE_VERKOOP]})".
 			   " AND bsr_date > ?".
 			   " AND bsr_paid = ?",
 			   $per, $bsk_id);
