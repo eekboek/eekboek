@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.23 2008/01/02 19:56:11 jv Exp $ ';
+my $RCS_Id = '$Id: Decode.pm,v 1.24 2008/02/04 23:26:51 jv Exp $ ';
 
 package main;
 
@@ -11,8 +11,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  2 20:54:17 2008
-# Update Count    : 170
+# Last Modified On: Thu Jan 10 14:37:27 2008
+# Update Count    : 171
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -225,14 +225,14 @@ sub decode {
 		$cmd .= $single ? " " : " \\\n\t";
 
 		# Check for a full payment.
-		my $sth = $dbh->sql_exec("SELECT bsk_amount, dbk_desc, bsk_nr, bsk_ref, bsr_rel_code, bsr_ptype, bsk_bky".
+		my $sth = $dbh->sql_exec("SELECT bsk_amount, dbk_desc, bsk_nr, bsk_ref, bsr_rel_code, bsk_bky".
 					 " FROM Boekstukken, Boekstukregels, Dagboeken".
 					 " WHERE bsk_dbk_id = dbk_id".
 					 " AND bsr_bsk_id = bsk_id".
 					 " AND bsk_id = ?", $bsr_paid);
-		my ($paid, $dbk, $nr, $ref, $rel, $ptype, $bky) = @{$sth->fetchrow_arrayref};
+		my ($paid, $dbk, $nr, $ref, $rel, $bky) = @{$sth->fetchrow_arrayref};
 		$sth->finish;
-		if ( $paid == $bsr_amount && !$ptype ) {
+		if ( $paid == $bsr_amount ) {
 		    # Matches -> Full payment
 		    $cmd .= "$type$dd " . _quote($bsr_rel_code) . " " .
 		      numfmt_plain($bsr_amount);
