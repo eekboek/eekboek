@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Journal.pm,v 1.33 2008/01/02 19:56:11 jv Exp $ ';
+my $RCS_Id = '$Id: Journal.pm,v 1.34 2008/02/04 23:28:26 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  2 20:44:25 2008
-# Update Count    : 298
+# Last Modified On: Fri Jan 11 00:06:29 2008
+# Update Count    : 301
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -145,6 +145,13 @@ sub journal {
 	    if ( $t && $jnl_bsk_ref ) {
 		$t .= ":" . $jnl_bsk_ref;
 	    }
+	    if ( $cfg->val(qw(internal noxrel), 0)
+		 && ( _dbk_type($jnl_dbk_id) == DBKTYPE_INKOOP
+		      || _dbk_type($jnl_dbk_id) == DBKTYPE_VERKOOP
+		    )
+	       ) {
+		undef $t;
+	    }
 	    $rep->add({ _style => 'head',
 			date => datefmt($jnl_bsr_date),
 			desc => join(":", _dbk_desc($jnl_dbk_id), $bsk_nr),
@@ -184,6 +191,12 @@ my %dbk_desc;
 sub _dbk_desc {
     $dbk_desc{$_[0]} ||= $dbh->lookup($_[0],
 				      qw(Dagboeken dbk_id dbk_desc =));
+}
+
+my %dbk_type;
+sub _dbk_type {
+    $dbk_type{$_[0]} ||= $dbh->lookup($_[0],
+				      qw(Dagboeken dbk_id dbk_type =));
 }
 
 my %acc_desc;
