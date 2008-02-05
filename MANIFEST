@@ -155,6 +155,7 @@ lib/EB/examples/vereniging.dat
 lib/EB/migrate/001000008001000009.pl
 lib/EB/migrate/001000009001000010.sql
 lib/EB/migrate/001000010001000011.sql
+lib/EB/migrate/001000011001000012.sql
 lib/EB/schema/cleanup.sql
 lib/EB/schema/eekboek.sql
 lib/EekBoek.pm
