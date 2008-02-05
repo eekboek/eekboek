@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.97 2008/01/28 11:50:23 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.98 2008/02/05 10:19:47 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 28 12:49:15 2008
-# Update Count    : 876
+# Last Modified On: Tue Feb  5 11:16:19 2008
+# Update Count    : 879
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -214,6 +214,10 @@ sub app_options {
 		     'export' => sub {
 			 $inexport = 0;
 		     },
+		     'init'   => sub {
+			 $inexport = 1;
+			 $inex_dir = ".";
+		     },
 		     'createdb' => \$createdb,
 		     'createsampledb' => \$createsampledb,
 		     'define|D=s%' => sub {
@@ -240,6 +244,10 @@ sub app_options {
     }
     app_usage(2) if @ARGV && !$command;
     app_ident() if $ident;
+    if ( $dataset ) {
+	print STDERR (_T("De optie '--dataset' (of '--db') komt binnenkort te vervallen.".
+			 " Gebruik in plaats daarvan '--config' (of '-f') om een configuratiebestand te selecteren.")."\n");
+    }
 }
 
 sub app_ident {
@@ -259,8 +267,6 @@ Gebruik: {prog} [options] [file ...]
     --command  -c       voer de rest van de opdrachtregel uit als command
     --echo  -e          toon ingelezen opdrachten
     --journaal          toon de journaalregels na elke opdracht
-    --dataset=DB        specificeer database
-    --db=DB             specificeer database
     --boekjaar=XXX	specificeer boekjaar
     --createdb		maak nieuwe database aan
     --createsampledb	maak nieuwe demo database aan
@@ -269,6 +275,7 @@ Gebruik: {prog} [options] [file ...]
     --export            exporteer een administratie
     --dir=XXX           directory voor im/export
     --file=XXX          bestand voor im/export
+    --init		creëer nieuwe administratie
     --define=XXX -D     definieer configuratiesetting
     --[no]interactive   forceer [non]interactieve modus
     --errexit           stop direct na een fout in de invoer
