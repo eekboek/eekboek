@@ -4,7 +4,7 @@ EekBoek Demo Administratie                                                      
 
 Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstuk/regel                  Relatie
 -------------------------------------------------------------------------------------------------------------------
-2005-01-05  Inkoop:1                                                     Internet
+2005-01-05  Inkoop:1                                                     Internet                        XS4ALL
 2005-01-05    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-01-05    Internetkosten                 4905      19,16               ADSL
 2005-01-05    Crediteuren                    1600                 22,80    Internet
@@ -13,7 +13,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-01-06    Bankkosten                     4980       2,70               Girotel
 2005-01-06    Postbank                       1120                  2,70    Girotel
 
-2005-01-15  Inkoop:2                                                     Telefoonkosten
+2005-01-15  Inkoop:2                                                     Telefoonkosten                  KPN
 2005-01-15    BTW Inkoop Hoog                1520      16,71               BTW ADSL + Telefoon
 2005-01-15    Telefoon- en faxkosten         4900      87,94               ADSL + Telefoon
 2005-01-15    Crediteuren                    1600                104,65    Telefoonkosten
@@ -26,7 +26,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-01-31    Crediteuren                    1600     104,65               *Telefoonkosten               KPN
 2005-01-31    Postbank                       1120                104,65    Tel.
 
-2005-02-09  Inkoop:3                                                     Internet
+2005-02-09  Inkoop:3                                                     Internet                        XS4ALL
 2005-02-09    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-02-09    Internetkosten                 4905      19,16               ADSL
 2005-02-09    Crediteuren                    1600                 22,80    Internet
@@ -35,7 +35,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-02-10    Bankkosten                     4980       2,70               Girotel
 2005-02-10    Postbank                       1120                  2,70    Girotel
 
-2005-02-18  Verkoop:1                                                    Perl Cursus
+2005-02-18  Verkoop:1                                                    Perl Cursus                     ACME
 2005-02-18    Debiteuren                     1200    3570,00               Perl Cursus
 2005-02-18    BTW Verkoop Hoog               1500                570,00    BTW Perl Cursus 1e bet.
 2005-02-18    Omzet cursussen                8300               3000,00    Perl Cursus 1e bet.
@@ -44,7 +44,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-02-23    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-02-23    Postbank                       1120                 22,80    ADSL
 
-2005-03-08  Inkoop:4                                                     Internet
+2005-03-08  Inkoop:4                                                     Internet                        XS4ALL
 2005-03-08    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-03-08    Internetkosten                 4905      19,16               ADSL
 2005-03-08    Crediteuren                    1600                 22,80    Internet
@@ -53,7 +53,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-03-09    Bankkosten                     4980       2,70               Girotel
 2005-03-09    Postbank                       1120                  2,70    Girotel
 
-2005-03-18  Inkoop:5                                                     Telefoonkosten
+2005-03-18  Inkoop:5                                                     Telefoonkosten                  KPN
 2005-03-18    BTW Inkoop Hoog                1520      16,21               BTW ADSL + Telefoon
 2005-03-18    Telefoon- en faxkosten         4900      85,31               ADSL + Telefoon
 2005-03-18    Crediteuren                    1600                101,52    Telefoonkosten
@@ -62,7 +62,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-03-18    Postbank                       1120    3570,00               ACME
 2005-03-18    Debiteuren                     1200               3570,00    *Perl Cursus                  ACME
 
-2005-03-18  Verkoop:2                                                    Perl Cursus
+2005-03-18  Verkoop:2                                                    Perl Cursus                     ACME
 2005-03-18    Debiteuren                     1200    3570,00               Perl Cursus
 2005-03-18    BTW Verkoop Hoog               1500                570,00    BTW Perl Cursus 2e bet.
 2005-03-18    Omzet cursussen                8300               3000,00    Perl Cursus 2e bet.
@@ -72,7 +72,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-03-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-03-31    Postbank                       1120                124,32    ADSL, Tel.
 
-2005-04-05  Inkoop:6                                                     Internet
+2005-04-05  Inkoop:6                                                     Internet                        XS4ALL
 2005-04-05    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-04-05    Internetkosten                 4905      19,16               ADSL
 2005-04-05    Crediteuren                    1600                 22,80    Internet
@@ -86,12 +86,12 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-04-12    Postbank                       1120    3570,00               ACME
 2005-04-12    Debiteuren                     1200               3570,00    *Perl Cursus                  ACME
 
-2005-04-18  Verkoop:3                                                    Perl Cursus
+2005-04-18  Verkoop:3                                                    Perl Cursus                     ACME
 2005-04-18    Debiteuren                     1200     595,00               Perl Cursus
 2005-04-18    BTW Verkoop Hoog               1500                 95,00    BTW Perl Cursus rest
 2005-04-18    Omzet cursussen                8300                500,00    Perl Cursus rest
 
-2005-05-10  Inkoop:7                                                     Internet
+2005-05-10  Inkoop:7                                                     Internet                        XS4ALL
 2005-05-10    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-05-10    Internetkosten                 4905      19,16               ADSL
 2005-05-10    Crediteuren                    1600                 22,80    Internet
@@ -100,12 +100,12 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-05-11    Bankkosten                     4980       2,70               Girotel
 2005-05-11    Postbank                       1120                  2,70    Girotel
 
-2005-05-14  Verkoop:4                                                    Ondersteuning
+2005-05-14  Verkoop:4                                                    Ondersteuning                   ACME
 2005-05-14    Debiteuren                     1200     714,00               Ondersteuning
 2005-05-14    BTW Verkoop Hoog               1500                114,00    BTW Consultancy
 2005-05-14    Omzet advisering BTW hoog      8000                600,00    Consultancy
 
-2005-05-20  Inkoop:8                                                     Telefoonkosten
+2005-05-20  Inkoop:8                                                     Telefoonkosten                  KPN
 2005-05-20    BTW Inkoop Hoog                1520      16,32               BTW ADSL + Telefoon
 2005-05-20    Telefoon- en faxkosten         4900      85,90               ADSL + Telefoon
 2005-05-20    Crediteuren                    1600                102,22    Telefoonkosten
@@ -116,7 +116,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-05-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-05-31    Debiteuren                     1200                595,00    *Perl Cursus                  ACME
 
-2005-06-07  Inkoop:9                                                     Internet
+2005-06-07  Inkoop:9                                                     Internet                        XS4ALL
 2005-06-07    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-06-07    Internetkosten                 4905      19,16               ADSL
 2005-06-07    Crediteuren                    1600                 22,80    Internet
@@ -130,7 +130,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-06-21    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-06-21    Postbank                       1120                 22,80    ADSL
 
-2005-07-05  Inkoop:10                                                    Internet
+2005-07-05  Inkoop:10                                                    Internet                        XS4ALL
 2005-07-05    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-07-05    Internetkosten                 4905      19,16               ADSL
 2005-07-05    Crediteuren                    1600                 22,80    Internet
@@ -139,12 +139,12 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-07-06    Bankkosten                     4980       2,70               Girotel
 2005-07-06    Postbank                       1120                  2,70    Girotel
 
-2005-07-15  Inkoop:11                                                    Telefoonkosten
+2005-07-15  Inkoop:11                                                    Telefoonkosten                  KPN
 2005-07-15    BTW Inkoop Hoog                1520      16,71               BTW ADSL + Telefoon
 2005-07-15    Telefoon- en faxkosten         4900      87,95               ADSL + Telefoon
 2005-07-15    Crediteuren                    1600                104,66    Telefoonkosten
 
-2005-07-16  Verkoop:5                                                    Ondersteuning
+2005-07-16  Verkoop:5                                                    Ondersteuning                   ACME
 2005-07-16    Debiteuren                     1200     714,00               Ondersteuning
 2005-07-16    BTW Verkoop Hoog               1500                114,00    BTW Consultancy
 2005-07-16    Omzet advisering BTW hoog      8000                600,00    Consultancy
@@ -154,7 +154,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-07-31    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-07-31    Postbank                       1120                127,46    ADSL, Tel.
 
-2005-08-09  Inkoop:12                                                    Internet
+2005-08-09  Inkoop:12                                                    Internet                        XS4ALL
 2005-08-09    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-08-09    Internetkosten                 4905      19,16               ADSL
 2005-08-09    Crediteuren                    1600                 22,80    Internet
@@ -169,16 +169,16 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-08-19    Postbank                       1120    1000,00               O'Reilly
 2005-08-19    Debiteuren                     1200               1000,00    *Pocket Reference             ORA
 
-2005-08-19  Verkoop:6                                                    Pocket Reference
+2005-08-19  Verkoop:6                                                    Pocket Reference                ORA
 2005-08-19    Debiteuren                     1200    1000,00               Pocket Reference
 2005-08-19    Omzet editing                  8200               1000,00    Produktie boek
 
-2005-09-06  Inkoop:13                                                    Internet
+2005-09-06  Inkoop:13                                                    Internet                        XS4ALL
 2005-09-06    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-09-06    Internetkosten                 4905      19,16               ADSL
 2005-09-06    Crediteuren                    1600                 22,80    Internet
 
-2005-09-16  Inkoop:14                                                    Telefoonkosten
+2005-09-16  Inkoop:14                                                    Telefoonkosten                  KPN
 2005-09-16    BTW Inkoop Hoog                1520      17,36               BTW ADSL + Telefoon
 2005-09-16    Telefoon- en faxkosten         4900      91,36               ADSL + Telefoon
 2005-09-16    Crediteuren                    1600                108,72    Telefoonkosten
@@ -192,7 +192,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-09-30    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-09-30    Postbank                       1120                131,52    ADSL, Tel.
 
-2005-10-11  Inkoop:15                                                    Internet
+2005-10-11  Inkoop:15                                                    Internet                        XS4ALL
 2005-10-11    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-10-11    Internetkosten                 4905      19,16               ADSL
 2005-10-11    Crediteuren                    1600                 22,80    Internet
@@ -202,7 +202,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-10-12    Bankkosten                     4980       2,70               Girotel
 2005-10-12    Postbank                       1120                 25,50    Girotel, ADSL
 
-2005-11-07  Inkoop:16                                                    Internet
+2005-11-07  Inkoop:16                                                    Internet                        XS4ALL
 2005-11-07    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-11-07    Internetkosten                 4905      19,16               ADSL
 2005-11-07    Crediteuren                    1600                 22,80    Internet
@@ -211,7 +211,7 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-11-08    Bankkosten                     4980       2,70               Girotel
 2005-11-08    Postbank                       1120                  2,70    Girotel
 
-2005-11-17  Inkoop:17                                                    Telefoonkosten
+2005-11-17  Inkoop:17                                                    Telefoonkosten                  KPN
 2005-11-17    BTW Inkoop Hoog                1520      17,51               BTW ADSL + Telefoon
 2005-11-17    Telefoon- en faxkosten         4900      92,16               ADSL + Telefoon
 2005-11-17    Crediteuren                    1600                109,67    Telefoonkosten
@@ -221,12 +221,12 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2005-11-30    Crediteuren                    1600      22,80               *Internet                     XS4ALL
 2005-11-30    Postbank                       1120                132,47    ADSL, Tel.
 
-2005-12-06  Inkoop:18                                                    Internet
+2005-12-06  Inkoop:18                                                    Internet                        XS4ALL
 2005-12-06    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-12-06    Internetkosten                 4905      19,16               ADSL
 2005-12-06    Crediteuren                    1600                 22,80    Internet
 
-2005-12-07  Inkoop:20                                                    Internet
+2005-12-07  Inkoop:20                                                    Internet                        XS4ALL
 2005-12-07    BTW Inkoop Hoog                1520       3,64               BTW ADSL
 2005-12-07    Internetkosten                 4905      19,16               ADSL
 2005-12-07    Crediteuren                    1600                 22,80    Internet

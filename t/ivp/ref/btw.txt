@@ -32,3 +32,5 @@ Berekening
 5c   Subtotaal                                               1314
 5d   Vermindering kleineondernemersregeling                  1314
 5g   Totaal te betalen                                          0
+     Totaal te betalen (onafgerond)             1314,86          
+     Afrondingsverschil                            0,86          

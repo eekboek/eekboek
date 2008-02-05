@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.8 2006/10/11 13:52:11 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.9 2008/02/05 10:50:17 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -39,7 +39,7 @@ chdir("ivp") if -d "ivp";
 my $f;
 for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
     ok(1, $_), next if -s $_;
-    if ( $f = findlib("example/$_") and -s $f ) {
+    if ( $f = findlib("examples/$_") and -s $f ) {
 	copy($f, $_);
     }
     ok(-s $_, $_);
