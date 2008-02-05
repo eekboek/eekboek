@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.98 2008/02/05 10:19:47 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.99 2008/02/05 10:41:02 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  5 11:16:19 2008
-# Update Count    : 879
+# Last Modified On: Tue Feb  5 11:38:57 2008
+# Update Count    : 886
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -52,7 +52,7 @@ my $createdb;			# create database
 my $createsampledb;		# create demo database
 my $schema;			# initialise w/ schema
 my $confirm = 0;
-my $journal = 0;
+my $journal;
 my $inexport;			# in/export
 my $inex_file;			# file voor in/export
 my $inex_dir;			# directory voor in/export
@@ -95,12 +95,13 @@ else {
 unless ( $dataset ) {
     die("?"._T("Geen dataset opgegeven.".
 	       " Specificeer een dataset in de configuratiefile,".
-	       " of geef een dataset".
-	       " naam mee op de command line met \"--dataset=...\".").
+	       " of selecteer een andere configuratiefile".
+	       " op de command line met \"--config=...\".").
 	"\n");
 }
 
 $cfg->newval(qw(database name), $dataset);
+$cfg->newval(qw(preferences journal), $journal) if defined $journal;
 
 use EB::DB;
 our $dbh = EB::DB->new(trace => $trace);
@@ -152,7 +153,7 @@ my $shell = EB::Shell->new
      errexit      => $errexit,
      verbose	  => $verbose,
      trace	  => $trace,
-     journal	  => $journal,
+     journal	  => $cfg->val(qw(preferences journal), 0),
      echo	  => $echo,
      prompt	  => lc($app),
      boekjaar	  => $bky,
@@ -266,7 +267,6 @@ Gebruik: {prog} [options] [file ...]
 
     --command  -c       voer de rest van de opdrachtregel uit als command
     --echo  -e          toon ingelezen opdrachten
-    --journaal          toon de journaalregels na elke opdracht
     --boekjaar=XXX	specificeer boekjaar
     --createdb		maak nieuwe database aan
     --createsampledb	maak nieuwe demo database aan
