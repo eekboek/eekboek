@@ -4,6 +4,7 @@ EekBoek.spec
 INSTALL
 MANIFEST
 META.yml
+Makefile.PL
 QUICKSTART
 README
 TODO
@@ -129,7 +130,6 @@ lib/EB/Tools/Opening.pm
 lib/EB/Tools/SQLEngine.pm
 lib/EB/Tools/Schema.pm
 lib/EB/Utils.pm
-lib/EB/WxPerl/ProcessStream.pm
 lib/EB/css/balans.css
 lib/EB/css/balres.css
 lib/EB/css/btwaangifte.css
@@ -159,7 +159,6 @@ lib/EB/schema/cleanup.sql
 lib/EB/schema/eekboek.sql
 lib/EekBoek.pm
 script/ebshell
-script/wxebshell
 t/10_basic.t
 t/20_dates.t
 t/80_postgresql.t
@@ -196,4 +195,7 @@ t/ivp/ref/result.txt
 t/ivp/ref/result0.txt
 t/ivp/ref/result1.txt
 t/ivp/ref/result2.txt
+t/ivp/mutaties.eb
+t/ivp/opening.eb
+t/ivp/relaties.eb
 t/ivp/reports.eb
