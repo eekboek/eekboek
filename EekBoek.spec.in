@@ -203,16 +203,6 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcpkgsuf
 %dir %{ebshare}/lib/EB/DB
 %{ebshare}/lib/EB/DB/Sqlite.pm
 
-%files wxshell
-%dir %{ebshare}
-%dir %{ebshare}/lib
-%dir %{ebshare}/lib/EB
-%dir %{ebshare}/lib/EB/WxPerl
-%{ebshare}/lib/EB/WxPerl/ProcessStream.pm
-%{ebshare}/lib/EB/Report/*/Wxhtml.pm
-%{ebshare}/lib/EB/Report/Reporter/WxHtml.pm
-%{_bindir}/wxebshell
-
 %if %{gui}
 %files gui
 %defattr(-,root,root)
