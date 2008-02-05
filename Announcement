@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.04 (unstable) is beschikbaar
+Subject: EekBoek 1.03.05 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,16 +9,16 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.04, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.05, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.04-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.03.04.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.05-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.03.05.tar.gz
 
 Kits:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.04-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.04-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.04-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.05-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.05-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.05-1.noarch.rpm
 * http://www.eekboek.nl/dl/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -32,26 +32,23 @@ Zie voor meer informatie http://www.eekboek.nl/fedora/repodata .
 De aanbevolen manier van installeren is door middel van de RPM
 "EekBoek-unstable" samen met tenminste een van de "db" rpms.
 
-Belangrijkste wijzigingen t.o.v. 1.03.03:
+Belangrijkste wijzigingen t.o.v. 1.03.04:
 
-****** WAARSCHUWING: Hoewel de database niet is gewijzigd moeten 
-****** bestaande administraties worden geëxporteerd en weer
-****** geïmporteerd. Dit kan met de nieuwe versie van EekBoek.
+* IV Boekingen:  Config optie strategy:iv_vc.
 
-* BTW Aangifte: Toon ook het onafgeronde totaal en de afronding.
+  Bij het boeken in een Inkoop- of Verkoopdagboek wordt BTW
+  berekend per boekstukregel. Sommige leveranciers berekenen
+  echter de BTW over het totaal van de boekstukregels. Daardoor
+  kunnen afrondingsverschillen ontstaan met als gevolg een
+  boekstuktotaal dat niet klopt met de opgegeven waarde. De
+  boeking zal dan worden geweigerd.
 
-* BTW Aangifte: Optie --noround voor een onafgerond rapport.
+  EekBoek zal in dit geval eerst proberen zo'n boeking te corrigeren
+  door de BTW te herberekenen over het totaal. Als dat lukt, dan wordt
+  een melding gegeven, en een correctieboekstukregel aangemaakt.
 
-* BTW Aangifte: Fix probleem met relaties die zowel debiteur als
-  crediteur zijn.
-
-* BKM Boekingen: Config optie strategy:bkm_multi. Indien gezet en niet
-  nul (kortom, true) dan wordt in geval een boeking niet kan worden
-  gematched tegen een openstaande post geprobeerd of deze boeking
-  wellicht voor meerdere openstaande posten tegelijk bedoeld is.
-
-* Klant-specifieke wijzigingen in de (niet ondersteunde) DaviAccount
-  import module.
+  Dit gedrag kan worden afgezet door de strategy optie iv_vc de waarde
+  0 te geven.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
