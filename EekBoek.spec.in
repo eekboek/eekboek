@@ -99,24 +99,13 @@ EekBoek can make use of several database systems for its storage.
 This package contains the SQLite database driver for %{name}.
 You need to install at least one of the available database packages.
 
-%package wxshell
-Summary: Wx based GUI extension for EekBoek shell.
-Group: Applications/Productivity
-AutoReqProv: 0
-Requires: %{name} = %{version}
-Requires: perl-Wx >= 0.69
-Provides: %{name}-wxshell
-
-%description wxshell
-This package contains a GUI executive for the EekBoek shell.
-
 %if %{gui}
 %package gui
 Summary: GUI enhancements for %{pkgname}.
 Group: Applications/Productivity
 AutoReqProv: 0
 Requires: %{name} = %{version}
-Requires: perl-Wx >= 0.27
+Requires: perl-Wx >= 0.74
 
 %description gui
 The wxWidgets extension for %{name}.
@@ -165,12 +154,6 @@ sed -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
 	< script/ebshell >> ${RPM_BUILD_ROOT}%{_bindir}/ebshell%{lcpkgsuffix}
 %{__chmod} 0755 ${RPM_BUILD_ROOT}%{_bindir}/ebshell%{lcpkgsuffix}
 
-echo "#!%{__perl}" > ${RPM_BUILD_ROOT}%{_bindir}/wxebshell%{lcpkgsuffix}
-sed -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
-	< script/wxebshell >> ${RPM_BUILD_ROOT}%{_bindir}/wxebshell%{lcpkgsuffix}
-
-%{__chmod} 0755 ${RPM_BUILD_ROOT}%{_bindir}/wxebshell%{lcpkgsuffix}
-
 cat <<EOD > .files
 %defattr(-,root,root)
 %doc CHANGES README INSTALL QUICKSTART examples doc/html TODO
@@ -203,6 +186,8 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcpkgsuf
 %{__rm} -rf $RPM_BUILD_ROOT
 
 %files -f .files
+%exclude %{ebshare}/lib/EB/Report/*/Wxhtml.pm
+%exclude %{ebshare}/lib/EB/Report/Reporter/WxHtml.pm
 
 %files db-postgresql
 %dir %{ebshare}
@@ -224,6 +209,8 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcpkgsuf
 %dir %{ebshare}/lib/EB
 %dir %{ebshare}/lib/EB/WxPerl
 %{ebshare}/lib/EB/WxPerl/ProcessStream.pm
+%{ebshare}/lib/EB/Report/*/Wxhtml.pm
+%{ebshare}/lib/EB/Report/Reporter/WxHtml.pm
 %{_bindir}/wxebshell
 
 %if %{gui}
@@ -239,7 +226,7 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcpkgsuf
 
 %changelog
 * Sun Apr 01 2007 Johan Vromans <jvromans@squirrel.nl> - 1.03.03
-- Add wxshell package.
+- Exclude some Wx files.
 * Sun Nov 05 2006 Johan Vromans <jvromans@squirrel.nl> - 1.03.00
 - Move DB drivers to separate package, and adjust req/prov.
 * Mon Oct 16 2006 Johan Vromans <jvromans@squirrel.nl> - 1.01.02
