@@ -186,8 +186,6 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell%{lcpkgsuf
 %{__rm} -rf $RPM_BUILD_ROOT
 
 %files -f .files
-%exclude %{ebshare}/lib/EB/Report/*/Wxhtml.pm
-%exclude %{ebshare}/lib/EB/Report/Reporter/WxHtml.pm
 
 %files db-postgresql
 %dir %{ebshare}
