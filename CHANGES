@@ -1,3 +1,140 @@
+1.03.06	05-02-2008
+
+	* Enkele aanpassingen in het strategy:bkm_multi gebeuren. Omdat
+	  het zoekproces enige tijd in beslag kan nemen (enkele minuten
+	  bij 25 openstaande posten) is een begrenzing ingebouwd. 
+	  Config: strategy:bkm_multi_max (default = 15).
+
+	* Bij een inkoop/verkoop boeking kun je een willekeurige (moet
+	  tenminste één niet-cijfer bevatten) string opgeven als
+	  referentie:
+
+	     inkoop 25-12 CREDITEUR "Diversen" --ref="P24XyzBla!" 100
+
+	  Een geschikte kandidaat is b.v. het faktuurnummer van de
+	  klant, of een ordernummer.
+
+	  Deze referentie kun je later gebruiken bij de betaling:
+
+	     postbank 25-12 Afschrijving \
+		crd 25-12 "CREDITEUR:P24XyzBla!" -100
+
+	  Dus net zoals:
+
+	     postbank 25-12 Afschrijving \
+		crd 25-12 inkoop:54 -100
+
+	  Overigens met dezelfde functionaliteit: er wordt niet gekeken
+	  of de boeking open staat. Je kunt dus op deze manier ook op
+	  voorhand boeken.
+
+	  De combinatie relatiecode - referentie moet per boekjaar uniek zijn.
+
+	* De journaal-rapporten laten nu ook de relatiecodes zien bij
+          inkoop- en verkoopboekingen.
+
+	* Bij de rapportage openstaande posten kan nu ook worden
+          geselecteerd dat alleen de debiteuren, crediteuren, of een
+	  enkele relatie wordt weergegeven.
+
+	* Bij de crediteuren/debiteurenrapportages kan nu ook worden
+          aangegeven dat alleen de openstaande posten moeten worden
+          weergegeven.
+
+	  Let op: Openstaande posten van voorgaande boekjaren worden
+	  NIET vernmeld.
+
+	* Fix enkele problemen met SQLite en Unicode.
+
+	* Makefile.PL toegevoegd.
+
+	* Nieuwe configuratie setting:
+
+	  [preferences]
+	  journal = 1
+
+	  Hiermee wordt na elke boeking automatisch de betreffende
+	  journaalpost getoond. Deze preference setting vervangt de
+	  command line optie "--journaal".
+
+	* Command line optie "--init". Hiermee wordt een nieuwe
+          administratie opgezet in de huidige directory.
+
+	  Equivalent met "--import --dir=.".
+
+	* Command line opties "--database" (en de verkorte vorm,
+          "--db") en "--journaal" komen binnenkort te vervallen.
+
+	* LET OP: EekBoek met SQLite ondersteunt niet de opdracht
+          "import". Importeren uitsluitend met de command line versie
+          
+	    ebshell --import ...
+
+	* Database structuur is gewijzigd, auto-migratie is beschikbaar.
+	  Let op: automigratie voor SQLite geeft een foutmelding:
+
+	    !De database wordt aangepast aan de nieuwere versie
+	    DBD::SQLite::st execute failed: database schema has changed(1) ...
+	    DBD::SQLite::st execute failed: database schema has changed(1) ...
+
+	  De migratie is echter ok. Daarna kun je opnieuw opstarten.
+
+1.03.05
+
+	IV Boekingen:  Config optie strategy:iv_vc.
+        Bij het boeken in een Inkoop- of Verkoopdagboek wordt BTW
+	berekend per boekstukregel. Sommige leveranciers berekenen
+	echter de BTW over het totaal van de boekstukregels. Daardoor
+	kunnen afrondingsverschillen ontstaan met als gevolg een
+	boekstuktotaal dat niet klopt met de opgegeven waarde. De
+	boeking zal dan worden geweigerd.
+	EekBoek zal proberen zo'n boeking te corrigeren door de BTW
+	te herberekenen over het totaal. Er wordt dan een melding
+	gegeven, en een correctieboekstukregel aangemaakt.
+	Dit gedrag kan worden afgezet door de strategy
+	optie iv_vc de waarde 0 te geven.
+
+1.03.04
+
+	WAARSCHUWING: Hoewel de database niet is gewijzigd moeten
+	bestaande administraties worden geëxporteerd en weer
+	geïmporteerd. Dit kan met de nieuwe versie van EekBoek, dus na
+	de upgrade.
+
+	BTW Aangifte: Toon ook het onafgeronde totaal en de afronding.
+
+	BTW Aangifte: Optie --noround voor een onafgerond rapport.
+
+	BTW Aangifte: Fix probleem met relaties die zowel debiteur als
+	crediteur zijn.
+
+	BKM Boekingen: Config optie strategy:bkm_multi. Indien gezet
+	en niet nul (kortom, true) dan wordt in geval een boeking niet
+	kan worden gematched tegen een openstaande post geprobeerd of
+	deze boeking wellicht voor meerdere openstaande posten
+	tegelijk bedoeld is.
+
+	Klant-specifieke wijzigingen in de (niet ondersteunde)
+	DaviAccount import module.
+
+1.03.03
+
+	BKM Boekingen: Toon bedrag en relatie indien geen openstaande
+	post kan worden gevonden.
+
+	Shell: Optie --errexit: Verwerking van invoer breekt direct af
+	na geconstateerde fouten.
+
+	Shell: Optie --[no]interactive om interactief gedrag te
+	forceren ook al komt de invoer niet van een terminal. Niet
+	bedoeld voor uitwendig gebruik.
+
+	Redesign en implementatie van de reporter backends.
+
+	eekboek-mode.el: Emacs major mode voor EekBoek data.
+
+	Kleine bugfixes.
+
 1.03.02
 
 	Fix probleem met foutieve export van adm_btwperiode in
