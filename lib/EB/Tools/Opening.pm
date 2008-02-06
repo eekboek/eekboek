@@ -1,10 +1,10 @@
-# $Id: Opening.pm,v 1.35 2008/01/28 11:44:39 jv Exp $
+# $Id: Opening.pm,v 1.36 2008/02/06 17:10:51 jv Exp $
 
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 28 12:43:25 2008
-# Update Count    : 256
+# Last Modified On: Wed Feb  6 17:13:02 2008
+# Update Count    : 257
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -351,7 +351,7 @@ sub open {
 		    $sth->finish;
 		    if ( defined($rr) ) {
 			my ($begin, $end) = @$rr;
-			if ( $date lt $begin || $date ge $end ) {
+			if ( $date lt $begin || $date gt $end ) {
 			    $fail++;
 			    warn(_T("Boekingsdatum valt niet binnen het boekjaar")."\n");
 			}
