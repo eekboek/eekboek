@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.99 2008/02/05 10:41:02 jv Exp $ ';
+my $RCS_Id = '$Id: Shell.pm,v 1.100 2008/02/06 17:10:27 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  5 11:38:57 2008
-# Update Count    : 886
+# Last Modified On: Wed Feb  6 16:42:06 2008
+# Update Count    : 888
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -366,6 +366,7 @@ sub bky_msg {
     my $sth = $dbh->sql_exec("SELECT bky_code".
 			     " FROM Boekjaren".
 			     " WHERE bky_end < ?".
+			     " AND NOT bky_opened IS NULL".
 			     " AND bky_closed IS NULL".
 			     " ORDER BY bky_begin",
 			     defined $bky ?
