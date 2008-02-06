@@ -1,10 +1,10 @@
 # EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.80 2008/02/01 15:39:37 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.81 2008/02/06 18:54:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb  1 16:37:30 2008
-# Update Count    : 210
+# Last Modified On: Wed Feb  6 19:52:07 2008
+# Update Count    : 211
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -45,6 +45,8 @@ BEGIN {
     # The core and GUI use a different EB::Locale module.
     if ( $app ) {
 	require EB::Wx::Locale;
+	# Force UNICODE for Wx.
+	$cfg->newval(qw(locale unicode), 1);
     }
     else {
 	require EB::Locale;
