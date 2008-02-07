@@ -1,10 +1,10 @@
 # WxHtml.pm -- Reporter backend for WxHtmlWindow
-# RCS Info        : $Id: WxHtml.pm,v 1.1 2007/03/08 18:22:21 jv Exp $
+# RCS Info        : $Id: WxHtml.pm,v 1.2 2008/02/07 11:39:04 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Mar  2 21:01:17 2007
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  3 23:15:55 2007
-# Update Count    : 47
+# Last Modified On: Thu Feb  7 12:37:46 2008
+# Update Count    : 48
 # Status          : Unknown, Use with caution!
 
 # WxHtmlWindow supports HTML, but to a limited extent. In particular,
@@ -35,7 +35,7 @@ sub new {
       if $opts->{output} && UNIVERSAL::isa($opts->{output}, 'SCALAR');
 
     my $self = $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
-    $self->{overall_font_size} = "-2";
+    $self->{overall_font_size} = $cfg->val(qw(wxhtml fontsize), "0");;
 
     $self->{_OUT} = $o if $o;
 
