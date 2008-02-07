@@ -2,11 +2,11 @@ package EB::Shell::Base;
 
 # Sorry, I had to modify a few things -- jv
 
-# RCS Id          : $Id: Base.pm,v 1.15 2008/02/07 12:14:53 jv Exp $
+# RCS Id          : $Id: Base.pm,v 1.16 2008/02/07 12:15:14 jv Exp $ 
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
-# $Id: Base.pm,v 1.15 2008/02/07 12:14:53 jv Exp $
+# $Id: Base.pm,v 1.16 2008/02/07 12:15:14 jv Exp $
 # ----------------------------------------------------------------------
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 #
@@ -16,7 +16,7 @@ package EB::Shell::Base;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
 
 use EB;
 use vars qw( $XXVERSION $REVISION $PROMPT
@@ -30,8 +30,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$XXVERSION    = 0.05;   # $Date: 2008/02/07 12:14:53 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
+$XXVERSION    = 0.05;   # $Date: 2008/02/07 12:15:14 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -1834,7 +1834,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.15 $.
+This documentation describes C<Shell::Base>, $Revision: 1.16 $.
 
 =head1 COPYRIGHT
 
