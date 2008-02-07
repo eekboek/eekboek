@@ -1,10 +1,12 @@
+#! perl
+
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.8 2007/10/27 20:20:38 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.9 2008/02/07 12:07:14 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov  8 22:37:02 2006
-# Update Count    : 95
+# Last Modified On: Thu Feb  7 13:07:02 2008
+# Update Count    : 96
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -13,8 +15,11 @@ our $cfg;
 
 package EB::Locale;
 
-use base qw(Exporter);
 use strict;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)/g;
+
+use base qw(Exporter);
 
 use constant COREPACKAGE => "ebcore";
 
