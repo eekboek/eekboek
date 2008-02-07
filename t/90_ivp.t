@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.9 2008/02/05 10:50:17 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.10 2008/02/07 14:34:43 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -55,7 +55,7 @@ unlink(<*.txt>);
 unlink(<*.html>);
 unlink(<*.csv>);
 
-my @ebcmd = qw(-MEB::Shell -e shell -- -X -f ivp.conf --echo);
+my @ebcmd = qw(-MEB::Main -e run -- -X -f ivp.conf --echo);
 push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
 
 unshift(@ebcmd, map { ("-I",
