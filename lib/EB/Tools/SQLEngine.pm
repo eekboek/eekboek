@@ -1,16 +1,22 @@
-# SQLEngine.pm -- 
-# RCS Info        : $Id: SQLEngine.pm,v 1.8 2006/10/07 20:55:56 jv Exp $
+#! perl
+
+# SQLEngine.pm -- Execute SQL commands
+# RCS Info        : $Id: SQLEngine.pm,v 1.9 2008/02/07 12:31:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct  7 22:55:41 2006
-# Update Count    : 65
+# Last Modified On: Thu Feb  7 13:31:03 2008
+# Update Count    : 66
 # Status          : Unknown, Use with caution!
 
 package EB::Tools::SQLEngine;
 
-use EB;
 use strict;
+use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)/g;
+
+use EB;
 
 sub new {
     my ($class, @args) = @_;

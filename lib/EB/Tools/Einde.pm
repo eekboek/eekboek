@@ -1,13 +1,13 @@
+#! perl
+
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.15 2006/12/14 14:28:56 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.16 2008/02/07 12:30:04 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Dec 14 14:48:53 2006
-# Update Count    : 223
+# Last Modified On: Thu Feb  7 13:30:02 2008
+# Update Count    : 224
 # Status          : Unknown, Use with caution!
-
-my $RCS_Id = '$Id: Einde.pm,v 1.15 2006/12/14 14:28:56 jv Exp $ ';
 
 package main;
 
@@ -18,6 +18,8 @@ package EB::Tools::Einde;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

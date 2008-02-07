@@ -1,21 +1,25 @@
-# $Id: Opening.pm,v 1.36 2008/02/06 17:10:51 jv Exp $
+#! perl
 
+# RCS Id          : $Id: Opening.pm,v 1.37 2008/02/07 12:30:30 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb  6 17:13:02 2008
-# Update Count    : 257
+# Last Modified On: Thu Feb  7 13:30:28 2008
+# Update Count    : 258
 # Status          : Unknown, Use with caution!
 
 package main;
 
 our $dbh;
-our $app;
 our $config;
 
 package EB::Tools::Opening;
 
 use strict;
+use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.37 $ =~ /(\d+)/g;
+
 use EB;
 use EB::Format;
 use EB::DB;

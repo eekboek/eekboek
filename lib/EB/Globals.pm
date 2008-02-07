@@ -1,8 +1,11 @@
-#!/usr/bin/perl
+#! perl
 
 package EB::Globals;
 
 use strict;
+use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.28 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 

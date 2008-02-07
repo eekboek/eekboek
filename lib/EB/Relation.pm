@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#! perl
 
 package main;
 
@@ -6,9 +6,12 @@ our $dbh;
 
 package EB::Relation;
 
-use EB;
-
 use strict;
+use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
+
+use EB;
 
 sub new {
     my $class = shift;

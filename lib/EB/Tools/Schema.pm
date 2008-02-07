@@ -1,10 +1,11 @@
-my $RCS_Id = '$Id: Schema.pm,v 1.52 2007/07/04 17:26:31 jv Exp $ ';
+#! perl
 
+# RCS Id          : $Id: Schema.pm,v 1.53 2008/02/07 12:29:38 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul  4 17:10:25 2007
-# Update Count    : 637
+# Last Modified On: Thu Feb  7 13:29:36 2008
+# Update Count    : 638
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -12,13 +13,14 @@ my $RCS_Id = '$Id: Schema.pm,v 1.52 2007/07/04 17:26:31 jv Exp $ ';
 package main;
 
 our $cfg;
-our $config;
-our $app;
 our $dbh;
 
 package EB::Tools::Schema;
 
 use strict;
+use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.53 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
