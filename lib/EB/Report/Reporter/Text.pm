@@ -1,20 +1,26 @@
-# Text.pm -- 
-# RCS Info        : $Id: Text.pm,v 1.6 2006/01/22 16:47:21 jv Exp $
+#! perl
+
+# Text.pm -- Reporter backend for text reports.
+# RCS Info        : $Id: Text.pm,v 1.7 2008/02/07 13:25:07 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:21:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 20 22:08:19 2006
-# Update Count    : 68
+# Last Modified On: Thu Feb  7 14:25:04 2008
+# Update Count    : 69
 # Status          : Unknown, Use with caution!
 
 package main;
 
 our $cfg;
+our $dbh;
 
 package EB::Report::Reporter::Text;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
+
 use EB;
 
 use base qw(EB::Report::Reporter);

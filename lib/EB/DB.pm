@@ -1,11 +1,11 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: DB.pm,v 1.54 2008/01/02 19:56:11 jv Exp $ ';
+#! perl
 
+# RCS Id          : $Id: DB.pm,v 1.55 2008/02/07 13:25:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  2 18:45:21 2008
-# Update Count    : 422
+# Last Modified On: Thu Feb  7 14:25:35 2008
+# Update Count    : 423
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -17,6 +17,9 @@ our $cfg;
 package EB::DB;
 
 use strict;
+use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.55 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;

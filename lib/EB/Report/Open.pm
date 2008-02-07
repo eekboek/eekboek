@@ -1,10 +1,8 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: Open.pm,v 1.18 2008/02/04 23:29:09 jv Exp $ ';
+#! perl
 
 package main;
 
 our $config;
-our $app;
 our $dbh;
 
 package EB::Report::Open;
@@ -12,14 +10,16 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 28 15:06:23 2008
-# Update Count    : 199
+# Last Modified On: Thu Feb  7 14:22:13 2008
+# Update Count    : 200
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
 
 ################ The Process ################
 

@@ -1,9 +1,21 @@
-#!/usr/bin/perl
+#! perl
 
-package EB::Shell;
+# Userdefs.pm -- User definable stuff
+# RCS Info        : $Id: Userdefs.pm,v 1.2 2008/02/07 13:30:51 jv Exp $
+# Author          : Johan Vromans
+# Created On      : Thu Feb  7 14:28:50 2008
+# Last Modified By: Johan Vromans
+# Last Modified On: Thu Feb  7 14:30:46 2008
+# Update Count    : 2
+# Status          : Unknown, Use with caution!
+
+package EB::Userdefs;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
+
 use EB;
 
 # Dit is een voorbeeld van een command-wrapper.
@@ -13,7 +25,7 @@ use EB;
 # argumenten. Deze method is dan verantwoordelijk voor het afleveren
 # van een (mogelijke andere) opdrachtnaam en argumenten.
 
-sub pp_kasverkoop {
+sub EB::Shell::pp_kasverkoop {
     my ($self, $cmd, @args) = @_;
 
     # Kontroleer argumenten. "--nr=.." is een intern doorgegeven
@@ -47,7 +59,7 @@ sub pp_kasverkoop {
 
 # En uiteraard, de hulpboodschap.
 
-sub help_kasverkoop {
+sub EB::Shell::help_kasverkoop {
     return <<EOD;
 Eenvoudige manier om een kasverkoop te boeken.
 

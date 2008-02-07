@@ -1,20 +1,26 @@
-# Config.pm -- 
-# RCS Info        : $Id: Config.pm,v 1.12 2008/01/10 14:26:52 jv Exp $
+#! perl
+
+# Config.pm -- Configuration files.
+# RCS Info        : $Id: Config.pm,v 1.13 2008/02/07 13:28:30 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 10 15:26:18 2008
-# Update Count    : 85
+# Last Modified On: Thu Feb  7 14:28:28 2008
+# Update Count    : 86
 # Status          : Unknown, Use with caution!
 
 package main;
 
 our $cfg;
+our $dbh;
 
 package EB::Config;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
+
 use EB::Config::IniFiles;
 
 my $unicode;

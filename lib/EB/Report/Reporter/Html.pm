@@ -1,20 +1,26 @@
-# Html.pm -- 
-# RCS Info        : $Id: Html.pm,v 1.12 2007/01/18 15:12:15 jv Exp $
+#! perl
+
+# Html.pm -- HTML backend for Reporters.
+# RCS Info        : $Id: Html.pm,v 1.13 2008/02/07 13:23:18 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 18 16:11:17 2007
-# Update Count    : 57
+# Last Modified On: Thu Feb  7 14:23:15 2008
+# Update Count    : 58
 # Status          : Unknown, Use with caution!
 
 package main;
 
+our $dbh;
 our $cfg;
 
 package EB::Report::Reporter::Html;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
+
 use EB;
 use EB::Format qw(datefmt_full);
 

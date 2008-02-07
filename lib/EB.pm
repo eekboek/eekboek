@@ -1,10 +1,12 @@
-# EB.pm -- 
-# RCS Info        : $Id: EB.pm,v 1.81 2008/02/06 18:54:17 jv Exp $
+#! perl
+
+# EB.pm -- EekBoek Base module.
+# RCS Info        : $Id: EB.pm,v 1.82 2008/02/07 13:33:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb  6 19:52:07 2008
-# Update Count    : 211
+# Last Modified On: Thu Feb  7 13:06:23 2008
+# Update Count    : 213
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -17,7 +19,7 @@ package EB;
 use strict;
 use base qw(Exporter);
 
-our $VERSION = $EekBoek::VERSION;
+our $VERSION;
 use EekBoek;
 BEGIN { $VERSION = $EekBoek::VERSION }
 
