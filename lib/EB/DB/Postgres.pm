@@ -1,10 +1,12 @@
+#! perl
+
 # Postgres.pm -- EekBoek driver for PostgreSQL dsatabase
-# RCS Info        : $Id: Postgres.pm,v 1.23 2008/01/23 16:30:46 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.24 2008/02/07 12:18:47 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 23 17:30:30 2008
-# Update Count    : 168
+# Last Modified On: Thu Feb  7 13:18:46 2008
+# Update Count    : 169
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -15,6 +17,9 @@ package EB::DB::Postgres;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.24 $ =~ /(\d+)/g;
+
 use EB;
 use DBI;
 use DBD::Pg;

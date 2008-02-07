@@ -1,8 +1,10 @@
-#!/usr/bin/perl
+#! perl
 
 package EB::Utils;
 
 use strict;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 

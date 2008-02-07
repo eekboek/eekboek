@@ -1,10 +1,12 @@
+#! perl
+
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.7 2008/01/10 14:42:54 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.8 2008/02/07 12:18:24 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 10 15:36:45 2008
-# Update Count    : 148
+# Last Modified On: Thu Feb  7 13:18:21 2008
+# Update Count    : 149
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -15,6 +17,9 @@ package EB::DB::Sqlite;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)/g;
+
 use EB;
 use DBI;
 

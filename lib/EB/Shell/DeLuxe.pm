@@ -1,12 +1,11 @@
-#!/usr/bin/perl
+#! perl
 
-my $RCS_Id = '$Id: DeLuxe.pm,v 1.17 2007/06/27 09:25:02 jv Exp $ ';
-
+# RCS Id          : $Id: DeLuxe.pm,v 1.18 2008/02/07 12:16:15 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 26 18:22:59 2007
-# Update Count    : 256
+# Last Modified On: Thu Feb  7 13:16:12 2008
+# Update Count    : 257
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,6 +17,9 @@ our $cfg;
 package EB::Shell::DeLuxe;
 
 use strict;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)/g;
+
 use base qw(EB::Shell::Base);
 use EB;
 

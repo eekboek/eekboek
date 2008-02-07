@@ -1,18 +1,18 @@
-#!/usr/bin/perl -w
+#! perl
 
 package main;
 
 our $cfg;
 our $dbh;
-our $config;
-our $app;
 
 package EB::Format;
 
+use strict;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.36 $ =~ /(\d+)/g;
+
 use EB;
 use EB::Expression;
-
-use strict;
 
 use base qw(Exporter);
 
