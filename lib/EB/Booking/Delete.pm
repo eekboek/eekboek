@@ -1,4 +1,4 @@
-my $RCS_Id = '$Id: Delete.pm,v 1.10 2006/10/24 13:43:17 jv Exp $ ';
+#! perl
 
 package main;
 
@@ -8,17 +8,20 @@ our $config;
 
 package EB::Booking::Delete;
 
+# RCS Id	  : $Id: Delete.pm,v 1.11 2008/02/07 12:09:45 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:23:45 2006
-# Update Count    : 82
+# Last Modified On: Thu Feb  7 13:09:41 2008
+# Update Count    : 83
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
 
 use EB;
 use base qw(EB::Booking);
