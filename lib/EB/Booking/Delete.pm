@@ -8,12 +8,12 @@ our $config;
 
 package EB::Booking::Delete;
 
-# RCS Id	  : $Id: Delete.pm,v 1.11 2008/02/07 12:09:45 jv Exp $
+# RCS Id	  : $Id: Delete.pm,v 1.12 2008/02/07 12:10:08 jv Exp $ 
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:09:41 2008
-# Update Count    : 83
+# Last Modified On: Thu Feb  7 13:10:06 2008
+# Update Count    : 84
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,7 +21,7 @@ package EB::Booking::Delete;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)/g;
 
 use EB;
 use base qw(EB::Booking);

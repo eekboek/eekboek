@@ -1,10 +1,12 @@
+#! perl
+
 # Import.pm -- Import EekBoek administratie
-# RCS Info        : $Id: Import.pm,v 1.8 2006/10/11 12:33:21 jv Exp $
+# RCS Info        : $Id: Import.pm,v 1.9 2008/02/07 12:13:48 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 11 14:26:56 2006
-# Update Count    : 54
+# Last Modified On: Thu Feb  7 13:13:47 2008
+# Update Count    : 55
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -15,6 +17,8 @@ package EB::Import;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;			# needs to be setup before we can use Schema

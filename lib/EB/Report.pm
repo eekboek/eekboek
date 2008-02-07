@@ -1,20 +1,25 @@
-# Report.pm -- Report tools
-# RCS Info        : $Id: Report.pm,v 1.6 2006/06/03 09:54:08 jv Exp $
-# Author          : Johan Vromans
-# Created On      : Mon Nov 14 21:46:04 2005
-# Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun  3 11:51:53 2006
-# Update Count    : 41
-# Status          : Unknown, Use with caution!
+#! perl
 
 package main;
 
 our $dbh;
 
+# Report.pm -- Report tools
+# RCS Info        : $Id: Report.pm,v 1.7 2008/02/07 12:13:27 jv Exp $
+# Author          : Johan Vromans
+# Created On      : Mon Nov 14 21:46:04 2005
+# Last Modified By: Johan Vromans
+# Last Modified On: Thu Feb  7 13:13:25 2008
+# Update Count    : 42
+# Status          : Unknown, Use with caution!
+
 package EB::Report;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
+
 use EB;
 use EB::Format qw(numfmt);
 use EB::Report::GenBase;

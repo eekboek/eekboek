@@ -1,24 +1,26 @@
-my $RCS_Id = '$Id: Decode.pm,v 1.24 2008/02/04 23:26:51 jv Exp $ ';
+#! perl
 
 package main;
 
 our $dbh;
-our $spp;
 our $config;
 
 package EB::Booking::Decode;
 
+# RCS Id          : $Id: Decode.pm,v 1.25 2008/02/07 12:12:39 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 10 14:37:27 2008
-# Update Count    : 171
+# Last Modified On: Thu Feb  7 13:12:37 2008
+# Update Count    : 172
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

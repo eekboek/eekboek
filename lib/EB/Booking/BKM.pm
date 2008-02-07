@@ -1,26 +1,26 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: BKM.pm,v 1.64 2008/01/02 19:51:59 jv Exp $ ';
+#! perl
 
 package main;
 
 our $cfg;
 our $dbh;
-our $app;
-our $config;
 
 package EB::Booking::BKM;
 
+# RCS Id	  : $Id: BKM.pm,v 1.65 2008/02/07 12:11:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Dec 31 15:11:45 2007
-# Update Count    : 506
+# Last Modified On: Thu Feb  7 13:11:21 2008
+# Update Count    : 507
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.65 $ =~ /(\d+)/g;
 
 # Dagboek type 3: Bank
 # Dagboek type 4: Kas

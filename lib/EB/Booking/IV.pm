@@ -1,26 +1,26 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: IV.pm,v 1.52 2008/01/02 19:56:11 jv Exp $ ';
+#!perl
 
 package main;
 
 our $cfg;
 our $dbh;
-our $spp;
-our $config;
 
 package EB::Booking::IV;
 
+# RCS Id          : $Id: IV.pm,v 1.53 2008/02/07 12:12:08 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 29 17:23:04 2007
-# Update Count    : 299
+# Last Modified On: Thu Feb  7 13:12:06 2008
+# Update Count    : 300
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.53 $ =~ /(\d+)/g;
 
 # Dagboek type 1: Inkoop
 # Dagboek type 2: Verkoop
