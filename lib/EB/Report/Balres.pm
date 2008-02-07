@@ -1,26 +1,26 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: Balres.pm,v 1.25 2006/10/24 13:43:17 jv Exp $ ';
+#! perl
 
 package main;
 
 our $cfg;
-our $config;
-our $app;
 our $dbh;
 
 package EB::Report::Balres;
 
+# RCS Id          : $Id: Balres.pm,v 1.26 2008/02/07 13:15:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:13:58 2006
-# Update Count    : 368
+# Last Modified On: Thu Feb  7 14:15:28 2008
+# Update Count    : 369
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)/g;
 
 ################ The Process ################
 

@@ -1,9 +1,11 @@
-# RCS Info        : $Id: GenBase.pm,v 1.23 2007/12/29 18:27:17 jv Exp $
+#! perl
+
+# RCS Info        : $Id: GenBase.pm,v 1.24 2008/02/07 13:14:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 29 19:25:11 2007
-# Update Count    : 147
+# Last Modified On: Thu Feb  7 14:14:06 2008
+# Update Count    : 148
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -15,6 +17,9 @@ package EB::Report::GenBase;
 
 use strict;
 use EB;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.24 $ =~ /(\d+)/g;
+
 use IO::File;
 use EB::Format;
 

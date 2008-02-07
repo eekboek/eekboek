@@ -1,10 +1,12 @@
+#! perl
+
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.27 2008/02/04 16:49:12 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.28 2008/02/07 13:11:11 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  4 17:48:42 2008
-# Update Count    : 218
+# Last Modified On: Thu Feb  7 14:11:09 2008
+# Update Count    : 219
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,6 +18,8 @@ package EB::Export;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.28 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

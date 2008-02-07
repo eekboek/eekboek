@@ -1,11 +1,11 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: BTWAangifte.pm,v 1.39 2008/01/02 19:21:54 jv Exp $ ';
+#! perl
 
+# RCS Id          : $Id: BTWAangifte.pm,v 1.40 2008/02/07 13:14:43 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  2 20:21:44 2008
-# Update Count    : 519
+# Last Modified On: Thu Feb  7 14:14:41 2008
+# Update Count    : 520
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,6 +18,9 @@ our $dbh;
 package EB::Report::BTWAangifte;
 
 use strict;
+use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.40 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

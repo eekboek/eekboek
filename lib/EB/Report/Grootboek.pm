@@ -1,26 +1,26 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: Grootboek.pm,v 1.31 2006/10/24 13:43:17 jv Exp $ ';
+#! perl
 
 package main;
 
 our $cfg;
-our $config;
 our $dbh;
-our $app;
 
 package EB::Report::Grootboek;
 
+# RCS Id          : $Id: Grootboek.pm,v 1.32 2008/02/07 13:12:33 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:11:51 2006
-# Update Count    : 283
+# Last Modified On: Thu Feb  7 14:12:32 2008
+# Update Count    : 284
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.32 $ =~ /(\d+)/g;
 
 ################ The Process ################
 

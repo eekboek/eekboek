@@ -1,12 +1,11 @@
-#!/usr/bin/perl
+#! perl
 
-my $RCS_Id = '$Id: Shell.pm,v 1.100 2008/02/06 17:10:27 jv Exp $ ';
-
+# RCS Id          : $Id: Shell.pm,v 1.101 2008/02/07 13:09:47 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb  6 16:42:06 2008
-# Update Count    : 888
+# Last Modified On: Thu Feb  7 14:09:44 2008
+# Update Count    : 889
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -14,13 +13,15 @@ my $RCS_Id = '$Id: Shell.pm,v 1.100 2008/02/06 17:10:27 jv Exp $ ';
 package main;
 
 use strict;
+use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.101 $ =~ /(\d+)/g;
 
 # Package or program libraries, if appropriate.
 # $LIBDIR = $ENV{'LIBDIR'} || '/usr/local/lib/sample';
 # use lib qw($LIBDIR);
 # require 'common.pl';
 
-# Package name.
 use EekBoek;
 
 ################ Configuration ################

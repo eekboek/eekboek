@@ -1,25 +1,25 @@
+#! perl
+
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.19 2008/01/02 19:56:11 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.20 2008/02/07 13:10:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  2 20:47:32 2008
-# Update Count    : 134
+# Last Modified On: Thu Feb  7 14:10:11 2008
+# Update Count    : 135
 # Status          : Unknown, Use with caution!
-
-my $RCS_Id = '$Id: Booking.pm,v 1.19 2008/01/02 19:56:11 jv Exp $ ';
 
 package main;
 
 our $cfg;
 our $dbh;
-our $spp;
-our $config;
 
 package EB::Booking;
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
