@@ -1,26 +1,26 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: Proof.pm,v 1.18 2006/10/24 13:43:16 jv Exp $ ';
+#! perl
 
 package main;
 
 our $cfg;
-our $config;
 our $dbh;
-our $app;
 
 package EB::Report::Proof;
 
+# RCS Id          : $Id: Proof.pm,v 1.19 2008/02/07 13:16:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 24 15:26:59 2006
-# Update Count    : 304
+# Last Modified On: Thu Feb  7 14:16:46 2008
+# Update Count    : 305
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
 
 ################ The Process ################
 

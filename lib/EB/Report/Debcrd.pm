@@ -1,25 +1,26 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: Debcrd.pm,v 1.13 2008/02/04 23:30:34 jv Exp $ ';
+#! perl
 
 package main;
 
 our $config;
-our $app;
 our $dbh;
 
 package EB::Report::Debcrd;
 
+# RCS Id          : $Id: Debcrd.pm,v 1.14 2008/02/07 13:17:29 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 28 13:05:28 2008
-# Update Count    : 182
+# Last Modified On: Thu Feb  7 14:17:27 2008
+# Update Count    : 183
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
 
 ################ The Process ################
 
