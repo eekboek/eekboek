@@ -1,20 +1,20 @@
 #! perl
 
 # Userdefs.pm -- User definable stuff
-# RCS Info        : $Id: Userdefs.pm,v 1.2 2008/02/07 13:30:51 jv Exp $
+# RCS Info        : $Id: Userdefs.pm,v 1.3 2008/02/07 13:46:14 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Feb  7 14:28:50 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:30:46 2008
-# Update Count    : 2
+# Last Modified On: Thu Feb  7 14:46:05 2008
+# Update Count    : 3
 # Status          : Unknown, Use with caution!
 
-package EB::Userdefs;
+package EB::Shell::Userdefs;
 
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
 
 use EB;
 
