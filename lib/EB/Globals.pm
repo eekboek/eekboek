@@ -5,7 +5,7 @@ package EB::Globals;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.28 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.29 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
@@ -61,10 +61,9 @@ BEGIN {
 
 }
 
-sub BTWKLASSE($$;$) {
-    unshift(@_, 1) if @_ == 2;
+sub BTWKLASSE($$$) {
     ($_[0] ? BTWKLASSE_BTW_BIT : 0)
-      | ($_[1] & BTWKLASSE_TYPE_BITS)
+      | ($_[1] ? ($_[1] & BTWKLASSE_TYPE_BITS) : 0)
 	| ($_[2] ? BTWKLASSE_KO_BIT : 0);
 }
 
