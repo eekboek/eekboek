@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Main.pm,v 1.1 2008/02/07 13:56:40 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.2 2008/02/07 14:36:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:54:20 2008
-# Update Count    : 897
+# Last Modified On: Thu Feb  7 14:59:14 2008
+# Update Count    : 898
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Main;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.1 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
 
 use EekBoek;
 
@@ -208,40 +208,40 @@ sub app_options {
     Getopt::Long::Configure(qw(no_ignore_case));
 
     if ( !GetOptions(
-		     'command|c' => sub {
+		     'command|c'    => sub {
 			 $command = 1;
 			 die("!FINISH\n");
 		     },
-		     'import' => sub {
+		     'import'       => sub {
 			 $inexport = 1;
 		     },
-		     'export' => sub {
+		     'export'       => sub {
 			 $inexport = 0;
 		     },
-		     'init'   => sub {
+		     'init'         => sub {
 			 $inexport = 1;
 			 $inex_dir = ".";
 		     },
-		     'createdb' => \$createdb,
+		     'createdb'     => \$createdb,
 		     'createsampledb' => \$createsampledb,
-		     'define|D=s%' => sub {
+		     'define|D=s%'  => sub {
 			 die(__x("Ongeldige aanduiding voor config setting: {arg}",
 				 arg => $_[1])."\n");
 		     },
-		     'schema=s' => \$schema,
-		     'echo|e!'	=> \$echo,
-		     'ident'	=> \$ident,
-		     'journaal'	=> \$journal,
-		     'boekjaar=s'	=> \$bky,
-		     'verbose'	=> \$verbose,
+		     'schema=s'     => \$schema,
+		     'echo|e!'	    => \$echo,
+		     'ident'	    => \$ident,
+		     'journaal'     => \$journal,
+		     'boekjaar=s'   => \$bky,
+		     'verbose'	    => \$verbose,
 		     'db|dataset=s' => \$dataset,
-		     'dir=s'	=> \$inex_dir,
-		     'file=s'	=> \$inex_file,
+		     'dir=s'	    => \$inex_dir,
+		     'file=s'	    => \$inex_file,
 		     'interactive!' => \$interactive,
-		     'errexit'  => \$errexit,
-		     'trace'	=> \$trace,
-		     'help|?'	=> \$help,
-		     'debug'	=> \$debug,
+		     'errexit'      => \$errexit,
+		     'trace'	    => \$trace,
+		     'help|?'	    => \$help,
+		     'debug'	    => \$debug,
 		    ) or $help )
     {
 	app_usage(2);
