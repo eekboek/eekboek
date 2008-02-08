@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWAangifte.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+# $Id: BTWAangifte.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -30,7 +30,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Report::BTWAangifte::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER 
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -68,6 +68,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Report::BTWAangifte::__set_properties
 
 	$self->SetTitle(_T("BTW  aangifte"));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(360, 220)));
 	$self->{b_refresh}->SetToolTipString(_T("Bijwerken naar laatste gegevens"));
 	$self->{b_props}->SetToolTipString(_T("Instellingsgegevens"));
 	$self->{b_close}->SetToolTipString(_T("Venster sluiten"));
@@ -86,7 +87,7 @@ sub __do_layout {
 	$self->{sz_tools} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_tools}->Add($self->{b_refresh}, 0, wxLEFT|wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_tools}->Add($self->{b_props}, 0, wxLEFT|wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
-	$self->{sz_tools}->Add(5, 1, 0, wxADJUST_MINSIZE, 0);
+	$self->{sz_tools}->Add(5, 1, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_tools}->Add($self->{l_periode}, 1, wxTOP|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_tools}->Add(5, 1, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_tools}->Add($self->{b_print}, 0, wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
@@ -95,7 +96,6 @@ sub __do_layout {
 	$self->{sz_report}->Add($self->{w_report}, 1, wxEXPAND, 0);
 	$self->{sz_outer}->Add($self->{sz_report}, 1, wxEXPAND, 0);
 	$self->SetSizer($self->{sz_outer});
-	$self->{sz_outer}->Fit($self);
 	$self->Layout();
 
 # end wxGlade

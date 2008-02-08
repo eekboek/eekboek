@@ -1,10 +1,11 @@
 #! perl
 
-# $Id: PreferencesDialog.pm,v 1.1 2008/02/04 23:25:49 jv Exp $
+# $Id: PreferencesDialog.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
 our $state;
+our $dbh;
 
 package EB::Wx::Tools::PreferencesDialog;
 
@@ -25,7 +26,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Tools::PreferencesDialog::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -62,6 +63,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Tools::PreferencesDialog::__set_properties
 
 	$self->SetTitle(_T("Voorkeursinstellingen"));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(159, 102)));
 	$self->{c_splash}->SetValue(1);
 	$self->{c_tips}->SetValue(1);
 	$self->{c_verbose}->SetValue(1);
@@ -94,7 +96,6 @@ sub __do_layout {
 	$self->{s_buttons}->Add($self->{b_accept}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{s_outer}->Add($self->{s_buttons}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
 	$self->SetSizer($self->{s_outer});
-	$self->{s_outer}->Fit($self);
 	$self->Layout();
 
 # end wxGlade
@@ -136,6 +137,7 @@ sub OnApply {
     $state->showtips(  0+$self->{c_tips   }->GetValue);
     $state->verbose(   0+$self->{c_verbose}->GetValue);
     $state->trace(     0+$self->{c_trace  }->GetValue);
+    $dbh->trace($state->trace);
     $self->OnClose($event);
 }
 

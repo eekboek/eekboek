@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: GenBase.pm,v 1.1 2008/02/04 23:10:31 jv Exp $
+# $Id: GenBase.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -31,7 +31,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Report::GenBase::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -72,6 +72,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Report::GenBase::__set_properties
 
 	$self->SetTitle(_T("Generiek Rapport"));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(360, 220)));
 	$self->{b_refresh}->SetToolTipString(_T("Bijwerken naar laatste gegevens"));
 	$self->{b_props}->SetToolTipString(_T("Instellingsgegevens"));
 	$self->{bd_less}->SetToolTipString(_T("Minder uitgebreid"));
@@ -95,7 +96,7 @@ sub __do_layout {
 	$self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_3}->Add($self->{b_refresh}, 0, wxLEFT|wxTOP|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{b_props}, 0, wxLEFT|wxTOP|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sizer_3}->Add(5, 1, 1, wxADJUST_MINSIZE, 0);
+	$self->{sizer_3}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add($self->{l_detail}, 0, wxLEFT|wxTOP|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{bd_less}, 0, wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{bd_more}, 0, wxTOP|wxEXPAND|wxADJUST_MINSIZE, 5);
@@ -106,7 +107,6 @@ sub __do_layout {
 	$self->{sizer_2}->Add($self->{w_report}, 1, wxEXPAND, 0);
 	$self->{sizer_1}->Add($self->{sizer_2}, 1, wxEXPAND, 5);
 	$self->SetSizer($self->{sizer_1});
-	$self->{sizer_1}->Fit($self);
 	$self->Layout();
 
 # end wxGlade

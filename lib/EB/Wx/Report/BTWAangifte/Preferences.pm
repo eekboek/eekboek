@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.3 2008/02/04 23:25:49 jv Exp $
+# $Id: Preferences.pm,v 1.4 2008/02/08 20:27:44 jv Exp $
 
 package EB::Wx::Report::BTWAangifte::Preferences;
 
@@ -20,7 +20,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Report::BTWAangifte::Preferences::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -107,6 +107,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Report::BTWAangifte::Preferences::__set_properties
 
 	$self->SetTitle(_T("Instellingen Aangifte BTW"));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(172, 129)));
 	$self->{b_jaar}->SetToolTipString(_T("Gehele jaar"));
 	$self->{b_kw1}->SetToolTipString(_T("Eerste kwartaal"));
 	$self->{b_m1}->SetToolTipString(_T("Januari"));
@@ -166,12 +167,11 @@ sub __do_layout {
 	$self->{sz_prefs}->Add($self->{sz_periode}, 0, wxALL|wxEXPAND, 5);
 	$self->{sz_prefs}->Add(1, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxLEFT|wxEXPAND|wxADJUST_MINSIZE, 5);
-	$self->{sz_buttons}->Add($self->{b_ok}, 0, wxLEFT|wxEXPAND|wxADJUST_MINSIZE, 5);
+	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxLEFT|wxTOP|wxEXPAND|wxADJUST_MINSIZE, 5);
+	$self->{sz_buttons}->Add($self->{b_ok}, 0, wxLEFT|wxTOP|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{sz_prefs}->Add($self->{sz_buttons}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
 	$self->{sz_outer}->Add($self->{sz_prefs}, 1, wxEXPAND, 5);
 	$self->SetSizer($self->{sz_outer});
-	$self->{sz_outer}->Fit($self);
 	$self->Layout();
 
 # end wxGlade

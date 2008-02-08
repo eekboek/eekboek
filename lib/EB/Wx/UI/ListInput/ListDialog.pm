@@ -27,7 +27,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::UI::ListInput::ListDialog::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxSTAY_ON_TOP 
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME|wxSTAY_ON_TOP 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -61,7 +61,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::UI::ListInput::ListDialog::__set_properties
 
 	$self->SetTitle(_T("Selecteer"));
-	$self->SetSize(Wx::Size->new(365, 240));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(161, 107)));
 	$self->{lb_lst}->SetFocus();
 	$self->{lb_lst}->SetSelection(0);
 	$self->{b_accept}->SetDefault();
@@ -79,7 +79,7 @@ sub __do_layout {
 	$self->{sz_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_lstd_main}->Add($self->{lb_lst}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add($self->{b_accept}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sz_buttons}->Add(5, 1, 1, wxADJUST_MINSIZE, 0);
+	$self->{sz_buttons}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_lstd_main}->Add($self->{sz_buttons}, 0, wxTOP|wxEXPAND, 5);
 	$self->{sz_lstd_outer}->Add($self->{sz_lstd_main}, 1, wxALL|wxEXPAND, 5);

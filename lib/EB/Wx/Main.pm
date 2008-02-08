@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Main.pm,v 1.1 2008/02/04 23:25:49 jv Exp $ ';
+my $RCS_Id = '$Id: Main.pm,v 1.2 2008/02/08 20:27:44 jv Exp $ ';
 
 package main;
 
@@ -13,30 +13,30 @@ package EB::Wx::Main;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  4 13:50:29 2008
-# Update Count    : 229
+# Last Modified On: Fri Feb  8 21:26:16 2008
+# Update Count    : 265
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 
-# Package or program libraries, if appropriate.
-# $LIBDIR = $ENV{'LIBDIR'} || '/usr/local/lib/sample';
-# use lib qw($LIBDIR);
-# require 'common.pl';
+our $VERSION = "0.06";
+
+use EekBoek;
 
 # Package name.
-my $my_package = 'EekBoek';
+my $my_package = $EekBoek::PACKAGE;
+
 # Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
+my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pm,v ([\d.]+)/;
 # Tack '*' if it is not checked in into RCS.
 $my_version .= '*' if length('$Locker:  $ ') > 12;
 
 ################ Configuration ################
 
 # This will set up the config at 'use' time.
-use EB::Config 'EekBoek';
+use EB::Config $EekBoek::PACKAGE;
 
 ################ Command line parameters ################
 
@@ -68,12 +68,29 @@ our @EXPORT = qw(run);
 BEGIN { $app = {} }
 
 use EB;
+BEGIN {
+    my $req = "1.03.07";
+    die("EekBoek $EB::VERSION -- GUI vereist EekBoek versie $req of nieuwer\n")
+      if $req gt $EB::VERSION;
+}
 
-use Wx 0.25 qw[:everything];
 use strict;
 
-my $appname = $my_package;
-my $appclass = lc($appname);
+use Wx 0.74 qw[:everything];
+
+sub Wx::wxTHICK_FRAME() { 0 }
+
+use POSIX qw(locale_h);
+use Wx::Locale;
+use EB::DB;
+use lib EB::findlib("CPAN");
+use File::Spec ();
+use File::HomeDir ();
+
+my $app_name;
+my $app_class;
+my $app_dir;
+my $app_state;
 
 our $restart = 0;
 
@@ -104,10 +121,10 @@ sub OnInit {
     Wx::InitAllImageHandlers();
 
     my $frame = EB::Wx::MainFrame->new
-      (undef, undef, $appname,
+      (undef, undef, $app_name,
        wxDefaultPosition, wxDefaultSize,
        undef,
-       $appname);
+       $app_name);
 
     $self->SetTopWindow($frame);
     $app->{TOP} = $frame;
@@ -155,7 +172,7 @@ sub init_state {
 
     # Predefine config variables.
     $state->define("app",      { ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("appname",  { DEFAULT => $appname, ARGCOUNT => ARGCOUNT_ONE });
+    $state->define("appname",  { DEFAULT => $app_name, ARGCOUNT => ARGCOUNT_ONE });
 
     $state->define("trace",    { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
     $state->define("verbose",  { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
@@ -175,6 +192,7 @@ sub init_state {
 	"prpw",			# Properties...
 	"prefw",		# Preferences...
 	"accw",			# Maint -- AccPanel
+	"dbkw",			# Maint -- DbkPanel
 	"relw",			# Maint -- RelPanel
 	"btww",			# Maint -- BtwPanel
 	"stdw",			# Maint -- MStdAccPanel
@@ -201,15 +219,13 @@ sub init_state {
     $state->define("accsash",  { DEFAULT => 400, ARGCOUNT => ARGCOUNT_ONE });
     $state->define("accexp",   { ARGCOUNT => ARGCOUNT_HASH });
 
-    # Load config (actually, state) file.
-    my $f = $ENV{HOME} . "/.$appclass/$my_name";
-    $state->file($f) if -f $f;
+    # Load state file.
+    $state->file($app_state) if -f $app_state;
 }
 
 sub store_state {
-    my $f = $ENV{HOME} . "/.$appclass/$my_name";
-    mkdir($ENV{HOME} . "/.$appclass") unless -d $ENV{HOME} . "/.$appclass";
-    open (my $cfg, ">$f");
+    mkdir($app_dir) unless -d $app_dir;
+    open (my $cfg, ">", $app_state);
 
     my %vars = $state->{STATE}->varlist(".");
     #my %vars = %{$state->{STATE}->{VARIABLE}};  # voids warranty
@@ -279,6 +295,10 @@ EndOfUsage
 ################ Run ################
 
 sub run {
+
+    $app_name = $my_package;
+    $app_class = lc($app_name);
+
     # Process command line options.
     app_options();
 
@@ -287,23 +307,23 @@ sub run {
 
     # This is for my temporary convenience. I always forget to set up
     # the right environment variable...
-    use POSIX qw(locale_h);
     setlocale(LC_ALL, "nl_NL");
 
-    use Wx::Locale;
     my $local = Wx::Locale->new("Dutch");
     $local->AddCatalog("wxstd");
 #    $local->Init();
 
-    use EB::DB;
+    $app_dir = File::Spec->catfile(File::HomeDir->my_data,
+				   ".$app_class");
+    $app_state = File::Spec->catfile($app_dir, "eb_state");
 
     init_state();
 
-#    if ( $state->showsplash ) {
-#	require Wx::Perl::SplashFast;
-#	Wx::Perl::SplashFast->new("ebsplash.jpg", 3000);
-#	sleep(2);
-#    }
+    if ( $state->showsplash ) {
+	use Wx::Perl::SplashFast;
+	Wx::Perl::SplashFast->new(EB::findlib("Wx/icons/ebsplash.jpg"), 3000);
+	sleep(2);
+    }
 
     $state->set(verbose => $verbose);
     $state->set(trace   => $trace);
@@ -325,7 +345,11 @@ sub run {
     }
 
     my $app = EB::Wx::Main->new();
-    $dbh->dbh->{HandleError} = sub { Wx::LogMessage(shift); return 0 };
+    $dbh->dbh->{HandleError} = sub { my $a = shift;
+				     $a =~ s/\n+$//;
+				     Wx::LogMessage($a);
+				     return 0;
+				 };
     $app->MainLoop();
 }
 

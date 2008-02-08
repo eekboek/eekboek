@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Relaties.pm,v 1.7 2008/02/04 23:25:49 jv Exp $
+# $Id: Relaties.pm,v 1.8 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -32,7 +32,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Maint::Relaties::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER 
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -148,6 +148,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Maint::Relaties::__set_properties
 
 	$self->SetTitle(_T("Onderhoud Relaties"));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(369, 167)));
 	$self->{ch_deb}->SetValue(1);
 	$self->{ch_crd}->SetValue(1);
 	$self->{b_cancel}->SetFocus();
@@ -184,7 +185,6 @@ sub __do_layout {
 	$self->{sz_buttons}->Add($self->{b_cancel}, 0, wxALL|wxEXPAND|wxADJUST_MINSIZE|wxFIXED_MINSIZE, 5);
 	$self->{sz_outer}->Add($self->{sz_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->SetSizer($self->{sz_outer});
-	$self->{sz_outer}->Fit($self);
 	$self->Layout();
 
 # end wxGlade

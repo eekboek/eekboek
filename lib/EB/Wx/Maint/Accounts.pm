@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Accounts.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+# $Id: Accounts.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -33,7 +33,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Maint::Accounts::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER 
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -120,6 +120,7 @@ sub __set_properties {
 	$self->{b_reset}->Enable(0);
 	$self->{b_cancel}->SetFocus();
 	$self->{b_cancel}->SetDefault();
+	$self->{w_acc_frame}->SetMinSize($self->{w_acc_frame}->ConvertDialogSizeToPixels(Wx::Size->new(338, 181)));
 
 # end wxGlade
 }
@@ -168,7 +169,7 @@ sub __do_layout {
 	$self->{sz_acccan}->Add($self->{b_cancel}, 0, wxRIGHT|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{sz_accx}->Add($self->{sz_acccan}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{maint_pane_outer}->SetSizer($self->{sz_accx});
-	$self->{w_acc_frame}->SplitVertically($self->{tree_pane}, $self->{maint_pane_outer}, );
+	$self->{w_acc_frame}->SplitVertically($self->{tree_pane}, $self->{maint_pane_outer}, 350);
 	$self->{acc_frame_sizer}->Add($self->{w_acc_frame}, 1, wxEXPAND, 0);
 	$self->SetSizer($self->{acc_frame_sizer});
 	$self->{acc_frame_sizer}->Fit($self);

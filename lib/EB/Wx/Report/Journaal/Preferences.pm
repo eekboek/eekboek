@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.1 2008/02/04 23:12:19 jv Exp $
+# $Id: Preferences.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -30,7 +30,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Report::Journaal::Preferences::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -60,6 +60,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Report::Journaal::Preferences::__set_properties
 
 	$self->SetTitle("Instellingen");
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(172, 144)));
 	$self->{ch_dbk}->SetSelection(0);
 	$self->{b_cancel}->SetFocus();
 
@@ -82,16 +83,15 @@ sub __do_layout {
 	$self->{sizer_5}->Add(5, 1, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_5}->Add($self->{ch_dbk}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_4}->Add($self->{sizer_5}, 0, wxEXPAND, 0);
-	$self->{sizer_1}->Add($self->{sizer_4}, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
+	$self->{sizer_1}->Add($self->{sizer_4}, 0, wxLEFT|wxRIGHT|wxEXPAND, 5);
 	$self->{sizer_2}->Add($self->{p_period}, 1, wxEXPAND, 0);
 	$self->{sizer_1}->Add($self->{sizer_2}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
 	$self->{sizer_1}->Add(1, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sizer_3}->Add($self->{b_cancel}, 0, wxRIGHT|wxBOTTOM|wxADJUST_MINSIZE, 5);
-	$self->{sizer_3}->Add($self->{b_apply}, 0, wxRIGHT|wxBOTTOM|wxADJUST_MINSIZE, 5);
+	$self->{sizer_3}->Add($self->{b_cancel}, 0, wxALL|wxADJUST_MINSIZE, 5);
+	$self->{sizer_3}->Add($self->{b_apply}, 0, wxRIGHT|wxTOP|wxBOTTOM|wxADJUST_MINSIZE, 5);
 	$self->{sizer_1}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
 	$self->SetSizer($self->{sizer_1});
-	$self->{sizer_1}->Fit($self);
 	$self->Layout();
 
 # end wxGlade

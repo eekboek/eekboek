@@ -1,8 +1,8 @@
 #! perl
 
-# $Id: AmtInput.pm,v 1.2 2008/02/04 23:25:49 jv Exp $
+# $Id: AmtInput.pm,v 1.3 2008/02/08 20:27:44 jv Exp $
 
-package EB::Wx::UI::GridPanel::AmountInput;
+package EB::Wx::UI::GridPanel::AmtInput;
 
 use Wx qw(wxDefaultPosition wxDefaultSize);
 use base qw(EB::Wx::UI::AmountCtrl);
@@ -15,23 +15,23 @@ sub new {
     $arg = 0 unless defined $arg;
     my $self = $class->SUPER::new($parent, -1, $arg,
 				  wxDefaultPosition, wxDefaultSize, 0);
-    $self->{committed_value} = $arg;
+    $self->setvalue($self->{committed_value} = $arg);
     $self;
 }
 
 sub value {
     my ($self) = @_;
-    amount($self->GetValue);
+    $self->GetValue;
 }
 
 sub setvalue {
     my ($self, $value) = @_;
-    $self->SetValue(amtfmt($value));
+    $self->SetValue($value);
 }
 
 sub changed {
     my ($self) = @_;
-    $self->value ne $self->{committed_value};
+    $self->value != $self->{committed_value};
 }
 
 sub registerchangecallback {

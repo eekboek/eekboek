@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: TreeCtrl.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+# $Id: TreeCtrl.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
 
 use strict;
 
@@ -379,20 +379,21 @@ sub populate {
 			       " ORDER BY vdi_id");
 
     my $rr;
-    if ( $sth->rows ) {
-	while ( $rr = $sth->fetchrow_arrayref ) {
-	    my $text = "$rr->[0]   $rr->[1]";
-	    my $item = $ctrl->AppendItem($parent, $text, -1, -1,
+    my $rows;
+
+    while ( $rr = $sth->fetchrow_arrayref ) {
+	$rows++;
+	my $text = "$rr->[0]   $rr->[1]";
+	my $item = $ctrl->AppendItem($parent, $text, -1, -1,
 					 Wx::TreeItemData->new(GrootboekHandler->new([@$rr,defined($id)])));
-	    $self->populate($ctrl, $item, $rr->[0]);
-	    $ctrl->Expand($item) if $state->accexp->{$text};
-	}
+	$self->populate($ctrl, $item, $rr->[0]);
+	$ctrl->Expand($item) if $state->accexp->{$text};
     }
-    else {
+    unless ( $rows ) {
 	$sth->finish;
 	$sth = $dbh->sql_exec("SELECT acc_id,acc_desc FROM Accounts".
-				" WHERE acc_struct = $id".
-				" ORDER BY acc_id");
+				" WHERE acc_struct = ?".
+				" ORDER BY acc_id", $id);
 
 	while ( $rr = $sth->fetchrow_arrayref ) {
 	    my $id = $rr->[0];

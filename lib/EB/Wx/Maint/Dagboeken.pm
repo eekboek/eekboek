@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Dagboeken.pm,v 1.1 2008/02/08 16:36:11 jv Exp $
+# $Id: Dagboeken.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -175,16 +175,20 @@ sub OnApply {
     #       else -> changed row, 1 bit per changed column
 
     $dbh->begin_work;
+
     my $error;
+    my @fields = qw(dbk_id dbk_desc dbk_type dbk_dcsplit dbk_acc_id);
+
     foreach my $op ( @$data ) {
-	my ($code, $id, $desc, $type, $dc, $acct, $del, $orig) = @$op;
+	my $code = shift(@$op);
+	my $orig = pop(@$op);
+	$op->[2]++;		# type is 1-relative.
+
 	eval {
 
 	if ( $code == 0 ) {
 	    # New.
-	    $dbh->sql_insert("Dagboeken",
-			     [qw(dbk_id dbk_desc dbk_type dbk_dcsplit dbk_acc_id)],
-			     $id, $desc, 1+$type, $dc, $acct);
+	    $dbh->sql_insert("Dagboeken", \@fields, @$op[0..4]);
 	}
 	elsif ( $code < 0 || $code == 4294967295 ) {
 	    # Deleted.
@@ -194,19 +198,13 @@ sub OnApply {
 	}
 	else {
 	    # Modified.
-	    my @fields = qw(dbk_id dbk_desc dbk_type dbk_dcsplit dbk_acc_id);
 	    my @sets;
 	    my @values;
-	    my $i = 1;
+	    my $i = 0;
 	    foreach ( @fields ) {
 		if ( $code & 1 ) {
 		    push(@sets, "$_ = ?");
-		    if ( $i == 3 ) {
-			push(@values, $op->[$i] - 1);
-		    }
-		    else {
-			push(@values, $op->[$i]);
-		    }
+		    push(@values, $op->[$i]);
 		}
 		$code >>= 1;
 		$i++;
@@ -220,7 +218,7 @@ sub OnApply {
 	};
 	if ( $@ ) {
 	    $error++;
-	    $orig ||= $id;
+	    $orig ||= $op->[0];
 	    my $msg;
 	    if ( $dbh->dbh->state eq '23505' ) {
 		$msg = "Dagboekcode $orig bestaat al\n";

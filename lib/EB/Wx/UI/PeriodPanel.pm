@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: PeriodPanel.pm,v 1.1 2008/02/04 23:25:49 jv Exp $
+# $Id: PeriodPanel.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -66,6 +66,7 @@ sub __set_properties {
 
 # begin wxGlade: EB::Wx::UI::PeriodPanel::__set_properties
 
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(172, 103)));
 	$self->{c_bky}->SetMinSize(Wx::Size->new(150, 30));
 	$self->{c_bky}->SetSelection(0);
 	$self->{dt_from}->SetMinSize(Wx::Size->new(150, 26));
@@ -99,7 +100,6 @@ sub __do_layout {
 	$self->{sizer_2}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
 	$self->{sizer_1}->Add($self->{sizer_2}, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
 	$self->SetSizer($self->{sizer_1});
-	$self->{sizer_1}->Fit($self);
 
 # end wxGlade
 }

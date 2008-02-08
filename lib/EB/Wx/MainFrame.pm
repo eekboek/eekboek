@@ -39,9 +39,10 @@ sub new {
 
 	$self->{mainframe_menubar} = Wx::MenuBar->new();
 	use constant MENU_GBK => Wx::NewId();
-	use constant MENU_REL => Wx::NewId();
+	use constant MENU_DBK => Wx::NewId();
 	use constant MENU_BTW => Wx::NewId();
 	use constant MENU_STD => Wx::NewId();
+	use constant MENU_REL => Wx::NewId();
 	use constant MENU_R_PRF => Wx::NewId();
 	use constant MENU_R_BAL => Wx::NewId();
 	use constant MENU_R_RES => Wx::NewId();
@@ -73,9 +74,10 @@ sub new {
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Edit"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(MENU_GBK, _T("Grootboekrekeningen"), _T("Onderhoud rekeningschema en grootboekrekeningen"));
-	$wxglade_tmp_menu->Append(MENU_REL, _T("Relaties"), _T("Onderhoud debiteuren en crediteuren"));
+	$wxglade_tmp_menu->Append(MENU_DBK, _T("Dagboeken"), _T("Onderhoud dagboeken"));
 	$wxglade_tmp_menu->Append(MENU_BTW, _T("BTW Tarieven"), _T("Onderhoud BTW tarieven"));
 	$wxglade_tmp_menu->Append(MENU_STD, _T("Koppelingen"), _T("Onderhoud Standaardrekeningen (koppelingen)"));
+	$wxglade_tmp_menu->Append(MENU_REL, _T("Relaties"), _T("Onderhoud debiteuren en crediteuren"));
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Onderhoud"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Dagboeken"));
@@ -118,9 +120,10 @@ sub new {
 	Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnExit);
 	Wx::Event::EVT_MENU($self, wxID_PREFERENCES, \&OnPreferences);
 	Wx::Event::EVT_MENU($self, MENU_GBK, \&OnMGbk);
-	Wx::Event::EVT_MENU($self, MENU_REL, \&OnMRel);
+	Wx::Event::EVT_MENU($self, MENU_DBK, \&OnMDbk);
 	Wx::Event::EVT_MENU($self, MENU_BTW, \&OnMBtw);
 	Wx::Event::EVT_MENU($self, MENU_STD, \&OnMStdAcc);
+	Wx::Event::EVT_MENU($self, MENU_REL, \&OnMRel);
 	Wx::Event::EVT_MENU($self, MENU_R_PRF, \&OnRPrf);
 	Wx::Event::EVT_MENU($self, MENU_R_BAL, \&OnRBal);
 	Wx::Event::EVT_MENU($self, MENU_R_RES, \&OnRRes);
@@ -139,8 +142,7 @@ sub new {
 	$self->{OLDLOG} = Wx::Log::SetActiveTarget (Wx::LogTextCtrl->new($self->{tx_log}));
 	Wx::Log::SetTimestamp("%T");
 	Wx::LogMessage($EB::imsg);
-	Wx::LogMessage("Administratie: " . $dbh->adm("name"));
-	Wx::LogMessage("Huidig boekjaar: " . $state->bky) if $state->bky;
+	Wx::LogMessage("Huidig boekjaar: " . ($state->bky) .  " (" . $dbh->adm("name") . ")");
 
 	$self->adapt_menus;
 
@@ -152,6 +154,7 @@ sub new {
 		  prefs	 => wxID_PREFERENCES,
 		  exp    => wxID_SAVE,
 		  gbk	 => MENU_GBK,
+		  dbk	 => MENU_DBK,
 		  rel	 => MENU_REL,
 		  btw	 => MENU_BTW,
 		  std	 => MENU_STD,
@@ -176,6 +179,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::MainFrame::__set_properties
 
 	$self->SetTitle(_T("EekBoek"));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(372, 204)));
 	$self->SetBackgroundColour(Wx::Colour->new(255, 255, 255));
 	$self->{mainframe_statusbar}->SetStatusWidths();
 	
@@ -209,8 +213,8 @@ sub __do_layout {
 	$self->{sz_main}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
 	$self->{sz_main}->Add($self->{tx_log}, 1, wxALL|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->SetSizer($self->{sz_main});
-	$self->{sz_main}->Fit($self);
 	$self->Layout();
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(372, 204)));
 
 # end wxGlade
 }
@@ -401,6 +405,21 @@ sub OnMGbk {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{$p}->sizepos_restore("accw");
+    $self->{$p}->Show(1);
+}
+
+# wxGlade: EB::Wx::MainFrame::OnMDbk <event_handler>
+sub OnMDbk {
+    my ($self, $event) = @_;
+    require EB::Wx::Maint::Dagboeken;
+    my $p = "d_mdbkpanel";
+    $self->{$p} ||= EB::Wx::Maint::Dagboeken->new
+      ($self, -1,
+       "Onderhoud Dagboeken",
+       wxDefaultPosition, wxDefaultSize,
+      );
+    $self->{$p}->sizepos_restore("dbkw");
+    $self->{$p}->refresh;
     $self->{$p}->Show(1);
 }
 

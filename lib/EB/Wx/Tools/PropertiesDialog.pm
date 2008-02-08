@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: PropertiesDialog.pm,v 1.3 2008/02/04 23:25:49 jv Exp $
+# $Id: PropertiesDialog.pm,v 1.4 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -28,7 +28,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Tools::PropertiesDialog::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -69,7 +69,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Tools::PropertiesDialog::__set_properties
 
 	$self->SetTitle(_T("Eigenschappen"));
-	$self->SetSize(Wx::Size->new(405, 226));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(199, 97)));
 	$self->{c_bky}->SetSelection(0);
 	$self->{c_btw}->SetSelection(0);
 	$self->{b_cancel}->SetFocus();
@@ -189,7 +189,9 @@ sub OnClose {
 	else {
 	    $dbh->commit;
 	    $app->{TOP}->SetTitle("EekBoek: " . ($self->{t_adm}->GetValue));
-	    $self->set_status("Boekjaar: " . ($state->bky) . " (" . ($self->{t_adm}->GetValue) . ")");
+	    my $t = $state->bky . " (" . $self->{t_adm}->GetValue . ")";
+	    Wx::LogMessage("Huidig boekjaar: $t");
+	    $self->set_status("Boekjaar: $t");
 	}
     }
     #$self->sizepos_save;

@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: EekBoek.pm,v 1.1 2008/02/04 23:25:49 jv Exp $
+# $Id: EekBoek.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -24,7 +24,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Tools::Export::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -63,6 +63,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Tools::Export::__set_properties
 
 	$self->SetTitle("Administratie exporteren");
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(200, 222)));
 	$self->{cb_bsknr}->SetValue(1);
 	$self->{cb_totals}->SetValue(1);
 	$self->{l_tofolder}->Show(0);
@@ -111,7 +112,6 @@ sub __do_layout {
 	$self->{sizer_2}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
 	$self->{sizer_1}->Add($self->{sizer_2}, 1, wxEXPAND, 0);
 	$self->SetSizer($self->{sizer_1});
-	$self->{sizer_1}->Fit($self);
 	$self->Layout();
 
 # end wxGlade

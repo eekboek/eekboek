@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BKMPanel.pm,v 1.4 2008/02/04 23:25:49 jv Exp $
+# $Id: BKMPanel.pm,v 1.5 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -31,7 +31,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Booking::BKMPanel::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER 
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -60,6 +60,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Booking::BKMPanel::__set_properties
 
 	$self->SetTitle(_T("Bank/Kas/Memoriaal Boeking"));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(269, 169)));
 	$self->{gr_main}->CreateGrid(0, 4);
 	$self->{gr_main}->SetRowLabelSize(3);
 	$self->{gr_main}->SetColLabelSize(22);
@@ -89,7 +90,6 @@ sub __do_layout {
 	$self->{sz_main}->Add($self->{sz_buttons}, 0, wxTOP|wxEXPAND, 5);
 	$self->{sz_outer}->Add($self->{sz_main}, 1, wxEXPAND, 0);
 	$self->SetSizer($self->{sz_outer});
-	$self->{sz_outer}->Fit($self);
 	$self->Layout();
 
 # end wxGlade
@@ -116,7 +116,6 @@ sub refresh {
 
     my $gr = $self->{gr_main};
     $gr->DeleteRows(0, $gr->GetNumberRows);
-    $gr->AppendRows($sth->rows);
 
     my $row = 0;
     while ( my $rr = $sth->fetchrow_arrayref ) {
@@ -124,6 +123,7 @@ sub refresh {
 	$bsk_nr =~ s/\s+$//;
 
 	my $col = 0;
+	$gr->AppendRows(1);
 	$gr->SetCellValue($row, $col, $bsk_nr);
 	$gr->SetCellAlignment($row, $col, wxALIGN_RIGHT, wxALIGN_CENTER);
 	$col++;

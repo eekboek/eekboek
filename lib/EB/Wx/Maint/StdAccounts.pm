@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: StdAccounts.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+# $Id: StdAccounts.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -31,7 +31,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Maint::StdAccounts::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER 
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -56,6 +56,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Maint::StdAccounts::__set_properties
 
 	$self->SetTitle(_T("Koppelingen"));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(238, 195)));
 	$self->{b_cancel}->SetFocus();
 	$self->{b_cancel}->SetDefault();
 
@@ -79,7 +80,6 @@ sub __do_layout {
 	$self->{stdacc_main}->Add($self->{sz_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->{stdacc_outer}->Add($self->{stdacc_main}, 1, wxALL|wxEXPAND, 5);
 	$self->SetSizer($self->{stdacc_outer});
-	$self->{stdacc_outer}->Fit($self);
 	$self->Layout();
 
 # end wxGlade

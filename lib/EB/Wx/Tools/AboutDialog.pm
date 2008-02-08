@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: AboutDialog.pm,v 1.1 2008/02/04 23:12:44 jv Exp $
+# $Id: AboutDialog.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
 
 package EB::Wx::Tools::AboutDialog;
 
@@ -19,7 +19,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Tools::AboutDialog::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -42,7 +42,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Tools::AboutDialog::__set_properties
 
 	$self->SetTitle("Info");
-	$self->SetSize(Wx::Size->new(550, 250));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(232, 136)));
 	$self->SetBackgroundColour(Wx::Colour->new(255, 255, 255));
 	$self->{b_ok}->SetFocus();
 
@@ -83,7 +83,7 @@ sub refresh {
     my $info = "<p>";
 
     my $msg = $EB::imsg . "\n";
-    $msg =~ s/ -- /<br>\n/;
+    $msg =~ s/ -- / $EB::Wx::Main::VERSION<br>\n/;
     $info .= $msg . "</p>\n";
     my $v = $Wx::VERSION;
     $v =~ s/,/./g;

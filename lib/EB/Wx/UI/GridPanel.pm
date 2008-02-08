@@ -1,11 +1,11 @@
 #! perl
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+# RCS Info        : $Id: GridPanel.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  4 18:49:25 2008
-# Update Count    : 321
+# Last Modified On: Fri Feb  8 15:54:30 2008
+# Update Count    : 322
 # Status          : Unknown, Use with caution!
 
 # GridPanel implements a widget that is row/column oriented, and
@@ -378,7 +378,7 @@ sub new_or_append {
 	    $w->registerchangecallback(sub { $self->{_check_changed}++ });
 	}
 	$self->item($r, $c) = $w;
-	$self->{grid}->Add($w, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid}->Add($w, 0, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxADJUST_MINSIZE, 0);
 	$c++;
 	if ( @values ) {
 	    $self->data($r) = [@values];

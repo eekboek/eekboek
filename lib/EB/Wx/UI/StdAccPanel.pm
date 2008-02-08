@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: StdAccPanel.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+# $Id: StdAccPanel.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
 
 package main;
 
@@ -30,7 +30,7 @@ sub new {
 # begin wxGlade: EB::Wx::UI::StdAccPanel::new
 
 	$self = $self->SUPER::new( $parent, $id, $pos, $size, $style, $name );
-	$self->{main_panel} = Wx::ScrolledWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
+	$self->{main_panel} = Wx::ScrolledWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL|wxCLIP_CHILDREN);
 	$self->{l_deb} = Wx::StaticText->new($self->{main_panel}, -1, _T("Debiteuren"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_deb} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_crd} = Wx::StaticText->new($self->{main_panel}, -1, _T("Crediteuren"), wxDefaultPosition, wxDefaultSize, );
@@ -83,6 +83,7 @@ sub __set_properties {
 
 # begin wxGlade: EB::Wx::UI::StdAccPanel::__set_properties
 
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(187, 153)));
 	$self->{main_panel}->SetScrollRate(10, 10);
 
 # end wxGlade
@@ -122,7 +123,6 @@ sub __do_layout {
 	$self->{sz_std_buttons}->Add($self->{b_reset}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_std}->Add($self->{sz_std_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->SetSizer($self->{sz_std});
-	$self->{sz_std}->Fit($self);
 
 # end wxGlade
 }
