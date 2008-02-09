@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: DB.pm,v 1.55 2008/02/07 13:25:37 jv Exp $
+# RCS Id          : $Id: DB.pm,v 1.56 2008/02/09 11:30:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:25:35 2008
-# Update Count    : 423
+# Last Modified On: Sat Feb  9 12:28:39 2008
+# Update Count    : 424
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,7 +19,7 @@ package EB::DB;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.55 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.56 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -370,20 +370,20 @@ sub std_accs {
     \@std_acc;
 }
 
-my %accts;
+my $accts;
 sub accts {
     my ($self, $sel) = @_;
     $sel = $sel ? " WHERE $sel" : "";
-    return \%accts if %accts;
+    return $accts->{$sel} if $accts->{$sel};
     my $sth = $self->sql_exec("SELECT acc_id,acc_desc".
 			      " FROM Accounts".
 			      $sel.
 			      " ORDER BY acc_id");
     my $rr;
     while ( $rr = $sth->fetchrow_arrayref ) {
-	$accts{$rr->[0]} = $rr->[1];
+	$accts->{$sel}->{$rr->[0]} = $rr->[1];
     }
-    \%accts;
+    $accts->{$sel};
 }
 
 sub dbh{
