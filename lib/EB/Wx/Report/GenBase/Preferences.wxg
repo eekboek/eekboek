@@ -68,9 +68,6 @@
                         <object class="wxButton" name="b_apply" base="EditButton">
                             <stockitem>OK</stockitem>
                             <label>&amp;OK</label>
-                            <events>
-                                <handler event="EVT_BUTTON">OnApply</handler>
-                            </events>
                             <size>36, 12d</size>
                         </object>
                     </object>
