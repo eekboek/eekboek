@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Relaties.pm,v 1.8 2008/02/08 20:27:44 jv Exp $
+# $Id: Relaties.pm,v 1.9 2008/02/09 20:09:13 jv Exp $
 
 package main;
 
@@ -79,6 +79,8 @@ sub fill_grid {
     my $dsel = "";
     my $dbks;
     my $sth;
+    my $allsel = " WHERE dbk_type = " . DBKTYPE_INKOOP .
+      " OR dbk_type = " . DBKTYPE_VERKOOP;
     if ( $deb && !$crd ) {
 	$asel = " WHERE rel_debcrd";
 	$dsel = " WHERE dbk_type = " . DBKTYPE_VERKOOP;
@@ -93,7 +95,7 @@ sub fill_grid {
     }
 
     $sth = $dbh->sql_exec("SELECT dbk_desc, dbk_id FROM Dagboeken".
-			 $dsel);
+			 $allsel);
     @dbkmap = ();
     foreach ( @{$sth->fetchall_arrayref} ) {
 	push(@$dbks, $_->[0]);
@@ -102,12 +104,20 @@ sub fill_grid {
     my %dbkmap;
     my $i = 0;
     foreach ( @dbkmap ) {
-	$dbkmap{0+$_} = $i++;
+	$dbkmap{$_} = $i++;
     }
+
     $sth = $dbh->sql_exec("SELECT rel_code, rel_desc, rel_debcrd, rel_btw_status, rel_ledger, rel_acc_id".
 			  " FROM Relaties".
 			  $asel.
 			  " ORDER BY rel_code");
+
+    # This can be slow, show progressbar.
+    my $rows = $sth->rows || 100;
+    my $prog = Wx::ProgressDialog->new
+      ("Voortgang", "Laden relatie-informatie",
+       $rows, $self, wxPD_AUTO_HIDE|wxPD_APP_MODAL);
+
 
     require EB::Wx::UI::GridPanel::TextCtrl;
     require EB::Wx::UI::GridPanel::AccInput;
@@ -129,17 +139,21 @@ sub fill_grid {
 
     my $p = $self->{panel};
 
+    my $row;
     while ( my $rr = $sth->fetchrow_arrayref ) {
+	$row = 0 if $row >= $rows;
+	$prog->Update(++$row);
 	my ($code, $desc, $debcrd, $btw, $ledger, $acct) = @$rr;
-	$p->append($code, $desc, $acct, $dbkmap{0+$ledger}, $btw, 0, $code, $ledger);
+	$p->append($code, $desc, $acct, $dbkmap{$ledger}, $btw, 0, $code, $ledger);
 	if ( defined $dbh->do("SELECT bsr_nr FROM Boekstukregels".
 			      " WHERE bsr_rel_code = ? AND bsr_dbk_id = ? LIMIT 1",
 			      $code, $ledger) ) {
-	    $p->enable(    0,     1,       1,                  1,
-			   $dbh->does_btw ? 1 : (), 0);
+	    $p->enable( 0, 1, 0, 0,
+			$dbh->does_btw ? 1 : (), 0);
 	    $self->{l_inuse}->Show(1);
 	}
     }
+    $prog->Destroy;
 }
 
 sub __set_properties {
