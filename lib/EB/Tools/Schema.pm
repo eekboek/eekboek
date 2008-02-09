@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Schema.pm,v 1.54 2008/02/07 14:34:32 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.55 2008/02/09 16:35:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 15:22:25 2008
-# Update Count    : 640
+# Last Modified On: Sat Feb  9 17:34:49 2008
+# Update Count    : 642
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,17 +20,17 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.54 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.55 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.54 2008/02/07 14:34:32 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.55 2008/02/09 16:35:01 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
 # Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
+my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pm,v ([\d.]+)/;
 # Tack '*' if it is not checked in into RCS.
 $my_version .= '*' if length('$Locker:  $ ') > 12;
 
@@ -677,7 +677,7 @@ sub dump_schema {
     print {$fh} ("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
 	  "# Aangemaakt door ", __PACKAGE__, " $my_version");
     my @t = localtime(time);
-    printf {$fh} ("op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
+    printf {$fh} (" op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
     printf {$fh} ("# Content-Type: text/plain; charset = %s\n",
 		  $cfg->unicode ? "UTF-8" : "ISO-8859.1");
     print {$fh}  <<EOD;
