@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.11 2008/02/11 22:34:25 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.12 2008/02/11 22:37:44 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -68,7 +68,7 @@ SKIP: {
 eval {
     my @ds = DBI->data_sources("Pg");
     skip("No access to database", 33)
-      if $DBI::errstr =~ /FATAL:\s*role .* does not exist/;
+      if $DBI::errstr && $DBI::errstr =~ /FATAL:\s*role .* does not exist/;
 };
 
 my $fail;
