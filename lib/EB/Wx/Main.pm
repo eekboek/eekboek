@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Main.pm,v 1.3 2008/02/11 15:00:41 jv Exp $ ';
+my $RCS_Id = '$Id: Main.pm,v 1.4 2008/02/11 15:27:42 jv Exp $ ';
 
 package main;
 
@@ -13,15 +13,15 @@ package EB::Wx::Main;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Feb 10 21:59:47 2008
-# Update Count    : 268
+# Last Modified On: Mon Feb 11 16:27:40 2008
+# Update Count    : 269
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 
-our $VERSION = "0.09";
+our $VERSION = "0.10";
 
 use EekBoek;
 
