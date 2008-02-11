@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
+# $Id: Preferences.pm,v 1.3 2008/02/11 15:14:07 jv Exp $
 
 package EB::Wx::Report::GenBase::Preferences;
 
@@ -20,7 +20,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Report::GenBase::Preferences::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
+	$style = wxDEFAULT_DIALOG_STYLE 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -32,9 +32,10 @@ sub new {
 	$self->__set_properties();
 	$self->__do_layout();
 
-	Wx::Event::EVT_BUTTON($self, $self->{b_apply}->GetId, \&OnApply);
-
 # end wxGlade
+
+	Wx::Event::EVT_EB_PERIOD($self, $self->{p_period}, \&OnPeriod);
+
 	return $self;
 
 }
@@ -46,9 +47,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Report::GenBase::Preferences::__set_properties
 
 	$self->SetTitle("Instellingen");
-	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(172, 110)));
 	$self->{b_cancel}->SetFocus();
-	$self->{b_apply}->SetMinSize($self->{b_apply}->ConvertDialogSizeToPixels(Wx::Size->new(36, 12)));
 
 # end wxGlade
 }
@@ -63,12 +62,12 @@ sub __do_layout {
 	$self->{sizer_2}= Wx::StaticBoxSizer->new($self->{sizer_2_staticbox}, wxHORIZONTAL);
 	$self->{sizer_2}->Add($self->{p_period}, 1, wxEXPAND, 0);
 	$self->{sizer_1}->Add($self->{sizer_2}, 0, wxLEFT|wxRIGHT|wxEXPAND, 5);
-	$self->{sizer_1}->Add(1, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add($self->{b_cancel}, 0, wxALL|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{b_apply}, 0, wxALL|wxADJUST_MINSIZE, 5);
 	$self->{sizer_1}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
 	$self->SetSizer($self->{sizer_1});
+	$self->{sizer_1}->Fit($self);
 	$self->Layout();
 
 # end wxGlade
@@ -80,7 +79,6 @@ sub init {
 	$self->{p_period}->allow_fromto(1) if $args->{pref_from_to} & 1;
 	$self->{p_period}->allow_to(1)     if $args->{pref_from_to} & 2;
     }
-    $self->{p_period}->register_cb(\&panel_cb);
     $self->refresh;
 }
 
@@ -88,12 +86,6 @@ sub refresh {
     my ($self) = @_;
     $self->{p_period}->refresh;
     $self->{b_apply}->Enable(0);
-}
-
-sub panel_cb {
-    my ($panel) = @_;
-    my $self = $panel->GetParent;
-    $self->{b_apply}->Enable($panel->changed);
 }
 
 sub GetValues {
@@ -106,15 +98,10 @@ sub GetValues {
     $r;
 }
 
-
-sub OnApply {
-	my ($self, $event) = @_;
-# wxGlade: EB::Wx::Report::GenBase::Preferences::OnApply <event_handler>
-
-	warn "Event handler (OnApply) not implemented";
-	$event->Skip;
-
-# end wxGlade
+sub OnPeriod {
+    my ($self, $event) = @_;
+    use Data::Dumper; warn(Dumper($event));
+    $self->{b_apply}->Enable($self->{p_period}->changed);
 }
 
 # end of class EB::Wx::Report::GenBase::Preferences
