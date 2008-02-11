@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWAangifte.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
+# $Id: BTWAangifte.pm,v 1.7 2008/02/11 15:09:43 jv Exp $
 
 package main;
 
@@ -55,8 +55,6 @@ sub new {
 	$self->{btwp} = $dbh->adm("btwperiod");
 
 	$self->{_PRINTER} =  Wx::HtmlEasyPrinting->new('Print');
-
-	$self->refresh;
 
 	return $self;
 
@@ -115,6 +113,7 @@ sub refresh {
 	   boekjaar => $state->bky,
 	   output => \$output,
 	   detail => $self->{detail} });
+    $output = "<h1>Output</h1>" unless $output =~ /\<tr\>/;
     $self->{w_report}->SetPage($output);
     $self->{_HTMLTEXT} = $output;
 }
