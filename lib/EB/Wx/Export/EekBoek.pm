@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: EekBoek.pm,v 1.3 2008/02/10 20:54:30 jv Exp $
+# $Id: EekBoek.pm,v 1.4 2008/02/11 15:21:05 jv Exp $
 
 package main;
 
@@ -11,6 +11,7 @@ package EB::Wx::Tools::Export;
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
 use strict;
+use EB::Wx::Window;
 use EB::Wx::UI::PeriodPanel;
 
 sub new {
@@ -117,14 +118,12 @@ sub DoExport {
 		$inuse++ if -e $_;
 	    }
 	    if ( $inuse ) {
-		my $m = Wx::MessageDialog->new
+		my $ret = EB::Wx::MessageDialog
 		  ($self,
 		   "De opgegeven folder bevat al exportinformatie.\n".
 		   "Moet deze worden overschreven?",
 		   "Folder in gebruik",
 		   wxICON_ERROR|wxYES_NO|wxNO_DEFAULT);
-		my $ret = $m->ShowModal;
-		$m->Destroy;
 		return unless $ret == wxID_YES;
 	    }
 	}
@@ -147,25 +146,21 @@ sub DoExport {
     eval { EB::Export->export($opts) };
     if ( $@ ) {
 	Wx::LogMessage($@);
-	my $m = Wx::MessageDialog->new
+	EB::Wx::MessageDialog
 	    ($self,
 	     "Fout tijdens het exporteren:\n".$@,
 	     "Fout tijdens het exporteren",
 	     wxICON_ERROR|wxOK);
-	$m->ShowModal;
-	$m->Destroy;
 	return;
     }
     else {
 	Wx::LogMessage("Export: $path");
-	my $m = Wx::MessageDialog->new
+	EB::Wx::MessageDialog->new
 	    ($self,
 	     "De administratie is succesvol geëxporteerd.",
 	     "Succes",
 	     wxICON_INFORMATION|wxOK,
 	    );
-	$m->ShowModal;
-	$m->Destroy;
 	if ( $opts->{dir} ) {
 	    $state->expdir($path);
 	}
