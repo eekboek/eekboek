@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Window.pm,v 1.1 2008/02/04 23:09:01 jv Exp $
+# $Id: Window.pm,v 1.2 2008/02/11 15:05:07 jv Exp $
 
 package main;
 
@@ -17,18 +17,20 @@ use warnings;
 use Wx qw(:everything);
 
 sub sizepos_save {
-    my ($self) = @_;
+    my ($self, $posonly) = @_;
     my $h = $state->get($self->{mew});
     @$h{ qw(xpos   ypos  ) } = $self->GetPositionXY;
-    @$h{ qw(xwidth ywidth) } = $self->GetSizeWH;
+    @$h{ qw(xwidth ywidth) } = $self->GetSizeWH unless $posonly;
 }
 
 sub sizepos_restore {
-    my ($self, $mew) = @_;
+    my ($self, $mew, $posonly) = @_;
     $self->{mew} = $mew if defined $mew;
     my $h = $state->get($self->{mew});
-    $self->Move(    [ @$h{ qw(xpos   ypos  ) } ] );
-    $self->SetSize( [ @$h{ qw(xwidth ywidth) } ] );
+    $self->Move(    [ @$h{ qw(xpos   ypos  ) } ] )
+      if defined($h->{xpos}) && defined($h->{ypos});
+    $self->SetSize( [ @$h{ qw(xwidth ywidth) } ] )
+      if !$posonly && defined($h->{xwidth}) && defined($h->{ywidth});
 
     # For convenience: CLOSE on Ctrl-W and Esc.
     # (Doesn't work on GTK, yet).
@@ -53,6 +55,17 @@ sub init {
 
 #### Override
 sub refresh {
+}
+
+sub EB::Wx::MessageDialog {
+    my ($parent, $msg, $title, $flags) = @_;
+
+    $flags ||= wxICON_INFORMATION|wxOK;
+
+    my $m = Wx::MessageDialog->new($parent, $msg, $title, $flags);
+    my $ret = $m->ShowModal;
+    $m->Destroy;
+    return $ret;
 }
 
 1;
