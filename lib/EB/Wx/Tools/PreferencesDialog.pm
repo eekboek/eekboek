@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: PreferencesDialog.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
+# $Id: PreferencesDialog.pm,v 1.3 2008/02/11 15:21:19 jv Exp $
 
 package main;
 
@@ -26,7 +26,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Tools::PreferencesDialog::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
+	$style = wxDEFAULT_DIALOG_STYLE 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -63,7 +63,6 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Tools::PreferencesDialog::__set_properties
 
 	$self->SetTitle(_T("Voorkeursinstellingen"));
-	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(159, 102)));
 	$self->{c_splash}->SetValue(1);
 	$self->{c_tips}->SetValue(1);
 	$self->{c_verbose}->SetValue(1);
@@ -90,12 +89,12 @@ sub __do_layout {
 	$self->{s_grid}->AddGrowableCol(1);
 	$self->{s_main}->Add($self->{s_grid}, 0, wxEXPAND, 0);
 	$self->{s_outer}->Add($self->{s_main}, 0, wxALL|wxEXPAND, 5);
-	$self->{s_outer}->Add(1, 5, 1, wxADJUST_MINSIZE, 0);
 	$self->{s_buttons}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{s_buttons}->Add($self->{b_cancel}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{s_buttons}->Add($self->{b_accept}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{s_outer}->Add($self->{s_buttons}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
 	$self->SetSizer($self->{s_outer});
+	$self->{s_outer}->Fit($self);
 	$self->Layout();
 
 # end wxGlade
