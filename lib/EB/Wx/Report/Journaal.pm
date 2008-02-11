@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Journaal.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+# $Id: Journaal.pm,v 1.6 2008/02/11 15:10:29 jv Exp $
 
 package main;
 
@@ -16,6 +16,7 @@ sub init {
     my ($self, $me) = @_;
     $self->SetDetails(1,0,1);
     $self->{pref_from_to} = 3;
+    $self->SetTitle("Journaal");
     $self->refresh;
 }
 
