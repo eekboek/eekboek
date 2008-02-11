@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Relaties.pm,v 1.9 2008/02/09 20:09:13 jv Exp $
+# $Id: Relaties.pm,v 1.10 2008/02/11 15:08:39 jv Exp $
 
 package main;
 
@@ -111,9 +111,13 @@ sub fill_grid {
 			  " FROM Relaties".
 			  $asel.
 			  " ORDER BY rel_code");
+    my $rows = $sth->rows;
+    unless ( $rows ) {
+	$rows = $dbh->do("SELECT COUNT(*) FROM Relaties".$asel);
+    }
 
     # This can be slow, show progressbar.
-    my $rows = $sth->rows || 100;
+    # (Constructing the GridPanel is slow, not the AccInput widgets.)
     my $prog = Wx::ProgressDialog->new
       ("Voortgang", "Laden relatie-informatie",
        $rows, $self, wxPD_AUTO_HIDE|wxPD_APP_MODAL);
@@ -133,7 +137,7 @@ sub fill_grid {
 			    => [ EB::Wx::UI::GridPanel::Choice::,
 		 	         [ qw(Normaal Verlegd Intra Extra) ] ] ) : (),
 	 ""		          => EB::Wx::UI::GridPanel::RemoveButton::,
-       ], 0, 0 );
+       ], 0, 0, $rows );
     $self->{panel}->addgrowablecol(1);
     $self->{panel}->addgrowablecol(2);
 
@@ -144,10 +148,11 @@ sub fill_grid {
 	$row = 0 if $row >= $rows;
 	$prog->Update(++$row);
 	my ($code, $desc, $debcrd, $btw, $ledger, $acct) = @$rr;
+	my $inuse = defined $dbh->do("SELECT bsr_nr FROM Boekstukregels".
+				     " WHERE bsr_rel_code = ? AND bsr_dbk_id = ? LIMIT 1",
+				     $code, $ledger);
 	$p->append($code, $desc, $acct, $dbkmap{$ledger}, $btw, 0, $code, $ledger);
-	if ( defined $dbh->do("SELECT bsr_nr FROM Boekstukregels".
-			      " WHERE bsr_rel_code = ? AND bsr_dbk_id = ? LIMIT 1",
-			      $code, $ledger) ) {
+	if ( $inuse ) {
 	    $p->enable( 0, 1, 0, 0,
 			$dbh->does_btw ? 1 : (), 0);
 	    $self->{l_inuse}->Show(1);
@@ -234,10 +239,12 @@ sub OnClose {
     my ($self, $event) = @_;
 
     if ( $self->{panel}->changed ) {
-	my $r = Wx::MessageBox("Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
-			       "Venster toch sluiten?",
-			       "Annuleren",
-			       wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
+	my $r = EB::Wx::MessageDialog
+	  ($self,
+	   "Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
+	   "Venster toch sluiten?",
+	   "Annuleren",
+	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
 	return unless $r == wxYES;
     }
 
@@ -313,8 +320,10 @@ sub OnApply {
 	    else {
 		$msg = "Fout tijdens het bijwerken van $orig:\n". $@;
 	    }
-	    Wx::MessageBox($msg, "Fout tijdens het bijwerken",
-			   wxOK|wxICON_ERROR);
+	    EB::Wx::MessageDialog
+		($self,
+		 $msg, "Fout tijdens het bijwerken",
+		 wxOK|wxICON_ERROR);
 	}
     }
 
