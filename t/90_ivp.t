@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.10 2008/02/07 14:34:43 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.11 2008/02/11 22:34:25 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -62,6 +62,14 @@ unshift(@ebcmd, map { ("-I",
 		       "../../$_"
 		      ) } grep { /^\w\w/ } reverse @INC);
 unshift(@ebcmd, "perl");
+
+SKIP: {
+# Check whether we can contact the database.
+eval {
+    my @ds = DBI->data_sources("Pg");
+    skip("No access to database", 33)
+      if $DBI::errstr =~ /FATAL:\s*role .* does not exist/;
+};
 
 my $fail;
 
@@ -137,6 +145,7 @@ vfy([@ebcmd, qw(-c btwaangifte j)], "btw.html");
 # Verify: CSV generatie.
 vfy([@ebcmd, qw(-c balans --detail=2 --gen-csv)], "balans2.csv");
 
+}	# end SKIP section
 }	# end SKIP section
 
 ################ subroutines ################
