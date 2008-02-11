@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.3 2008/02/11 15:14:07 jv Exp $
+# $Id: Preferences.pm,v 1.4 2008/02/11 15:19:37 jv Exp $
 
 package EB::Wx::Report::GenBase::Preferences;
 
@@ -100,7 +100,6 @@ sub GetValues {
 
 sub OnPeriod {
     my ($self, $event) = @_;
-    use Data::Dumper; warn(Dumper($event));
     $self->{b_apply}->Enable($self->{p_period}->changed);
 }
 
