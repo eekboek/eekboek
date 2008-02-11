@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: AmtInput.pm,v 1.3 2008/02/08 20:27:44 jv Exp $
+# $Id: AmtInput.pm,v 1.4 2008/02/11 15:24:16 jv Exp $
 
 package EB::Wx::UI::GridPanel::AmtInput;
 
@@ -36,7 +36,7 @@ sub changed {
 
 sub registerchangecallback {
     my ($self, $cb) = @_;
-    Wx::Event::EVT_TEXT($self->GetParent, $self->GetId, $cb);
+    Wx::Event::EVT_PL_AMOUNT($self->GetParent, $self->GetId, $cb);
 }
 
 sub reset {

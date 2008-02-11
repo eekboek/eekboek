@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: AccInput.pm,v 1.3 2008/02/04 23:25:49 jv Exp $
+# $Id: AccInput.pm,v 1.4 2008/02/11 15:24:09 jv Exp $
 
 package EB::Wx::UI::GridPanel::AccInput;
 
@@ -45,7 +45,7 @@ sub changed {
 
 sub registerchangecallback {
     my ($self, $cb) = @_;
-    Wx::Event::EVT_TEXT($self->GetParent, $self->GetId, $cb);
+    Wx::Event::EVT_PL_LISTINPUT($self->GetParent, $self->GetId, $cb);
 }
 
 sub reset {

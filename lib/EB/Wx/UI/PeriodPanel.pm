@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: PeriodPanel.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
+# $Id: PeriodPanel.pm,v 1.3 2008/02/11 15:23:06 jv Exp $
 
 package main;
 
@@ -13,6 +13,14 @@ use Wx qw[:everything :datepicker];
 use Wx::Calendar;
 use base qw(Wx::Panel);
 use base qw(EB::Wx::Window);
+
+use base qw(Wx::PlWindow);
+use base qw(Exporter);
+our @EXPORT_OK = qw(EVT_EB_PERIOD);
+our %EXPORT_TAGS = ( 'everything'   => \@EXPORT_OK,
+                     'event'        => [ qw(EVT_EB_PERIOD) ],
+		   );
+
 use EB;
 
 use strict;
@@ -102,6 +110,12 @@ sub __do_layout {
 	$self->SetSizer($self->{sizer_1});
 
 # end wxGlade
+}
+
+my $evt_change = Wx::NewEventType;
+
+sub Wx::Event::EVT_EB_PERIOD($$$) {
+    $_[0]->Connect($_[1], -1, $evt_change, $_[2]);
 }
 
 sub _ISOtoWxD {
@@ -209,6 +223,8 @@ sub OnBky {
     }
 
     $self->{_changed}++;
+    $self->GetEventHandler->ProcessEvent
+      (EB::Wx::UI::PeriodPanel::Event->new($evt_change, $self->GetId));
     $self->{_cb}->($self) if $self->{_cb};
 
 # end wxGlade
@@ -217,12 +233,16 @@ sub OnBky {
 sub OnFromChanged {
     my ($self, $event) = @_;
     $self->{_changed}++;
+    $self->GetEventHandler->ProcessEvent
+      (EB::Wx::UI::PeriodPanel::Event->new($evt_change, $self->GetId));
     $self->{_cb}->($self) if $self->{_cb};
 }
 
 sub OnToChanged {
     my ($self, $event) = @_;
     $self->{_changed}++;
+    $self->GetEventHandler->ProcessEvent
+      (EB::Wx::UI::PeriodPanel::Event->new($evt_change, $self->GetId));
     $self->{_cb}->($self) if $self->{_cb};
 }
 
@@ -245,5 +265,8 @@ sub GetValues {
 }
 
 # end of class EB::Wx::UI::PeriodPanel
+
+package EB::Wx::UI::PeriodPanel::Event;
+use base qw(Wx::PlCommandEvent);
 
 1;

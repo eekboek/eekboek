@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: ListInput.pm,v 1.3 2008/02/04 23:25:49 jv Exp $
+# $Id: ListInput.pm,v 1.4 2008/02/11 15:22:47 jv Exp $
 
 package main;
 
@@ -12,6 +12,12 @@ package EB::Wx::UI::ListInput;
 
 use Wx qw(wxDefaultPosition wxDefaultSize wxID_OK);
 use base qw(Wx::TextCtrl);
+use base qw(Wx::PlWindow);
+use base qw(Exporter);
+our @EXPORT_OK = qw(EVT_PL_LISTINPUT);
+our %EXPORT_TAGS = ( 'everything'   => \@EXPORT_OK,
+                     'event'        => [ qw(EVT_PL_LISTINPUT) ],
+		   );
 use strict;
 use EB;
 
@@ -38,6 +44,12 @@ sub new {
     $self->{ctx_type} = 0;	# 0 = alpha, 1 = numeric
     $self->{default} = "";
     return $self;
+}
+
+my $evt_change = Wx::NewEventType;
+
+sub Wx::Event::EVT_PL_LISTINPUT($$$) {
+    $_[0]->Connect($_[1], -1, $evt_change, $_[2]);
 }
 
 use Wx qw(:keycode);
@@ -67,7 +79,7 @@ sub OnChar {
     }
     elsif ( $k == WXK_ESCAPE ) {
 	# Reset to orig value.
-	$self->SUPER::SetValue($self->{default});
+	$self->SetValueAsIs($self->{default});
 	$self->{ctx} = "";
     }
     elsif ( $k == WXK_UP ) {
@@ -77,7 +89,7 @@ sub OnChar {
 	    last if $_ eq $cur;
 	    $v = $_;
 	}
-	$self->SUPER::SetValue($v) if $v;
+	$self->SetValueAsIs($v) if $v;
 	$self->{ctx} = "";
     }
     elsif ( $k == WXK_DOWN ) {
@@ -85,7 +97,7 @@ sub OnChar {
 	my $cur = $self->SUPER::GetValue;
 	foreach ( @{$self->{list}} ) {
 	    if ( $v eq $cur ) {
-#		$self->SUPER::SetValue($_);
+#		$self->SetValueAsIs($_);
 		$self->{_pending} = $_;
 		last;
 	    }
@@ -142,7 +154,7 @@ sub OnChar {
 	my $pat = $self->{ctx_type} ? qr/(^)($lk)/ : qr/^(\S+\s+)($lk)/i;
 	foreach ( @{$self->{list}} ) {
 	    next unless /$pat/;
-	    $self->SUPER::SetValue($_);
+	    $self->SetValueAsIs($_);
 	    $self->SetSelection(length($1), length($1)+length($2));
 	    return;
 	}
@@ -171,7 +183,16 @@ sub SetValue {
 	$value = $_;
 	last;
     }
+    $self->SetValueAsIs($value);
+}
+
+sub SetValueAsIs {
+    my ($self, $value) = @_;
     $self->SUPER::SetValue($value);
+    my $event =
+      EB::Wx::Perl::ListInput::Event->new($evt_change, $self->GetId);
+    $self->GetEventHandler->ProcessEvent($event);
+
 }
 
 sub GetValue {
@@ -195,5 +216,8 @@ sub OnLoseFocus {
     my $obj = $event->GetEventObject;
     #warn("Selected: ", $obj->GetValue);
 }
+
+package EB::Wx::Perl::ListInput::Event;
+use base qw(Wx::PlCommandEvent);
 
 1;
