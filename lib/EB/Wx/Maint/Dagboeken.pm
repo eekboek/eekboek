@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Dagboeken.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
+# $Id: Dagboeken.pm,v 1.3 2008/02/11 15:07:32 jv Exp $
 
 package main;
 
@@ -153,10 +153,12 @@ sub OnClose {
     my ($self, $event) = @_;
 
     if ( $self->{panel}->changed ) {
-	my $r = Wx::MessageBox("Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
-			       "Venster toch sluiten?",
-			       "Annuleren",
-			       wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
+	my $r = EB::Wx::MessageDialog
+	  ($self,
+	   "Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
+	   "Venster toch sluiten?",
+	   "Annuleren",
+	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
 	return unless $r == wxYES;
     }
 
@@ -226,8 +228,10 @@ sub OnApply {
 	    else {
 		$msg = "Fout tijdens het bijwerken van dagboekcode $orig:\n". $@;
 	    }
-	    Wx::MessageBox($msg, "Fout tijdens het bijwerken",
-			   wxOK|wxICON_ERROR);
+	    EB::Wx::MessageDialog
+		($self,
+		 $msg, "Fout tijdens het bijwerken",
+		 wxOK|wxICON_ERROR);
 	}
     }
 

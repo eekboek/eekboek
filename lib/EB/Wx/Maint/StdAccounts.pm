@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: StdAccounts.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
+# $Id: StdAccounts.pm,v 1.7 2008/02/11 15:08:49 jv Exp $
 
 package main;
 
@@ -89,10 +89,12 @@ sub __do_layout {
 sub OnClose {
     my ($self, $event) = @_;
     if ( $self->{p_stdacc}->changed ) {
-	my $r = Wx::MessageBox("Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
-			       "Venster toch sluiten?",
-			       "Annuleren",
-			       wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
+	my $r = EB::Wx::MessageDialog
+	  ($self,
+	   "Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
+	   "Venster toch sluiten?",
+	   "Annuleren",
+	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
 	return unless $r == wxYES;
 	$self->{p_stdacc}->refresh;
     }
