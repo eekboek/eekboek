@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWTarieven.pm,v 1.9 2008/02/08 20:27:44 jv Exp $
+# $Id: BTWTarieven.pm,v 1.10 2008/02/11 15:07:20 jv Exp $
 
 package main;
 
@@ -96,7 +96,7 @@ sub fill_grid {
 
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($code, $desc, $perc, $tg, $incl) = @$rr;
-	$p->append($code, $desc, $perc, $tg, $incl, $code);
+	$p->append($code, $desc, $perc, $tg, $incl, 0, $code);
 	if ( $code == 0
 	     || defined $dbh->do("SELECT bsr_btw_id FROM Boekstukregels".
 				 " WHERE bsr_btw_id = ? LIMIT 1",
@@ -152,10 +152,12 @@ sub OnClose {
     my ($self, $event) = @_;
 
     if ( $self->{panel}->changed ) {
-	my $r = Wx::MessageBox("Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
-			       "Venster toch sluiten?",
-			       "Annuleren",
-			       wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
+	my $r = EB::Wx::MessageDialog
+	  ($self,
+	   "Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
+	   "Venster toch sluiten?",
+	   "Annuleren",
+	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
 	return unless $r == wxYES;
     }
 
@@ -178,21 +180,39 @@ sub OnApply {
     my @fields = qw(btw_id btw_desc btw_perc btw_tariefgroep btw_incl);
     foreach my $op ( @$data ) {
 	my $code = shift(@$op);
-	my $orig = pop(@$op);
+	my $orig = $op->[scalar(@fields) + 1];
 	eval {
 
 	if ( $code == 0 ) {
 	    # New.
 	    $dbh->sql_insert("BTWTabel", \@fields, @$op[0..4]);
+	    #### TODO: New inserted entries lack the 'orig' data,
+	    #### so they cannot be changed or modified...
 	}
 	elsif ( $code < 0 || $code == 4294967295 ) {
 	    # Deleted.
+	    unless ( defined $orig ) {
+		EB::Wx::MessageDialog
+		    ($self,
+		     "Deze nieuw toegevoegde entry kan nog niet worden verwijderd.",
+		     "Fout tijdens het bijwerken",
+		     wxOK|wxICON_ERROR);
+		next;
+	    }
 	    $dbh->sql_exec("DELETE FROM BTWTabel".
 			   " WHERE btw_id = ?",
 			   $orig);
 	}
 	else {
 	    # Modified.
+	    unless ( defined $orig ) {
+		EB::Wx::MessageDialog
+		    ($self,
+		     "Deze nieuw toegevoegde entry kan nog niet worden gewijzigd.",
+		     "Fout tijdens het bijwerken",
+		     wxOK|wxICON_ERROR);
+		next;
+	    }
 	    my @sets;
 	    my @values;
 	    my $i = 0;
@@ -219,10 +239,12 @@ sub OnApply {
 		$msg = "Dagboekcode $orig bestaat al\n";
 	    }
 	    else {
-		$msg = "Fout tijdens het bijwerken van dagboekcode $orig:\n". $@;
+		$msg = "Fout tijdens het bijwerken van btwcode $orig:\n". $@;
 	    }
-	    Wx::MessageBox($msg, "Fout tijdens het bijwerken",
-			   wxOK|wxICON_ERROR);
+	    EB::Wx::MessageDialog
+		($self,
+		 $msg, "Fout tijdens het bijwerken",
+		 wxOK|wxICON_ERROR);
 	}
     }
 
