@@ -140,8 +140,9 @@ sub new {
 # end wxGlade
 
 	$self->{OLDLOG} = Wx::Log::SetActiveTarget (Wx::LogTextCtrl->new($self->{tx_log}));
-	Wx::Log::SetTimestamp("%T");
+	#Wx::Log::SetTimestamp("%T");
 	Wx::LogMessage($EB::imsg);
+	Wx::LogMessage("EekBoek GUI extension version $EB::Wx::Main::VERSION");
 	Wx::LogMessage("Huidig boekjaar: " . ($state->bky) .  " (" . $dbh->adm("name") . ")");
 
 	$self->adapt_menus;
@@ -314,7 +315,7 @@ sub OnExport {
     my $c = $state->expdir;
     $state->expdir("") unless $c && -d $c;
     require EB::Wx::Tools::Export;
-    $self->{d_export} ||= EB::Wx::Tools::Export->new
+    $self->{d_export} = EB::Wx::Tools::Export->new
       ($self, -1,
        _T("Exporteren administratie"),
        wxDefaultPosition,
@@ -324,6 +325,7 @@ sub OnExport {
       );
     $self->{d_export}->refresh;
     $self->{d_export}->ShowModal;
+    $self->{d_export}->Destroy;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnProperties <event_handler>
@@ -335,7 +337,7 @@ sub OnProperties {
        _T("Administratiegegevens"),
        wxDefaultPosition, wxDefaultSize,
       );
-    #$self->{d_prpdialog}->sizepos_restore("prpw");
+    $self->{d_prpdialog}->sizepos_restore("prpw", 1);
     $self->{d_prpdialog}->refresh;
     $self->{d_prpdialog}->ShowModal;
 }
@@ -387,7 +389,7 @@ sub OnPreferences {
        "Voorkeursinstellingen",
        wxDefaultPosition, wxDefaultSize,
       );
-    $self->{$p}->sizepos_restore("prefw");
+    $self->{$p}->sizepos_restore("prefw", 1);
     $self->{$p}->refresh;
     $self->{$p}->Show(1);
 }
@@ -434,7 +436,7 @@ sub OnMRel {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{$p}->sizepos_restore("relw");
-    $self->{$p}->refresh;
+#    $self->{$p}->refresh;
     $self->{$p}->Show(1);
 }
 
@@ -443,7 +445,8 @@ sub OnMBtw {
     my ($self, $event) = @_;
     require EB::Wx::Maint::BTWTarieven;
     my $p = "d_mbtwpanel";
-    $self->{$p} ||= EB::Wx::Maint::BTWTarieven->new
+    $self->{$p}->Destroy if $self->{$p};
+    $self->{$p} = EB::Wx::Maint::BTWTarieven->new
       ($self, -1,
        "Onderhoud BTW instellingen",
        wxDefaultPosition, wxDefaultSize,
@@ -614,7 +617,7 @@ sub OnROBal {
 # wxGlade: EB::Wx::MainFrame::OnDoc <event_handler>
 sub OnDoc {
     my ($self, $event) = @_;
-    Wx::LaunchDefaultBrowser("http:www.eekboek.nl/docs/index.html");
+    Wx::LaunchDefaultBrowser("$EB::url/docs/index.html");
 }
 
 # wxGlade: EB::Wx::MainFrame::OnAbout <event_handler>
