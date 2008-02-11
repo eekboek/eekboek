@@ -1,11 +1,11 @@
 #! perl
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
+# RCS Info        : $Id: GridPanel.pm,v 1.7 2008/02/11 15:22:40 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb  8 15:54:30 2008
-# Update Count    : 322
+# Last Modified On: Mon Feb 11 11:29:20 2008
+# Update Count    : 326
 # Status          : Unknown, Use with caution!
 
 # GridPanel implements a widget that is row/column oriented, and
@@ -90,7 +90,7 @@ sub new {
 # and and array ref with construction data as the second element.
 
 sub create {
-    my ($self, $cols, $vgap, $hgap) = @_;
+    my ($self, $cols, $vgap, $hgap, $rows) = @_;
 
     die(__PACKAGE__ . " columns argument must be an array ref")
       unless UNIVERSAL::isa($cols, 'ARRAY');
@@ -119,7 +119,7 @@ sub create {
 	}
     }
     else {
-	$self->{grid} = Wx::FlexGridSizer->new(1, $self->{cols}, $vgap, $hgap);
+	$self->{grid} = Wx::FlexGridSizer->new($rows||1, $self->{cols}, $vgap, $hgap);
 	my $i = 0;
 	my $flip = 0;
 	foreach my $col ( @$cols ) {
@@ -354,8 +354,24 @@ sub commit_changes {
     }
 }
 
+sub new_or_append_noupdate {
+    my ($self, $new, @values) = @_;
+    $self->_new_or_append($new, 1, @values);
+}
+
 sub new_or_append {
     my ($self, $new, @values) = @_;
+    $self->_new_or_append($new, 0, @values);
+}
+
+sub _new_or_append {
+    my ($self, $new, $more, @values) = @_;
+    if ( $more && $more == 2 ) {
+	$self->{grid}->FitInside($self->{panel});
+	$self->Layout();
+	return;
+    }
+
     my $r = $self->{rows}++;
     my $c = 0;
     foreach my $col ( @{$self->{grid_cols}} ) {
@@ -365,7 +381,13 @@ sub new_or_append {
 	if ( UNIVERSAL::isa($col, 'ARRAY') ) {
 	    ($f, @args) = @$col;
 	}
-	push(@args, shift(@values)) unless $new;
+	unless ( $new ) {
+	    my $val = shift(@values);
+	    if ( ref($val) eq 'ARRAY' ) {
+		($f, $val) = @$val;
+	    }
+	    push(@args, $val);
+	}
 
 	if ( $f eq EB::Wx::UI::GridPanel::RemoveButton:: ) {
 	    $w = $self->rembut($r) = $f->new($self->{panel}, 0);
@@ -385,8 +407,10 @@ sub new_or_append {
 	}
     }
 
-    $self->{grid}->FitInside($self->{panel});
-    $self->Layout();
+    unless ( $more ) {
+	$self->{grid}->FitInside($self->{panel});
+	$self->Layout();
+    }
     $self->{_check_changed}++;
     $r;
 }
