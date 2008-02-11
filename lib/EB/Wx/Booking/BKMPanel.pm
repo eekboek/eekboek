@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BKMPanel.pm,v 1.5 2008/02/08 20:27:44 jv Exp $
+# $Id: BKMPanel.pm,v 1.6 2008/02/11 15:05:39 jv Exp $
 
 package main;
 
@@ -158,8 +158,14 @@ sub resize {
     }
 
     # Get available width.
-    my $width = ($gr->GetSizeWH)[0];
-    $width -= 20;			# scrollbar
+    my $width;
+    if ( $gr->can("GetVirtualSizeWH") ) {
+	$width = ($gr->GetVirtualSizeWH)[0];
+    }
+    else {
+	# Assume scrollbar.
+	$width = ($gr->GetSizeWH)[0] - 16;
+    }
 
     # Scale columns if possible.
     if ( $w < $width ) {
