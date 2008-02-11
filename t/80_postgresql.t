@@ -1,4 +1,4 @@
-# $Id: 80_postgresql.t,v 1.2 2006/01/18 20:42:52 jv Exp $  -*-perl-*-
+# $Id: 80_postgresql.t,v 1.3 2008/02/11 22:22:45 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More tests => 4;
@@ -27,6 +27,10 @@ SKIP: {
 	my @ds;
 	eval {
 	    @ds = DBI->data_sources("Pg");
+
+	    skip("No access to database", 2)
+	      if $DBI::errstr =~ /FATAL:\s*role .* does not exist/;
+
 	    ok(!$DBI::errstr, "Database Connect");
 	    diag("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
 	};
