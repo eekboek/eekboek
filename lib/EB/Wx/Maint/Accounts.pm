@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Accounts.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
+# $Id: Accounts.pm,v 1.7 2008/02/11 15:06:18 jv Exp $
 
 package main;
 
@@ -47,7 +47,7 @@ sub new {
 	$self->{acc_tree} = EB::Wx::Maint::Accounts::TreeCtrl->new($self->{tree_pane}, -1, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
 	$self->{l_acc_id} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Nr."), wxDefaultPosition, wxDefaultSize, );
 	$self->{l_acc_desc} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Omschrijving"), wxDefaultPosition, wxDefaultSize, );
-	$self->{t_acc_id} = EB::Wx::UI::NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+	$self->{t_acc_id} = EB::Wx::UI::NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{t_acc_desc} = Wx::TextCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{rb_balres} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Indeling"), wxDefaultPosition, wxDefaultSize, [_T("Balans"), _T("Resultaat")], 0, wxRA_SPECIFY_ROWS);
 	$self->{rb_debcrd} = Wx::RadioBox->new($self->{maint_pane}, -1, _T("Richting"), wxDefaultPosition, wxDefaultSize, [_T("Debet"), _T("Credit")], 0, wxRA_SPECIFY_ROWS);
@@ -234,8 +234,11 @@ sub set_acc {
     $rr = $dbh->do("SELECT jnl_acc_id FROM Journal".
 		   " WHERE jnl_acc_id = ?".
 		   " LIMIT 1", $id);
-    foreach ( qw(t_acc_id rb_balres rb_kstomz rb_debcrd ch_btw) ) {
+    foreach ( qw(rb_balres rb_kstomz rb_debcrd ch_btw) ) {
 	$self->{$_}->Enable(!$rr->[0]);
+    }
+    foreach ( qw(t_acc_id) ) {
+	$self->{$_}->SetEditable(!$rr->[0]); # TODO
     }
 
     $self->{b_accept}->Enable(0);
@@ -349,22 +352,26 @@ sub check_id {
     return 1 if $obj->GetValue == $self->{_id};
     my $rr = $dbh->do("SELECT COUNT(*) FROM Journal WHERE jnl_acc_id = ?", $self->{_id});
     if ( $rr && $rr->[0] ) {
-	Wx::MessageBox("Rekeningnummer ".
-		       ($self->{_id}).
-		       " is in gebruik en kan daarom niet worden gewijzigd.",
-		       "In gebruik",
-		       wxOK|wxICON_ERROR);
+	EB::Wx::MessageDialog
+	    ($self,
+	     "Rekeningnummer ".
+	     ($self->{_id}).
+	     " is in gebruik en kan daarom niet worden gewijzigd.",
+	     "In gebruik",
+	     wxOK|wxICON_ERROR);
 	local($self->{busy}) = 1;
 	$obj->SetValue($self->{_id});
 	return 0;
     }
     $rr = $dbh->do("SELECT COUNT(*) FROM Accounts WHERE acc_id = ?", $obj->GetValue);
     if ( $rr && $rr->[0] ) {
-	Wx::MessageBox("Rekeningnummer ".
-		       ($obj->GetValue).
-		       " bestaat reeds.",
-		       "In gebruik",
-		       wxOK|wxICON_ERROR);
+	EB::Wx::MessageDialog
+	    ($self,
+	     "Rekeningnummer ".
+	     ($obj->GetValue).
+	     " bestaat reeds.",
+	     "In gebruik",
+	     wxOK|wxICON_ERROR);
 	local($self->{busy}) = 1;
 	$obj->SetValue($self->{_id});
 	return 0;
@@ -425,12 +432,14 @@ sub OnBalresClicked {
     my ($self, $event) = @_;
     return if $self->{rb_balres}->GetSelection != $self->{_balres};
     $self->{rb_balres}->SetSelection(!$self->{_balres});
-    Wx::MessageBox("Om de balans/resultaat eigenschap te wijzigen ".
-		   "dient u de rekening in het linker venster ".
-		   "te slepen naar de gewenste plaats onder ".
-		   ($self->{_balres} ? "Resultaat" : "Balans")."rekeningen",
-		   "Niet zo",
-		   wxOK|wxICON_ERROR);
+    EB::Wx::MessageDialog
+	($self,
+	 "Om de balans/resultaat eigenschap te wijzigen ".
+	 "dient u de rekening in het linker venster ".
+	 "te slepen naar de gewenste plaats onder ".
+	 ($self->{_balres} ? "Resultaat" : "Balans")."rekeningen",
+	 "Niet zo",
+	 wxOK|wxICON_ERROR);
 }
 
 # wxGlade: EB::Wx::Maint::Accounts::OnDebcrdClicked <event_handler>
@@ -477,6 +486,7 @@ sub OnAccept {
 		     $self->{_debcrd} = 1 - $self->{rb_debcrd}->GetSelection,
 		     $self->{struct},
 		     $self->{_btw} = $self->{ch_btw}->GetSelection);
+	$dbh->begin_work;
 	$dbh->sql_exec($sql, @args)->finish;
 	$dbh->commit;
 	$self->{struct} = 0;
@@ -516,9 +526,11 @@ sub OnAccept {
 	    $dbh->begin_work;
 	    eval { $dbh->sql_exec($sql, @args)->finish };
 	    if ( $@ ) {
-		Wx::MessageBox("Fout tijdens de verwerking\n$@",
-			       "Annuleren",
-			       wxOK|wxICON_ERROR);
+		EB::Wx::MessageDialog
+		    ($self,
+		     "Fout tijdens de verwerking\n$@",
+		     "Annuleren",
+		     wxOK|wxICON_ERROR);
 		$dbh->rollback;
 	    }
 	    else {
@@ -558,10 +570,12 @@ sub OnReset {
 sub OnClose {
     my ($self, $event) = @_;
     if ( $self->changed ) {
-	my $r = Wx::MessageBox("Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
-			       "Venster toch sluiten?",
-			       "Annuleren",
-			       wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
+	my $r = EB::Wx::MessageDialog
+	  ($self,
+	   "Er zijn nog wijzigingen, deze zullen verloren gaan.\n".
+	   "Venster toch sluiten?",
+	   "Annuleren",
+	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
 	return unless $r == wxYES;
     }
     # Remember position and size.

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: TreeCtrl.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
+# $Id: TreeCtrl.pm,v 1.7 2008/02/11 15:09:10 jv Exp $
 
 use strict;
 
@@ -17,6 +17,7 @@ package EB::Wx::Maint::Accounts::TreeCtrl;
 
 use strict;
 use base qw(Wx::TreeCtrl);
+use EB::Wx::Window;
 
 sub new {
     my $class = shift;
@@ -36,10 +37,10 @@ sub new {
     Wx::Event::EVT_TREE_ITEM_EXPANDED ($self, $self, \&OnExpand);
     Wx::Event::EVT_TREE_ITEM_COLLAPSED($self, $self, \&OnCollapse);
     Wx::Event::EVT_TREE_ITEM_ACTIVATED($self, $self, \&OnActivate);
-#    Wx::Event::EVT_TREE_BEGIN_DRAG    ($self, $self, \&OnBeginDrag);
-#    Wx::Event::EVT_TREE_END_DRAG      ($self, $self, \&OnEndDrag);
+    Wx::Event::EVT_TREE_BEGIN_DRAG    ($self, $self, \&OnBeginDrag);
+    Wx::Event::EVT_TREE_END_DRAG      ($self, $self, \&OnEndDrag);
 
-#    Wx::Event::EVT_RIGHT_DOWN ($self, \&OnRightClick);
+    Wx::Event::EVT_RIGHT_DOWN ($self, \&OnRightClick);
 
     Wx::Event::EVT_IDLE($self, \&OnIdle);
 
@@ -55,7 +56,7 @@ sub OnIdle {
     }
     if ( my $msg = $self->{msg} ) {
 	$self->{msg} = 0;
-	Wx::MessageBox(@$msg);
+	EB::Wx::MessageDialog($self, @$msg);
     }
 }
 
@@ -107,6 +108,7 @@ sub OnEndDrag {
 	    $self->AppendItem($dst, $text, -1, -1, Wx::TreeItemData->new($sdata));
 	    $self->SortChildren($dst);
 	    $self->Delete($src);
+	    $dbh->begin_work;
 	    $dbh->sql_exec("UPDATE Accounts".
 			   " SET acc_struct = ?, acc_balres = ?".
 			   " WHERE acc_id = ?",
@@ -134,6 +136,7 @@ sub OnEndDrag {
 	    $self->Delete($src);
 	    my $sbalres = $dbh->lookup($sdata->[0], qw(Verdichtingen vdi_id vdi_balres));
 	    my $dbalres = $dbh->lookup($ddata->[0], qw(Verdichtingen vdi_id vdi_balres));
+	    $dbh->begin_work;
 	    $dbh->sql_exec("UPDATE Verdichtingen".
 			   " SET vdi_struct = ?, vdi_balres = ?".
 			   " WHERE vdi_id = ?",
@@ -164,6 +167,7 @@ sub OnEndDrag {
 	    $self->Delete($src);
 	    my $sbalres = $dbh->lookup($sdata->[0], qw(Verdichtingen vdi_id vdi_balres));
 	    my $dbalres = $dbh->lookup($ddata->[0], qw(Verdichtingen vdi_id vdi_balres));
+	    $dbh->begin_work;
 	    $dbh->sql_exec("UPDATE Verdichtingen".
 			   " SET vdi_balres = ?".
 			   " WHERE vdi_id = ? OR vdi_struct = ?",
@@ -295,8 +299,8 @@ sub ctxmenu {
 	$ctxmenu->Append(CTXMENU_COLLAPSE, "Dichtvouwen");
     }
     $ctxmenu->Append(CTXMENU_RENAME,   "Omschrijving wijzigen");
-#    $ctxmenu->AppendSeparator;
-#    $ctxmenu->Append(CTXMENU_NEW,      "Nieuw ...");
+    $ctxmenu->AppendSeparator;
+    $ctxmenu->Append(CTXMENU_NEW,      "Nieuw ...");
 #    $ctxmenu->AppendSeparator;
 #    $ctxmenu->Append(CTXMENU_DELETE,   "Verwijderen");
 
@@ -324,6 +328,7 @@ sub ctxmenu {
 				my $t = $event->GetLabel;
 				$self->[1] = $t;
 				Wx::LogMessage("New label for %d: %s", $self->[0], $t);
+				$dbh->begin_work;
 				$dbh->sql_exec("UPDATE Accounts SET acc_desc = ? WHERE acc_id = ?",
 					       $self->[1], $self->[0])->finish;
 				$dbh->commit;
@@ -340,12 +345,14 @@ sub ctxmenu {
 	     sub {
 		 # my ($self, $event) = @_;
 		 my ($aid) = $self->[0];
-		 my $r = Wx::MessageBox
-		   ("$aid: " . ($self->[1]) . "\n" .
+		 my $r = EB::Wx::MessageDialog
+		   ($self,
+		    "$aid: " . ($self->[1]) . "\n" .
 		    "Wilt u deze rekening verwijderen?",
 		    "Bevestig",
 		    wxYES_NO|wxNO_DEFAULT|wxICON_QUESTION);
 		 return unless $r == wxYES;
+		 $dbh->begin_work;
 		 $dbh->sql_exec("DELETE FROM Accounts WHERE acc_id = ?",
 				$aid)->finish;
 		 $dbh->commit;
