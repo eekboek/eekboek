@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: StdAccPanel.pm,v 1.6 2008/02/08 20:27:44 jv Exp $
+# $Id: StdAccPanel.pm,v 1.7 2008/02/11 15:23:34 jv Exp $
 
 package main;
 
@@ -17,6 +17,8 @@ use EB;
 
 # begin wxGlade: ::dependencies
 use EB::Wx::UI::BalAccInput;
+use EB::Wx::UI::ListInput;
+use EB::Wx::Window;
 # end wxGlade
 
 sub new {
@@ -53,14 +55,14 @@ sub new {
 	$self->__set_properties();
 	$self->__do_layout();
 
-	Wx::Event::EVT_TEXT($self, $self->{tx_deb}->GetId, \&OnChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_crd}->GetId, \&OnChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_winst}->GetId, \&OnChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btw_ih}->GetId, \&OnChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btw_vh}->GetId, \&OnChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btw_il}->GetId, \&OnChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btw_vl}->GetId, \&OnChanged);
-	Wx::Event::EVT_TEXT($self, $self->{tx_btw_ok}->GetId, \&OnChanged);
+	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_deb}->GetId, \&OnChanged);
+	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_crd}->GetId, \&OnChanged);
+	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_winst}->GetId, \&OnChanged);
+	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_ih}->GetId, \&OnChanged);
+	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_vh}->GetId, \&OnChanged);
+	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_il}->GetId, \&OnChanged);
+	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_vl}->GetId, \&OnChanged);
+	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_ok}->GetId, \&OnChanged);
 	Wx::Event::EVT_BUTTON($self, $self->{b_apply}->GetId, \&OnApply);
 	Wx::Event::EVT_BUTTON($self, $self->{b_reset}->GetId, \&OnReset);
 
@@ -186,9 +188,11 @@ sub OnApply {
     eval { $self->apply };
     if ( $@ ) {
 	$dbh->rollback;
-	Wx::MessageBox("Dat ging niet helemaal lekker.\n".$@,
-		       "Oeps",
-		       wxOK|wxICON_ERROR);
+	EB::Wx::MessageDialog
+	    ($self,
+	     "Dat ging niet helemaal lekker.\n".$@,
+	     "Oeps",
+	     wxOK|wxICON_ERROR);
     }
     else {
 	#$dbh->commit;
@@ -205,8 +209,10 @@ sub apply {
 	    my $inuse = $dbh->do("SELECT COUNT(*) FROM Journal WHERE jnl_acc_id = ?",
 				 $t)->[0];
 	    if ( $inuse ) {
-		Wx::MessageBox("Rekening $t is in gebruik", "In gebruik",
-			       wxOK|wxICON_ERROR);
+		EB::Wx::MessageBox
+		    ($self,
+		     "Rekening $t is in gebruik", "In gebruik",
+		     wxOK|wxICON_ERROR);
 		next;
 	    }
 	    push(@set, "std_acc_$acc = $t");
