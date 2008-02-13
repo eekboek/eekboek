@@ -10,7 +10,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.102 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.103 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -1124,7 +1124,7 @@ sub do_verwijder {
 	$cmd = EB::Booking::Decode->decode($id, { boekjaar => $opts->{boekjaar}, trail => 1, bsknr => 1, single => 1 });
     }
     my $res = EB::Booking::Delete->new->perform($id, $opts);
-    if ( $self->{interactive} && $res !~ /^[?!]/ ) {	# no error
+    if ( $res && $self->{interactive} && $res !~ /^[?!]/ ) {	# no error
 	$self->term->addhistory($cmd);
     }
     $res;
