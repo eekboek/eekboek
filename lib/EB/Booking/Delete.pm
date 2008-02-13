@@ -8,12 +8,12 @@ our $config;
 
 package EB::Booking::Delete;
 
-# RCS Id	  : $Id: Delete.pm,v 1.12 2008/02/07 12:10:08 jv Exp $ 
+# RCS Id	  : $Id: Delete.pm,v 1.13 2008/02/13 15:19:19 jv Exp $ 
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:10:06 2008
-# Update Count    : 84
+# Last Modified On: Wed Feb 13 16:13:19 2008
+# Update Count    : 85
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,7 +21,7 @@ package EB::Booking::Delete;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
 
 use EB;
 use base qw(EB::Booking);
@@ -49,8 +49,17 @@ sub perform {
 
     return unless $self->in_bky($dd, $begin, $end);
     if ( $does_btw && $dbh->adm("btwbegin") && $dd lt $dbh->adm("btwbegin") ) {
-	warn("?"._T("Deze boeking valt in de periode waarover al BTW aangifte is gedaan en kan niet meer worden verwijderd")."\n");
-	return;
+	my $r = $dbh->do("SELECT COUNT(*)".
+			 " from Boekstukregels, Boekstukken".
+			 " WHERE bsr_bsk_id = bsk_id".
+			 " AND bsr_bsk_id = ?".
+			 " AND ( bsr_btw_class != 0 OR bsr_btw_id != 0 )".
+			 " LIMIT 1",
+			 $bsk);
+	if ( $r && $r->[0] ) {
+	    warn("?"._T("Deze boeking valt in de periode waarover al BTW aangifte is gedaan en kan niet meer worden verwijderd")."\n");
+	    return;
+	}
     }
 
     # Check if this boekstuk is used by others. This can only be the
