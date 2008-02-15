@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.07 (unstable) is beschikbaar
+Subject: EekBoek 1.03.08 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,17 +9,17 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.07, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.08, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.07-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.03.07.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.08-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.03.08.tar.gz
 
 Kits:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.07-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.07-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.07-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek.ppd
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.08-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.08-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.08-1.noarch.rpm
+* http://www.eekboek.nl/dl/ppms/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
 ervan vind je op http://www.eekboek.nl/fedora/RPM-PGP-KEY-EekBoek.
@@ -32,12 +32,15 @@ Zie voor meer informatie http://www.eekboek.nl/fedora/repoview .
 De aanbevolen manier van installeren is door middel van de RPM
 "EekBoek-unstable" samen met tenminste een van de "db" rpms.
 
-LET OP: EXPORTEER VOOR DE ZEKERHEID JE ADMINISTRATIE EN HOU DEZE
-ACHTER DE HAND!
+Belangrijkste wijzigingen t.o.v. 1.03.07:
 
-Belangrijkste wijzigingen t.o.v. 1.03.06:
+* Boekingen in een periode waarover BTW aangifte is gedaan
+  kunnen toch worden gewijzigd als deze boeken geen betrekking
+  heeft op de BTW (m.a.w., BTW type Neutraal).
 
-* Cruciale bugfixes.
+* Fix problem met #! in ebshell script bij CPAN build.
+
+* Kleine aanpassingen t.b.v. de GUI.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
