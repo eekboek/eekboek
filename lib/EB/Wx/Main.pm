@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Main.pm,v 1.5 2008/02/15 21:46:21 jv Exp $ ';
+my $RCS_Id = '$Id: Main.pm,v 1.6 2008/02/15 22:08:54 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Wx::Main;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb 15 22:44:52 2008
-# Update Count    : 279
+# Last Modified On: Fri Feb 15 23:07:06 2008
+# Update Count    : 282
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -68,10 +68,11 @@ our @EXPORT = qw(run);
 BEGIN { $app = {} }
 
 use EB;
+use EekBoek;
 BEGIN {
     my $req = "1.03.08";
-    die("EekBoek $EB::VERSION -- GUI vereist EekBoek versie $req of nieuwer\n")
-      if $req gt $EB::VERSION;
+    die("EekBoek $EekBoek::VERSION -- GUI vereist EekBoek versie $req of nieuwer\n")
+      if $req gt $EekBoek::VERSION;
 }
 
 use strict;
@@ -164,100 +165,17 @@ sub showtips {
     }
 }
 
-################ Configuration / State ################
+################ State ################
 
 sub init_state {
-    use EB::Wx::AppConfig qw(:argcount);
-    $state = EB::Wx::AppConfig->new();
-
-    # Predefine config variables.
-    $state->define("app",      { ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("appname",  { DEFAULT => $app_name, ARGCOUNT => ARGCOUNT_ONE });
-
-    $state->define("trace",    { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("verbose",  { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("debug",    { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-
-    $state->define("showsplash", { DEFAULT => 1, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("showtips", { DEFAULT => 1, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("lasttip",  { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("lastdb",   { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("bky",      { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("expfile",  { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("expdir",   { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-
-    # Windows that remember their size/positions.
-    my @windows =
-      ( "mainw",		# MainFrame
-	"prpw",			# Properties...
-	"prefw",		# Preferences...
-	"accw",			# Maint -- AccPanel
-	"dbkw",			# Maint -- DbkPanel
-	"relw",			# Maint -- RelPanel
-	"btww",			# Maint -- BtwPanel
-	"stdw",			# Maint -- MStdAccPanel
-	"rprfw",		# Report -- RepPrf
-	"rbalw",		# Report -- RepBalRes
-	"robalw",		# Report -- RepBalRes
-	"rresw",		# Report -- RepBalRes
-	"rgbkw",		# Report -- RepGbk
-	"rjnlw",		# Report -- RepJnl
-	"rbtww",		# Report -- RepBtw
-	"rdebw",		# Report -- RepDebCrd
-	"rcrdw",		# Report -- RepDebCrd
-	"rbrpw",		# Report -- BalResProof -- Preferences
-	"ropnw",		# Report -- Openstaand
-	"ivw",			# Bookings -- IV
-	"bkmw",			# Bookings -- BKM
-      );
-
-    foreach my $w ( @windows ) {
-	$state->define($w, { ARGCOUNT => ARGCOUNT_HASH });
-	$state->$w->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-    }
-
-    # Since dagboeken are dynamic, need something else here...
-    $state->define("dbk_$_", { ARGCOUNT => ARGCOUNT_HASH })
-      foreach qw(xpos ypos xwidth ywidth);
-
-    $state->define("accsash",  { DEFAULT => 400, ARGCOUNT => ARGCOUNT_ONE });
-    $state->define("accexp",   { ARGCOUNT => ARGCOUNT_HASH });
-
-    # Load state file.
-    $state->file($app_state) if -f $app_state;
+    use EB::Wx::State;
+    $state = EB::Wx::State->new;
+    $state->load($app_state) if -f $app_state;
 }
 
 sub store_state {
     mkdir($app_dir) unless -d $app_dir;
-    open (my $cfg, ">", $app_state);
-
-    my %vars = $state->{STATE}->varlist(".");
-    #my %vars = %{$state->{STATE}->{VARIABLE}};  # voids warranty
-
-    my $p = sub { $_[0] eq "" ? '"<empty>"' : $_[0] };
-
-    while ( my ($var, $value) = each(%vars) ) {
-	unless ( ref($value) ) {
-	    print $cfg ("$var = ", $p->($value), "\n");
-	}
-	elsif ( ref($value) eq 'ARRAY' ) {
-	    foreach my $v ( @$value ) {
-		print $cfg ("$var = $v\n");
-	    }
-	}
-	elsif ( ref($value) eq 'HASH' ) {
-	    while ( my($k,$v) = each(%$value) ) {
-		print $cfg ("$var = $k=$v\n");
-	    }
-	}
-    }
-
-    close($cfg);
-
-    use Data::Dumper;
-    open($cfg, '>', $app_state.".dd");
-    print $cfg Dumper($state);
-    close($cfg);
+    $state->store($app_state);
 }
 
 ################ Subroutines ################
