@@ -9,7 +9,7 @@ package EB::Format;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.36 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.37 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Expression;
@@ -137,6 +137,7 @@ EOD
 EOD
     $sub .= <<EOD;
     }
+    \$v =~ s/^\\+//;
 EOD
 
     eval("sub numfmt_plain { $sub; \$v }");
@@ -145,13 +146,10 @@ EOD
     $sub .= <<EOD if $thousandsep;
     \$v = reverse(\$v);
     \$v =~ s/(\\d\\d\\d)(?=\\d)(?!\\d*@{[quotemeta($decimalpt)]})/\${1}$thousandsep/g;
-    scalar(reverse(\$v));
-EOD
-    $sub .= <<EOD if !$thousandsep;
-    \$v;
+    \$v = scalar(reverse(\$v));
 EOD
 
-    eval("sub numfmt { $sub }");
+    eval("sub numfmt { $sub; \$v }");
     die($@) if $@;
 
     $numpat = qr/^([-+])?(\d+)?(?:[.,])?(\d{1,@{[AMTPRECISION]}})?$/;
