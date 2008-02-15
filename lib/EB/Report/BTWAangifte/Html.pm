@@ -1,10 +1,10 @@
 # Html.pm -- HTML backend for BTWAangifte
-# RCS Info        : $Id: Html.pm,v 1.12 2006/06/02 13:38:57 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.13 2008/02/15 22:00:25 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 14 14:51:19 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  2 15:33:15 2006
-# Update Count    : 36
+# Last Modified On: Fri Feb 15 23:00:16 2008
+# Update Count    : 37
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -13,6 +13,8 @@ our $cfg;
 our $dbh;
 
 package EB::Report::BTWAangifte::Html;
+
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
 
 use strict;
 use EB;
