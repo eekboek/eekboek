@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Main.pm,v 1.4 2008/02/11 15:27:42 jv Exp $ ';
+my $RCS_Id = '$Id: Main.pm,v 1.5 2008/02/15 21:46:21 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Wx::Main;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 11 16:27:40 2008
-# Update Count    : 269
+# Last Modified On: Fri Feb 15 22:44:52 2008
+# Update Count    : 279
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -69,7 +69,7 @@ BEGIN { $app = {} }
 
 use EB;
 BEGIN {
-    my $req = "1.03.07";
+    my $req = "1.03.08";
     die("EekBoek $EB::VERSION -- GUI vereist EekBoek versie $req of nieuwer\n")
       if $req gt $EB::VERSION;
 }
@@ -216,6 +216,10 @@ sub init_state {
 	$state->$w->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
     }
 
+    # Since dagboeken are dynamic, need something else here...
+    $state->define("dbk_$_", { ARGCOUNT => ARGCOUNT_HASH })
+      foreach qw(xpos ypos xwidth ywidth);
+
     $state->define("accsash",  { DEFAULT => 400, ARGCOUNT => ARGCOUNT_ONE });
     $state->define("accexp",   { ARGCOUNT => ARGCOUNT_HASH });
 
@@ -248,6 +252,11 @@ sub store_state {
 	}
     }
 
+    close($cfg);
+
+    use Data::Dumper;
+    open($cfg, '>', $app_state.".dd");
+    print $cfg Dumper($state);
     close($cfg);
 }
 
