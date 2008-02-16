@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # Sorry, I had to modify a few things -- jv
 
-# RCS Id          : $Id: Base.pm,v 1.18 2008/02/07 12:15:49 jv Exp $
+# RCS Id          : $Id: Base.pm,v 1.19 2008/02/16 15:01:58 jv Exp $
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
@@ -17,7 +17,7 @@ package EB::Shell::Base;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
 
 use EB;
 use vars qw( $XXVERSION $REVISION $PROMPT
@@ -31,8 +31,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$XXVERSION    = 0.05;   # $Date: 2008/02/07 12:15:49 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.18 $ =~ /(\d+)\.(\d+)/;
+$XXVERSION    = 0.05;   # $Date: 2008/02/16 15:01:58 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.19 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -378,6 +378,13 @@ sub run {
         $line = $self->precmd($line);
 
         ($cmd, $env, @args) = $self->parseline($line);
+
+	# If there's a quoting mistake, parseline returns nothing.
+	if ( $line =~ /\S/ && $cmd !~ /\S/ ) {
+	    warn("?Fout in de invoerregel. Controleer de \" en ' tekens.\n");
+	    next;
+	}
+
         local %ENV = (%ENV, %$env);
 
         if (! length($cmd)) {
@@ -1835,7 +1842,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.18 $.
+This documentation describes C<Shell::Base>, $Revision: 1.19 $.
 
 =head1 COPYRIGHT
 
