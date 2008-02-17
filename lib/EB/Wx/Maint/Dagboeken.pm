@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Dagboeken.pm,v 1.3 2008/02/11 15:07:32 jv Exp $
+# $Id: Dagboeken.pm,v 1.4 2008/02/17 14:12:22 jv Exp $
 
 package main;
 
@@ -159,7 +159,7 @@ sub OnClose {
 	   "Venster toch sluiten?",
 	   "Annuleren",
 	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
-	return unless $r == wxYES;
+	return unless $r == wxID_YES;
     }
 
     $self->sizepos_save;
@@ -190,6 +190,11 @@ sub OnApply {
 
 	if ( $code == 0 ) {
 	    # New.
+	    if ( !$op->[0]
+		 || !$op->[1]
+		 || ( $op->[2] != DBKTYPE_MEMORIAAL && !$op->[4] ) ) {
+		     die("Niet alle verplichte gegevens zijn ingevuld\n");
+	    }
 	    $dbh->sql_insert("Dagboeken", \@fields, @$op[0..4]);
 	}
 	elsif ( $code < 0 || $code == 4294967295 ) {
@@ -228,6 +233,7 @@ sub OnApply {
 	    else {
 		$msg = "Fout tijdens het bijwerken van dagboekcode $orig:\n". $@;
 	    }
+	    $msg =~ s/\nat .*//s;
 	    EB::Wx::MessageDialog
 		($self,
 		 $msg, "Fout tijdens het bijwerken",

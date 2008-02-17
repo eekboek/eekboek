@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Relaties.pm,v 1.10 2008/02/11 15:08:39 jv Exp $
+# $Id: Relaties.pm,v 1.11 2008/02/17 14:13:38 jv Exp $
 
 package main;
 
@@ -245,7 +245,7 @@ sub OnClose {
 	   "Venster toch sluiten?",
 	   "Annuleren",
 	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
-	return unless $r == wxYES;
+	return unless $r == wxID_YES;
     }
 
     $self->sizepos_save;
@@ -270,6 +270,9 @@ sub OnApply {
 	$dbk = $dbkmap[$dbk];
 	if ( $code == 0 ) {
 	    # New.
+	    if ( !$op->[1] || !$op->[2] || !$op->[3] || !$op->[4] ) {
+		     die("Niet alle verplichte gegevens zijn ingevuld\n");
+	    }
 	    my $debcrd = 0+($dbh->lookup($dbk, qw(Dagboeken dbk_id dbk_type)) == DBKTYPE_VERKOOP);
 	    $dbh->sql_insert("Relaties",
 			     [qw(rel_code rel_desc rel_debcrd rel_btw_status rel_ledger rel_acc_id)],
@@ -277,12 +280,28 @@ sub OnApply {
 	}
 	elsif ( $code < 0 || $code == 4294967295 ) {
 	    # Deleted.
+	    unless ( defined $orig ) {
+		EB::Wx::MessageDialog
+		    ($self,
+		     "Deze nieuw toegevoegde entry kan nog niet worden verwijderd.",
+		     "Fout tijdens het bijwerken",
+		     wxOK|wxICON_ERROR);
+		next;
+	    }
 	    $dbh->sql_exec("DELETE FROM Relaties".
 			   " WHERE rel_code = ? and rel_ledger = ?",
 			   $orig, $ledger);
 	}
 	else {
 	    # Modified.
+	    unless ( defined $orig ) {
+		EB::Wx::MessageDialog
+		    ($self,
+		     "Deze nieuw toegevoegde entry kan nog niet worden gewijzigd.",
+		     "Fout tijdens het bijwerken",
+		     wxOK|wxICON_ERROR);
+		next;
+	    }
 	    my @fields = qw(rel_code rel_desc rel_acc_id rel_ledger rel_btw_status);
 	    my @sets;
 	    my @values;
@@ -320,6 +339,7 @@ sub OnApply {
 	    else {
 		$msg = "Fout tijdens het bijwerken van $orig:\n". $@;
 	    }
+	    $msg =~ s/\nat .*//s;
 	    EB::Wx::MessageDialog
 		($self,
 		 $msg, "Fout tijdens het bijwerken",

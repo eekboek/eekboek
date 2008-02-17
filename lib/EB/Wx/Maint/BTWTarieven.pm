@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWTarieven.pm,v 1.10 2008/02/11 15:07:20 jv Exp $
+# $Id: BTWTarieven.pm,v 1.11 2008/02/17 14:11:58 jv Exp $
 
 package main;
 
@@ -158,7 +158,7 @@ sub OnClose {
 	   "Venster toch sluiten?",
 	   "Annuleren",
 	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
-	return unless $r == wxYES;
+	return unless $r == wxID_YES;
     }
 
     $self->sizepos_save;
@@ -185,6 +185,9 @@ sub OnApply {
 
 	if ( $code == 0 ) {
 	    # New.
+	    if ( !$op->[0] || !$op->[1]) {
+		     die("Niet alle verplichte gegevens zijn ingevuld\n");
+	    }
 	    $dbh->sql_insert("BTWTabel", \@fields, @$op[0..4]);
 	    #### TODO: New inserted entries lack the 'orig' data,
 	    #### so they cannot be changed or modified...
