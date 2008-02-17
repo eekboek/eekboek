@@ -1,12 +1,12 @@
 #! perl
 
 # Postgres.pm -- EekBoek driver for PostgreSQL dsatabase
-# RCS Info        : $Id: Postgres.pm,v 1.24 2008/02/07 12:18:47 jv Exp $
+# RCS Info        : $Id: Postgres.pm,v 1.25 2008/02/17 16:47:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:18:46 2008
-# Update Count    : 169
+# Last Modified On: Sun Feb 17 17:37:54 2008
+# Update Count    : 171
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::DB::Postgres;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.24 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -268,9 +268,9 @@ sub feature {
     # Unknown/unsupported features may be ignored.
 
     if ( $feat eq "pgcopy" ) {
-	return 1 if ($DBD::Pg::VERSION||0) >= 1.41;
+	return 1 if ($DBD::Pg::VERSION||"0") ge "1.41";
 	warn("%"."Not using PostgreSQL fast load. DBD::Pg::VERSION = ",
-	     ($DBD::Pg::VERSION||0), ", needs 1.41 or later\n");
+	     ($DBD::Pg::VERSION||"0"), ", needs 1.41 or later\n");
 	return;
     }
 
