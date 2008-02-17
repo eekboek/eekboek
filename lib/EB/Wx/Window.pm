@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Window.pm,v 1.2 2008/02/11 15:05:07 jv Exp $
+# $Id: Window.pm,v 1.3 2008/02/17 14:18:59 jv Exp $
 
 package main;
 
@@ -55,6 +55,40 @@ sub init {
 
 #### Override
 sub refresh {
+}
+
+sub resize_grid {
+    my ($self, $gr) = @_;
+
+    # Calculate minimal fit.
+    $gr->AutoSizeColumns(1);
+
+    # Get the total minimal width.
+    my $w = 0;
+    my @w;
+    my $cols = $gr->GetNumberCols;
+    for ( 0 .. $cols-1 ) {
+	push(@w, $gr->GetColSize($_));
+	$w += $w[-1];
+    }
+
+    # Get available width.
+    my $width;
+    if ( $gr->can("GetVirtualSizeWH") ) {
+	$width = ($gr->GetVirtualSizeWH)[0];
+    }
+    else {
+	# Assume scrollbar.
+	$width = ($gr->GetSizeWH)[0] - 16;
+    }
+
+    # Scale columns if possible.
+    if ( $w < $width ) {
+	my $r = $width / $w;
+	for ( 0 .. $cols-1 ) {
+	    $gr->SetColSize($_, int($r*$w[$_]));
+	}
+    }
 }
 
 sub EB::Wx::MessageDialog {
