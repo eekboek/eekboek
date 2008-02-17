@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWTarieven.pm,v 1.11 2008/02/17 14:11:58 jv Exp $
+# $Id: BTWTarieven.pm,v 1.12 2008/02/17 14:13:20 jv Exp $
 
 package main;
 
@@ -244,6 +244,7 @@ sub OnApply {
 	    else {
 		$msg = "Fout tijdens het bijwerken van btwcode $orig:\n". $@;
 	    }
+	    $msg =~ s/\nat .*//s;
 	    EB::Wx::MessageDialog
 		($self,
 		 $msg, "Fout tijdens het bijwerken",
