@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Accounts.pm,v 1.7 2008/02/11 15:06:18 jv Exp $
+# $Id: Accounts.pm,v 1.8 2008/02/17 14:11:34 jv Exp $
 
 package main;
 
@@ -576,7 +576,7 @@ sub OnClose {
 	   "Venster toch sluiten?",
 	   "Annuleren",
 	   wxYES_NO|wxNO_DEFAULT|wxICON_ERROR);
-	return unless $r == wxYES;
+	return unless $r == wxID_YES;
     }
     # Remember position and size.
     $self->sizepos_save;
