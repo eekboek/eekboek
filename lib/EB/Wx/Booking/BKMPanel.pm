@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BKMPanel.pm,v 1.6 2008/02/11 15:05:39 jv Exp $
+# $Id: BKMPanel.pm,v 1.7 2008/02/17 14:18:39 jv Exp $
 
 package main;
 
@@ -180,7 +180,8 @@ sub resize {
 sub OnClose {
     my ($self, $event) = @_;
     # Remember position and size.
-    @{$state->get($self->{mew})}{qw(xpos ypos xwidth ywidth)} = ($self->GetPositionXY, $self->GetSizeWH);
+    ($state->dbk_xpos->{$self->{dbk_id}}, $state->dbk_ypos->{$self->{dbk_id}}) = $self->GetPositionXY;
+    ($state->dbk_xwidth->{$self->{dbk_id}}, $state->dbk_ywidth->{$self->{dbk_id}}) = $self->GetSizeWH;
     # Disappear.
     $self->Show(0);
 }
