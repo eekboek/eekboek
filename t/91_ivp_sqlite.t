@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 91_ivp_sqlite.t,v 1.3 2008/02/07 14:34:22 jv Exp $  -*-perl-*-
+# $Id: 91_ivp_sqlite.t,v 1.4 2008/02/17 16:47:26 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -61,7 +61,7 @@ push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
 unshift(@ebcmd, map { ("-I",
 		       "../../$_"
 		      ) } grep { /^\w\w/ } reverse @INC);
-unshift(@ebcmd, "perl");
+unshift(@ebcmd, $^X);
 
 my $fail;
 

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.12 2008/02/11 22:37:44 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.13 2008/02/17 16:47:31 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
@@ -61,7 +61,7 @@ push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
 unshift(@ebcmd, map { ("-I",
 		       "../../$_"
 		      ) } grep { /^\w\w/ } reverse @INC);
-unshift(@ebcmd, "perl");
+unshift(@ebcmd, $^X);
 
 SKIP: {
 # Check whether we can contact the database.
