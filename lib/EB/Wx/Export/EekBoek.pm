@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: EekBoek.pm,v 1.4 2008/02/11 15:21:05 jv Exp $
+# $Id: EekBoek.pm,v 1.5 2008/02/17 14:14:45 jv Exp $
 
 package main;
 
@@ -13,6 +13,7 @@ use base qw(Wx::Dialog);
 use strict;
 use EB::Wx::Window;
 use EB::Wx::UI::PeriodPanel;
+use File::Spec;
 
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
@@ -48,6 +49,8 @@ sub new {
 
 # end wxGlade
 
+	$self->{p_period}->allow_all(2);
+	$self->{p_period}->Enable(0);
 	return $self;
 
 }
@@ -109,13 +112,18 @@ sub refresh {
 sub DoExport {
     my ($self, $path, $file) = @_;
 
+    my $sel = $self->{p_period}->GetValues;
+
     my $opts = {};
+
+    $opts->{boekjaar} = $sel->{period_panel_bky}
+      if $sel->{period_panel_bky} && ! $sel->{period_panel_all};
 
     if ( defined($path) ) {
 	if ( -d $path ) {
 	    my $inuse = 0;
 	    for ( qw(schema.dat opening.eb muaties.eb relaties.eb) ) {
-		$inuse++ if -e $_;
+		$inuse++ if -e File::Spec->catfile($path, $_);
 	    }
 	    if ( $inuse ) {
 		my $ret = EB::Wx::MessageDialog
@@ -155,7 +163,7 @@ sub DoExport {
     }
     else {
 	Wx::LogMessage("Export: $path");
-	EB::Wx::MessageDialog->new
+	EB::Wx::MessageDialog
 	    ($self,
 	     "De administratie is succesvol geëxporteerd.",
 	     "Succes",
