@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: PeriodPanel.pm,v 1.3 2008/02/11 15:23:06 jv Exp $
+# $Id: PeriodPanel.pm,v 1.4 2008/02/17 14:18:00 jv Exp $
 
 package main;
 
@@ -135,6 +135,12 @@ sub allow_to {
 sub allow_from {
     my ($self, $val) = @_;
     $self->{_allow_from} = $val;
+
+}
+sub allow_all {
+    my ($self, $val) = @_;
+    $self->{_allow_all} = $val;
+
 }
 
 sub register_cb {
@@ -152,13 +158,19 @@ sub refresh {
 			     " ORDER BY bky_begin", BKY_PREVIOUS);
     $self->{c_bky}->Clear;
     @choices = ();
+
+    if ( $self->{_allow_all} ) {
+	push(@choices, 0);
+	$self->{c_bky}->Append("Alle");
+    }
+
     my $i = 0;
     my $sel;
     my $min;
     my $max;
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	push(@choices, [@$rr]);
-	$self->{c_bky}->Append($rr->[0]);
+	$self->{c_bky}->Append($rr->[0]) unless $self->{_allow_all} > 1;
 	$sel = $i if $state->bky eq $choices[-1];
 	$i++;
 	$min = $rr->[1] if !defined($min) || $min gt $rr->[1];
@@ -166,9 +178,12 @@ sub refresh {
     }
     if ( $self->{_allow_from} || $self->{_allow_to} ) {
 	push(@choices, ["Kies datum",$min,$max,""]);
-	$self->{c_bky}->Append($choices[-1]->[0]);
+	$self->{c_bky}->Append($choices[-1]->[0]) unless $self->{_allow_all} > 1;
     }
-
+    if ( $self->{_allow_all} ) {
+	$choices[0] = ["Alle", $min, $max, "Gehele administratie"];
+	$sel = 0;
+    }
     $self->{_bky} = $choices[$sel]->[0];
     my $begin = _ISOtoWxD($min);
     $min = _ISOtoWxD($choices[$sel]->[1]);
@@ -261,6 +276,8 @@ sub GetValues {
       if $self->{_allow_from};
     $ret->{period_panel_to}   = $self->{dt_to}->GetValue->FormatISODate
       if $self->{_allow_to};
+    $ret->{period_panel_all}  = $self->{c_bky}->GetSelection == 0
+      if $self->{_allow_all};
     $ret;
 }
 
