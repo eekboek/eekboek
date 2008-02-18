@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Dagboeken.pm,v 1.4 2008/02/17 14:12:22 jv Exp $
+# $Id: Dagboeken.pm,v 1.5 2008/02/18 10:20:41 jv Exp $
 
 package main;
 
@@ -197,7 +197,7 @@ sub OnApply {
 	    }
 	    $dbh->sql_insert("Dagboeken", \@fields, @$op[0..4]);
 	}
-	elsif ( $code < 0 || $code == 4294967295 ) {
+	elsif ( $code < 0 ) {
 	    # Deleted.
 	    $dbh->sql_exec("DELETE FROM Dagboeken".
 			   " WHERE dbk_id = ?",

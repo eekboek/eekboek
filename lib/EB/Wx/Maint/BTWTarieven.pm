@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWTarieven.pm,v 1.12 2008/02/17 14:13:20 jv Exp $
+# $Id: BTWTarieven.pm,v 1.13 2008/02/18 10:20:41 jv Exp $
 
 package main;
 
@@ -192,7 +192,7 @@ sub OnApply {
 	    #### TODO: New inserted entries lack the 'orig' data,
 	    #### so they cannot be changed or modified...
 	}
-	elsif ( $code < 0 || $code == 4294967295 ) {
+	elsif ( $code < 0 ) {
 	    # Deleted.
 	    unless ( defined $orig ) {
 		EB::Wx::MessageDialog

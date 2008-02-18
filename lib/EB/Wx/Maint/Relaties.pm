@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Relaties.pm,v 1.11 2008/02/17 14:13:38 jv Exp $
+# $Id: Relaties.pm,v 1.12 2008/02/18 10:20:41 jv Exp $
 
 package main;
 
@@ -278,7 +278,7 @@ sub OnApply {
 			     [qw(rel_code rel_desc rel_debcrd rel_btw_status rel_ledger rel_acc_id)],
 			     $key, $desc, $debcrd, $btw, $dbk, $acct);
 	}
-	elsif ( $code < 0 || $code == 4294967295 ) {
+	elsif ( $code < 0 ) {
 	    # Deleted.
 	    unless ( defined $orig ) {
 		EB::Wx::MessageDialog

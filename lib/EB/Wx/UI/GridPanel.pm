@@ -1,11 +1,11 @@
 #! perl
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.7 2008/02/11 15:22:40 jv Exp $
+# RCS Info        : $Id: GridPanel.pm,v 1.8 2008/02/18 10:20:41 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 11 11:29:20 2008
-# Update Count    : 326
+# Last Modified On: Mon Feb 18 11:16:27 2008
+# Update Count    : 329
 # Status          : Unknown, Use with caution!
 
 # GridPanel implements a widget that is row/column oriented, and
@@ -291,14 +291,6 @@ sub perform_update {
 	next unless $self->exists($row);
 	my $rowchanged = 0;
 	my $action = 0;
-	if ( $self->is_new($row) ) {
-	    $action = 0;
-	    $rowchanged++ unless $self->is_deleted($row);
-	}
-	elsif ( $self->is_deleted($row) ) {
-	    $action = -1;
-	    $rowchanged++ unless $self->is_new($row);
-	}
 	my @act = (0);
 	foreach my $col ( 0 .. $self->{cols}-1 ) {
 	    my $item = $self->item($row, $col);
@@ -306,9 +298,13 @@ sub perform_update {
 	    $action |= (1 << $col), $rowchanged++ if $item && $item->changed;
 	    $col++;
 	}
-
 	if ( $self->is_new($row) ) {
 	    $action = 0;
+	    $rowchanged++ unless $self->is_deleted($row);
+	}
+	elsif ( $self->is_deleted($row) ) {
+	    $action = -1;
+	    $rowchanged++ unless $self->is_new($row);
 	}
 	$act[0] = $action;
 	my $data = $self->data($row);
