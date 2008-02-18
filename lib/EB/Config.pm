@@ -1,12 +1,12 @@
 #! perl
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.13 2008/02/07 13:28:30 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.14 2008/02/18 10:31:19 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:28:28 2008
-# Update Count    : 86
+# Last Modified On: Mon Feb 18 11:07:50 2008
+# Update Count    : 88
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,9 +19,10 @@ package EB::Config;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
 
 use EB::Config::IniFiles;
+use File::Spec;
 
 my $unicode;
 
@@ -66,6 +67,15 @@ sub init_config {
 	if ( !defined($dir) ) {
 	    last unless $extraconf;
 	    $file = $extraconf;
+	    if ( -d $file ) {
+		my $f = File::Spec->catfile($file, "$app.conf");
+		if ( -e $f ) {
+		    $file = $f;
+		}
+		else {
+		    $file = File::Spec->catfile($file, ".$app.conf");
+		}
+	    }
 	    die("$file: $!\n") unless -f $file;
 	}
 	else {
