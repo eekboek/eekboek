@@ -10,7 +10,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.103 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.104 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -322,27 +322,48 @@ sub _state {
 }
 
 sub do_trace {
-    my ($self, $state) = @_;
-    return unless argcnt(scalar(@_), 1, 2);
+    my ($self, @args) = @_;
+    my $opts = { quiet => 0 };
+    return unless
+    parse_args(\@args,
+	       [ 'quiet!' ],
+	       $opts);
+    return unless argcnt(@args, 0, 1);
+    my $state = shift(@args);
     $self->{trace} = _state($self->{trace}, $state);
 
     if ( $dbh ) {
 	$dbh->trace($self->{trace});
     }
+    return "" if $opts->{quiet};
     __x("SQL Trace: {state}", state => uc($self->{trace} ? _T("aan") : _T("uit")));
 }
 
 sub do_journal {
-    my ($self, $state) = @_;
-    return unless argcnt(scalar(@_), 1, 2);
+    my ($self, @args) = @_;
+    my $opts = { quiet => 0 };
+    return unless
+    parse_args(\@args,
+	       [ 'quiet!' ],
+	       $opts);
+    return unless argcnt(@args, 0, 1);
+    my $state = shift(@args);
     $self->{journal} = _state($self->{journal}, $state);
+    return "" if $opts->{quiet};
     __x("Journal: {state}", state => uc($self->{journal} ? _T("aan") : _T("uit")));
 }
 
 sub do_confirm {
-    my ($self, $state) = @_;
-    return unless argcnt(scalar(@_), 1, 2);
+    my ($self, @args) = @_;
+    my $opts = { quiet => 0 };
+    return unless
+    parse_args(\@args,
+	       [ 'quiet!' ],
+	       $opts);
+    return unless argcnt(@args, 0, 1);
+    my $state = shift(@args);
     $self->{confirm} = _state($self->{confirm}, $state);
+    return "" if $opts->{quiet};
     __x("Bevestiging: {state}", state => uc($self->{confirm} ? _T("aan") : _T("uit")));
 }
 
