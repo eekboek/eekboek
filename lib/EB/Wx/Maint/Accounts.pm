@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Accounts.pm,v 1.8 2008/02/17 14:11:34 jv Exp $
+# $Id: Accounts.pm,v 1.9 2008/02/20 11:36:49 jv Exp $
 
 package main;
 
@@ -30,6 +30,8 @@ sub new {
 	$pos    = wxDefaultPosition  unless defined $pos;
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
+
+	$state->set("accexp", {}) unless $state->accexp;
 
 # begin wxGlade: EB::Wx::Maint::Accounts::new
 
