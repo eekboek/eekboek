@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.3 2008/02/11 15:20:51 jv Exp $
+# $Id: Preferences.pm,v 1.4 2008/02/20 15:22:26 jv Exp $
 
 package main;
 
@@ -106,6 +106,7 @@ sub init {
     }
     $self->{b_apply}->Enable(0);
     $self->refresh;
+    $self->{p_period}->set_bky($args->{pref_bky}) if $args->{pref_bky};
 }
 
 my @choices;

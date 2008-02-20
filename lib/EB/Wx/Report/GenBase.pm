@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: GenBase.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
+# $Id: GenBase.pm,v 1.3 2008/02/20 15:22:26 jv Exp $
 
 package main;
 
@@ -167,6 +167,7 @@ sub OnProps {
       );
 
     # Let it take what it wants...
+use Data::Dumper; warn(Dumper($self));
     $self->{$this}->init($self);
     my $ret = $self->{$this}->ShowModal;
 

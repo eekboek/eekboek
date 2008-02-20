@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.4 2008/02/11 15:19:37 jv Exp $
+# $Id: Preferences.pm,v 1.5 2008/02/20 15:22:26 jv Exp $
 
 package EB::Wx::Report::GenBase::Preferences;
 
@@ -80,6 +80,7 @@ sub init {
 	$self->{p_period}->allow_to(1)     if $args->{pref_from_to} & 2;
     }
     $self->refresh;
+    $self->{p_period}->set_bky($args->{pref_bky}) if $args->{pref_bky};
 }
 
 sub refresh {
