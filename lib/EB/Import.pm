@@ -1,16 +1,17 @@
 #! perl
 
 # Import.pm -- Import EekBoek administratie
-# RCS Info        : $Id: Import.pm,v 1.9 2008/02/07 12:13:48 jv Exp $
+# RCS Info        : $Id: Import.pm,v 1.10 2008/02/20 11:10:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:13:47 2008
-# Update Count    : 55
+# Last Modified On: Wed Feb 20 12:10:22 2008
+# Update Count    : 61
 # Status          : Unknown, Use with caution!
 
 package main;
 
+our $cfg;
 our $dbh;
 
 package EB::Import;
@@ -18,7 +19,7 @@ package EB::Import;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;			# needs to be setup before we can use Schema
@@ -50,6 +51,9 @@ sub do_import {
 	  or die("?".__x("Bestand \"{file}\" ontbreekt ({err})",
 			 file => "mutaties.eb", err => $!)."\n");
 
+	# To temporary suspend journaling.
+	my $jnl_state = $cfg->val(qw(preferences journal), undef);
+
 	# Create DB.
 	$dbh->cleardb if $opts->{clean};
 
@@ -59,9 +63,12 @@ sub do_import {
 	$cmdobj->_plug_cmds;
 
 	# Relaties, Opening, Mutaties.
+	# Remember: These are executed in LIFO.
+	$cmdobj->attach_lines(["journal --quiet $jnl_state"]) if $jnl_state;
 	$cmdobj->attach_file($mutaties);
 	$cmdobj->attach_file($opening);
 	$cmdobj->attach_file($relaties);
+	$cmdobj->attach_lines(["journal --quiet 0"]) if $jnl_state;
 	return;
     }
 
