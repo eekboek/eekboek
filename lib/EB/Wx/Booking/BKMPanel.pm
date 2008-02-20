@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BKMPanel.pm,v 1.7 2008/02/17 14:18:39 jv Exp $
+# $Id: BKMPanel.pm,v 1.8 2008/02/20 14:02:53 jv Exp $
 
 package main;
 
@@ -12,6 +12,7 @@ package EB::Wx::Booking::BKMPanel;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
+use base qw(EB::Wx::Window);
 use strict;
 use EB;
 use EB::Format;
@@ -35,6 +36,7 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+	$self->{sz_staticbox} = Wx::StaticBox->new($self, -1, _T("Dagboek") );
 	$self->{gr_main} = Wx::Grid->new($self, -1);
 	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, "");
 
@@ -47,7 +49,6 @@ sub new {
 
 	Wx::Event::EVT_GRID_CELL_LEFT_DCLICK($self->{gr_main}, \&OnDClick);
 
-	$self->{mew} = "bkmw";
 	$self->SetTitle($title);
 	return $self;
 
@@ -60,7 +61,7 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Booking::BKMPanel::__set_properties
 
 	$self->SetTitle(_T("Bank/Kas/Memoriaal Boeking"));
-	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(269, 169)));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(300, 168)));
 	$self->{gr_main}->CreateGrid(0, 4);
 	$self->{gr_main}->SetRowLabelSize(3);
 	$self->{gr_main}->SetColLabelSize(22);
@@ -84,11 +85,13 @@ sub __do_layout {
 	$self->{sz_outer} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_main} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sz_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_main}->Add($self->{gr_main}, 1, wxEXPAND, 0);
+	$self->{sz}= Wx::StaticBoxSizer->new($self->{sz_staticbox}, wxHORIZONTAL);
+	$self->{sz}->Add($self->{gr_main}, 1, wxALL|wxEXPAND, 5);
+	$self->{sz_main}->Add($self->{sz}, 1, wxEXPAND, 0);
 	$self->{sz_buttons}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add($self->{b_close}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_main}->Add($self->{sz_buttons}, 0, wxTOP|wxEXPAND, 5);
-	$self->{sz_outer}->Add($self->{sz_main}, 1, wxEXPAND, 0);
+	$self->{sz_outer}->Add($self->{sz_main}, 1, wxALL|wxEXPAND, 5);
 	$self->SetSizer($self->{sz_outer});
 	$self->Layout();
 
@@ -138,50 +141,15 @@ sub refresh {
 	$row++;
     }
 
-    $self->resize;
-}
-
-sub resize {
-    my ($self) = @_;
-    my $gr = $self->{gr_main};
-
-    # Calculate minimal fit.
-    $gr->AutoSizeColumns(1);
-
-    # Get the total minimal width.
-    my $w = 0;
-    my @w;
-    my $cols = $gr->GetNumberCols;
-    for ( 0 .. $cols-1 ) {
-	push(@w, $gr->GetColSize($_));
-	$w += $w[-1];
-    }
-
-    # Get available width.
-    my $width;
-    if ( $gr->can("GetVirtualSizeWH") ) {
-	$width = ($gr->GetVirtualSizeWH)[0];
-    }
-    else {
-	# Assume scrollbar.
-	$width = ($gr->GetSizeWH)[0] - 16;
-    }
-
-    # Scale columns if possible.
-    if ( $w < $width ) {
-	my $r = $width / $w;
-	for ( 0 .. $cols-1 ) {
-	    $gr->SetColSize($_, int($r*$w[$_]));
-	}
-    }
+    $self->{_curr_row} = 0;
+    $self->resize_grid($self->{gr_main});
 }
 
 # wxGlade: EB::Wx::Booking::BKMPanel::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     # Remember position and size.
-    ($state->dbk_xpos->{$self->{dbk_id}}, $state->dbk_ypos->{$self->{dbk_id}}) = $self->GetPositionXY;
-    ($state->dbk_xwidth->{$self->{dbk_id}}, $state->dbk_ywidth->{$self->{dbk_id}}) = $self->GetSizeWH;
+    $self->sizepos_save;
     # Disappear.
     $self->Show(0);
 }
