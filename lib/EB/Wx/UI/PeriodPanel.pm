@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: PeriodPanel.pm,v 1.4 2008/02/17 14:18:00 jv Exp $
+# $Id: PeriodPanel.pm,v 1.5 2008/02/20 14:09:33 jv Exp $
 
 package main;
 
@@ -143,11 +143,6 @@ sub allow_all {
 
 }
 
-sub register_cb {
-    my ($self, $cb) = @_;
-    $self->{_cb} = $cb;
-}
-
 my @choices;
 sub refresh {
     my ($self) = @_;
@@ -240,7 +235,6 @@ sub OnBky {
     $self->{_changed}++;
     $self->GetEventHandler->ProcessEvent
       (EB::Wx::UI::PeriodPanel::Event->new($evt_change, $self->GetId));
-    $self->{_cb}->($self) if $self->{_cb};
 
 # end wxGlade
 }
@@ -250,7 +244,6 @@ sub OnFromChanged {
     $self->{_changed}++;
     $self->GetEventHandler->ProcessEvent
       (EB::Wx::UI::PeriodPanel::Event->new($evt_change, $self->GetId));
-    $self->{_cb}->($self) if $self->{_cb};
 }
 
 sub OnToChanged {
@@ -258,7 +251,6 @@ sub OnToChanged {
     $self->{_changed}++;
     $self->GetEventHandler->ProcessEvent
       (EB::Wx::UI::PeriodPanel::Event->new($evt_change, $self->GetId));
-    $self->{_cb}->($self) if $self->{_cb};
 }
 
 sub changed {
