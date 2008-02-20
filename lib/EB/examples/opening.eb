@@ -1,13 +1,19 @@
+# $Id: opening.eb,v 1.6 2008/02/20 23:24:53 jv Exp $
+
 # Administratiegegevens.
 
-# Naam van de administratie
+# Naam van de administratie.
 adm_naam "EekBoek Demo Administratie"
+
+# Periode waarover BTW aangifte moet worden gedaan.
 adm_btwperiode jaar
-adm_begindatum 2005
+
+# Begindatum van deze administratie.
+adm_begindatum 2007
 
 # Standaard wordt voor als boekjaarcode het jaartal gebruikt. U kunt
 # ook iets anders opgeven.
-adm_boekjaarcode "2005"
+adm_boekjaarcode "2007"
 
 # Data voor openingsbalans:
 
@@ -15,21 +21,19 @@ adm_boekjaarcode "2005"
 # overeenkomt met het totaal van alle credit posten.
 adm_balanstotaal 15854,77
 
-# Grootboekrekening Bedrag
-
-adm_balans  230  1344.37
-adm_balans  231  1304.81
-adm_balans  240 13378.48
-adm_balans  241 12106.78
-adm_balans 1120  1131.92
-adm_balans  500  2443.18
+# De openingsposten.
+adm_balans 1100  1344,37        # Inventaris en inrichting
+adm_balans 1101  1304,81        # Afschr. Inv. en inr.
+adm_balans 1110 13378,48        # Computers
+adm_balans 1111 12106,78        # Afscr. computers
+adm_balans 2320  1131,92        # Saldo Postbank
+adm_balans 3100  2443,18        # Kapitaal
 
 # Openstaande posten uit voorgaande boekjaren als volgt:
 # Eerst, indien nodig, de betreffende relatie toevoegen:
-#relatie KESTER "Repro van Kesteren" 4950
+#relatie KESTER "Repro van Kesteren" 6950
 # Dan het openstaande boekstuk:
-#adm_relatie inkoop:2004:67 2004-12-11 "KESTER" "Printwerk" 48.79
+#adm_relatie inkoop:2006:67 2006-12-11 "KESTER" "Printwerk" 48,79
 
 # Open de administratie.
-
 adm_open
