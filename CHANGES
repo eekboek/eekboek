@@ -1,4 +1,55 @@
-1.03.06	05-02-2008
+1.03.09
+
+	* Update PPD met 5.10 info.
+
+	* --config (-f) accepteert nu ook de naam van een directory,
+	  en probeert dan eekboek.conf en .eekboek.conf.
+
+	* Commando's 'journal', 'trace' en 'confirm' kennen nu
+          een'--quiet' optie, waardoor de opdrachten stil worden
+          uitgevoerd.
+
+	* Journaalposten worden niet meer gerapporteerd tijdens import
+          en init.
+
+	* Nieuw, actueel, eenvoudiger en beter schema voor de example
+          database.
+
+	* Verified to work with Perl 5.10.0 and DBD::Pg 2.0.0.
+
+	* Fix CPAN testing problems that cause the wrong perl to be used.
+
+	* Fix CPAN testing problems that cause the wrong sample files
+          to be used.
+
+	* Elimineer warnings bij export van administraties die niet
+          alle standaardkoppelingen hebben.
+
+	* Fix issue 1871576.
+
+1.03.08	15-02-2008 21:08
+
+	* Boekingen in een periode waarover BTW aangifte is gedaan
+          kunnen toch worden gewijzigd als deze boeken geen betrekking
+          heeft op de BTW (m.a.w., BTW type Neutraal).
+
+	* Fix problem met #! in ebshell script bij CPAN build.
+
+	* Kleine aanpassingen t.b.v. de GUI.
+
+1.03.07	06-02-2008 18:12
+
+	* Fix bug waardoor een adm_relatie met datum 31-12 niet werd
+          geaccepteerd wanneer er al eerdere boekingen in dat jaar
+          waren.
+
+	* Fix bug waardoor openstaande posten uit voorgaande jaren
+	  XXXX leidden tot de melding "Boekjaar XXXX nog niet
+	  afgesloten".
+	
+	* Fix auto-migratie bug.
+
+1.03.06	05-02-2008 11:57
 
 	* Enkele aanpassingen in het strategy:bkm_multi gebeuren. Omdat
 	  het zoekproces enige tijd in beslag kan nemen (enkele minuten
@@ -79,7 +130,7 @@
 
 	  De migratie is echter ok. Daarna kun je opnieuw opstarten.
 
-1.03.05
+1.03.05	28-10-2007 20:57
 
 	IV Boekingen:  Config optie strategy:iv_vc.
         Bij het boeken in een Inkoop- of Verkoopdagboek wordt BTW
@@ -94,7 +145,7 @@
 	Dit gedrag kan worden afgezet door de strategy
 	optie iv_vc de waarde 0 te geven.
 
-1.03.04
+1.03.04	18-07-2007 19:15
 
 	WAARSCHUWING: Hoewel de database niet is gewijzigd moeten
 	bestaande administraties worden geëxporteerd en weer
@@ -117,7 +168,7 @@
 	Klant-specifieke wijzigingen in de (niet ondersteunde)
 	DaviAccount import module.
 
-1.03.03
+1.03.03	27-06-2007 12:39
 
 	BKM Boekingen: Toon bedrag en relatie indien geen openstaande
 	post kan worden gevonden.
@@ -135,7 +186,7 @@
 
 	Kleine bugfixes.
 
-1.03.02
+1.03.02	04-02-2007 21:29
 
 	Fix probleem met foutieve export van adm_btwperiode in
 	multi-jaar admin (issue 1628783).
@@ -154,7 +205,7 @@
 
 	Fix probleem met UTF-8 data in Latin1 files in export zip.
 
-1.03.01
+1.03.01	27-12-2006 15:48
 
 	*** DATABASE STRUCTUUR IS GEWIJZIGD ***
 	Export de data voor de upgrade! Database migratie werkt alleen
@@ -177,7 +228,7 @@
 
 	Fix probleem met het opruimen van de directories na (rpm) uninstall.
 
-1.03.00
+1.03.00	13-12-2006 21:55
 
 	Expliciete controle of een nieuw boekstuknummer nog vrij is,
 	ter voorkoming van een onvriendelijke "dup key" melding.
