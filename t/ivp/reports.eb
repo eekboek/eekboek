@@ -32,6 +32,10 @@ grootboek --detail=0 --output=grootboek0.txt
 grootboek --detail=1 --output=grootboek1.txt
 grootboek --detail=2 --output=grootboek2.txt
 
+# Verify: Crediteuren/Debiteuren.
+crediteuren          --output=crdrept.txt
+debiteuren           --output=debrept.txt
+
 # Verify: BTW aangifte.
 btwaangifte j --output=btw.txt
 
