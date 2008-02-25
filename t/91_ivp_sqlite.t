@@ -1,7 +1,10 @@
-#!/usr/bin/perl
-# $Id: 91_ivp_sqlite.t,v 1.5 2008/02/25 11:48:17 jv Exp $  -*-perl-*-
+#! perl
+
+# $Id: 91_ivp_sqlite.t,v 1.6 2008/02/25 11:51:13 jv Exp $  -*-perl-*-
 
 use strict;
+use warnings;
+
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
   : (tests => 43);

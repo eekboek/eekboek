@@ -1,12 +1,8 @@
                                                      Journaal
-Periode: 2005-01-01 t/m 2005-12-31
-EekBoek Demo Administratie                                                                      EekBoek, 2005-12-31
+Periode: 2007-01-01 t/m 2007-12-31
+EekBoek Demo Administratie                                                                      EekBoek, 2007-12-31
 
 Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstuk/regel                  Relatie
 -------------------------------------------------------------------------------------------------------------------
-2005-12-07  Postbank:24                                                  Girotel, ADSL
-2005-12-07    Crediteuren                    1600      22,80               *Internet                     XS4ALL
-2005-12-07    Bankkosten                     4980       2,70               Girotel
-2005-12-07    Postbank                       1120                 25,50    Girotel, ADSL
 -------------------------------------------------------------------------------------------------------------------
-            Totaal Boekstuk Postbank:24                25,50      25,50
+            Totaal Boekstuk Postbank:24                 0,00       0,00

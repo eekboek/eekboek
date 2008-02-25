@@ -1,7 +1,10 @@
-#!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.14 2008/02/25 11:46:14 jv Exp $  -*-perl-*-
+#! perl
+
+# $Id: 90_ivp.t,v 1.15 2008/02/25 11:50:56 jv Exp $  -*-perl-*-
 
 use strict;
+use warnings;
+
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
   : (tests => 43);

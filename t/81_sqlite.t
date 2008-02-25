@@ -1,6 +1,8 @@
-# $Id: 81_sqlite.t,v 1.1 2006/10/10 18:46:26 jv Exp $  -*-perl-*-
+# $Id: 81_sqlite.t,v 1.2 2008/02/25 11:50:28 jv Exp $  -*-perl-*-
 
 use strict;
+use warnings;
+
 use Test::More tests => 4;
 
 # Some basic tests.

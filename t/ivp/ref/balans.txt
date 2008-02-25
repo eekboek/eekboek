@@ -1,17 +1,17 @@
                                 Balans
-Periode: t/m 2005-12-31
-EekBoek Demo Administratie                         EekBoek, 2005-12-31
+Periode: t/m 2007-12-31
+EekBoek Demo Administratie                         EekBoek, 2007-12-31
 
 RekNr   Grootboekrekening                             Debet     Credit
 ----------------------------------------------------------------------
-230     Inventaris en inrichting                    1344,37
-231     Afschrijving inventaris & inrichting                   1716,07
-240     Computers                                  13378,48
-241     Afschrijving computers                                12503,60
-500     Kapitaal                                               2443,18
-1120    Postbank                                   10334,68
-1500    BTW Verkoop Hoog                                       1463,00
-1520    BTW Inkoop Hoog                              148,14
-        << Winst >>                                            7079,82
+1100    Inventaris en inrichting                    1344,37
+1101    Afschrijving inv. & inr.                               1716,07
+1110    Computers                                  13378,48
+1111    Afschrijving computers                                12503,60
+2320    Postbank                                   10334,68
+3100    Kapitaal de heer/mevrouw                               2443,18
+4200    BTW Verkoop Hoog                                       1463,00
+4220    BTW Inkoop Hoog                              148,13
+        << Winst >>                                            7079,81
 ----------------------------------------------------------------------
-        TOTAAL Balans                              25205,67   25205,67
+        TOTAAL Balans                              25205,66   25205,66
