@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: DB.pm,v 1.56 2008/02/09 11:30:12 jv Exp $
+# RCS Id          : $Id: DB.pm,v 1.57 2008/02/25 10:50:09 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Feb  9 12:28:39 2008
-# Update Count    : 424
+# Last Modified On: Mon Feb 25 10:42:49 2008
+# Update Count    : 425
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,7 +19,7 @@ package EB::DB;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.56 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.57 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -362,6 +362,7 @@ sub std_accs {
 	my $rr = $sth->fetchrow_hashref;
 	$sth->finish;
 	while ( my($k,$v) = each(%$rr) ) {
+	    next unless defined $v;
 	    $k =~ s/^std_acc_//;
 	    $std_acc{lc($k)} = $v;
 	}
