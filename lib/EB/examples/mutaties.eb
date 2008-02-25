@@ -1,5 +1,4 @@
-# $Id: mutaties.eb,v 1.10 2008/02/20 23:24:53 jv Exp $
-
+# $Id: mutaties.eb,v 1.11 2008/02/25 10:46:21 jv Exp $
 
 # Inkopen (Dagboek: Inkoop)
 
@@ -11,7 +10,7 @@
 #  Boekstukregel: "Omschrijving" bedrag [ grootboekrekening ]
 #
 # Standaard wordt de met deze crediteur geassocieerde
-# grootboekrekening gebruikt (zie file relaties.eb).
+# grootboekrekening gebruikt (zie relaties.eb).
 #
 # Standaard wordt het met de grootboekrekening geassocieerde BTW
 # tarief gebruikt. Dit kan worden gewijzigd door een toevoeging aan
@@ -21,14 +20,18 @@
 #     @L         pas het lage tarief toe
 #     @n         pas BTW code n toe (afgeraden)
 #
-# Meerdere boekstukregels zijn mogelijk; de grootboekrekening is dan
-# verplicht.
-#
 # Een credit-boeking kan worden gespecificeerd door een negatief
 # bedrag.
 
+# Enkelvoudig, met één enkele boekstukregel.
 inkoop 05-01 "Internet" XS4ALL "ADSL" 22,80
-inkoop 15-01 "Telefoonkosten" KPN "ADSL + Telefoon" 104,65
+
+# Meerdere boekstukregels; de grootboekrekening is dan verplicht.
+# De totaaltelling is optioneel, maar sterk aangeraden om fouten
+# te voorkomen.
+inkoop 15-01 "ADSL + Telefoon" KPN --totaal=104,65 \
+        "ADSL"                        24,20  6905  \
+        "Telefoonkosten"              80,45  6900  \
 
 inkoop 09-02 "Internet" XS4ALL "ADSL" 22,80
 
@@ -72,7 +75,7 @@ inkoop:20 07-12 "Internet" XS4ALL "ADSL" 22,80
 # toegepaste BTW tarief te specificeren.
 #
 # Meerdere boekstukregels zijn mogelijk; de grootboekrekening is dan
-# verplicht.
+# verplicht. Zie bij Inkopen voor een voorbeeld.
 #
 # Een debet-boeking kan worden gespecificeerd door een negatief
 # bedrag.
@@ -146,7 +149,7 @@ postbank 31-05 "Afschrift 5" --saldo=8431,03       \
 postbank 30-06 "Afschrift 6" --saldo=9119,53       \
          std 08-06 "Girotel"            -2,70 6980 \
          deb 08-06 ACME                714,00      \
-         crd 21-06 XS4ALL              -22,80      \
+         crd 21-06 XS4ALL              -22,80
 
 postbank 31-07 "Afschrift 7" --saldo=8989,37       \
          std 06-07 "Girotel"            -2,70 6980 \
@@ -164,11 +167,11 @@ postbank 30-09 "Afschrift 9" --saldo=10543,65      \
          crd 30-09 XS4ALL              -22,80      \
          crd 30-09 KPN                -108,72
 
-postbank 31-10 "Afschrift 10" --saldo=10518,15    \
+postbank 31-10 "Afschrift 10" --saldo=10518,15     \
          std 12-10 "Girotel"            -2,70 6980 \
          crd 13-10 XS4ALL              -22,80
 
-postbank 30-11 "Afschrift 11" --saldo=10382,98    \
+postbank 30-11 "Afschrift 11" --saldo=10382,98     \
          std 08-11 "Girotel"            -2,70 6980 \
          crd 30-11 XS4ALL              -22,80      \
          crd 30-11 KPN                -109,67
@@ -183,7 +186,8 @@ postbank:12 07-12 "Afschrift 12" --saldo 10357,48  \
 postbank 09-12 "Eerste deel ADSL" --saldo=10347,48 \
          crd 09-12 Inkoop:20           -10,00
 
-# En de rest van de betaling...
+# De rest van de betaling kan met opgave van boekstuk, maar natuurlijk
+# ook op de 'handige' manier waarbij EekBoek het zelf uitzoekt.
 postbank 10-12 "Tweede deel ADSL" --saldo=10334,68 \
          crd 10-12 XS4ALL              -12,80
 
@@ -205,3 +209,13 @@ memoriaal 31-12 "Afschrijving computers" \
           std "Afschrijving"          -396,82 6810 \
           std "Afschrijving"           396,82 1111
 
+
+# Rapportages voor de accountant.
+balans                 --output=balans.html
+balans   --detail=2    --output=balans2.html
+result                 --output=result.html
+result   --detail=2    --output=result2.html
+journaal               --output=journaal.html
+grootboek              --output=grootboek.html
+btwaangifte            --output=btwaangifte.html
+openstaand             --output=openstaand.html
