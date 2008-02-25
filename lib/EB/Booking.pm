@@ -1,12 +1,12 @@
 #! perl
 
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.20 2008/02/07 13:10:12 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.21 2008/02/25 10:51:11 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:10:11 2008
-# Update Count    : 135
+# Last Modified On: Mon Feb 25 11:51:01 2008
+# Update Count    : 138
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Booking;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -192,6 +192,7 @@ sub norm_btw {
 	my $rr = $dbh->do("SELECT btw_perc, btw_incl, btw_tariefgroep".
 			  " FROM BTWTabel".
 			  " WHERE btw_id = ?", $bsr_btw_id);
+	assert($rr, "Unk BTW: $bsr_btw_id");
 	($btw_perc, $btw_incl) = @$rr;
     }
 
