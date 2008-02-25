@@ -91,6 +91,7 @@ inc/Module/Build/PodParser.pm
 inc/Module/Build/YAML.pm
 inc/build_common.pl
 lib/EB.pm
+lib/EB/Assert.pm
 lib/EB/Booking.pm
 lib/EB/Booking/BKM.pm
 lib/EB/Booking/Decode.pm
@@ -203,7 +204,4 @@ t/ivp/ref/result.txt
 t/ivp/ref/result0.txt
 t/ivp/ref/result1.txt
 t/ivp/ref/result2.txt
-t/ivp/mutaties.eb
-t/ivp/opening.eb
-t/ivp/relaties.eb
 t/ivp/reports.eb
