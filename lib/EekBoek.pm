@@ -6,7 +6,7 @@ package EekBoek;
 
 use strict;
 
-my $RCS_Id = '$Id: EekBoek.pm,v 1.57 2008/02/15 20:30:47 jv Exp $ ';
+my $RCS_Id = '$Id: EekBoek.pm,v 1.58 2008/02/25 10:52:44 jv Exp $ ';
 our $PACKAGE = 'EekBoek';
 our $VERSION = '1.03.09';
 
@@ -41,7 +41,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2007 by Squirrel Consultancy. All
+This program is Copyright 2005-2008 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -59,4 +59,4 @@ GNU General Public License or the Artistic License for more details.
 
 1;
 
-# $Id: EekBoek.pm,v 1.57 2008/02/15 20:30:47 jv Exp $ 
+# $Id: EekBoek.pm,v 1.58 2008/02/25 10:52:44 jv Exp $ 
