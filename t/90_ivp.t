@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: 90_ivp.t,v 1.15 2008/02/25 11:50:56 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.16 2008/02/25 11:53:42 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
@@ -35,7 +35,7 @@ else {
 SKIP: {
 
 eval "require $dbddrv";
-skip("DBI $dbdriver driver ($dbddrv) not installed", 39) if $@;
+skip("DBI $dbdriver driver ($dbddrv) not installed", 40) if $@;
 
 chdir("t") if -d "t";
 chdir("ivp") if -d "ivp";
@@ -47,7 +47,7 @@ for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
     }
     ok(-s $_, $_);
 }
-for ( qw(opening.eb relaties.eb mutaties.eb reports.eb schema.dat ) ) {
+for ( qw(ivp.conf opening.eb relaties.eb mutaties.eb reports.eb schema.dat ) ) {
     die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
 }
 
@@ -70,7 +70,7 @@ SKIP: {
 # Check whether we can contact the database.
 eval {
     my @ds = DBI->data_sources("Pg");
-    skip("No access to database", 35)
+    skip("No access to database", 36)
       if $DBI::errstr && $DBI::errstr =~ /FATAL:\s*role .* does not exist/;
 };
 

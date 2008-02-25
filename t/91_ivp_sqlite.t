@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: 91_ivp_sqlite.t,v 1.6 2008/02/25 11:51:13 jv Exp $  -*-perl-*-
+# $Id: 91_ivp_sqlite.t,v 1.7 2008/02/25 11:53:38 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
@@ -47,7 +47,7 @@ for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
     }
     ok(-s $_, $_);
 }
-for ( qw(opening.eb relaties.eb mutaties.eb reports.eb schema.dat ) ) {
+for ( qw(ivp.conf opening.eb relaties.eb mutaties.eb reports.eb schema.dat ) ) {
     die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
 }
 
