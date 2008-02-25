@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Schema.pm,v 1.55 2008/02/09 16:35:01 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.56 2008/02/25 10:49:39 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Feb  9 17:34:49 2008
-# Update Count    : 642
+# Last Modified On: Mon Feb 25 10:41:44 2008
+# Update Count    : 643
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,12 +20,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.55 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.56 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.55 2008/02/09 16:35:01 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.56 2008/02/25 10:49:39 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -699,6 +699,7 @@ EOD
     my $rr = $sth->fetchrow_hashref;
     $sth->finish;
     while ( my($k,$v) = each(%$rr) ) {
+	next unless defined $v;
 	$k =~ s/^std_acc_//;
 	$kopp{$v} = $k;
     }
