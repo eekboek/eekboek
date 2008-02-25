@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-# $Id: 90_ivp.t,v 1.13 2008/02/17 16:47:31 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.14 2008/02/25 11:46:14 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => 41);
+  : (tests => 43);
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
@@ -32,7 +32,7 @@ else {
 SKIP: {
 
 eval "require $dbddrv";
-skip("DBI $dbdriver driver ($dbddrv) not installed", 37) if $@;
+skip("DBI $dbdriver driver ($dbddrv) not installed", 39) if $@;
 
 chdir("t") if -d "t";
 chdir("ivp") if -d "ivp";
@@ -67,7 +67,7 @@ SKIP: {
 # Check whether we can contact the database.
 eval {
     my @ds = DBI->data_sources("Pg");
-    skip("No access to database", 33)
+    skip("No access to database", 35)
       if $DBI::errstr && $DBI::errstr =~ /FATAL:\s*role .* does not exist/;
 };
 
@@ -131,8 +131,11 @@ vfy([@ebcmd, qw(-c proefensaldibalans --verdicht)], "proef2.txt");
 vfy([@ebcmd, qw(-c grootboek)           ], "grootboek.txt");
 vfy([@ebcmd, qw(-c grootboek --detail=0)], "grootboek0.txt");
 vfy([@ebcmd, qw(-c grootboek --detail=1)], "grootboek1.txt");
-
 vfy([@ebcmd, qw(-c grootboek --detail=2)], "grootboek2.txt");
+
+# Verify: Crediteuren/Debiteuren.
+vfy([@ebcmd, qw(-c crediteuren)         ], "crdrept.txt");
+vfy([@ebcmd, qw(-c debiteuren)          ], "debrept.txt");
 
 # Verify: BTW aangifte.
 vfy([@ebcmd, qw(-c btwaangifte j)], "btw.txt");

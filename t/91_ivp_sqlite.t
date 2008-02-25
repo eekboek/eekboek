@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-# $Id: 91_ivp_sqlite.t,v 1.4 2008/02/17 16:47:26 jv Exp $  -*-perl-*-
+# $Id: 91_ivp_sqlite.t,v 1.5 2008/02/25 11:48:17 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => 41);
+  : (tests => 43);
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
@@ -32,7 +32,7 @@ else {
 SKIP: {
 
 eval "require $dbddrv";
-skip("DBI $dbdriver driver ($dbddrv) not installed", 37) if $@;
+skip("DBI $dbdriver driver ($dbddrv) not installed", 39) if $@;
 
 chdir("t") if -d "t";
 chdir("ivp") if -d "ivp";
@@ -123,8 +123,11 @@ vfy([@ebcmd, qw(-c proefensaldibalans --verdicht)], "proef2.txt");
 vfy([@ebcmd, qw(-c grootboek)           ], "grootboek.txt");
 vfy([@ebcmd, qw(-c grootboek --detail=0)], "grootboek0.txt");
 vfy([@ebcmd, qw(-c grootboek --detail=1)], "grootboek1.txt");
-
 vfy([@ebcmd, qw(-c grootboek --detail=2)], "grootboek2.txt");
+
+# Verify: Crediteuren/Debiteuren.
+vfy([@ebcmd, qw(-c crediteuren)         ], "crdrept.txt");
+vfy([@ebcmd, qw(-c debiteuren)          ], "debrept.txt");
 
 # Verify: BTW aangifte.
 vfy([@ebcmd, qw(-c btwaangifte j)], "btw.txt");
