@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Booking::BKM;
 
-# RCS Id	  : $Id: BKM.pm,v 1.65 2008/02/07 12:11:23 jv Exp $
+# RCS Id	  : $Id: BKM.pm,v 1.66 2008/02/26 21:06:11 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:11:21 2008
-# Update Count    : 507
+# Last Modified On: Mon Feb 25 18:49:34 2008
+# Update Count    : 510
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Booking::BKM;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.65 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.66 $ =~ /(\d+)/g;
 
 # Dagboek type 3: Bank
 # Dagboek type 4: Kas
@@ -303,7 +303,7 @@ sub perform {
 
 	    my ($rr, $sql, @sql_args);
 	    if ( $rel =~ /:/ ) {
-		my ($id, $bsk, $err) = $dbh->bskid($rel);
+		my ($id, $bsk, $err) = $dbh->bskid($rel, $bky);
 		unless ( defined($id) ) {
 		    warn("?$err\n");
 		    $fail++;
