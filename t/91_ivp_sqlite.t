@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: 91_ivp_sqlite.t,v 1.7 2008/02/25 11:53:38 jv Exp $  -*-perl-*-
+# $Id: 91_ivp_sqlite.t,v 1.8 2008/02/26 22:26:23 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
@@ -172,8 +172,8 @@ sub diff {
     $str2 = <$fd2>;
     close($fd2);
     $str1 =~ s/^EekBoek \d.*Squirrel Consultancy\n//;
-    $str1 =~ s/[\n\r]+/\n/;
-    $str2 =~ s/[\n\r]+/\n/;
+    $str1 =~ s/[\n\r]+/\n/g;
+    $str2 =~ s/[\n\r]+/\n/g;
     $str1 ne $str2;
 }
 
