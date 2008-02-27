@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: 90_ivp.t,v 1.18 2008/02/26 22:26:28 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.19 2008/02/27 09:54:41 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
@@ -70,8 +70,9 @@ SKIP: {
 # Check whether we can contact the database.
 eval {
     my @ds = DBI->data_sources("Pg");
+    diag("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
     skip("No access to database", 35)
-      if $DBI::errstr && $DBI::errstr =~ /FATAL:\s*(user|role) .* does not exist/;
+      if $DBI::errstr;# && $DBI::errstr =~ /FATAL:\s*(user|role) .* does not exist/;
 };
 
 my $fail;

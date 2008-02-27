@@ -1,4 +1,4 @@
-# $Id: 80_db_postgresql.t,v 1.6 2008/02/25 21:00:05 jv Exp $  -*-perl-*-
+# $Id: 80_db_postgresql.t,v 1.7 2008/02/27 09:54:47 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
@@ -30,11 +30,12 @@ SKIP: {
 	eval {
 	    @ds = DBI->data_sources("Pg");
 
+	    diag("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
 	    skip("No access to database", 2)
-	      if $DBI::errstr && $DBI::errstr =~ /FATAL:\s*(user|role) .* does not exist/;
+	      if $DBI::errstr;# && $DBI::errstr =~ /FATAL:\s*(user|role) .* does not exist/;
+	    diag("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
 
 	    ok(!$DBI::errstr, "Database Connect");
-	    diag("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
 	};
 	ok(@ds > 1, "Check databases");
     }
