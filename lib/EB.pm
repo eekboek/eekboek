@@ -1,12 +1,12 @@
 #! perl
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.84 2008/02/25 10:51:42 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.85 2008/02/27 15:12:40 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 18 13:53:22 2008
-# Update Count    : 217
+# Last Modified On: Wed Feb 27 16:12:33 2008
+# Update Count    : 218
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,7 +16,7 @@ our $cfg;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.84 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.85 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -158,7 +158,7 @@ appreciated).
 
 =head1 DESCRIPTION
 
-For a description how to use the program, see L<http://www.squirrel.nl/eekboek/docs/index.html>.
+For a description how to use the program, see L<http://www.eekboek.nl/docs/index.html>.
 
 =head1 BUGS AND PROBLEMS
 
@@ -172,7 +172,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2007 by Squirrel Consultancy. All
+This program is Copyright 2005-2008 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify
