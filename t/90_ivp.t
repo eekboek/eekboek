@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: 90_ivp.t,v 1.20 2008/02/27 10:52:01 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.21 2008/02/27 14:43:33 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
@@ -35,7 +35,7 @@ else {
 SKIP: {
 
 eval "require $dbddrv";
-skip("DBI $dbdriver driver ($dbddrv) not installed", 40) if $@;
+skip("DBI $dbdriver driver ($dbddrv) not installed", 39) if $@;
 
 chdir("t") if -d "t";
 chdir("ivp") if -d "ivp";
