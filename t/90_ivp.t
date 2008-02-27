@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: 90_ivp.t,v 1.19 2008/02/27 09:54:41 jv Exp $  -*-perl-*-
+# $Id: 90_ivp.t,v 1.20 2008/02/27 10:52:01 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
@@ -170,6 +170,7 @@ sub vfyxx {
     ok(!diff($ref), $ref);
 }
 
+use Encode;
 sub diff {
     my ($file1, $file2) = @_;
     $file2 = "ref/$file1" unless $file2;
@@ -178,13 +179,21 @@ sub diff {
     open(my $fd1, "<", $file1) or die("$file1: $!\n");
     $str1 = <$fd1>;
     close($fd1);
-    open(my $fd2, "<", $file2) or die("$file2: $!\n");
+    open(my $fd2, "<:encoding(iso-8859-1)", $file2) or die("$file2: $!\n");
     $str2 = <$fd2>;
     close($fd2);
     $str1 =~ s/^EekBoek \d.*Squirrel Consultancy\n//;
-    $str1 =~ s/[\n\r]+/\n/g;
-    $str2 =~ s/[\n\r]+/\n/g;
-    $str1 ne $str2;
+    $str1 =~ s/[\n\r]+/\n/;
+    $str2 =~ s/[\n\r]+/\n/;
+    return 0 if $str1 eq $str2;
+
+    # If we're running in a Unicode environment, the data may be utf-8.
+    $str2 = encode("utf8", $str2);
+    if ( $str1 eq $str2 ) {
+	diag("Data is UTF-8: $file1");
+	return 0;
+    }
+    1;
 }
 
 sub syscmd {
