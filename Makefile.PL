@@ -1,13 +1,13 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.12 2008/02/25 20:56:38 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.13 2008/02/27 10:53:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 25 21:56:29 2008
-# Update Count    : 93
+# Last Modified On: Wed Feb 27 10:07:31 2008
+# Update Count    : 94
 # Status          : Unknown, Use with caution!
 
-use 5.8;
+use 5.008;
 use strict;
 
 #use inc::Module::Install;

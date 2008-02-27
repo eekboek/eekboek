@@ -2,11 +2,11 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 25 21:54:48 2008
-# Update Count    : 93
+# Last Modified On: Wed Feb 27 10:07:39 2008
+# Update Count    : 94
 # Status          : Experimental
 
-use 5.8;
+use 5.008;
 use strict;
 use lib 'inc';
 use Module::Build 0.27_09;
