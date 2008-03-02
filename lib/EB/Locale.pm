@@ -1,12 +1,12 @@
 #! perl
 
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.10 2008/02/07 12:08:44 jv Exp $ 
+# RCS Info        : $Id: Locale.pm,v 1.11 2008/03/02 15:22:30 jv Exp $ 
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:08:39 2008
-# Update Count    : 97
+# Last Modified On: Sun Mar  2 16:15:55 2008
+# Update Count    : 99
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -17,7 +17,7 @@ package EB::Locale;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
@@ -64,9 +64,9 @@ unless ( $gotone ) {
     if ( !$cfg || $cfg->val(qw(locale unicode), 0) ) {
 	require Encode;
 	eval 'sub _T($) { Encode::decode("ISO-8859-1", $_[0]) };';
-	binmode(STDIN,  ":utf8");
-	binmode(STDOUT, ":utf8");
-	binmode(STDERR, ":utf8");
+	binmode(STDIN,  ":encoding(utf8)");
+	binmode(STDOUT, ":encoding(utf8)");
+	binmode(STDERR, ":encoding(utf8)");
     }
     else {
 	eval 'sub _T($) { $_[0] };';

@@ -1,12 +1,12 @@
 #! perl
 
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.28 2008/02/07 13:11:11 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.29 2008/03/02 15:21:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:11:09 2008
-# Update Count    : 219
+# Last Modified On: Sun Mar  2 16:18:39 2008
+# Update Count    : 221
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Export;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.28 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.29 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -60,7 +60,8 @@ sub export {
 	# For the schema, we need a temp file.
 	my ($fh, $tmpname) = Archive::Zip::tempFile();
 	if ( $cfg->unicode ) {
-	    binmode($fh, ":utf8");
+	    require Encode;
+	    binmode($fh, ":encoding(utf8)");
 	}
 	$self->_schema($fh);
 	$fh->close;
@@ -93,7 +94,8 @@ sub _write {
       or die("?".__x("Fout bij aanmaken bestand {file}: {err}",
 		     file => $file, err => $!)."\n");
     if ( $cfg->unicode ) {
-	binmode($fh, ":utf8");
+	require Encode;
+	binmode($fh, ":encoding(utf8)");
     }
     $producer->($fh)
       or die("?".__x("Fout bij schrijven bestand {file}: {err}",

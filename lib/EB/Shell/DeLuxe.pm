@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.18 2008/02/07 12:16:15 jv Exp $
+# RCS Id          : $Id: DeLuxe.pm,v 1.19 2008/03/02 15:22:25 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:16:12 2008
-# Update Count    : 257
+# Last Modified On: Sun Mar  2 16:17:56 2008
+# Update Count    : 258
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,7 +18,7 @@ package EB::Shell::DeLuxe;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;
@@ -66,7 +66,7 @@ use Encode;
 sub readline_file {
     my ($self, $rl) = @_;
     # binmode($fd, ":utf8") conflicts with UNICODE checking.
-    #binmode($fd, ":utf8") if $cfg->unicode;
+    #binmode($fd, ":encoding(utf8)") if $cfg->unicode;
     my $line;
     my $pre = "";
     while ( 1 ) {

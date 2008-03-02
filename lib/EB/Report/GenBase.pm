@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Info        : $Id: GenBase.pm,v 1.24 2008/02/07 13:14:12 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.25 2008/03/02 15:21:16 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:14:06 2008
-# Update Count    : 148
+# Last Modified On: Sun Mar  2 16:19:09 2008
+# Update Count    : 149
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::Report::GenBase;
 use strict;
 use EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.24 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)/g;
 
 use IO::File;
 use EB::Format;
@@ -98,7 +98,8 @@ sub backend {
 	$be->{fh} = IO::File->new_from_fd(fileno(STDOUT), "w");
     }
     if ( $cfg->val(qw(locale unicode), 0) ) {
-	binmode($be->{fh}, ":utf8");
+	require Encode;
+	binmode($be->{fh}, ":encoding(utf8)");
     }
 
     # Handle pagesize.
