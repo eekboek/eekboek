@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Opening.pm,v 1.37 2008/02/07 12:30:30 jv Exp $
+# RCS Id          : $Id: Opening.pm,v 1.38 2008/03/02 15:04:29 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:30:28 2008
-# Update Count    : 258
+# Last Modified On: Sun Mar  2 16:01:31 2008
+# Update Count    : 259
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,11 +18,10 @@ package EB::Tools::Opening;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.37 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.38 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
-use EB::DB;
 
 # List of API methods (for the shell).
 sub commands {

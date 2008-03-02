@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Journal.pm,v 1.35 2008/02/07 13:15:05 jv Exp $
+# RCS Id          : $Id: Journal.pm,v 1.36 2008/03/02 15:04:21 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:15:03 2008
-# Update Count    : 302
+# Last Modified On: Sun Mar  2 16:01:58 2008
+# Update Count    : 303
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,11 +20,10 @@ package EB::Report::Journal;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.35 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.36 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
-use EB::DB;
 use EB::Booking;		# for dcfromtd()
 use EB::Report::GenBase;
 

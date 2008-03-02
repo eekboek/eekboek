@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Report::Grootboek;
 
-# RCS Id          : $Id: Grootboek.pm,v 1.32 2008/02/07 13:12:33 jv Exp $
+# RCS Id          : $Id: Grootboek.pm,v 1.33 2008/03/02 15:04:25 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:12:32 2008
-# Update Count    : 284
+# Last Modified On: Sun Mar  2 16:01:44 2008
+# Update Count    : 285
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,12 +20,11 @@ package EB::Report::Grootboek;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.32 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.33 $ =~ /(\d+)/g;
 
 ################ The Process ################
 
 use EB;
-use EB::DB;
 use EB::Booking;		# for dcfromtd()
 use EB::Format;
 use EB::Report::GenBase;

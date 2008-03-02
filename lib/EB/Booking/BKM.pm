@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Booking::BKM;
 
-# RCS Id	  : $Id: BKM.pm,v 1.66 2008/02/26 21:06:11 jv Exp $
+# RCS Id	  : $Id: BKM.pm,v 1.67 2008/03/02 15:04:41 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 25 18:49:34 2008
-# Update Count    : 510
+# Last Modified On: Sun Mar  2 16:01:22 2008
+# Update Count    : 512
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,14 +20,13 @@ package EB::Booking::BKM;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.66 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.67 $ =~ /(\d+)/g;
 
 # Dagboek type 3: Bank
 # Dagboek type 4: Kas
 # Dagboek type 5: Memoriaal
 
 use EB;
-use EB::DB;
 use EB::Format;
 use EB::Report::Journal;
 use base qw(EB::Booking);
