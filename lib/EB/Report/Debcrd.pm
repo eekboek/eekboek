@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Report::Debcrd;
 
-# RCS Id          : $Id: Debcrd.pm,v 1.14 2008/02/07 13:17:29 jv Exp $
+# RCS Id          : $Id: Debcrd.pm,v 1.15 2008/03/02 16:09:14 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:17:27 2008
-# Update Count    : 183
+# Last Modified On: Sun Mar  2 16:58:55 2008
+# Update Count    : 184
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::Debcrd;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
 
 ################ The Process ################
 
@@ -86,10 +86,10 @@ sub _perform {
     $sth = $dbh->sql_exec("SELECT bsr_rel_code, bsr_paid".
 			  " FROM Boekstukregels, Boekstukken".
 			  " WHERE bsr_paid = bsk_id".
-#			  " AND bsr_date >= ? AND bsr_date <= ?".
+			  " AND bsr_date >= ? AND bsr_date <= ?".
 			  " AND bsk_date < ?".
 			  " AND bsr_type = ?",
-#			  @{$rep->{periode}},
+			  @{$rep->{periode}},
 			  $rep->{per_begin},
 			  $debcrd ? DBKTYPE_INKOOP : DBKTYPE_VERKOOP);
 
