@@ -10,7 +10,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.104 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.105 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -209,12 +209,15 @@ sub _plug_cmds {
 	};
 	if ( $dbk_type == DBKTYPE_INKOOP ) {
 	    $dbk_v_pat .= lc($dbk_desc)."|";
+	    $dbk_pat .= lc($dbk_desc)."|";
 	}
 	elsif ( $dbk_type == DBKTYPE_VERKOOP ) {
 	    $dbk_i_pat .= lc($dbk_desc)."|";
+	    $dbk_pat .= lc($dbk_desc)."|";
 	}
 	else {
 	    $dbk_bkm_pat .= lc($dbk_desc)."|";
+	    $dbk_pat .= lc($dbk_desc)."|";
 	}
     }
 
@@ -243,8 +246,9 @@ sub _plug_cmds {
 	*{"help_btwaangifte"} = \&_help_btwaangifte;
     }
 
-    $dbk_pat = $dbk_i_pat.$dbk_v_pat.$dbk_bkm_pat;
-    chop foreach ($dbk_pat, $dbk_i_pat, $dbk_v_pat, $dbk_bkm_pat);
+    foreach ($dbk_pat, $dbk_i_pat, $dbk_v_pat, $dbk_bkm_pat) {
+	chop if $_;
+    }
 }
 
 sub _help {
