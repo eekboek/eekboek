@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Journal.pm,v 1.36 2008/03/02 15:04:21 jv Exp $
+# RCS Id          : $Id: Journal.pm,v 1.37 2008/03/05 21:36:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  2 16:01:58 2008
-# Update Count    : 303
+# Last Modified On: Wed Mar  5 22:08:35 2008
+# Update Count    : 305
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::Journal;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.36 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.37 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -233,7 +233,7 @@ sub style {
 	},
 	total => {
 	    _style => { line_before => 1 },
-	    desc   => { excess      => 1 },
+#	    desc   => { excess      => 2 },
 	},
     };
 
