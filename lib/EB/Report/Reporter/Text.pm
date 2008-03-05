@@ -1,12 +1,12 @@
 #! perl
 
 # Text.pm -- Reporter backend for text reports.
-# RCS Info        : $Id: Text.pm,v 1.7 2008/02/07 13:25:07 jv Exp $
+# RCS Info        : $Id: Text.pm,v 1.8 2008/03/05 21:38:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:21:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:25:04 2008
-# Update Count    : 69
+# Last Modified On: Wed Mar  5 22:27:34 2008
+# Update Count    : 118
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter::Text;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -33,6 +33,7 @@ sub start {
     $self->_make_format;
     $self->{_lines} = 0;
     $self->{_page} = 0;
+    $self->{_colsep} = "  " unless defined $self->{_colsep};
 }
 
 sub finish {
@@ -69,8 +70,20 @@ sub add {
     my @indents;
     my $linebefore;
     my $lineafter;
-    push(@values, $style||"") if $cfg->val(__PACKAGE__, "layout", 0);
+    my $colspan = 0;
+    my $lw;
+    #push(@values, $style||"") if $cfg->val(__PACKAGE__, "layout", 0);
     foreach my $col ( @{$self->{_fields}} ) {
+
+	if ( $colspan > 1 ) {
+	    $colspan--;
+	    $$lw += $col->{width} + length($self->{_colsep});
+	    push(@values, "");
+	    push(@widths, 0);
+	    push(@indents, 0);
+	    next;
+	}
+
 	my $fname = $col->{name};
 	push(@values, defined($data->{$fname}) ? $data->{$fname} : "");
 	push(@widths, $col->{width});
@@ -90,10 +103,14 @@ sub add {
 		      ($t->{line_after} eq "1" ? "-" : $t->{line_after}) x $col->{width};
 		}
 		if ( $t->{excess} ) {
-		    $widths[-1] += 2;
+#### TODO	    $widths[-1] += $t->{excess};
 		}
-		if ($t->{truncate} ) {
+		if ( $t->{truncate} ) {
 		    $values[-1] = substr($values[-1], 0, $widths[-1] - $indent);
+		}
+		if ( $t->{colspan} ) {
+		    $colspan = $t->{colspan};
+		    $lw = \$widths[-1];
 		}
 	    }
 	}
@@ -101,6 +118,9 @@ sub add {
 
     }
 
+#    use Data::Dumper;
+#    warn(Dumper \@values);
+#    warn(Dumper \@widths);
     if ( $linebefore ) {
 	$self->add($linebefore);
     }
@@ -135,7 +155,7 @@ sub add {
 		$more++;
 	    }
 	}
-	my $t = sprintf($self->{_format}, @v);
+	my $t = $self->_format_line(\@v, \@widths);
 	$t =~ s/ +$//;
 	push(@lines, $t) if $t =~ /\S/;
 	last unless $more;
@@ -169,13 +189,17 @@ sub header {
     my $t = sprintf("%s\n" .
 		    "%-" . ($self->{_width}-10) . "s%10s\n" .
 		    "%-" . ($self->{_width}-31) . "s%31s\n" .
-		    "\n" .
-		    $self->{_format},
+		    "\n",
 		    $self->_center($self->{_title1}, $self->{_width}),
 		    $self->{_title2},
 		    1 ? "" : ("Blad: " . (++$self->{_page})),
-		    $self->{_title3l}, $self->{_title3r},
-		    map { $_->{title} } @{$self->{_fields}});
+		    $self->{_title3l}, $self->{_title3r});
+
+    if ( grep { $_->{title} =~ /\S/ } @{$self->{_fields}} ) {
+	$t .= $self->_format_line([map { $_->{title} } @{$self->{_fields}}],
+				  [map { $_->{width} } @{$self->{_fields}}]),
+    }
+
     $t =~ s/ +$//gm;
     print {$self->{fh}} ($t);
     $self->_line;
@@ -189,32 +213,40 @@ sub _make_format {
     my ($self) = @_;
 
     my $width = 0;		# new width
-    my $format = "";		# new format
-
-    $format = "%6s  " if $cfg->val(__PACKAGE__, "layout", 0);
+    my $cs = $self->{_colsep} || "  ";
+    my $cw = length($cs);
 
     foreach my $a ( @{$self->{_fields}} ) {
 
-	# Never mind the trailing blanks -- we'll trim anyway.
-	$width += $a->{width} + 2;
-	if ( $a->{align} eq "<" ) {
-	    $format .= "%-".
-	      join(".", ($a->{width}+2) x 2) .
-		"s";
-	}
-	else {
-	    $format .= "%".
-	      join(".", ($a->{width}) x 2) .
-		"s  ";
-	}
+	$width += $a->{width} + $cw;
     }
-
-    # Store format and width in object.
-    $self->{_format} = $format . "\n";
-    $self->{_width}  = $width - 2;
+    $self->{_width}  = $width - $cw;
 
     # PBP: Return nothing sensible.
     return;
+}
+
+sub _format_line {
+    my ($self, $values, $widths) = @_;
+
+    my $t = "";
+    my $i = 0;
+    for ( my $i = 0; $i <= $#{$self->{_fields}}; $i++ ) {
+	$t .= $self->{_colsep} if $t ne '' && $widths->[$i];
+	my $a = $self->{_fields}->[$i];
+	my $v = shift(@$values);
+	if ( $a->{align} eq '<' ) {
+	    $t .= $v;
+	    $t .= ' ' x ($widths->[$i] - length($v));
+	}
+	#elsif ( $a->{align} eq '<' ) {
+	else {
+	    $t .= ' ' x ($widths->[$i] - length($v));
+	    $t .= $v;
+	}
+	$i += $a->{colspan} if $a->{colspan};
+    }
+    $t . "\n";
 }
 
 sub _checkskip {
