@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Report::Debcrd;
 
-# RCS Id          : $Id: Debcrd.pm,v 1.15 2008/03/02 16:09:14 jv Exp $
+# RCS Id          : $Id: Debcrd.pm,v 1.16 2008/03/05 21:36:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  2 16:58:55 2008
-# Update Count    : 184
+# Last Modified On: Wed Mar  5 22:27:17 2008
+# Update Count    : 185
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::Debcrd;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
 
 ################ The Process ################
 
@@ -59,7 +59,7 @@ sub _perform {
 	{ name  => "date",   title => _T("Datum"),        width => $date_width },
 	{ name  => "desc",   title => _T("Omschrijving"), width => 25 },
 	{ name  => "amount", title => _T("Bedrag"),       width => $amount_width, align => ">" },
-	{ name  => "open",   title => _T("Openstaand"),   width => $amount_width, align => ">" },
+	{ name  => "open",   title => _T("Open"),         width => $amount_width, align => ">" },
 	{ name  => "paid",   title => _T("Betaald"),      width => $amount_width, align => ">" },
 	{ name  => "bsknr",  title => _T("Boekstuk"),     width => 18 },
       ];
