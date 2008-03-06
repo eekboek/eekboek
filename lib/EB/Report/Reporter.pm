@@ -1,12 +1,12 @@
 #! perl
 
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.12 2008/03/05 21:37:16 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.13 2008/03/06 14:34:13 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  5 22:19:40 2008
-# Update Count    : 147
+# Last Modified On: Thu Mar  6 15:11:32 2008
+# Update Count    : 148
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,13 +19,19 @@ package EB::Report::Reporter;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
 
 sub new {
     my ($class, $style, $config) = @_;
+
+    if ( @_ == 2 ) {
+	$config = $style->{LAYOUT};
+	$style  = $style->{STYLE};
+    }
+
     $class = ref($class) || $class;
     my $self = bless { _fields => [],
 		       _fdata  => {},
