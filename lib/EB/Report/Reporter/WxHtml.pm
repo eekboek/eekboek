@@ -1,12 +1,12 @@
 #! perl
 
 # WxHtml.pm -- Reporter backend for WxHtml
-# RCS Info        : $Id: WxHtml.pm,v 1.4 2008/03/06 14:34:41 jv Exp $
+# RCS Info        : $Id: WxHtml.pm,v 1.5 2008/03/06 14:38:07 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Mar  2 21:01:17 2007
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  6 15:11:59 2008
-# Update Count    : 55
+# Last Modified On: Thu Mar  6 15:38:02 2008
+# Update Count    : 56
 # Status          : Unknown, Use with caution!
 
 # WxHtmlWindow supports HTML, but to a limited extent. In particular,
@@ -24,7 +24,7 @@ package EB::Report::Reporter::WxHtml;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -110,7 +110,6 @@ sub add {
 	    if ( my $t = $self->_getstyle($style, $fname) ) {
 		$t = { %style, %$t };
 
-		use Data::Dumper; warn(Dumper($t)) if $style eq 'h1';
 		my $colour = $t->{colour} || $t->{color} || "";
 		$colour = " color=\"$colour\"" if $colour;
 		my $size = defined($t->{size}) ? " size=\"$t->{size}\"" : "";
