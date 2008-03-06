@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: BTWAangifte.pm,v 1.41 2008/03/05 21:36:12 jv Exp $
+# RCS Id          : $Id: BTWAangifte.pm,v 1.42 2008/03/06 14:33:56 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  5 22:35:56 2008
-# Update Count    : 567
+# Last Modified On: Thu Mar  6 15:15:37 2008
+# Update Count    : 572
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::BTWAangifte;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.41 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.42 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -185,14 +185,14 @@ sub perform {
       [ { name   => "_colsep",	# neat? or trick?
 	  #sep => "|",
 	  width  => 1 },
-        { name	 => "column",
+        { name	 => "num",
 	  width	 => 4 },
 	{ name	 => "desc",
 	  width	 => 40 },
-	{ name	 => "sub",
+	{ name	 => "col1",
 	  width	 => $amount_width,
 	  align	 => ">" },
-	{ name	 => "amount",
+	{ name	 => "col2",
 	  width	 => $amount_width,
 	  align	 => ">" },
       ];
@@ -543,15 +543,15 @@ sub report {
     my $outline = sub {
 	my ($column, $desc, $sub, $amt) = @_;
 	$rep->add({ _style => 'd',
-		     column => $column,
+		     num => $column,
 		     desc   => $desc,
 		     defined($sub)
-		     ? ( sub => $noround
+		     ? ( col1 => $noround
 			 ? numfmt($sub)
 			 : $sub)
 		     : (),
 		     defined($amt)
-		     ? (amount => $noround
+		     ? (col2 => $noround
 			? numfmt($amt)
 			: $amt)
 		     : (),
@@ -566,11 +566,11 @@ sub report {
 		      to   => datefmt_full($rep->{per_end})));
 
     # Binnenland
-    $rep->add({ _style => 'h1', column  => "Binnenland" });
+    $rep->add({ _style => 'h1', num  => "Binnenland" });
 
     # 1. Door mij verrichte leveringen/diensten
     $rep->add({ _style => 'h2',
-		column => "1. Door mij verrichte leveringen/diensten",
+		num => "1. Door mij verrichte leveringen/diensten",
 	      });
 
     # 1a. Belast met hoog tarief
@@ -592,11 +592,11 @@ sub report {
 		  $data->{deb_0}, undef);
 
     # Buitenland
-    $rep->add({ _style => 'h1', column => "Buitenland" });
+    $rep->add({ _style => 'h1', num => "Buitenland" });
 
     # 3. Door mij verrichte leveringen
     $rep->add({ _style => 'h2',
-		column => "3. Door mij verrichte leveringen" });
+		num => "3. Door mij verrichte leveringen" });
     # 3a. Buiten de EU
     $outline->("3a", "Buiten de EU", $data->{extra_deb}, undef);
 
@@ -605,7 +605,7 @@ sub report {
 
     # 4. Aan mij verrichte leveringen
     $rep->add({ _style => 'h2',
-		column => "4. Aan mij verrichte leveringen" });
+		num => "4. Aan mij verrichte leveringen" });
 
     # 4a. Van buiten de EU
     $outline->("4a", "Van buiten de EU",
@@ -616,9 +616,9 @@ sub report {
 		  $data->{intra_crd}, $data->{intra_crd_btw});
 
     # 5 Berekening totaal
-    $rep->add({ _style => 'h1', column => "Berekening" });
+    $rep->add({ _style => 'h1', num => "Berekening" });
     $rep->add({ _style => 'h2',
-		column => "5. Berekening totaal" });
+		num => "5. Berekening totaal" });
 
     # 5a. Subtotaal
     $outline->("5a", "Subtotaal", undef, $data->{sub0});
@@ -747,13 +747,9 @@ sub kleine_ondernemers {
 
 package EB::Report::BTWAangifte::Text;
 
-use EB;
+use strict;
+use warnings;
 use base qw(EB::Report::Reporter::Text);
-
-sub new {
-    my ($class, $opts) = @_;
-    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
-}
 
 # Style mods.
 
@@ -764,12 +760,12 @@ sub style {
 	h1  => {
 	    _style => { skip_before => 1,
 			skip_after => 1 },
-	    column => { colspan => 2 },
+	    num => { colspan => 2 },
 	},
 	h2  => {
 	    _style => { skip_before => 1,
 			skip_after => 1 },
-	    column => { colspan => 2 },
+	    num => { colspan => 2 },
 	},
 	d => {
 	},
@@ -781,13 +777,9 @@ sub style {
 
 package EB::Report::BTWAangifte::Html;
 
-use EB;
+use strict;
+use warnings;
 use base qw(EB::Report::Reporter::Html);
-
-sub new {
-    my ($class, $opts) = @_;
-    $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
-}
 
 # Style mods.
 
@@ -796,15 +788,21 @@ sub style {
 
     my $stylesheet = {
 	h1  => {
-	    column => { colspan => 2 },
+	    num => { class => "heading", colspan => 2 },
 	},
 	h2  => {
-	    column => { colspan => 2 },
+	    num => { class => "subheading", colspan => 2 },
 	},
     };
 
     $cell = "_style" unless defined($cell);
     return $stylesheet->{$row}->{$cell};
 }
+
+package EB::Report::BTWAangifte::Csv;
+
+use strict;
+use warnings;
+use base qw(EB::Report::Reporter::Csv);
 
 1;
