@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWAangifte.pm,v 1.8 2008/03/06 14:36:36 jv Exp $
+# $Id: BTWAangifte.pm,v 1.9 2008/03/06 16:58:50 jv Exp $
 
 package main;
 
@@ -9,167 +9,68 @@ our $dbh;
 
 package EB::Wx::Report::BTWAangifte;
 
-use Wx qw[:everything];
-use Wx::Html;
-use base qw(Wx::Dialog);
-use base qw(EB::Wx::Window);
+use base qw(EB::Wx::Report::GenBase);
 use strict;
 use EB;
-
-# begin wxGlade: ::dependencies
-# end wxGlade
-
-sub new {
-	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
-	$parent = undef              unless defined $parent;
-	$id     = -1                 unless defined $id;
-	$title  = ""                 unless defined $title;
-	$pos    = wxDefaultPosition  unless defined $pos;
-	$size   = wxDefaultSize      unless defined $size;
-	$name   = ""                 unless defined $name;
-
-# begin wxGlade: EB::Wx::Report::BTWAangifte::new
-
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
-		unless defined $style;
-
-	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{b_refresh} = Wx::Button->new($self, wxID_REFRESH, "");
-	$self->{b_props} = Wx::Button->new($self, wxID_PREFERENCES, "");
-	$self->{l_periode} = Wx::StaticText->new($self, -1, _T("Periode"), wxDefaultPosition, wxDefaultSize, );
-	$self->{b_print} = Wx::Button->new($self, wxID_PRINT, "");
-	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, "");
-	$self->{w_report} = Wx::HtmlWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-
-	$self->__set_properties();
-	$self->__do_layout();
-
-	Wx::Event::EVT_BUTTON($self, wxID_REFRESH, \&OnRefresh);
-	Wx::Event::EVT_BUTTON($self, wxID_PREFERENCES, \&OnProps);
-	Wx::Event::EVT_BUTTON($self, wxID_PRINT, \&OnPrint);
-	Wx::Event::EVT_BUTTON($self, wxID_CLOSE, \&OnClose);
-
-# end wxGlade
-
-	$self->{year} = substr($dbh->adm("begin"), 0, 4);
-	$self->{btwp} = $dbh->adm("btwperiod");
-
-	$self->{_PRINTER} =  Wx::HtmlEasyPrinting->new('Print');
-
-	return $self;
-
-}
-
-sub __set_properties {
-	my $self = shift;
-
-# begin wxGlade: EB::Wx::Report::BTWAangifte::__set_properties
-
-	$self->SetTitle(_T("BTW  aangifte"));
-	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(360, 220)));
-	$self->{b_refresh}->SetToolTipString(_T("Bijwerken naar laatste gegevens"));
-	$self->{b_props}->SetToolTipString(_T("Instellingsgegevens"));
-	$self->{b_close}->SetToolTipString(_T("Venster sluiten"));
-	$self->{b_close}->SetFocus();
-
-# end wxGlade
-}
-
-sub __do_layout {
-	my $self = shift;
-
-# begin wxGlade: EB::Wx::Report::BTWAangifte::__do_layout
-
-	$self->{sz_outer} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_report} = Wx::BoxSizer->new(wxVERTICAL);
-	$self->{sz_tools} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_tools}->Add($self->{b_refresh}, 0, wxLEFT|wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
-	$self->{sz_tools}->Add($self->{b_props}, 0, wxLEFT|wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
-	$self->{sz_tools}->Add(5, 1, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_tools}->Add($self->{l_periode}, 1, wxTOP|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
-	$self->{sz_tools}->Add(5, 1, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_tools}->Add($self->{b_print}, 0, wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
-	$self->{sz_tools}->Add($self->{b_close}, 0, wxRIGHT|wxTOP|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
-	$self->{sz_report}->Add($self->{sz_tools}, 0, wxBOTTOM|wxEXPAND, 5);
-	$self->{sz_report}->Add($self->{w_report}, 1, wxEXPAND, 0);
-	$self->{sz_outer}->Add($self->{sz_report}, 1, wxEXPAND, 0);
-	$self->SetSizer($self->{sz_outer});
-	$self->Layout();
-
-# end wxGlade
-}
+use Wx qw(wxICON_ERROR wxOK);
 
 sub init {
-    my ($self, $me) = @_;
+    my ($self) = @_;
+    $self->SetTitle(_T("BTW  aangifte"));
+    $self->SetDetails(0,0,0);
+    $self->{year} = substr($dbh->adm("begin"), 0, 4);
+    $self->{btwp} = $dbh->adm("btwperiod");
+
+    $self->{compat_periode} =
+      $self->{btwp} == 1 ? "j" :
+	$self->{btwp} == 4 ? "k1" :
+	  $self->{btwp} == 12 ? $EB::month_names[0] : $self->{btwp};
+
     $self->refresh;
 }
 
 sub refresh {
     my ($self) = @_;
     require EB::Report::BTWAangifte;
+
+    if ( $self->{pref_periode} ) {
+	$self->set_periode($self->{pref_periode});
+    }
+
     my $output;
+    my $save = $self->htmltext;
+    eval {
+
     EB::Report::BTWAangifte->new->perform
 	({ generate => 'wxhtml',
-	   boekjaar => $state->bky,
+	   compat_periode => $self->{compat_periode},
 	   output   => \$output,
 	   detail   => $self->{detail} });
-    $output = "<h1>Output</h1>" unless $output =~ /\<tr\>/;
+
+    $output =~ s/<table border="1" width="100%">/<table>/;
+    };
+
+    if ( $@ ) {
+	my $msg = $@;
+	$msg =~ s/^\?+//;
+	EB::Wx::MessageDialog($self, $msg, "Fout", wxICON_ERROR|wxOK);
+	$output = $save;
+    }
     $self->{w_report}->SetPage($output);
     $self->{_HTMLTEXT} = $output;
 }
 
-sub html     { $_[0]->{w_report}  }
-sub htmltext { $_[0]->{_HTMLTEXT} }
-sub printer  { $_[0]->{_PRINTER}  }
-
 sub set_periode {
    my ($self, $p) = @_;
    if ( $p eq "j" ) {
-       $p = "Gehele jaar";
+       $self->{compat_periode} = $p;
    }
    elsif ( $p =~ /^k(\d+)$/ ) {
-       $p = (qw(Eerste Tweede Derde Vierde)[$1-1] . " kwartaal");
+       $self->{compat_periode} = $p;
    }
    elsif ( $p =~ /^m(\d+)$/ ) {
-       $p = (qw(Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December)[$1-1]);
+       $self->{compat_periode} = $EB::month_names[$1-1];
    }
-   $self->{l_periode}->SetLabel(_T("Periode:")." ".$p);
-   $self->Layout;
 }
-
-# wxGlade: EB::Wx::Report::BTWAangifte::OnRefresh <event_handler>
-sub OnRefresh {
-    my ($self, $event) = @_;
-    $self->refresh;
-}
-
-# wxGlade: EB::Wx::Report::BTWAangifte::OnProps <event_handler>
-sub OnProps {
-    my ($self, $event) = @_;
-    use EB::Wx::Report::BTWAangifte::Preferences;
-    my $d = EB::Wx::Report::BTWAangifte::Preferences->new
-      ($self, -1, "Selecteer", wxDefaultPosition, wxDefaultSize,);
-    my $ret = $d->ShowModal;
-    if ( $ret == wxID_OK ) {
-	$self->set_periode($d->{periode});
-    }
-    $d->Destroy;
-}
-
-# wxGlade: EB::Wx::Report::BTWAangifte::OnClose <event_handler>
-sub OnClose {
-    my ($self, $event) = @_;
-    $self->sizepos_save;
-    $self->Show(0);
-}
-
-# wxGlade: EB::Wx::Report::BTWAangifte::OnPrint <event_handler>
-sub OnPrint {
-    my ($self, $event) = @_;
-    $self->printer->SetFooter(_T("Blad:").' @PAGENUM@');
-    $self->printer->PrintText($self->htmltext);
-}
-
-# end of class EB::Wx::Report::BTWAangifte
 
 1;
