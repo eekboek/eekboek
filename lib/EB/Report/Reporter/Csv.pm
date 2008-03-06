@@ -1,12 +1,12 @@
 #! perl
 
 # Csv.pm -- Reporter backend for CSV reports.
-# RCS Info        : $Id: Csv.pm,v 1.5 2008/02/07 13:24:34 jv Exp $
+# RCS Info        : $Id: Csv.pm,v 1.6 2008/03/06 12:58:06 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jan  5 18:47:37 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:24:31 2008
-# Update Count    : 13
+# Last Modified On: Thu Mar  6 13:52:34 2008
+# Update Count    : 14
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter::Csv;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -69,8 +69,11 @@ sub add {
 
 sub header {
     my ($self) = @_;
-
-    print {$self->{fh}} (join($sep, map { _csv($_->{title}) } @{$self->{_fields}}), "\n");
+    if ( grep { $_->{title} =~ /\S/ } @{$self->{_fields}} ) {
+	print {$self->{fh}} (join($sep,
+				  map { _csv($_->{title}||"") }
+				  @{$self->{_fields}}), "\n");
+    }
 }
 
 ################ Internal methods ################
