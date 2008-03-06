@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWAangifte.pm,v 1.7 2008/02/11 15:09:43 jv Exp $
+# $Id: BTWAangifte.pm,v 1.8 2008/03/06 14:36:36 jv Exp $
 
 package main;
 
@@ -109,10 +109,10 @@ sub refresh {
     require EB::Report::BTWAangifte;
     my $output;
     EB::Report::BTWAangifte->new->perform
-	({ backend => 'EB::Report::BTWAangifte::WxHtml',
+	({ generate => 'wxhtml',
 	   boekjaar => $state->bky,
-	   output => \$output,
-	   detail => $self->{detail} });
+	   output   => \$output,
+	   detail   => $self->{detail} });
     $output = "<h1>Output</h1>" unless $output =~ /\<tr\>/;
     $self->{w_report}->SetPage($output);
     $self->{_HTMLTEXT} = $output;
@@ -171,62 +171,5 @@ sub OnPrint {
 }
 
 # end of class EB::Wx::Report::BTWAangifte
-
-################ Report handler ################
-
-package EB::Report::BTWAangifte::WxHtml;
-
-use EB;
-use base qw(EB::Report::Reporter::WxHtml);
-
-sub new {
-    my ($class, $opts) = @_;
-    my $self = $class->SUPER::new($opts->{STYLE}, $opts->{LAYOUT});
-    $self->{overall_font_size} = "-2";
-    $self->{_OUT} = $opts->{output} if $opts->{output};
-    return $self;
-}
-
-sub outline {
-}
-
-sub style {
-    my ($self, $row, $cell) = @_;
-
-    my $stylesheet = {
-	d2    => {
-	    desc   => { indent => 2      },
-	},
-	h1    => {
-	    _style => { colour => 'red',
-			size   => '+2',
-		      }
-	},
-	h2    => {
-	    _style => { colour => 'red'  },
-	    desc   => { indent => 1,},
-	},
-	t1    => {
-	    _style => { colour => 'blue',
-			size   => '+1',
-		      }
-	},
-	t2    => {
-	    _style => { colour => 'blue' },
-	    desc   => { indent => 1      },
-	},
-	v     => {
-	    _style => { colour => 'red',
-			size   => '+2',
-		      }
-	},
-	grand => {
-	    _style => { colour => 'blue' }
-	},
-    };
-
-    $cell = "_style" unless defined($cell);
-    return $stylesheet->{$row}->{$cell};
-}
 
 1;

@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Journaal.pm,v 1.6 2008/02/11 15:10:29 jv Exp $
+# $Id: Journaal.pm,v 1.7 2008/03/06 14:36:36 jv Exp $
 
 package main;
 
@@ -39,7 +39,7 @@ sub refresh {
     require EB::Report::Journal;
     eval {
     EB::Report::Journal->new->journal
-	({ backend => "EB::Wx::Report::Journaal::WxHtml",
+	({ generate => "wxhtml",
 	   @period,
 	   $self->{pref_dbk} ? (select => $self->{pref_dbk}) : (),
 	   output => \$output,
@@ -50,34 +50,6 @@ sub refresh {
     }
     $self->html->SetPage($output);
     $self->{_HTMLTEXT} = $output;
-}
-
-################ Report handler for Journaal ################
-
-package EB::Wx::Report::Journaal::WxHtml;
-
-use base qw(EB::Report::Reporter::WxHtml);
-
-sub style {
-    my ($self, $row, $cell) = @_;
-
-    my $stylesheet = {
-	head    => {
-	    _style => { colour => 'red',
-		      }
-	},
-	total    => {
-	    _style => { colour => 'blue',
-		      }
-	},
-	data    => {
-	    desc => { indent => '+2' },
-	    bsk  => { indent => '+2' },
-	},
-    };
-
-    $cell = "_style" unless defined($cell);
-    return $stylesheet->{$row}->{$cell};
 }
 
 1;

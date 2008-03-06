@@ -1,21 +1,10 @@
 #! perl
 
-# Wxhtml.pm -- WxHtml backend for Proof/Saldi report.
-# RCS Info        : $Id: Wxhtml.pm,v 1.2 2008/03/06 14:34:41 jv Exp $
-# Author          : Johan Vromans
-# Created On      : ***
-# Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  6 15:28:29 2008
-# Update Count    : 2
-# Status          : Unknown, Use with caution!
-
-package EB::Report::Proof::Wxhtml;
+package EB::Wx::Report::Open::wxhtml;
 
 use strict;
 use warnings;
 use base qw(EB::Report::Reporter::WxHtml);
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
 
 sub style {
     my ($self, $row, $cell) = @_;

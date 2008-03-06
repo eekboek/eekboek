@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Grootboek.pm,v 1.4 2008/02/04 23:25:49 jv Exp $
+# $Id: Grootboek.pm,v 1.5 2008/03/06 14:36:36 jv Exp $
 
 package main;
 
@@ -14,60 +14,45 @@ use EB;
 
 sub init {
     my ($self, $me) = @_;
-    $self->SetDetails(0,0,0);
+    $self->SetTitle(_T("Grootboek"));
+    $self->{pref_from_to} = 3;
+    $self->SetDetails(2,0,2);
     $self->refresh;
 }
 
 sub refresh {
     my ($self) = @_;
-    my $output = "<h1>Output</h1>";
+    my $output = "";
+
+    my @period;
+
+    if ( defined($self->{pref_bky}) ) {
+	@period = ("boekjaar", $self->{pref_bky});
+    }
+    elsif ( defined($self->{pref_per}->[0]) ) {
+	@period = ("periode", [ @{$self->{pref_per}} ]);
+    }
+    else {
+	@period = ("boekjaar", $self->{pref_bky} = $state->bky);
+    }
+
+    require EB::Report::Grootboek;
+
+    eval {
+    EB::Report::Grootboek->new->perform
+	({ generate => "wxhtml",
+	   @period,
+	   detail  => $self->GetDetail,
+	   $self->{pref_acct} ? ("select" => $self->{pref_acct}) : (),
+	   output => \$output,
+	 });
+    };
+    if ( $@ ) {
+	$output = $@;
+    }
+
     $self->html->SetPage($output);
     $self->{_HTMLTEXT} = $output;
-}
-
-################ Report handler for Grootboek ################
-
-package EB::Wx::Report::Grootboek::WxHtml;
-
-use base qw(EB::Report::Reporter::WxHtml);
-
-sub style {
-    my ($self, $row, $cell) = @_;
-
-    my $stylesheet = {
-	d2    => {
-	    desc   => { indent => 2      },
-	},
-	h1    => {
-	    _style => { colour => 'red',
-			size   => '+2',
-		      }
-	},
-	h2    => {
-	    _style => { colour => 'red'  },
-	    desc   => { indent => 1,},
-	},
-	t1    => {
-	    _style => { colour => 'blue',
-			size   => '+1',
-		      }
-	},
-	t2    => {
-	    _style => { colour => 'blue' },
-	    desc   => { indent => 1      },
-	},
-	v     => {
-	    _style => { colour => 'red',
-			size   => '+2',
-		      }
-	},
-	grand => {
-	    _style => { colour => 'blue' }
-	},
-    };
-
-    $cell = "_style" unless defined($cell);
-    return $stylesheet->{$row}->{$cell};
 }
 
 1;

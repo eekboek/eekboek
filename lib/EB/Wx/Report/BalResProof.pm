@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BalResProof.pm,v 1.5 2008/02/04 23:25:49 jv Exp $
+# $Id: BalResProof.pm,v 1.6 2008/03/06 14:36:36 jv Exp $
 
 package main;
 
@@ -58,11 +58,11 @@ sub refresh {
     if ( $self->{mew} eq "rprfw" ) {
 	require EB::Report::Proof;
 	EB::Report::Proof->new->perform
-	    ({ backend => "EB::Wx::Report::BalResProof::WxHtml",
+	    ({ generate => "wxhtml",
 	       @period,
-	       saldi => 1,
-	       output => \$output,
-	       detail => $self->GetDetail });
+	       saldi    => 1,
+	       output   => \$output,
+	       detail   => $self->GetDetail });
     }
     else {
 	require EB::Report::Balres;
@@ -72,59 +72,15 @@ sub refresh {
 	    ? "balans"
 	    : "balans";
 	EB::Report::Balres->new->$fun
-	    ( { backend => "EB::Wx::Report::BalResProof::WxHtml",
+	    ( { generate => "wxhtml",
 	       @period,
-	        detail => $self->GetDetail,
+	        detail   => $self->GetDetail,
 		$self->{mew} eq "robalw" ? ( opening => 1 ) : (),
-		output => \$output,
+		output   => \$output,
 	      } );
     }
     $self->html->SetPage($output);
     $self->htmltext = $output;
 }
 
-################ Report handler for Balans/Report ################
-
-package EB::Wx::Report::BalResProof::WxHtml;
-
-use base qw(EB::Report::Reporter::WxHtml);
-
-sub style {
-    my ($self, $row, $cell) = @_;
-
-    my $stylesheet = {
-	d2    => {
-	    desc   => { indent => 2      },
-	},
-	h1    => {
-	    _style => { colour => 'red',
-			size   => '+2',
-		      }
-	},
-	h2    => {
-	    _style => { colour => 'red'  },
-	    desc   => { indent => 1,},
-	},
-	t1    => {
-	    _style => { colour => 'blue',
-			size   => '+1',
-		      }
-	},
-	t2    => {
-	    _style => { colour => 'blue' },
-	    desc   => { indent => 1      },
-	},
-	v     => {
-	    _style => { colour => 'red',
-			size   => '+2',
-		      }
-	},
-	grand => {
-	    _style => { colour => 'blue' }
-	},
-    };
-
-    $cell = "_style" unless defined($cell);
-    return $stylesheet->{$row}->{$cell};
-}
-
+1;
