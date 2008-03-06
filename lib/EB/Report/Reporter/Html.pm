@@ -1,12 +1,12 @@
 #! perl
 
 # Html.pm -- HTML backend for Reporters.
-# RCS Info        : $Id: Html.pm,v 1.14 2008/03/06 12:41:32 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.15 2008/03/06 12:51:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  6 13:34:03 2008
-# Update Count    : 64
+# Last Modified On: Thu Mar  6 13:51:11 2008
+# Update Count    : 66
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter::Html;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format qw(datefmt_full);
@@ -143,12 +143,15 @@ sub header {
        "<p class=\"subtitle\">", $html->($self->{_title2}), "<br>\n", $html->($self->{_title3l}), "</p>\n",
        "<table class=\"main\">\n");
 
-    print {$self->{fh}} ("<tr class=\"head\">\n");
-    foreach ( @{$self->{_fields}} ) {
-	print {$self->{fh}} ("<th class=\"h_", $_->{name}, "\">",
-			     $html->($_->{title}), "</th>\n");
+    if ( grep { $_->{title} =~ /\S/ } @{$self->{_fields}} ) {
+	print {$self->{fh}} ("<tr class=\"head\">\n");
+	foreach ( @{$self->{_fields}} ) {
+	    print {$self->{fh}} ("<th class=\"h_", $_->{name}, "\">",
+				 $_->{title} ? $html->($_->{title}) : "&nbsp'",
+				 "</th>\n");
+	}
+	print {$self->{fh}} ("</tr>\n");
     }
-    print {$self->{fh}} ("</tr>\n");
 
 }
 
