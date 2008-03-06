@@ -1,12 +1,12 @@
 #! perl
 
 # Html.pm -- HTML backend for Reporters.
-# RCS Info        : $Id: Html.pm,v 1.13 2008/02/07 13:23:18 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.14 2008/03/06 12:41:32 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:23:15 2008
-# Update Count    : 58
+# Last Modified On: Thu Mar  6 13:34:03 2008
+# Update Count    : 64
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter::Html;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format qw(datefmt_full);
@@ -71,17 +71,32 @@ sub add {
 
     print {$self->{fh}} ("<tr", $style ? " class=\"r_$style\"" : (), ">\n");
 
+    my $colspan = 0;
     foreach my $col ( @{$self->{_fields}} ) {
+
+	if ( $colspan > 1 ) {
+	    $colspan--;
+	    next;
+	}
+
 	my $fname = $col->{name};
 	my $value = defined($data->{$fname}) ? $data->{$fname} : "";
+	my $class = "c_$fname";
 
 	# Examine style mods.
-	# No style mods for HTML.
-	# if ( $style ) {
-	#    if ( my $t = $self->_getstyle($style, $fname) ) {
-	#    }
-	# }
-	print {$self->{fh}} ("<td class=\"c_$fname\">",
+	if ( $style ) {
+	    if ( my $t = $self->_getstyle($style, $fname) ) {
+		if ( $t->{class} ) {
+		    $class = $t->{class};
+		}
+		if ( $t->{colspan} ) {
+		    $colspan = $t->{colspan};
+		}
+	    }
+	}
+	print {$self->{fh}} ("<td class=\"$class\"",
+			     $colspan > 1 ? " colspan=\"$colspan\"" : "",
+			     ">",
 			     $value eq "" ? "&nbsp;" : $html->($value),
 			     "</td>\n");
     }
