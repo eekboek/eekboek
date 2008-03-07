@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.09 (unstable) is beschikbaar
+Subject: EekBoek 1.03.10 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,16 +9,16 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.09, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.10, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.09-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.03.09.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.10-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.03.10.tar.gz
 
 Kits:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.09-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.09-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.09-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.10-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.10-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.10-1.noarch.rpm
 * http://www.eekboek.nl/dl/ppms/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -32,34 +32,14 @@ Zie voor meer informatie http://www.eekboek.nl/fedora/repoview .
 De aanbevolen manier van installeren is door middel van de RPM
 "EekBoek-unstable" samen met tenminste een van de "db" rpms.
 
-Belangrijkste wijzigingen t.o.v. 1.03.08:
+Belangrijkste wijzigingen t.o.v. 1.03.09:
 
-* Update PPD met 5.10 info.
+* CPAN testing: Skip PostgreSQL tests if no database access.
 
-* --config (-f) accepteert nu ook de naam van een directory,
-  en probeert dan eekboek.conf en .eekboek.conf.
+* CPAN testing: Encode reference data to UTF-8 if running in
+  an Unicode environment.
 
-* Commando's 'journal', 'trace' en 'confirm' kennen nu
-  een'--quiet' optie, waardoor de opdrachten stil worden
-  uitgevoerd.
-
-* Journaalposten worden niet meer gerapporteerd tijdens import
-  en init.
-
-* Nieuw, actueel, eenvoudiger en beter schema voor de example
-  database.
-
-* Verified to work with Perl 5.10.0 and DBD::Pg 2.0.0.
-
-* Fix CPAN testing problems that cause the wrong perl to be used.
-
-* Fix CPAN testing problems that cause the wrong sample files
-  to be used.
-
-* Elimineer warnings bij export van administraties die niet
-  alle standaardkoppelingen hebben.
-
-* Fix issue 1871576.
+* Fix issue 1901436.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
