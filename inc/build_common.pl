@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.15 2008/02/25 11:54:14 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.16 2008/03/07 10:12:18 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb  5 11:52:34 2008
-# Update Count    : 57
+# Last Modified On: Thu Feb 28 00:13:33 2008
+# Update Count    : 74
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -106,44 +106,49 @@ sub WriteSpecfile {
     my $name    = shift;
     my $version = shift;
 
-    my $fh;
-    if ( open ($fh, "$name.spec.in") ) {
-	print "Writing RPM spec file...\n";
-	my $newfh;
-	open ($newfh, ">$name.spec");
-	while ( <$fh> ) {
-	    s/%define pkgname \w+/%define pkgname $name/;
-	    s/%define pkgversion [\d.]+/%define pkgversion $version/;
-	    print $newfh $_;
-	}
-	close($newfh);
-    }
+    vcopy( _tag	    => "RPM spec file",
+	   _dst	    => "$name.spec",
+	   pkgname  => $name,
+	   version  => $version,
+	 );
 }
 
-sub vcopy($$) {
-    warn("WARNING: vcopy is untested!\n");
-    my ($file, $vars) = @_;
+sub WriteDebianControl {
+    my $version = shift;
+
+    vcopy( _tag	    => "Debian control file",
+	   _dst	    => "debian/control",
+	   version  => $version,
+	 );
+}
+
+sub vcopy {
+    my (%ctrl) = @_;
+
+    $ctrl{_src} ||= $ctrl{_dst} . ".in";
+
+    return unless open(my $fh, "<", $ctrl{_src});
+
+    print("Writing ", $ctrl{_tag}, "...\n") if $ctrl{_tag};
+
+    my $newfh;
+    open ($newfh, ">", $ctrl{_dst})
+      or die($ctrl{_dst}, ": $!\n");
 
     my $pat = "(";
-    foreach ( keys(%$vars) ) {
+    foreach ( grep { ! /^_/ } keys(%ctrl) ) {
 	$pat .= quotemeta($_) . "|";
     }
     chop($pat);
     $pat .= ")";
 
-    $pat = qr/\b$pat\b/;
+    $pat = qr/\[\%\s+$pat\s+\%\]/;
 
-    warn("=> $pat\n");
-
-    my $fin = $file . ".in";
-    open(my $fi, "<$fin") or die("Cannot open $fin: $!\n");
-    open(my $fo, ">$file") or die("Cannot create $file: $!\n");
-    while ( <$fi> ) {
-	s/$pat/$vars->{$1}/ge;
-	print;
+    while ( <$fh> ) {
+	s/$pat/$ctrl{$1}/ge;
+	print { $newfh } $_;
     }
-    close($fo);
-    close($fi);
+    close($newfh);
 }
 
 1;
