@@ -6,9 +6,12 @@ package EekBoek;
 
 use strict;
 
-my $RCS_Id = '$Id: EekBoek.pm,v 1.60 2008/02/27 11:04:52 jv Exp $ ';
+# Minimal version to prevent many Unicode bugs.
+use 5.8.3;
+
+my $RCS_Id = '$Id: EekBoek.pm,v 1.61 2008/03/07 10:14:33 jv Exp $ ';
 our $PACKAGE = 'EekBoek';
-our $VERSION = '1.03.11';
+our $VERSION = '1.03.10_3';
 
 =head1 NAME
 
@@ -59,4 +62,4 @@ GNU General Public License or the Artistic License for more details.
 
 1;
 
-# $Id: EekBoek.pm,v 1.60 2008/02/27 11:04:52 jv Exp $ 
+# $Id: EekBoek.pm,v 1.61 2008/03/07 10:14:33 jv Exp $ 
