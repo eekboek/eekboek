@@ -1,6 +1,6 @@
 #! perl
 
-package EB::Wx::Report::Open::wxhtml;
+package EB::Report::Open::Wxhtml;
 
 use strict;
 use warnings;
@@ -10,35 +10,15 @@ sub style {
     my ($self, $row, $cell) = @_;
 
     my $stylesheet = {
-	d2    => {
-	    desc   => { indent => 2      },
-	},
-	h1    => {
-	    _style => { colour => 'red',
-			size   => '+2',
-		      }
-	},
-	h2    => {
+	tdebcrd    => {
 	    _style => { colour => 'red'  },
-	    desc   => { indent => 1,},
 	},
-	t1    => {
-	    _style => { colour => 'blue',
-			size   => '+1',
-		      }
-	},
-	t2    => {
+	trelatie    => {
 	    _style => { colour => 'blue' },
-	    desc   => { indent => 1      },
 	},
-	v     => {
-	    _style => { colour => 'red',
-			size   => '+2',
-		      }
-	},
-	grand => {
-	    _style => { colour => 'blue' }
-	},
+	prevdata    => {
+	    bsk => { colour => 'red' },
+        },
     };
 
     $cell = "_style" unless defined($cell);
