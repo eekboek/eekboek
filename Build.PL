@@ -2,11 +2,11 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb 27 10:07:39 2008
-# Update Count    : 94
+# Last Modified On: Sun Mar  2 16:07:14 2008
+# Update Count    : 99
 # Status          : Experimental
 
-use 5.008;
+use 5.008003;
 use strict;
 use lib 'inc';
 use Module::Build 0.27_09;
@@ -67,4 +67,8 @@ $build->create_build_script;
 
 if ( $build->os_type eq "Unix" ) {
     WriteSpecfile($build->dist_name, $build->dist_version);
+    WriteDebianControl($build->dist_version);
 }
+
+# Debian needs this.
+1;
