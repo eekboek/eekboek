@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: BTWAangifte.pm,v 1.42 2008/03/06 14:33:56 jv Exp $
+# RCS Id          : $Id: BTWAangifte.pm,v 1.43 2008/03/08 11:49:34 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  6 15:15:37 2008
-# Update Count    : 572
+# Last Modified On: Sat Mar  8 12:48:32 2008
+# Update Count    : 573
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::BTWAangifte;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.42 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.43 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -720,7 +720,11 @@ sub kleine_ondernemers {
 
     return 0 if $amount < 0;
 
-    # Formule lijkt linds 1995 ongwijzigd, alleen de bedragen veranderen.
+    # Formule lijkt linds 1995 ongwijzigd, alleen de bedragen
+    # veranderen. Sinds 2002 zijn de bedragen ongewijzigd. Alle
+    # officiële documentatie spreeekt over "Als de afdracht van
+    # omzetbelasting beneden de 1.345 per jaar blijft, ...".
+
     my %mmtab = ( 2002 => [ 1345, 1883 ],
 		  2003 => [ 1345, 1883 ],
 		  2004 => [ 1345, 1883 ],
@@ -728,6 +732,8 @@ sub kleine_ondernemers {
 		  2006 => [ 1345, 1883 ],
 		  2007 => [ 1345, 1883 ],
 		);
+
+    $mmtab{$year} ||= [ 1345, 1883 ] if $year >= 2002;
 
     return unless exists $mmtab{$year};
 
