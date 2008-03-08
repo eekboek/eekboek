@@ -4,7 +4,7 @@ package EB::Shell::Base;
 
 # Sorry, I had to modify a few things -- jv
 
-# RCS Id          : $Id: Base.pm,v 1.20 2008/03/03 07:46:51 jv Exp $
+# RCS Id          : $Id: Base.pm,v 1.21 2008/03/08 15:32:11 jv Exp $
 
 # ----------------------------------------------------------------------
 # Shell::Base - A generic class to build line-oriented command interpreters.
@@ -17,7 +17,7 @@ package EB::Shell::Base;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
 
 use EB;
 use vars qw( $XXVERSION $REVISION $PROMPT
@@ -31,8 +31,8 @@ use File::Basename qw(basename);
 #use Term::Size qw(chars);	# not needed - jv
 use Text::ParseWords qw(shellwords);
 
-$XXVERSION    = 0.05;   # $Date: 2008/03/03 07:46:51 $
-$REVISION     = sprintf "%d.%02d", q$Revision: 1.20 $ =~ /(\d+)\.(\d+)/;
+$XXVERSION    = 0.05;   # $Date: 2008/03/08 15:32:11 $
+$REVISION     = sprintf "%d.%02d", q$Revision: 1.21 $ =~ /(\d+)\.(\d+)/;
 $RE_QUIT      = '(?i)^\s*(exit|quit|logout)' unless defined $RE_QUIT;
 $RE_HELP      = '(?i)^\s*(help|\?)'          unless defined $RE_HELP;
 $RE_SHEBANG   = '^\s*!\s*$'                  unless defined $RE_SHEBANG;
@@ -160,6 +160,10 @@ sub init_rl {
 
     require Term::ReadLine;
     $self->term($term = Term::ReadLine->new(ref $self));
+
+    if ( -t STDIN && $term->ReadLine ne 'Term::ReadLine::Gnu' ) {
+	warn("%Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::Gnu installeren.\n");
+    }
 
     # Setup default tab-completion function.
     $attr = $term->Attribs;
@@ -1842,7 +1846,7 @@ darren chamberlain E<lt>darren@cpan.orgE<gt>
 
 =head1 REVISION
 
-This documentation describes C<Shell::Base>, $Revision: 1.20 $.
+This documentation describes C<Shell::Base>, $Revision: 1.21 $.
 
 =head1 COPYRIGHT
 
