@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: BTWAangifte.pm,v 1.43 2008/03/08 11:49:34 jv Exp $
+# RCS Id          : $Id: BTWAangifte.pm,v 1.44 2008/03/09 13:02:18 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  8 12:48:32 2008
-# Update Count    : 573
+# Last Modified On: Sat Mar  8 18:58:52 2008
+# Update Count    : 578
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::BTWAangifte;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.43 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.44 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -362,7 +362,7 @@ sub collect {
     my $rr;
 
     my $tr = $trace ? sub {
-	warn("BTW " . shift() . " @$rr\n");
+	warn("BTW " . shift() . " " . join(" ", map { defined $_ ? $_ : "-" } @$rr). "\n");
     } : sub {};
 
     while ( $rr = $sth->fetchrow_arrayref ) {
@@ -470,7 +470,8 @@ sub collect {
 
     # 1c. Belast met ander, niet-nul tarief
     $v = rounddown($deb_btw_x);
-    $data{deb_x} = $v;
+    $data{deb_x} = rounddown($deb_x);
+    $data{deb_btw_x} = $v;
     $ad->($deb_btw_x, $v);
     $tot += $v;
 
@@ -586,6 +587,8 @@ sub report {
 		  $data->{deb_x}, $data->{deb_btw_x});
 
     # 1d. Eigen gebruik
+    #$outline->("1d", "Eigen gebruik",
+    #		  $data->{deb_p}, $data->{deb_btw_p});
 
     # 1e. Belast met 0%/verlegd
     $outline->("1e", "Belast met 0% / verlegd",
