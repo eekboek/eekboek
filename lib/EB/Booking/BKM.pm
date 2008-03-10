@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Booking::BKM;
 
-# RCS Id	  : $Id: BKM.pm,v 1.67 2008/03/02 15:04:41 jv Exp $
+# RCS Id	  : $Id: BKM.pm,v 1.68 2008/03/10 10:29:38 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  2 16:01:22 2008
-# Update Count    : 512
+# Last Modified On: Mon Mar 10 11:25:52 2008
+# Update Count    : 514
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Booking::BKM;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.67 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.68 $ =~ /(\d+)/g;
 
 # Dagboek type 3: Bank
 # Dagboek type 4: Kas
@@ -228,7 +228,9 @@ sub perform {
 		my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
 		croak("INTERNAL ERROR: btw code $btw_id heeft tariefgroep $tg")
 		  unless $tg;
-		my $t = qw(v i)[$kstomz] . qw(x h l)[$tg];
+		croak("INTERNAL ERROR: Onbekende tariefgroep $tg")
+		  unless my $t = BTWTARIEVEN->[$tg];
+		my $t = qw(v i)[$kstomz] . lc(substr($t, 0, 1));
 		$btw_acc = $dbh->std_acc("btw_$t");
 	    }
 
