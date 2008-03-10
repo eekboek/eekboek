@@ -1,12 +1,12 @@
 #! perl
 
 # WxHtml.pm -- Reporter backend for WxHtml
-# RCS Info        : $Id: WxHtml.pm,v 1.5 2008/03/06 14:38:07 jv Exp $
+# RCS Info        : $Id: WxHtml.pm,v 1.6 2008/03/10 17:41:48 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Mar  2 21:01:17 2007
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  6 15:38:02 2008
-# Update Count    : 56
+# Last Modified On: Mon Mar 10 18:30:40 2008
+# Update Count    : 57
 # Status          : Unknown, Use with caution!
 
 # WxHtmlWindow supports HTML, but to a limited extent. In particular,
@@ -24,7 +24,7 @@ package EB::Report::Reporter::WxHtml;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -196,6 +196,11 @@ sub _close {
 	return;
     }
     $self->{fh}->close;
+}
+
+sub html {
+    my $self = shift;
+    _html(@_);
 }
 
 sub _html {
