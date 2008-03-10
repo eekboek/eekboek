@@ -1,5 +1,5 @@
 -- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.34 2008/01/02 19:56:11 jv Exp $
+-- $Id: eekboek.sql,v 1.35 2008/03/10 17:42:04 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -42,6 +42,10 @@ CREATE TABLE Standaardrekeningen (
     std_acc_btw_il   int references Accounts,	-- BTW inkoop laag
     std_acc_btw_vh   int references Accounts,	-- BTW verkoop hoog
     std_acc_btw_vl   int references Accounts,	-- BTW verkoop laag
+    std_acc_btw_vp   int references Accounts,	-- BTW verkoop privé
+    std_acc_btw_ip   int references Accounts,	-- BTW inkoop privé
+    std_acc_btw_va   int references Accounts,	-- BTW verkoop anders
+    std_acc_btw_ia   int references Accounts,	-- BTW inkoop anders
     std_acc_btw_ok   int references Accounts,	-- BTW betaald
     std_acc_winst    int references Accounts	-- Winstrekening
 );
@@ -56,7 +60,7 @@ CREATE TABLE BTWTabel (
     btw_tariefgroep smallint not null, -- 0 (Geen) 1 (Hoog) 2 (Laag)
     btw_incl        boolean,           -- inclusief / exclusief
     CONSTRAINT "btw_tariefgroep"
-	CHECK (btw_tariefgroep >= 0 AND btw_tariefgroep <= 2)
+	CHECK (btw_tariefgroep >= 0 AND btw_tariefgroep <= 4)
 );
 
 \i btw.sql
@@ -209,6 +213,6 @@ CREATE TABLE Metadata (
 
 -- Harde waarden, moeten overeenkomen met de code.
 INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision)
-  VALUES (1, 0, 12);
+  VALUES (1, 0, 13);
 
 UPDATE Metadata SET adm_bky = '<<<<'; -- Voorgaand boekjaar

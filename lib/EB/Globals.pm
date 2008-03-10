@@ -5,7 +5,7 @@ package EB::Globals;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.29 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.30 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
@@ -24,7 +24,7 @@ sub N__($) { $_[0] }
 BEGIN {
     _newconst("SCM_MAJVERSION", 1);
     _newconst("SCM_MINVERSION", 0);
-    _newconst("SCM_REVISION",  12);
+    _newconst("SCM_REVISION",  13);
 
     _newconst("AMTPRECISION",   2);
     _newconst("AMTWIDTH",       9);
@@ -42,8 +42,8 @@ BEGIN {
 	      "[qw(".N__("-- Inkoop Verkoop Bank Kas Memoriaal").")]");
     $i = 0;
     map { _newconst("BTWTARIEF_$_", $i++) }
-      qw(NUL HOOG LAAG);
-    _newconst("BTWTARIEVEN", "[qw(".N__("Nul Hoog Laag").")]");
+      qw(NUL HOOG LAAG PRIV ANDERS);
+    _newconst("BTWTARIEVEN", "[qw(".N__("Nul Hoog Laag Privé Anders").")]");
     _newconst("BTWPERIODES", "[qw(".N__("Geen Jaar 2 3 Kwartaal 5 6 7 8 9 10 11 Maand").")]");
     _newconst("BTWPER_GEEN", 0);
     _newconst("BTWPER_JAAR", 1);

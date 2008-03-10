@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Schema.pm,v 1.56 2008/02/25 10:49:39 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.57 2008/03/10 17:41:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 25 10:41:44 2008
-# Update Count    : 643
+# Last Modified On: Sun Mar  9 15:24:14 2008
+# Update Count    : 651
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,12 +20,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.56 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.57 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.56 2008/02/25 10:49:39 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.57 2008/03/10 17:41:58 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -194,6 +194,12 @@ sub scan_btw {
 	    warn("!"._T("Gelieve BTW tariefgroep \"Geen\" te vervangen door \"Nul\"")."\n")
 	      if lc($1) eq "geen";
 	}
+	elsif ( $extra =~ m/^tariefgroep=priv(e|é)?$/i ) {
+	    $groep = BTWTARIEF_PRIV;
+	}
+	elsif ( $extra =~ m/^tariefgroep=anders??$/i ) {
+	    $groep = BTWTARIEF_ANDERS;
+	}
 	elsif ( $extra =~ m/^incl(?:usief)?$/i ) {
 	    $incl = 1;
 	}
@@ -222,6 +228,12 @@ sub scan_btw {
 	elsif ( $groep == BTWTARIEF_LAAG && !defined($btwmap{l}) ) {
 	    $btwmap{l} = $id;
 	}
+	elsif ( $groep == BTWTARIEF_PRIV && !defined($btwmap{p}) ) {
+	    $btwmap{p} = $id;
+	}
+	elsif ( $groep == BTWTARIEF_ANDERS && !defined($btwmap{a}) ) {
+	    $btwmap{a} = $id;
+	}
     }
     else {
 	if ( $groep == BTWTARIEF_HOOG && !defined($btwmap{"h-"}) ) {
@@ -229,6 +241,12 @@ sub scan_btw {
 	}
 	elsif ( $groep == BTWTARIEF_LAAG && !defined($btwmap{"l-"}) ) {
 	    $btwmap{"l-"} = $id;
+	}
+	elsif ( $groep == BTWTARIEF_PRIV && !defined($btwmap{"p-"}) ) {
+	    $btwmap{"p-"} = $id;
+	}
+	elsif ( $groep == BTWTARIEF_ANDERS && !defined($btwmap{"a-"}) ) {
+	    $btwmap{"a-"} = $id;
 	}
     }
     $btwmap{$id} = $id;
@@ -280,7 +298,7 @@ sub scan_balres {
 		    if ( $balres && /^(kosten|omzet)$/ ) {
 			$btw_ko = substr($1, 0, 1) eq "k";
 		    }
-		    elsif ( /^(hoog|laag|nul)$/ ) {
+		    elsif ( /^(hoog|laag|nul|priv(e|é)?|anders?)$/ ) {
 			$btw_type = substr($1, 0, 1);
 		    }
 		    elsif ( /^\d+$/ ) {
@@ -352,7 +370,7 @@ sub load_schema {
     my $uerr = 0;
     my $unicode = $cfg->unicode;
 
-    %std = map { $_ => 0 } qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih);
+    %std = map { $_ => 0 } qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih btw_vp btw_ip btw_va btw_ia);
     while ( $_ = $rl->() ) {
 	if ( /^\# \s*
 	      content-type: \s*
@@ -457,6 +475,15 @@ sub load_schema {
     delete($std{crd}) unless $need_crd;
     delete($std{deb}) unless $need_deb;
 
+    unless (defined($btwmap{p}) || defined($btwmap{"p-"}) ) {
+	delete($std{"btw_ip"}) unless $std{"btw_ip"};
+	delete($std{"btw_vp"}) unless $std{"btw_vp"};
+    }
+    unless (defined($btwmap{a}) || defined($btwmap{"a-"}) ) {
+	delete($std{"btw_ia"}) unless $std{"btw_ia"};
+	delete($std{"btw_va"}) unless $std{"btw_va"};
+    }
+
     my %mapbtw = ( n => "Nul", h => "Hoog", "l" => "Laag" );
     if ( @btw ) {
 	foreach ( keys(%mapbtw) ) {
@@ -466,7 +493,7 @@ sub load_schema {
 	}
     }
     else {
-	for ( qw(ih il vh vl ok) ) {
+	for ( qw(ih il ip ia vh vl vp va ok) ) {
 	    delete($std{"btw_$_"}) unless $std{"btw_$_"};
 	}
 	$btwmap{n} = undef;
@@ -878,6 +905,22 @@ sub dump_acc {
 		}
 		elsif ( $btw == BTWTARIEF_LAAG ) {
 		    $extra .= " :btw=laag";
+		    $extra .= ",excl" unless $btwincl;
+		    if ( $balres ) {
+			$extra .= ",kosten" if $acc_kstomz;
+			$extra .= ",omzet"  if !$acc_kstomz;
+		    }
+		}
+		elsif ( $btw == BTWTARIEF_PRIV ) {
+		    $extra .= " :btw=privé";
+		    $extra .= ",excl" unless $btwincl;
+		    if ( $balres ) {
+			$extra .= ",kosten" if $acc_kstomz;
+			$extra .= ",omzet"  if !$acc_kstomz;
+		    }
+		}
+		elsif ( $btw == BTWTARIEF_ANDERS ) {
+		    $extra .= " :btw=anders";
 		    $extra .= ",excl" unless $btwincl;
 		    if ( $balres ) {
 			$extra .= ",kosten" if $acc_kstomz;
