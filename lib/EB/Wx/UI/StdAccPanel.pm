@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: StdAccPanel.pm,v 1.7 2008/02/11 15:23:34 jv Exp $
+# $Id: StdAccPanel.pm,v 1.8 2008/03/11 11:05:34 jv Exp $
 
 package main;
 
@@ -33,36 +33,15 @@ sub new {
 
 	$self = $self->SUPER::new( $parent, $id, $pos, $size, $style, $name );
 	$self->{main_panel} = Wx::ScrolledWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL|wxCLIP_CHILDREN);
-	$self->{l_deb} = Wx::StaticText->new($self->{main_panel}, -1, _T("Debiteuren"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_deb} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_crd} = Wx::StaticText->new($self->{main_panel}, -1, _T("Crediteuren"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_crd} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_winst} = Wx::StaticText->new($self->{main_panel}, -1, _T("Winst"), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_winst} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_ih} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Inkoop Hoog"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_ih} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_vh} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Verkoop Hoog"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_vh} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_il} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Inkoop Laag"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_il} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_vl} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Verkoop Laag"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_vl} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_ok} = Wx::StaticText->new($self->{main_panel}, -1, _T("BTW Betaald"), wxDefaultPosition, wxDefaultSize, );
-	$self->{tx_btw_ok} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{b_apply} = Wx::Button->new($self, wxID_APPLY, "");
 	$self->{b_reset} = Wx::Button->new($self, wxID_REVERT_TO_SAVED, "");
 
 	$self->__set_properties();
 	$self->__do_layout();
 
-	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_deb}->GetId, \&OnChanged);
-	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_crd}->GetId, \&OnChanged);
-	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_winst}->GetId, \&OnChanged);
-	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_ih}->GetId, \&OnChanged);
-	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_vh}->GetId, \&OnChanged);
-	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_il}->GetId, \&OnChanged);
-	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_vl}->GetId, \&OnChanged);
-	Wx::Event::EVT_PL_LISTINPUT($self, $self->{tx_btw_ok}->GetId, \&OnChanged);
+	Wx::Event::EVT_TEXT($self, $self->{tx_winst}->GetId, \&OnChanged);
 	Wx::Event::EVT_BUTTON($self, $self->{b_apply}->GetId, \&OnApply);
 	Wx::Event::EVT_BUTTON($self, $self->{b_reset}->GetId, \&OnReset);
 
@@ -86,6 +65,8 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::UI::StdAccPanel::__set_properties
 
 	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(187, 153)));
+	$self->{l_winst}->Enable(0);
+	$self->{tx_winst}->Enable(0);
 	$self->{main_panel}->SetScrollRate(10, 10);
 
 # end wxGlade
@@ -99,23 +80,9 @@ sub __do_layout {
 	$self->{sz_std} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sz_std_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_stdacc} = Wx::BoxSizer->new(wxVERTICAL);
-	$self->{sz_g_stdacc} = Wx::FlexGridSizer->new(8, 2, 3, 5);
-	$self->{sz_g_stdacc}->Add($self->{l_deb}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{tx_deb}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{l_crd}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{tx_crd}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_g_stdacc} = Wx::FlexGridSizer->new(0, 2, 3, 5);
 	$self->{sz_g_stdacc}->Add($self->{l_winst}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sz_g_stdacc}->Add($self->{tx_winst}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{l_btw_ih}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{tx_btw_ih}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{l_btw_vh}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{tx_btw_vh}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{l_btw_il}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{tx_btw_il}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{l_btw_vl}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{tx_btw_vl}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{l_btw_ok}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sz_g_stdacc}->Add($self->{tx_btw_ok}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sz_g_stdacc}->AddGrowableCol(1);
 	$self->{sz_stdacc}->Add($self->{sz_g_stdacc}, 0, wxALL|wxEXPAND, 5);
 	$self->{main_panel}->SetSizer($self->{sz_stdacc});
@@ -127,6 +94,35 @@ sub __do_layout {
 	$self->SetSizer($self->{sz_std});
 
 # end wxGlade
+
+	# Bepaal dynamisch de rest van de koppelingen.
+	foreach my $acc ( sort @{$dbh->std_accs} ) {
+	    next if $acc eq 'winst';
+	    my $label = $acc;
+	    if ( $acc eq 'deb' ) {
+		$label = "Debiteuren";
+	    }
+	    elsif ( $acc eq 'crd' ) {
+		$label = "Crediteuren";
+	    }
+	    elsif ( $acc eq 'btw_ok' ) {
+		$label = "BTW Betaald";
+	    }
+	    elsif ( $acc =~ /^btw_([iv])(.)$/ ) {
+		$label = "BTW ";
+		$label .= $1 eq 'i' ? "Inkoop " : "Verkoop ";
+		foreach ( @{BTWTARIEVEN()} ) {
+		    $label .= $_ if lc(substr($_, 0, 1)) eq $2;
+		}
+	    }
+	    $self->{"l_$acc"} = Wx::StaticText->new($self->{main_panel}, -1, _T($label), wxDefaultPosition, wxDefaultSize, );
+	    $self->{"tx_$acc"} = EB::Wx::UI::BalAccInput->new($self->{main_panel}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	    $self->{"tx_$acc"}->SetValue($dbh->std_acc($acc));
+	    $self->{sz_g_stdacc}->Add($self->{"l_$acc"}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	    $self->{sz_g_stdacc}->Add($self->{"tx_$acc"}, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	    Wx::Event::EVT_TEXT($self, $self->{"tx_$acc"}->GetId, \&OnChanged);
+	}
+
 }
 
 sub hide_buttons {
@@ -158,6 +154,10 @@ sub refresh {
 	    $self->{"l_$acc"}->Enable(0);
 	    $self->{anyinuse}++;
 	}
+	else {
+	    $self->{"tx_$acc"}->Enable(1);
+	    $self->{"l_$acc"}->Enable(1);
+	}
     }
 }
 
@@ -170,7 +170,9 @@ sub changed {
     my ($self) = @_;
     return 0 if $self->{busy};
     foreach my $acc ( @{$dbh->std_accs} ) {
-	return 1 if (split(' ', $self->{"tx_$acc"}->GetValue))[0] != $dbh->std_acc($acc);
+	eval {
+	    return 1 if (split(' ', $self->{"tx_$acc"}->GetValue))[0] != $dbh->std_acc($acc);
+	};
     }
     return 0;
 }
