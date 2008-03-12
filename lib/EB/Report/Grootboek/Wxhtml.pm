@@ -11,6 +11,7 @@ sub style {
 
     my $stylesheet = {
 	d     => {
+	    bsk    => { link => "jnl://" },
 	    desc   => { indent => 2      },
 	},
 	h1    => {

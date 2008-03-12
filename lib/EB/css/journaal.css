@@ -82,6 +82,14 @@ tr { vertical-align: top }
     padding-left: 20pt;
 }
 
+.r_cdata .c_desc, .r_cdata .c_bsk {
+    padding-left: 20pt;
+}
+
+.r_ddata .c_desc, .r_ddata .c_bsk {
+    padding-left: 20pt;
+}
+
 .c_bsk, .h_bsk {
     padding-left: 10pt;
     padding-right: 10pt;

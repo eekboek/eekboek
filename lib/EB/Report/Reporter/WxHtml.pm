@@ -1,12 +1,12 @@
 #! perl
 
 # WxHtml.pm -- Reporter backend for WxHtml
-# RCS Info        : $Id: WxHtml.pm,v 1.6 2008/03/10 17:41:48 jv Exp $
+# RCS Info        : $Id: WxHtml.pm,v 1.7 2008/03/12 14:38:29 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Mar  2 21:01:17 2007
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 10 18:30:40 2008
-# Update Count    : 57
+# Last Modified On: Wed Mar 12 14:00:26 2008
+# Update Count    : 59
 # Status          : Unknown, Use with caution!
 
 # WxHtmlWindow supports HTML, but to a limited extent. In particular,
@@ -24,7 +24,7 @@ package EB::Report::Reporter::WxHtml;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -103,6 +103,7 @@ sub add {
 	              ? "right"
 		      : "center";
 	$align = " align=\"$align\"" if $align;
+	my $val = $value eq "" ? "&nbsp;" : $html->($value);
 
 	# Examine style mods.
 	my ($font, $weight, $italic, $indent);
@@ -124,6 +125,9 @@ sub add {
 		    $colspan = $t->{colspan};
 		    $align .= " colspan=\"" . $colspan . "\"";
 		}
+		if ( $t->{link} && $value ne "" ) {
+		    $val = "<a href=\"".$t->{link}.$value."\">$val</a>";
+		}
 	    }
 	}
 	$self->_print("<td$align>",
@@ -131,7 +135,7 @@ sub add {
 			     $weight ? $weight->[0] : (),
 			     $italic ? $italic->[0] : (),
 			     $indent ? $indent : (),
-			     $value eq "" ? "&nbsp;" : $html->($value),
+			     $val,
 			     $italic ? $italic->[1] : (),
 			     $weight ? $weight->[1] : (),
 			     $font ? $font->[1] : (),

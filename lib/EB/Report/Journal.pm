@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Journal.pm,v 1.37 2008/03/05 21:36:53 jv Exp $
+# RCS Id          : $Id: Journal.pm,v 1.38 2008/03/12 14:38:29 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  5 22:08:35 2008
-# Update Count    : 305
+# Last Modified On: Wed Mar 12 15:35:45 2008
+# Update Count    : 310
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::Journal;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.37 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.38 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -140,20 +140,19 @@ sub journal {
 	my ($jnl_date, $jnl_bsr_date, $jnl_dbk_id, $jnl_bsk_id, $bsk_nr, $jnl_bsr_seq, $jnl_acc_id,
 	    $jnl_amount, $jnl_damount, $jnl_desc, $jnl_rel, $jnl_bsk_ref) = @$rr;
 
+	my $iv = _dbk_type($jnl_dbk_id) == DBKTYPE_INKOOP ? 'c'
+	  : _dbk_type($jnl_dbk_id) == DBKTYPE_VERKOOP ? 'd' : '';
+
 	if ( $jnl_bsr_seq == 0 ) {
 	    $nl++, next unless $detail;
 	    my $t = $jnl_rel;
 	    if ( $t && $jnl_bsk_ref ) {
 		$t .= ":" . $jnl_bsk_ref;
 	    }
-	    if ( $cfg->val(qw(internal noxrel), 0)
-		 && ( _dbk_type($jnl_dbk_id) == DBKTYPE_INKOOP
-		      || _dbk_type($jnl_dbk_id) == DBKTYPE_VERKOOP
-		    )
-	       ) {
+	    if ( $iv && $cfg->val(qw(internal noxrel), 0) ) {
 		undef $t;
 	    }
-	    $rep->add({ _style => 'head',
+	    $rep->add({ _style => $iv.'head',
 			date => datefmt($jnl_bsr_date),
 			desc => join(":", _dbk_desc($jnl_dbk_id), $bsk_nr),
 			bsk  => $jnl_desc,
@@ -170,7 +169,14 @@ sub journal {
 	if ( $t && $jnl_bsk_ref ) {
 	    $t .= ":" . $jnl_bsk_ref;
 	}
-	$rep->add({ _style => 'data',
+	if ( $t ) {
+	    $iv = _acc_type($jnl_acc_id) ? 'd' : 'c';
+	}
+	else {
+	    $iv = '';
+	}
+
+	$rep->add({ _style => $iv.'data',
 		    date => datefmt($jnl_bsr_date),
 		    desc => _acc_desc($jnl_acc_id),
 		    acct => $jnl_acc_id,
@@ -207,6 +213,13 @@ sub _acc_desc {
 				      qw(Accounts acc_id acc_desc =));
 }
 
+my %acc_type;
+sub _acc_type {
+    return '' unless $_[0];
+    $acc_type{$_[0]} ||= $dbh->lookup($_[0],
+				      qw(Accounts acc_id acc_debcrd =));
+}
+
 package EB::Report::Journal::Text;
 
 use EB;
@@ -223,14 +236,18 @@ sub new {
 sub style {
     my ($self, $row, $cell) = @_;
 
+    my $style_data  = {
+		       _style => { skip_after  => 1,
+				   cancel_skip => 1,
+				 },
+		       desc   => { indent      => 2 },
+		       bsk    => { indent      => 2 },
+		      };
+
     my $stylesheet = {
-	data  => {
-	    _style => { skip_after  => 1,
-			cancel_skip => 1,
-		      },
-	    desc   => { indent      => 2 },
-	    bsk    => { indent      => 2 },
-	},
+	data  => $style_data,
+	cdata => $style_data,
+	ddata => $style_data,
 	total => {
 	    _style => { line_before => 1 },
 #	    desc   => { excess      => 2 },
