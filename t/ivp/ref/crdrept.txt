@@ -2,7 +2,7 @@
 Periode: 2007-01-01 t/m 2007-12-31
 EekBoek Demo Administratie                                                         EekBoek, 2007-12-31
 
-Crediteur   Datum       Omschrijving                  Bedrag  Openstaan    Betaald  Boekstuk
+Crediteur   Datum       Omschrijving                  Bedrag       Open    Betaald  Boekstuk
 ------------------------------------------------------------------------------------------------------
 KPN
             2007-01-15  ADSL + Telefoon               104,65       0,00             Inkoop:2

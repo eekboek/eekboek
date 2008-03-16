@@ -2,7 +2,7 @@
 Periode: 2007-01-01 t/m 2007-12-31
 EekBoek Demo Administratie                                                         EekBoek, 2007-12-31
 
-Debiteur    Datum       Omschrijving                  Bedrag  Openstaan    Betaald  Boekstuk
+Debiteur    Datum       Omschrijving                  Bedrag       Open    Betaald  Boekstuk
 ------------------------------------------------------------------------------------------------------
 ACME
             2007-02-18  Perl Cursus                  3570,00       0,00             Verkoop:1
