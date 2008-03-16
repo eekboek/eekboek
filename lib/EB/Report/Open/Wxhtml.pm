@@ -10,12 +10,23 @@ sub style {
     my ($self, $row, $cell) = @_;
 
     my $stylesheet = {
-	tdebcrd    => {
+	tdebcrd     => {
 	    _style => { colour => 'red'  },
 	},
 	trelatie    => {
 	    _style => { colour => 'blue' },
 	},
+	data        => {
+	    bsk => { link => "jnl://" },
+        },
+	cdata        => {
+	    bsk => { link => "jnl://" },
+	    rel => { link => "crd://" },
+        },
+	ddata        => {
+	    bsk => { link => "jnl://" },
+	    rel => { link => "deb://" },
+        },
 	prevdata    => {
 	    bsk => { colour => 'red' },
         },
