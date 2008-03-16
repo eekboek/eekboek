@@ -1,12 +1,12 @@
 #! perl
 
 # WxHtml.pm -- Reporter backend for WxHtml
-# RCS Info        : $Id: WxHtml.pm,v 1.7 2008/03/12 14:38:29 jv Exp $
+# RCS Info        : $Id: WxHtml.pm,v 1.8 2008/03/16 21:41:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Mar  2 21:01:17 2007
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 12 14:00:26 2008
-# Update Count    : 59
+# Last Modified On: Thu Mar 13 22:46:52 2008
+# Update Count    : 69
 # Status          : Unknown, Use with caution!
 
 # WxHtmlWindow supports HTML, but to a limited extent. In particular,
@@ -24,7 +24,7 @@ package EB::Report::Reporter::WxHtml;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -126,7 +126,14 @@ sub add {
 		    $align .= " colspan=\"" . $colspan . "\"";
 		}
 		if ( $t->{link} && $value ne "" ) {
-		    $val = "<a href=\"".$t->{link}.$value."\">$val</a>";
+		    my $v = "<a href=\"".$t->{link}.$value."?";
+		    if ( $self->{periodex} ) {
+			$v .= "periode=" .
+			  $self->{per_begin} . "-" .
+			  $self->{per_end} . "&";
+		    }
+		    chop($v);
+		    $val = $v."\">$val</a>";
 		}
 	    }
 	}
@@ -157,7 +164,7 @@ sub header {
        "<head>\n",
        "<title>", $html->($self->{_title1}), "</title>\n",
        "</head>\n",
-       "<body>\n",
+       "<body text='#000000' bgcolor='#ffffff' link='#000000' vlink='#000000' alink='#0000ff'>\n",
        $ofs ? "<font size=\"$ofs\">\n" : (),
        "<p><b>", $html->($self->{_title1}), "</b><br>\n",
        $html->($self->{_title2}), "<br>\n",
