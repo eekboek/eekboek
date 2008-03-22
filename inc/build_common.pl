@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.16 2008/03/07 10:12:18 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.17 2008/03/22 16:08:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 28 00:13:33 2008
-# Update Count    : 74
+# Last Modified On: Sat Mar 22 17:07:09 2008
+# Update Count    : 75
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -118,6 +118,10 @@ sub WriteDebianControl {
 
     vcopy( _tag	    => "Debian control file",
 	   _dst	    => "debian/control",
+	   version  => $version,
+	 );
+    vcopy( _tag	    => "Debian changelog file",
+	   _dst	    => "debian/changelog",
 	   version  => $version,
 	 );
 }
