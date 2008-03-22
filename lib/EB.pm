@@ -1,12 +1,12 @@
 #! perl
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.85 2008/02/27 15:12:40 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.86 2008/03/22 15:54:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb 27 16:12:33 2008
-# Update Count    : 218
+# Last Modified On: Sat Mar 22 16:45:55 2008
+# Update Count    : 219
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,7 +16,7 @@ our $cfg;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.85 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.86 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -116,7 +116,7 @@ INIT {
 	    $incompatibleOS++;
 	    warn(_T("Dit is niet te verenigen met uw keuze voor dit Microsoft Windows besturingssysteem.")."\n");
 	}
-    };
+    } unless $ENV{AUTOMATED_TESTING};
 
     @months =
       split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
