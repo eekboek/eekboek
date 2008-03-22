@@ -2,9 +2,12 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  2 16:07:14 2008
-# Update Count    : 99
+# Last Modified On: Sat Mar  8 16:30:48 2008
+# Update Count    : 100
 # Status          : Experimental
+
+# Ease the life of the CPAN testers.
+exit 0 if $ENV{AUTOMATED_TESTING} && $] < 5.008003;
 
 use 5.008003;
 use strict;
