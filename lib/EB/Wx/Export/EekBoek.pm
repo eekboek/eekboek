@@ -1,12 +1,12 @@
 #! perl
 
-# $Id: EekBoek.pm,v 1.5 2008/02/17 14:14:45 jv Exp $
+# $Id: EekBoek.pm,v 1.6 2008/03/25 22:23:24 jv Exp $
 
 package main;
 
 our $state;
 
-package EB::Wx::Tools::Export;
+package EB::Wx::Export::EekBoek;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
@@ -24,7 +24,7 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: EB::Wx::Tools::Export::new
+# begin wxGlade: EB::Wx::Export::EekBoek::new
 
 	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
@@ -59,7 +59,7 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
-# begin wxGlade: EB::Wx::Tools::Export::__set_properties
+# begin wxGlade: EB::Wx::Export::EekBoek::__set_properties
 
 	$self->SetTitle("Administratie exporteren");
 	$self->{cb_bsknr}->SetValue(1);
@@ -71,7 +71,7 @@ sub __set_properties {
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: EB::Wx::Tools::Export::__do_layout
+# begin wxGlade: EB::Wx::Export::EekBoek::__do_layout
 
 	$self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
@@ -179,7 +179,7 @@ sub DoExport {
     return 1;
 }
 
-# wxGlade: EB::Wx::Tools::Export::OnExpDir <event_handler>
+# wxGlade: EB::Wx::Export::EekBoek::OnExpDir <event_handler>
 sub OnExpDir {
     my ($self, $event) = @_;
 
@@ -197,7 +197,7 @@ sub OnExpDir {
     }
 }
 
-# wxGlade: EB::Wx::Tools::Export::OnExpFile <event_handler>
+# wxGlade: EB::Wx::Export::EekBoek::OnExpFile <event_handler>
 sub OnExpFile {
     my ($self, $event) = @_;
 
@@ -218,6 +218,6 @@ sub OnExpFile {
 
 }
 
-# end of class EB::Wx::Tools::Export
+# end of class EB::Wx::Export::EekBoek
 
 1;
