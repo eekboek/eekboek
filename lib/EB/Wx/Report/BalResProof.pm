@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BalResProof.pm,v 1.6 2008/03/06 14:36:36 jv Exp $
+# $Id: BalResProof.pm,v 1.7 2008/03/25 22:31:06 jv Exp $
 
 package main;
 
@@ -32,7 +32,12 @@ sub init {
 	$self->SetTitle(_T("Resultaatrekening"));
 	$self->{pref_from_to} = 3;
     }
-    $self->SetDetails(2, -1, 2);
+    $self->SetDetails(2, -1, 2,
+		     [ _T("Op hoofdverdichting"),	#  0
+		       _T("Op verdichting"),		#  1
+		       _T("Gedetailleerd"),		#  2
+		       _T("Op grootboekrekening"),	# -1
+		     ]);
     $self->refresh;
 }
 
