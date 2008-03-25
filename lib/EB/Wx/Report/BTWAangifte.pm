@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWAangifte.pm,v 1.9 2008/03/06 16:58:50 jv Exp $
+# $Id: BTWAangifte.pm,v 1.10 2008/03/25 22:30:49 jv Exp $
 
 package main;
 
@@ -39,6 +39,8 @@ sub refresh {
 
     my $output;
     my $save = $self->htmltext;
+    my @msgs;
+    local $SIG{__WARN__} = sub { push(@msgs, "@_") };
     eval {
 
     EB::Report::BTWAangifte->new->perform
@@ -55,6 +57,11 @@ sub refresh {
 	$msg =~ s/^\?+//;
 	EB::Wx::MessageDialog($self, $msg, "Fout", wxICON_ERROR|wxOK);
 	$output = $save;
+    }
+    elsif ( @msgs ) {
+	# Splice in any messages.
+	my $msg = join("<br>", map { s/^\!//; $_ } @msgs);
+	$output =~ s/\&nbsp;/<font color=\"red\">$msg<\/font><br>\&nbsp;/;
     }
     $self->{w_report}->SetPage($output);
     $self->{_HTMLTEXT} = $output;
