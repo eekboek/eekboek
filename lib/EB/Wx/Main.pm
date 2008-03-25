@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Main.pm,v 1.6 2008/02/15 22:08:54 jv Exp $ ';
+my $RCS_Id = '$Id: Main.pm,v 1.7 2008/03/25 22:38:55 jv Exp $ ';
 
 package main;
 
@@ -13,15 +13,15 @@ package EB::Wx::Main;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb 15 23:07:06 2008
-# Update Count    : 282
+# Last Modified On: Tue Mar 25 19:27:44 2008
+# Update Count    : 315
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 
-our $VERSION = "0.10";
+our $VERSION = "0.20";
 
 use EekBoek;
 
@@ -34,6 +34,9 @@ my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pm,v ([\d.]+)/;
 $my_version .= '*' if length('$Locker:  $ ') > 12;
 
 ################ Configuration ################
+
+# Save options array (for restart).
+my @opts; BEGIN { @opts = @ARGV }
 
 # This will set up the config at 'use' time.
 use EB::Config $EekBoek::PACKAGE;
@@ -51,9 +54,6 @@ my $precmd;
 my $debug = 0;			# debugging
 my $test = 0;			# test mode.
 
-# Save options array (for restart).
-my @opts = @ARGV;
-
 ################ Presets ################
 
 my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
@@ -67,10 +67,17 @@ our @EXPORT = qw(run);
 # the Locale module.
 BEGIN { $app = {} }
 
+use EB::Wx::Window;
+BEGIN {
+    *CORE::GLOBAL::die = sub(@) {
+	goto \&EB::Wx::Fatal;
+    };
+}
+
 use EB;
 use EekBoek;
 BEGIN {
-    my $req = "1.03.08";
+    my $req = "1.03.11";
     die("EekBoek $EekBoek::VERSION -- GUI vereist EekBoek versie $req of nieuwer\n")
       if $req gt $EekBoek::VERSION;
 }
@@ -85,6 +92,7 @@ use POSIX qw(locale_h);
 use Wx::Locale;
 use EB::DB;
 use lib EB::findlib("CPAN");
+use File::Basename ();
 use File::Spec ();
 use File::HomeDir ();
 
@@ -114,7 +122,7 @@ sub OnInit {
 	# Only handle Wx::Bitmap->new(file, type) case.
 	goto &$wxbitmapnew if @_ != 3 || -f $_[1];
 	my ($self, @rest) = @_;
-	$rest[0] = EB::findlib("Wx/icons/".$rest[0]);
+	$rest[0] = EB::findlib("Wx/icons/".File::Basename::basename($rest[0]));
 	$wxbitmapnew->($self, @rest);
     };
     use warnings 'redefine';
@@ -204,13 +212,13 @@ sub app_options {
 }
 
 sub app_ident {
-    print STDERR ("This is $my_package [$my_name $my_version]\n");
+    warn("This is $my_package [$my_name $my_version]\n");
 }
 
 sub app_usage {
     my ($exit) = @_;
     app_ident();
-    print STDERR <<EndOfUsage;
+    warn <<EndOfUsage;
 Usage: $0 [options] [file ...]
     -help		this message
     -ident		show identification
@@ -242,7 +250,7 @@ sub run {
 
     $app_dir = File::Spec->catfile(File::HomeDir->my_data,
 				   ".$app_class");
-    $app_state = File::Spec->catfile($app_dir, "eb_state");
+    $app_state = File::Spec->catfile($app_dir, "ebgui_state");
 
     init_state();
 
@@ -258,9 +266,9 @@ sub run {
 
     my $dataset = $cfg->val(qw(database name));
     if ( !$dataset ) {
-	die("?"._T("Geen dataset opgegeven.".
-		   " Specificeer een dataset in de configuratiefile.").
-	    "\n");
+	die(_T("Geen dataset opgegeven.".
+			 " Specificeer een dataset in de configuratiefile.").
+		      "\n");
     }
     $cfg->newval(qw(database name), $dataset);
 
