@@ -1,11 +1,11 @@
 #! perl
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.8 2008/02/18 10:20:41 jv Exp $
+# RCS Info        : $Id: GridPanel.pm,v 1.9 2008/03/25 22:24:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 18 11:16:27 2008
-# Update Count    : 329
+# Last Modified On: Thu Feb 21 11:22:09 2008
+# Update Count    : 336
 # Status          : Unknown, Use with caution!
 
 # GridPanel implements a widget that is row/column oriented, and
@@ -174,6 +174,7 @@ sub addgrowablecol {
 
 #### TODO: Use event. See Wx::Perl::VirtualTreeCtrl on CPAN for an example.
 #### DONE: Cannot use event -- need return value.
+#### TODO: Store return value in event.
 
 sub registerapplycb {
     my ($self, $cb) = @_;
@@ -298,7 +299,13 @@ sub perform_update {
 	    $action |= (1 << $col), $rowchanged++ if $item && $item->changed;
 	    $col++;
 	}
+	warn("row $row: ",
+	     $self->is_new($row) ? "new, " : "",
+	     $self->is_deleted($row) ? "del, " : "",
+	     $rowchanged ? "changed" : "not changed",
+	     "\n");
 	if ( $self->is_new($row) ) {
+	    next if $self->is_deleted($row);
 	    $action = 0;
 	    $rowchanged++ unless $self->is_deleted($row);
 	}
@@ -311,6 +318,7 @@ sub perform_update {
 	push(@act, @$data) if $data;
 	push(@actions, [@act]) if $rowchanged;
     }
+    use Data::Dumper; warn(Dumper(\@actions));
     if ( $self->{applycb}->(\@actions) ) {
 	foreach my $row ( 1 .. $rows-1 ) {
 	    next unless $self->exists($row);
@@ -370,6 +378,7 @@ sub _new_or_append {
 
     my $r = $self->{rows}++;
     my $c = 0;
+    my @data;
     foreach my $col ( @{$self->{grid_cols}} ) {
 	my $w;
 	my $f = $col;
@@ -379,6 +388,7 @@ sub _new_or_append {
 	}
 	unless ( $new ) {
 	    my $val = shift(@values);
+	    push(@data, $val);
 	    if ( ref($val) eq 'ARRAY' ) {
 		($f, $val) = @$val;
 	    }
@@ -389,6 +399,8 @@ sub _new_or_append {
 	    $w = $self->rembut($r) = $f->new($self->{panel}, 0);
 	    $self->is_deleted($r) = 0;
 	    $self->is_new($r) = $new;
+	    $w->is_new($new);
+	    $w->flip_button($new) if $new;
 	    $w->registerchangecallback(sub { $self->OnRemoveButton($r) });
 	}
 	else {
@@ -398,10 +410,8 @@ sub _new_or_append {
 	$self->item($r, $c) = $w;
 	$self->{grid}->Add($w, 0, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxADJUST_MINSIZE, 0);
 	$c++;
-	if ( @values ) {
-	    $self->data($r) = [@values];
-	}
     }
+    $self->data($r) = [@data, @values];
 
     unless ( $more ) {
 	$self->{grid}->FitInside($self->{panel});

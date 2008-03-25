@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: RemoveButton.pm,v 1.3 2008/02/04 23:25:49 jv Exp $
+# $Id: RemoveButton.pm,v 1.4 2008/03/25 22:27:36 jv Exp $
 
 package EB::Wx::UI::GridPanel::RemoveButton;
 
@@ -9,6 +9,7 @@ use base qw(Wx::BitmapButton);
 use strict;
 
 my $bm_edit_remove;
+my $bm_edit_add;
 my $bm_edit_trash;
 
 sub new {
@@ -16,12 +17,14 @@ sub new {
     $class = ref($class) || $class;
     $arg = 1 unless defined($arg);
 
-    $bm_edit_trash  ||= Wx::Bitmap->new("edittrash.png", wxBITMAP_TYPE_PNG);
+    $bm_edit_trash  ||= Wx::Bitmap->new("edittrash.png",   wxBITMAP_TYPE_PNG);
+    $bm_edit_add    ||= Wx::Bitmap->new("edit_add.png",    wxBITMAP_TYPE_PNG);
     $bm_edit_remove ||= Wx::Bitmap->new("edit_remove.png", wxBITMAP_TYPE_PNG);
 
     my $self = $class->SUPER::new($parent, -1,
 				  $arg ? $bm_edit_remove : $bm_edit_trash);
     $self->{state} = $self->{committed_value} = $arg;
+    $self->{is_new} = 0;
     $self;
 }
 
@@ -49,8 +52,20 @@ sub flip_button {
     $state = !$self->{state} unless defined $state;
     $changed++ if ($self->{state} xor $state);
     $self->{state} = $state;
-    $self->SetBitmapLabel($state ? $bm_edit_remove : $bm_edit_trash);
+    $self->SetBitmapLabel($state
+			  ? $self->{is_new}
+			    ? $bm_edit_add
+			    : $bm_edit_remove
+			  : $bm_edit_trash);
     $changed;
+}
+
+sub is_new {
+    my ($self, $new) = @_;
+    if ( @_ > 1 ) {
+	$self->{is_new} = $new;
+    }
+    $self->{is_new};
 }
 
 sub commit {
