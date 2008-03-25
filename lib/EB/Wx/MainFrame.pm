@@ -7,14 +7,15 @@ our $dbh;
 
 package EB::Wx::MainFrame;
 
+use strict;
+use warnings;
+
 use Wx qw[:everything];
 use base qw(Wx::Frame);
-use base qw(EB::Wx::Window);
-use strict;
 use EB;
+use base qw(EB::Wx::Window);
 
-# begin wxGlade: ::dependencies
-# end wxGlade
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
 
 my %cmds;
 
@@ -38,6 +39,8 @@ sub new {
 	# Menu Bar
 
 	$self->{mainframe_menubar} = Wx::MenuBar->new();
+	use constant MENU_XAF => Wx::NewId();
+	use constant MENU_SHELL => Wx::NewId();
 	use constant MENU_GBK => Wx::NewId();
 	use constant MENU_DBK => Wx::NewId();
 	use constant MENU_BTW => Wx::NewId();
@@ -58,12 +61,15 @@ sub new {
 	$wxglade_tmp_menu->Append(wxID_CLOSE, _T("Verberg log venster"), _T("Toon of verberg het log venster"));
 	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("Log venster schoonmaken"), "");
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(wxID_SAVE, _T("Exporteer..."), _T("Exporteer administratie"));
+	$wxglade_tmp_menu->Append(wxID_SAVE, _T("Exporteer EekBoek..."), _T("Exporteer administratie"));
+	$wxglade_tmp_menu->Append(MENU_XAF, _T("Exporteer XML Audit File..."), _T("Exporteer administratie"));
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_PROPERTIES, _T("Eigenschappen...\tAlt+Enter"), _T("Toon administratiegegevens"));
 	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(MENU_SHELL, _T("EekBoek Shell\tAlt-!"), _T("EekBoek Shell"));
+	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_REFRESH, _T("Opnieuw starten\tAlt-R"), _T("Herstart (voor testen)"));
-	$wxglade_tmp_menu->Append(wxID_EXIT, _T("Beëndigen\tAlt-x"), _T("Beëindig het programma"));
+	$wxglade_tmp_menu->Append(wxID_EXIT, _T("Beëindigen\tAlt-x"), _T("Beëindig het programma"));
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Bestand"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_CUT, _T("Knip"), "");
@@ -105,8 +111,8 @@ sub new {
 # Menu Bar end
 
 	$self->{mainframe_statusbar} = $self->CreateStatusBar(0, 0);
-	$self->{eb_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("eb.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxDOUBLE_BORDER);
-	$self->{pp_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("perl_powered.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, );
+	$self->{eb_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("/home/jv/src/eekboek/src/libgui/EB/Wx/icons/eb.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxDOUBLE_BORDER);
+	$self->{pp_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("/home/jv/src/eekboek/src/libgui/EB/Wx/icons/perl_powered.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_log} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
 
 	$self->__set_properties();
@@ -114,8 +120,10 @@ sub new {
 
 	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnLogw);
 	Wx::Event::EVT_MENU($self, wxID_CLEAR, \&OnLogClean);
-	Wx::Event::EVT_MENU($self, wxID_SAVE, \&OnExport);
+	Wx::Event::EVT_MENU($self, wxID_SAVE, \&OnExportEB);
+	Wx::Event::EVT_MENU($self, MENU_XAF, \&OnExportXAF);
 	Wx::Event::EVT_MENU($self, wxID_PROPERTIES, \&OnProperties);
+	Wx::Event::EVT_MENU($self, MENU_SHELL, \&OnShell);
 	Wx::Event::EVT_MENU($self, wxID_REFRESH, \&OnRestart);
 	Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnExit);
 	Wx::Event::EVT_MENU($self, wxID_PREFERENCES, \&OnPreferences);
@@ -146,6 +154,14 @@ sub new {
 	Wx::LogMessage("Huidig boekjaar: " . ($state->bky) .  " (" . $dbh->adm("name") . ")");
 
 	$self->adapt_menus;
+
+	# No restart unless we have a program.
+	$self->{mainframe_menubar}->Enable(wxID_REFRESH, $0 ne '-e');
+
+	$self->{mainframe_menubar}->Enable(MENU_SHELL,
+					   findlib("Wx/Shell.pm"));
+	$self->{mainframe_menubar}->Enable(MENU_XAF,
+					   findlib("Wx/Export/XAF.pm"));
 
 	use Wx::Event qw(EVT_CLOSE);
 
@@ -267,20 +283,22 @@ sub adapt_menus {
 		     __x("Dagboek {dbk}", dbk => $desc)."\n");
 	my $tp = qw(X IV IV BKM BKM BKM)[$type];
 	my $cl = "EB::Wx::Booking::${tp}Panel";
-	undef($self->{"d_dbkpanel$id"});
+	my $p = "d_dbkpanel$tp$id";
+	undef($self->{$p});
 	EVT_MENU($self, $m,
 		 sub { eval "require $cl";
 		       die($@) if $@;
-		       my $cfg = $state->get(lc($tp)."w");
-		       $self->{"d_dbkpanel$id"} ||=
+		       my $pos = wxDefaultPosition;
+		       my $width = wxDefaultSize;
+		       $self->{$p} ||=
 			 $cl->new($self, -1,
 				  __x("Dagboek {dbk}", dbk => $desc)."\n",
-				  [$cfg->{xpos}, $cfg->{ypos}],
-				  [$cfg->{xwidth}, $cfg->{ywidth}]);
-		       ### TODO: How to save/restore geometry?
-		       $self->{"d_dbkpanel$id"}->init($id, $desc, $type);
-		       $self->{"d_dbkpanel$id"}->Show(1);
-		       $self->{"d_dbkpanel$id"}->SetSize([$cfg->{xwidth}, $cfg->{ywidth}]);
+				  $pos, $width, $type);
+		       $self->{$p}->sizepos_restore("dbk$tp${id}w");
+		       $self->{$p}->init($id, $desc, $type);
+		       $self->{$p}->refresh;
+		       $self->{$p}->Show(1);
+		       $self->{dbk_id} = $id;
 		   });
     }
 
@@ -307,15 +325,14 @@ sub DESTROY {
 
 ################ Menu: File ################
 
-
-# wxGlade: EB::Wx::MainFrame::OnExport <event_handler>
-sub OnExport {
+# wxGlade: EB::Wx::MainFrame::OnExportEB <event_handler>
+sub OnExportEB {
     my ($self, $event) = @_;
 
     my $c = $state->expdir;
     $state->expdir("") unless $c && -d $c;
-    require EB::Wx::Tools::Export;
-    $self->{d_export} = EB::Wx::Tools::Export->new
+    require EB::Wx::Export::EekBoek;
+    $self->{d_exporteb} = EB::Wx::Export::EekBoek->new
       ($self, -1,
        _T("Exporteren administratie"),
        wxDefaultPosition,
@@ -323,9 +340,29 @@ sub OnExport {
        wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER,
        "",
       );
-    $self->{d_export}->refresh;
-    $self->{d_export}->ShowModal;
-    $self->{d_export}->Destroy;
+    $self->{d_exporteb}->refresh;
+    $self->{d_exporteb}->ShowModal;
+    $self->{d_exporteb}->Destroy;
+}
+
+# wxGlade: EB::Wx::MainFrame::OnExportXAF <event_handler>
+sub OnExportXAF {
+    my ($self, $event) = @_;
+
+    my $c = $state->expdir;
+    $state->expdir("") unless $c && -d $c;
+    require EB::Wx::Export::XAF;
+    $self->{d_exportxaf} = EB::Wx::Export::XAF->new
+      ($self, -1,
+       _T("Exporteren administratie"),
+       wxDefaultPosition,
+       wxDefaultSize,
+       wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER,
+       "",
+      );
+    $self->{d_exportxaf}->refresh;
+    $self->{d_exportxaf}->ShowModal;
+    $self->{d_exportxaf}->Destroy;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnProperties <event_handler>
@@ -360,6 +397,13 @@ sub OnLogw {
 sub OnLogClean {
     my ($self, $event) = @_;
     $self->{tx_log}->Clear;
+}
+
+# wxGlade: EB::Wx::MainFrame::OnShell <event_handler>
+sub OnShell {
+    my ($self, $event) = @_;
+    warn "Event handler (OnShell) not implemented";
+    $event->Skip;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnRestart <event_handler>
@@ -436,7 +480,7 @@ sub OnMRel {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{$p}->sizepos_restore("relw");
-#    $self->{$p}->refresh;
+    $self->{$p}->refresh;
     $self->{$p}->Show(1);
 }
 
@@ -452,6 +496,7 @@ sub OnMBtw {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{$p}->sizepos_restore("btww");
+    $self->{$p}->refresh;
     $self->{$p}->Show(1);
 }
 
@@ -516,6 +561,11 @@ sub OnRRes {
 # wxGlade: EB::Wx::MainFrame::OnRGbk <event_handler>
 sub OnRGbk {
     my ($self, $event) = @_;
+    $self->ShowRGbk;
+}
+
+sub ShowRGbk {
+    my ($self, $args) = @_;
     require EB::Wx::Report::Grootboek;
     $self->{d_rgbkpanel} ||= EB::Wx::Report::Grootboek->new
       ($self, -1,
@@ -523,13 +573,19 @@ sub OnRGbk {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{d_rgbkpanel}->sizepos_restore("rgbkw");
-    $self->{d_rgbkpanel}->init("gbk");
+    $self->{d_rgbkpanel}->init("gbk", $args);
     $self->{d_rgbkpanel}->Show(1);
+    $self->{d_rgbkpanel}->Raise;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnRJnl <event_handler>
 sub OnRJnl {
     my ($self, $event) = @_;
+    $self->ShowRJnl;
+}
+
+sub ShowRJnl {
+    my ($self, $args) = @_;
     require EB::Wx::Report::Journaal;
     $self->{d_rjnlpanel} ||= EB::Wx::Report::Journaal->new
       ($self, -1,
@@ -537,8 +593,9 @@ sub OnRJnl {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{d_rjnlpanel}->sizepos_restore("rjnlw");
-    $self->{d_rjnlpanel}->init("jnl");
+    $self->{d_rjnlpanel}->init("jnl", $args);
     $self->{d_rjnlpanel}->Show(1);
+    $self->{d_rjnlpanel}->Raise;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnRBtw <event_handler>
@@ -572,6 +629,11 @@ sub OnROpen {
 # wxGlade: EB::Wx::MainFrame::OnRDeb <event_handler>
 sub OnRDeb {
     my ($self, $event) = @_;
+    $self->ShowRDeb;
+}
+
+sub ShowRDeb {
+    my ($self, $args) = @_;
     require EB::Wx::Report::DebCrd;
     $self->{d_rdebpanel} ||= EB::Wx::Report::DebCrd->new
       ($self, -1,
@@ -579,13 +641,19 @@ sub OnRDeb {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{d_rdebpanel}->sizepos_restore("rdebw");
-    $self->{d_rdebpanel}->init("deb");
+    $self->{d_rdebpanel}->init("deb", $args);
     $self->{d_rdebpanel}->Show(1);
+    $self->{d_rdebpanel}->Raise;
 }
 
 # wxGlade: EB::Wx::MainFrame::OnRCrd <event_handler>
 sub OnRCrd {
     my ($self, $event) = @_;
+    $self->ShowRCrd;
+}
+
+sub ShowRCrd {
+    my ($self, $args) = @_;
     require EB::Wx::Report::DebCrd;
     $self->{d_rcrdpanel} ||= EB::Wx::Report::DebCrd->new
       ($self, -1,
@@ -593,8 +661,9 @@ sub OnRCrd {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{d_rcrdpanel}->sizepos_restore("rcrdw");
-    $self->{d_rcrdpanel}->init("crd");
+    $self->{d_rcrdpanel}->init("crd", $args);
     $self->{d_rcrdpanel}->Show(1);
+    $self->{d_rcrdpanel}->Raise;
 }
 
 
