@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: NumericCtrl.pm,v 1.4 2008/02/04 23:25:49 jv Exp $
+# $Id: NumericCtrl.pm,v 1.5 2008/03/25 22:26:01 jv Exp $
 
 package EB::Wx::UI::NumericCtrl;
 
@@ -12,8 +12,9 @@ use EB;
 
 sub new {
     my ($class, @args) = @_;
+    $args[5] |= wxTE_RIGHT|wxTE_PROCESS_ENTER;
     my $self = $class->SUPER::new(@args);
-    $self->SetValidator(Wx::Perl::TextValidator->new(qr/\d/));
+    $self->SetValidator(Wx::Perl::TextValidator->new(qr/^\d*$/));
     $self;
 }
 
