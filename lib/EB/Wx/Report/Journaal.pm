@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Journaal.pm,v 1.7 2008/03/06 14:36:36 jv Exp $
+# $Id: Journaal.pm,v 1.8 2008/03/25 22:32:46 jv Exp $
 
 package main;
 
@@ -13,16 +13,31 @@ use strict;
 use EB;
 
 sub init {
-    my ($self, $me) = @_;
-    $self->SetDetails(1,0,1);
+    my ($self, $me, $args) = @_;
+    $self->SetDetails(1, 0, 1,
+		      [ _T("Alleen totaal"),
+			_T("Volledig"),
+		      ]);
     $self->{pref_from_to} = 3;
     $self->SetTitle("Journaal");
+
+    if ( $args->{select} ) {
+	$self->{pref_dbk} = $args->{select};
+	$self->{detail} = 1;
+    }
+    if ( $args->{periode} ) {
+	my $p = parse_date_range($args->{periode});
+	delete($self->{pref_bky});
+	$self->{pref_per} = $p;
+    }
     $self->refresh;
 }
 
 sub refresh {
     my ($self) = @_;
     my $output;
+
+    delete($self->{pref_dbk}) if $self->{prefs_changed};
 
     my @period;
 
