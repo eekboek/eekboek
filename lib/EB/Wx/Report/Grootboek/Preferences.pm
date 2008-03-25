@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.1 2008/03/06 14:37:38 jv Exp $
+# $Id: Preferences.pm,v 1.2 2008/03/25 22:28:53 jv Exp $
 
 package main;
 
@@ -51,6 +51,7 @@ sub new {
 
 # end wxGlade
 
+	Wx::Event::EVT_EB_LISTINPUT($self, $self->{t_acct}, \&OnAcct);
 	Wx::Event::EVT_EB_PERIOD($self, $self->{p_period}, \&OnPeriod);
 
 	return $self;
@@ -147,6 +148,11 @@ sub OnPeriod {
 sub OnCBAcct {
     my ($self, $event) = @_;
     $self->{t_acct}->Enable($self->{cb_acct}->IsChecked);
+    $self->{b_apply}->Enable(1);
+}
+
+sub OnAcct {
+    my ($self, $event) = @_;
     $self->{b_apply}->Enable(1);
 }
 
