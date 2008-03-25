@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Window.pm,v 1.3 2008/02/17 14:18:59 jv Exp $
+# $Id: Window.pm,v 1.4 2008/03/25 22:56:48 jv Exp $
 
 package main;
 
@@ -21,6 +21,7 @@ sub sizepos_save {
     my $h = $state->get($self->{mew});
     @$h{ qw(xpos   ypos  ) } = $self->GetPositionXY;
     @$h{ qw(xwidth ywidth) } = $self->GetSizeWH unless $posonly;
+    $state->set($self->{mew}, $h);
 }
 
 sub sizepos_restore {
@@ -100,6 +101,18 @@ sub EB::Wx::MessageDialog {
     my $ret = $m->ShowModal;
     $m->Destroy;
     return $ret;
+}
+
+sub EB::Wx::Fatal {
+    my ($msg) = "@_";
+
+    my $m = Wx::MessageDialog->new(undef, $msg,
+				   "EekBoek afgebroken",
+				   wxICON_ERROR|wxOK);
+    my $ret = $m->ShowModal;
+    $m->Destroy;
+    $app->{TOP}->ExitMainLoop if $app && $app->{TOP};
+    exit(1);
 }
 
 1;
