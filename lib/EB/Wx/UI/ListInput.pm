@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: ListInput.pm,v 1.4 2008/02/11 15:22:47 jv Exp $
+# $Id: ListInput.pm,v 1.5 2008/03/25 22:25:36 jv Exp $
 
 package main;
 
@@ -14,9 +14,9 @@ use Wx qw(wxDefaultPosition wxDefaultSize wxID_OK);
 use base qw(Wx::TextCtrl);
 use base qw(Wx::PlWindow);
 use base qw(Exporter);
-our @EXPORT_OK = qw(EVT_PL_LISTINPUT);
+our @EXPORT_OK = qw(EVT_EB_LISTINPUT);
 our %EXPORT_TAGS = ( 'everything'   => \@EXPORT_OK,
-                     'event'        => [ qw(EVT_PL_LISTINPUT) ],
+                     'event'        => [ qw(EVT_EB_LISTINPUT) ],
 		   );
 use strict;
 use EB;
@@ -48,7 +48,7 @@ sub new {
 
 my $evt_change = Wx::NewEventType;
 
-sub Wx::Event::EVT_PL_LISTINPUT($$$) {
+sub Wx::Event::EVT_EB_LISTINPUT($$$) {
     $_[0]->Connect($_[1], -1, $evt_change, $_[2]);
 }
 
