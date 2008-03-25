@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: IVPanel.pm,v 1.6 2008/02/11 15:05:42 jv Exp $
+# $Id: IVPanel.pm,v 1.7 2008/03/25 23:03:51 jv Exp $
 
 package main;
 
@@ -17,6 +17,7 @@ use EB::Format;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
+use base qw(EB::Wx::Window);
 use strict;
 
 # begin wxGlade: ::dependencies
@@ -38,6 +39,7 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+	$self->{sz_staticbox} = Wx::StaticBox->new($self, -1, _T("Dagboek") );
 	$self->{gr_main} = Wx::Grid->new($self, -1);
 	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, "");
 
@@ -48,10 +50,9 @@ sub new {
 
 # end wxGlade
 
+	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
 	Wx::Event::EVT_GRID_CELL_LEFT_DCLICK($self->{gr_main}, \&OnDClick);
 
-	$self->{mew} = "ivw";
-	$self->SetTitle($title);
 	return $self;
 
 }
@@ -89,7 +90,9 @@ sub __do_layout {
 	$self->{sz_outer} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_main} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sz_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_main}->Add($self->{gr_main}, 1, wxEXPAND, 0);
+	$self->{sz}= Wx::StaticBoxSizer->new($self->{sz_staticbox}, wxHORIZONTAL);
+	$self->{sz}->Add($self->{gr_main}, 1, wxALL|wxEXPAND, 5);
+	$self->{sz_main}->Add($self->{sz}, 1, wxEXPAND, 0);
 	$self->{sz_buttons}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_buttons}->Add($self->{b_close}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_main}->Add($self->{sz_buttons}, 0, wxTOP|wxEXPAND, 5);
@@ -103,27 +106,38 @@ sub __do_layout {
 sub init {
     my ($self, $id, $desc, $type) = @_;
     $self->SetTitle(__x("Dagboek: {dbk}", dbk => $desc));
+    $self->{sz_staticbox}->SetLabel(__x("Dagboek: {dbk}", dbk => $desc));
     $self->{dbk_id} = $id;
     $self->{dbk_desc} = $desc;
     $self->{dbk_type} = $type;
-    $self->refresh;
 }
+
+my @bskmap;
 
 sub refresh {
     my ($self) = @_;
+
+    my ($begin, $end) = @{$dbh->do("SELECT bky_begin, bky_end".
+				   " FROM Boekjaren".
+				   " WHERE bky_code = ?",
+				   $state->bky ||
+				   $state->set("bky", $dbh->adm("bky")))};
 
     my $sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc,".
 			     " bsk_date, bsk_amount, bsk_open, bsr_rel_code".
 			     " From Boekstukken, Boekstukregels".
 			     " WHERE bsk_dbk_id = ?".
 			     " AND bsr_bsk_id = bsk_id AND bsr_nr = 1".
+			     " AND bsk_date >= ? AND bsk_date <= ?".
 			     " ORDER BY bsk_date, bsk_id",
-			     $self->{dbk_id});
+			     $self->{dbk_id}, $begin, $end);
 
     my $gr = $self->{gr_main};
     $gr->DeleteRows(0, $gr->GetNumberRows);
 
+    @bskmap = ();
     my $row = 0;
+
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($bsk_id, $bsk_nr, $bsk_desc, $bsk_date, $bsk_amount, $bsk_open, $bsr_rel) = @$rr;
 	$bsk_nr =~ s/\s+$//;
@@ -150,51 +164,18 @@ sub refresh {
 	$gr->SetCellValue($row, $col, $bsk_open ? _T("Nee") : _T("Ja"));
 	$gr->SetCellAlignment($row, $col, wxALIGN_CENTER, wxALIGN_CENTER);
 	$row++;
+	push(@bskmap, $bsk_id);
     }
 
-    $self->resize;
-}
-
-sub resize {
-    my ($self) = @_;
-    my $gr = $self->{gr_main};
-
-    # Calculate minimal fit.
-    $gr->AutoSizeColumns(1);
-
-    # Get the total minimal width.
-    my $w = 0;
-    my @w;
-    my $cols = $gr->GetNumberCols;
-    for ( 0 .. $cols-1 ) {
-	push(@w, $gr->GetColSize($_));
-	$w += $w[-1];
-    }
-
-    # Get available width.
-    my $width;
-    if ( $gr->can("GetVirtualSizeWH") ) {
-	$width = ($gr->GetVirtualSizeWH)[0];
-    }
-    else {
-	# Assume scrollbar.
-	$width = ($gr->GetSizeWH)[0] - 16;
-    }
-
-    # Scale columns if possible.
-    if ( $w < $width ) {
-	my $r = $width / $w;
-	for ( 0 .. $cols-1 ) {
-	    $gr->SetColSize($_, int($r*$w[$_]));
-	}
-    }
+    $self->{_curr_row} = 0;
+    $self->resize_grid($self->{gr_main});
 }
 
 # wxGlade: EB::Wx::Booking::IVPanel::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
     # Remember position and size.
-    @{$state->get($self->{mew})}{qw(xpos ypos xwidth ywidth)} = ($self->GetPositionXY, $self->GetSizeWH);
+    $self->sizepos_save;
     # Disappear.
     $self->Show(0);
 }
@@ -203,7 +184,30 @@ sub OnClose {
 sub OnDClick {
     my ($self, $event) = @_;
     my $row = $event->GetRow;
-    warn("row = $row\n");
+    $self = $self->GetParent;
+    $self->{_curr_row} = $row;
+
+    require EB::Wx::Booking::IVPanel::BskPanel;
+    $self->{d_bskpanel} ||= EB::Wx::Booking::IVPanel::BskPanel->new
+      ($self, -1,
+       _T("Boekstuk"),
+       wxDefaultPosition,
+       wxDefaultSize,
+      );
+    $self->{d_bskpanel}->sizepos_restore($self->{mew}."kw");
+    $self->advance($row);
+    $self->{d_bskpanel}->Show(1);
+
+}
+
+sub advance {
+    my ($self, $row) = @_;
+    $self->{_curr_row} = $row;
+    $self->{d_bskpanel}->init($bskmap[$row]);
+    $self->{d_bskpanel}->refresh;
+    $self->{d_bskpanel}->{b_forward}->Enable($row < $self->{gr_main}->GetNumberRows-1);
+    $self->{d_bskpanel}->{b_backward}->Enable($row > 0);
+    $self->{gr_main}->SelectRow($row);
 }
 
 # end of class EB::Wx::Booking::IVPanel

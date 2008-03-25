@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BKMPanel.pm,v 1.8 2008/02/20 14:02:53 jv Exp $
+# $Id: BKMPanel.pm,v 1.9 2008/03/25 23:03:51 jv Exp $
 
 package main;
 
@@ -21,14 +21,18 @@ use EB::Format;
 use Wx::Grid;
 # end wxGlade
 
+my $dbk_type;
+
 sub new {
-	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
+	my( $self, $parent, $id, $title, $pos, $size, $type ) = @_;
 	$parent = undef              unless defined $parent;
 	$id     = -1                 unless defined $id;
 	$title  = ""                 unless defined $title;
 	$pos    = wxDefaultPosition  unless defined $pos;
 	$size   = wxDefaultSize      unless defined $size;
-	$name   = ""                 unless defined $name;
+	my $style;
+	my $name = "";
+	$dbk_type = $type;
 
 # begin wxGlade: EB::Wx::Booking::BKMPanel::new
 
@@ -47,6 +51,7 @@ sub new {
 
 # end wxGlade
 
+	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
 	Wx::Event::EVT_GRID_CELL_LEFT_DCLICK($self->{gr_main}, \&OnDClick);
 
 	$self->SetTitle($title);
@@ -58,11 +63,14 @@ sub new {
 sub __set_properties {
 	my $self = shift;
 
+	$self->{dbk_type} = $dbk_type;
+
 # begin wxGlade: EB::Wx::Booking::BKMPanel::__set_properties
 
 	$self->SetTitle(_T("Bank/Kas/Memoriaal Boeking"));
 	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(300, 168)));
-	$self->{gr_main}->CreateGrid(0, 4);
+	$self->{gr_main}->CreateGrid(0,
+				     $self->{dbk_type} == DBKTYPE_MEMORIAAL ? 3 : 4);
 	$self->{gr_main}->SetRowLabelSize(3);
 	$self->{gr_main}->SetColLabelSize(22);
 	$self->{gr_main}->EnableEditing(0);
@@ -71,7 +79,8 @@ sub __set_properties {
 	$self->{gr_main}->SetColLabelValue(0, _T("Nr"));
 	$self->{gr_main}->SetColLabelValue(1, _T("Datum"));
 	$self->{gr_main}->SetColLabelValue(2, _T("Omschrijving"));
-	$self->{gr_main}->SetColLabelValue(3, _T("Bedrag"));
+	$self->{gr_main}->SetColLabelValue(3, _T("Bedrag"))
+	  if $self->{dbk_type} != DBKTYPE_MEMORIAAL;
 	$self->{b_close}->SetFocus();
 
 # end wxGlade
@@ -135,9 +144,11 @@ sub refresh {
 	$col++;
 	$gr->SetCellValue($row, $col, $bsk_desc);
 	$gr->SetCellAlignment($row, $col, wxALIGN_LEFT, wxALIGN_CENTER);
-	$col++;
-	$gr->SetCellValue($row, $col, numfmt($bsk_amount));
-	$gr->SetCellAlignment($row, $col, wxALIGN_RIGHT, wxALIGN_CENTER);
+	if ( $self->{dbk_type} != DBKTYPE_MEMORIAAL ) {
+	    $col++;
+	    $gr->SetCellValue($row, $col, numfmt($bsk_amount));
+	    $gr->SetCellAlignment($row, $col, wxALIGN_RIGHT, wxALIGN_CENTER);
+	}
 	$row++;
     }
 
