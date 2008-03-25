@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: GenBase.pm,v 1.4 2008/03/06 14:36:36 jv Exp $
+# $Id: GenBase.pm,v 1.5 2008/03/25 22:36:27 jv Exp $
 
 package main;
 
@@ -42,7 +42,7 @@ sub new {
 	$self->{bd_more} = Wx::BitmapButton->new($self, -1, Wx::Bitmap->new("edit_add.png", wxBITMAP_TYPE_ANY));
 	$self->{b_print} = Wx::Button->new($self, wxID_PRINT, "");
 	$self->{b_close} = Wx::Button->new($self, wxID_CLOSE, "");
-	$self->{w_report} = Wx::HtmlWindow->new($self, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{w_report} = Wx::HtmlWindow::Derived->new($self, -1, wxDefaultPosition, wxDefaultSize, );
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -56,6 +56,13 @@ sub new {
 
 # end wxGlade
 
+	my $cc = Wx::NewId();
+	$self->SetAcceleratorTable
+	  ( Wx::AcceleratorTable->new
+	    ( [ wxACCEL_ALT,  'Z', $cc ] ) );
+
+	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
+	Wx::Event::EVT_MENU($self, $cc, \&OnClose);
 	$self->{_PRINTER} =  Wx::HtmlEasyPrinting->new('Print');
 
 	return $self;
@@ -114,18 +121,12 @@ sub __do_layout {
 }
 
 sub SetDetails {
-    my ($self, $cur, $min, $max) = @_;
+    my ($self, $cur, $min, $max, $tips) = @_;
     $self->{_maxdetail} = $max;
     $self->{_mindetail} = $min;
     $self->{detail} = $cur;
-    if ( $max == $min ) {
-	$self->{bd_more}->Enable(0);
-	$self->{bd_less}->Enable(0);
-    }
-    else {
-	$self->{bd_more}->Enable($cur < $max);
-	$self->{bd_less}->Enable($cur > $min);
-    }
+    $self->{_ml_tips} = $tips if $tips;
+    $self->_MoreLess;
 }
 
 sub GetDetail {
@@ -176,7 +177,9 @@ sub OnProps {
 	foreach ( grep { /^pref_/ } keys(%$h) ) {
 	    $self->{$_} = $h->{$_};
 	}
+	$self->{prefs_changed} = 1;
 	$self->refresh;
+	delete $self->{prefs_changed};
     }
 
 # end wxGlade
@@ -190,9 +193,33 @@ sub OnMore {
 	$self->{detail}++;
 	$self->refresh;
     }
+    $self->_MoreLess;
+}
 
-    $self->{bd_more}->Enable(0+($self->{detail} < $self->{_maxdetail}));
-    $self->{bd_less}->Enable(0+($self->{detail} > $self->{_mindetail}));
+sub _MoreLess() {
+    my $self = shift;
+
+    if ( $self->{detail} < $self->{_maxdetail} ) {
+	$self->{bd_more}->Enable(1);
+	$self->{bd_more}->SetToolTipString
+	  ( $self->{_ml_tips}
+	    ? $self->{_ml_tips}->[$self->{detail}+1]
+	    : _T("Meer uitgebreid") );
+    }
+    else {
+	$self->{bd_more}->Enable(0);
+    }
+
+    if ( $self->{detail} > $self->{_mindetail} ) {
+	$self->{bd_less}->Enable(1);
+	$self->{bd_less}->SetToolTipString
+	  ( $self->{_ml_tips}
+	    ? $self->{_ml_tips}->[$self->{detail}-1]
+	    : _T("Minder uitgebreid") );
+    }
+    else {
+	$self->{bd_less}->Enable(0);
+    }
 }
 
 # wxGlade: EB::Wx::Report::GenBase::OnLess <event_handler>
@@ -203,8 +230,7 @@ sub OnLess {
 	$self->{detail}--;
 	$self->refresh;
     }
-    $self->{bd_more}->Enable(0+($self->{detail} < $self->{_maxdetail}));
-    $self->{bd_less}->Enable(0+($self->{detail} > $self->{_mindetail}));
+    $self->_MoreLess;
 }
 
 # wxGlade: EB::Wx::Report::GenBase::OnClose <event_handler>
@@ -223,8 +249,40 @@ sub OnPrint {
     #$self->printer->SetHeader('@TITLE@');
     #$self->printer->SetFooter('@DATE@ @TIME@ '._T("Blad:").' @PAGENUM@');
     $self->printer->SetFooter(_T("Blad:").' @PAGENUM@');
-    $self->printer->PrintText($self->htmltext);
+    my $html = $self->htmltext;
+    $html =~ s;</?a[^>]*>;;gx;
+    $self->printer->PrintText($html);
 
+}
+
+package Wx::HtmlWindow::Derived;
+
+use strict;
+use warnings;
+use base qw(Wx::HtmlWindow);
+
+sub OnLinkClicked {
+    my ($self, $event) = @_;
+    my $link = $event->GetHref;
+
+    if ( $link =~ m;^([^:]+)://(.+)$;
+	 && (my $rep = EB::Wx::MainFrame->can("ShowR" . ucfirst(lc($1)))) ) {
+	my @a = split(/[?&]/, $2);
+	my $args = { select => shift(@a) };
+	foreach ( @a ) {
+	    if ( /^([^=]+)=(.*)/ ) {
+		$args->{$1} = $2;
+	    }
+	    else {
+		$args->{$_} = 1;
+	    }
+	}
+	$rep->($app->{TOP}, $args);
+    }
+    else {
+	Wx::LogMessage('Link: "%s"', $1);
+	$self->SUPER::OnLinkClicked($event);
+    }
 }
 
 1;
