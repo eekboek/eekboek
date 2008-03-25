@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: StdAccounts.pm,v 1.7 2008/02/11 15:08:49 jv Exp $
+# $Id: StdAccounts.pm,v 1.8 2008/03/25 22:58:38 jv Exp $
 
 package main;
 
@@ -46,6 +46,9 @@ sub new {
 	Wx::Event::EVT_BUTTON($self, $self->{b_cancel}->GetId, \&OnClose);
 
 # end wxGlade
+
+	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
+
 	return $self;
 
 }
