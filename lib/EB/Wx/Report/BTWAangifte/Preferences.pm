@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.5 2008/02/11 15:19:27 jv Exp $
+# $Id: Preferences.pm,v 1.6 2008/03/25 22:28:18 jv Exp $
 
 package EB::Wx::Report::BTWAangifte::Preferences;
 
@@ -53,12 +53,6 @@ sub new {
 	Wx::Event::EVT_BUTTON($self, $self->{b_ok}->GetId, \&OnOk);
 
 # end wxGlade
-
-	$self->{b_jaar}->SetLabel("Gehele jaar ".$parent->{year});
-	my $t = $parent->{btwp} == 1 ? "jaar" :
-	  $parent->{btwp} == 4 ? "kwartaal" :
-	    $parent->{btwp} == 12 ? "maand" : $parent->{btwp};
-	$self->{l_default}->SetLabel("Standaardinstelling: per $t");
 
 	Wx::Event::EVT_TOGGLEBUTTON($self, $self->{b_jaar}->GetId,
 				    sub { $self->{b_jaar}->SetValue(1);
@@ -176,6 +170,19 @@ sub __do_layout {
 # end wxGlade
 }
 
+sub init {
+    my ($self, $args) = @_;
+    $self->{b_jaar}->SetLabel("Gehele jaar ".$args->{year});
+    my $t = $args->{btwp} == 1 ? "jaar" :
+      $args->{btwp} == 4 ? "kwartaal" :
+	$args->{btwp} == 12 ? "maand" : $args->{btwp};
+    $self->{l_default}->SetLabel("Standaardinstelling: per $t");
+    $self->refresh;
+}
+
+sub refresh {
+}
+
 # wxGlade: EB::Wx::Report::BTWAangifte::Preferences::OnOk <event_handler>
 sub OnOk {
     my ($self, $event) = @_;
@@ -186,6 +193,13 @@ sub OnOk {
 sub OnCancel {
     my ($self, $event) = @_;
     $self->EndModal(-1);
+}
+
+sub GetValues {
+    my ($self) = @_;
+    my $r;
+    $r->{pref_periode} = $self->{periode};
+    $r;
 }
 
 # end of class EB::Wx::Report::BTWAangifte::Preferences
