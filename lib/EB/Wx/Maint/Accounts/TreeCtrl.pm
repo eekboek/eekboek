@@ -1,11 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: TreeCtrl.pm,v 1.7 2008/02/11 15:09:10 jv Exp $
-
-use strict;
-
-use Wx;
-use EB;
+# $Id: TreeCtrl.pm,v 1.8 2008/03/25 22:57:42 jv Exp $
 
 package main;
 
@@ -17,6 +12,7 @@ package EB::Wx::Maint::Accounts::TreeCtrl;
 
 use strict;
 use base qw(Wx::TreeCtrl);
+use Wx qw[:everything];
 use EB::Wx::Window;
 
 sub new {
@@ -26,7 +22,7 @@ sub new {
     my $root = $self->AddRoot("Gegevens", -1, -1);
 
     foreach ( qw(Balans Resultaat) ) {
-	my $handler = $_ . "Handler";
+	my $handler = "EB::Wx::Maint::Accounts::TreeCtrl::" . $_ . "Handler";
 	my $text = $handler->description;
 	my $item = $self->AppendItem($root, $text, -1, -1);
 	$handler->populate($self, $item);
@@ -37,10 +33,15 @@ sub new {
     Wx::Event::EVT_TREE_ITEM_EXPANDED ($self, $self, \&OnExpand);
     Wx::Event::EVT_TREE_ITEM_COLLAPSED($self, $self, \&OnCollapse);
     Wx::Event::EVT_TREE_ITEM_ACTIVATED($self, $self, \&OnActivate);
+
     Wx::Event::EVT_TREE_BEGIN_DRAG    ($self, $self, \&OnBeginDrag);
     Wx::Event::EVT_TREE_END_DRAG      ($self, $self, \&OnEndDrag);
 
+=begin ContextMenu
+
     Wx::Event::EVT_RIGHT_DOWN ($self, \&OnRightClick);
+
+=cut
 
     Wx::Event::EVT_IDLE($self, \&OnIdle);
 
@@ -84,6 +85,14 @@ sub OnEndDrag {
 	return;
     }
 
+    if ( $app->{TOP}->{d_maccpanel}->changed ) {
+	EB::Wx::MessageDialog($self,
+			      "Er zijn wijzigingen in het rechter paneel. Gelieve deze eerst te verwerken of te annuleren.",
+			     "In gebruik",
+			     wxOK|wxICON_ERROR);
+	return;
+    }
+
     if ( $self->GetParent($src) == $dst ||
 	 $self->GetParent($src) == $self->GetParent($dst) ) {
 	Wx::LogMessage("Drop skipped");
@@ -92,6 +101,13 @@ sub OnEndDrag {
 
     my $sdata = $self->GetPlData($src);
     my $ddata = $self->GetPlData($dst) || [0,0,-1];
+
+    unless ( $dbh->lookup($sdata->[0], qw(Accounts acc_id acc_balres))
+	     ==
+	     $dbh->lookup($ddata->[0], qw(Accounts acc_id acc_balres)) ) {
+	Wx::LogMessage("Drop skipped");
+	return;
+    }
 
     my $stype = $sdata->[2];
     my $dtype = $ddata->[2];
@@ -102,10 +118,10 @@ sub OnEndDrag {
 	$dtype = $ddata->[2];
     }
 
-    if ( $stype == 2 ) {
-	if ( $dtype == 1 ) {
+    if ( $stype == 2 ) {	# Account
+	if ( $dtype == 1 ) {	# Verdichting
 	    my $text = $self->GetItemText($src);
-	    $self->AppendItem($dst, $text, -1, -1, Wx::TreeItemData->new($sdata));
+	    my $it = $self->AppendItem($dst, $text, -1, -1, Wx::TreeItemData->new($sdata));
 	    $self->SortChildren($dst);
 	    $self->Delete($src);
 	    $dbh->begin_work;
@@ -117,6 +133,8 @@ sub OnEndDrag {
 			   $sdata->[0],
 			  )->finish;
 	    $dbh->commit;
+	    $app->{TOP}->{d_maccpanel}->set_item($sdata->[0], $sdata->[2], $self, $dst);
+	    $self->SelectItem($it, 1);
 	}
 	else {
 	    $self->{msg} = ["Een grootboekrekening kan alleen worden verplaatst naar een verdichting",
@@ -125,8 +143,8 @@ sub OnEndDrag {
 	    return;
 	}
     }
-    elsif ( $stype == 1 ) {
-	if ( $dtype == 0 ) {
+    elsif ( $stype == 1 ) {	# Verdichting
+	if ( $dtype == 0 ) {	# Hoofdverdichting
 	    my $text = $self->GetItemText($src);
 	    my $new = $self->AppendItem($dst, $text, -1, -1, Wx::TreeItemData->new($sdata));
 	    if ( $self->ItemHasChildren($src) ) {
@@ -148,6 +166,8 @@ sub OnEndDrag {
 			   $dbalres, $sdata->[0],
 			  )->finish unless $sbalres == $dbalres;
 	    $dbh->commit;
+	    $app->{TOP}->{d_maccpanel}->set_item($sdata->[0], $sdata->[2], $self, $dst);
+	    $self->SelectItem($new, 1);
 	}
 	else {
 	    $self->{msg} = ["Een verdichting kan alleen worden verplaatst naar een hoofdverdichting",
@@ -156,8 +176,8 @@ sub OnEndDrag {
 	    return;
 	}
     }
-    elsif ( $stype == 0 ) {
-	if ( $dtype == -1 ) {
+    elsif ( $stype == 0 ) {	# Hoofdverdichting
+	if ( $dtype == -1 ) {	# Balans/Resultaat
 	    my $text = $self->GetItemText($src);
 	    my $new = $self->AppendItem($dst, $text, -1, -1, Wx::TreeItemData->new($sdata));
 	    if ( $self->ItemHasChildren($src) ) {
@@ -246,6 +266,8 @@ sub OnCollapse {
     $state->accexp->{$text} = 0;
 }
 
+=begin ContextMenu
+
 use Wx qw(wxTREE_HITTEST_NOWHERE);
 
 sub OnRightClick {
@@ -259,7 +281,9 @@ sub OnRightClick {
     $ctx->($data, $event, $self, $item);
 }
 
-package StandardHandler;
+=cut
+
+package EB::Wx::Maint::Accounts::TreeCtrl::StandardHandler;
 
 use strict;
 
@@ -278,6 +302,8 @@ sub activate {
     my ($self, $ctrl, $event) = @_;
     print STDERR ("ACT: ", @_, "\n");
 }
+
+=begin ContextMenu
 
 use constant CTXMENU_DELETE    => Wx::NewId();
 use constant CTXMENU_NEW       => Wx::NewId();
@@ -298,7 +324,7 @@ sub ctxmenu {
 	$ctxmenu->Append(CTXMENU_EXPAND,   "Uitvouwen");
 	$ctxmenu->Append(CTXMENU_COLLAPSE, "Dichtvouwen");
     }
-    $ctxmenu->Append(CTXMENU_RENAME,   "Omschrijving wijzigen");
+#    $ctxmenu->Append(CTXMENU_RENAME,   "Omschrijving wijzigen");
     $ctxmenu->AppendSeparator;
     $ctxmenu->Append(CTXMENU_NEW,      "Nieuw ...");
 #    $ctxmenu->AppendSeparator;
@@ -369,10 +395,12 @@ sub ctxmenu {
     $ctl->PopupMenu($ctxmenu, $event->GetPosition);
 }
 
-package GrootboekHandler;
+=cut
+
+package EB::Wx::Maint::Accounts::TreeCtrl::GrootboekHandler;
 
 use strict;
-use base qw(StandardHandler);
+use base qw(EB::Wx::Maint::Accounts::TreeCtrl::StandardHandler);
 
 sub description { "Grootboekrekeningen" }
 
@@ -392,7 +420,7 @@ sub populate {
 	$rows++;
 	my $text = "$rr->[0]   $rr->[1]";
 	my $item = $ctrl->AppendItem($parent, $text, -1, -1,
-					 Wx::TreeItemData->new(GrootboekHandler->new([@$rr,defined($id)])));
+					 Wx::TreeItemData->new(__PACKAGE__->new([@$rr,defined($id)])));
 	$self->populate($ctrl, $item, $rr->[0]);
 	$ctrl->Expand($item) if $state->accexp->{$text};
     }
@@ -406,7 +434,7 @@ sub populate {
 	    my $id = $rr->[0];
 	    my $text = $rr->[1];
 	    my $item = $ctrl->AppendItem($parent, "$id   $text", -1, -1,
-					 Wx::TreeItemData->new(GrootboekHandler->new([@$rr,2])));
+					 Wx::TreeItemData->new(__PACKAGE__->new([@$rr,2])));
 	}
     }
 }
@@ -424,19 +452,19 @@ sub activate {
     $app->{TOP}->{d_maccpanel}->set_item($data->[0], $data->[2], $ctrl, $item);
 }
 
-package BalansHandler;
+package EB::Wx::Maint::Accounts::TreeCtrl::BalansHandler;
 
 use strict;
-use base qw(GrootboekHandler);
+use base qw(EB::Wx::Maint::Accounts::TreeCtrl::GrootboekHandler);
 
 sub description { "Balansrekeningen" }
 
 sub type { "balans" };
 
-package ResultaatHandler;
+package EB::Wx::Maint::Accounts::TreeCtrl::ResultaatHandler;
 
 use strict;
-use base qw(GrootboekHandler);
+use base qw(EB::Wx::Maint::Accounts::TreeCtrl::GrootboekHandler);
 
 sub description { "Resultaatrekeningen" }
 
