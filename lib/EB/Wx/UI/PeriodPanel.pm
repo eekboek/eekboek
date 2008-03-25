@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: PeriodPanel.pm,v 1.5 2008/02/20 14:09:33 jv Exp $
+# $Id: PeriodPanel.pm,v 1.6 2008/03/25 22:26:27 jv Exp $
 
 package main;
 
@@ -201,6 +201,23 @@ sub OnBky {
 # wxGlade: EB::Wx::UI::PeriodPanel::OnBky <event_handler>
 
     my $sel = $self->{c_bky}->GetSelection;
+    $self->set_bky(undef, $sel);
+    $self->{_changed}++;
+    $self->GetEventHandler->ProcessEvent
+      (EB::Wx::UI::PeriodPanel::Event->new($evt_change, $self->GetId));
+
+# end wxGlade
+}
+
+sub set_bky {
+    my ($self, $bky, $sel) = @_;
+    unless ( defined($sel) ) {
+	for ( my $s=0; $s < @choices; $s++ ) {
+	    $sel = $s, last if $choices[$s]->[0] eq $bky;
+	}
+    }
+    return unless defined $sel;
+
     my $min = _ISOtoWxD($choices[$sel]->[1]);
     my $max = _ISOtoWxD($choices[$sel]->[2]);
 
@@ -224,19 +241,13 @@ sub OnBky {
 	$self->{_bky} = undef;
     }
     else {
-	$self->{_bky} = $choices[$sel]->[0];
+	$self->{c_bky}->SetSelection($sel);
 	$self->{dt_to}->Enable(0);
 	$self->{dt_from}->Enable(0);
 	$self->{l_per_from}->Enable(0);
 	$self->{l_per_to}->Enable(0);
 	$self->{_bky} = $choices[$sel]->[0];
     }
-
-    $self->{_changed}++;
-    $self->GetEventHandler->ProcessEvent
-      (EB::Wx::UI::PeriodPanel::Event->new($evt_change, $self->GetId));
-
-# end wxGlade
 }
 
 sub OnFromChanged {
