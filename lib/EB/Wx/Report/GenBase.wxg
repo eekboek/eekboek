@@ -131,7 +131,7 @@
                         <flag>wxEXPAND</flag>
                         <border>0</border>
                         <option>1</option>
-                        <object class="Wx::HtmlWindow" name="w_report" base="EditPanel" no_custom_class="1">
+                        <object class="Wx::HtmlWindow::Derived" name="w_report" base="EditPanel" no_custom_class="1">
                             <no_custom_class>1</no_custom_class>
                         </object>
                     </object>
