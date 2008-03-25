@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: DebCrd.pm,v 1.5 2008/03/06 14:36:36 jv Exp $
+# $Id: DebCrd.pm,v 1.6 2008/03/25 22:32:01 jv Exp $
 
 package main;
 
@@ -13,16 +13,27 @@ use strict;
 use EB;
 
 sub init {
-    my ($self, $me) = @_;
+    my ($self, $me, $args) = @_;
     $self->{pref_from_to} = 3;
     $self->SetTitle($me eq "deb" ? "Debiteurenoverzicht" : "Crediteurenoverzicht");
     $self->SetDetails(0,0,0);
+    if ( $args->{select} ) {
+	$self->{pref_rel} = [ $args->{select} ];
+    }
+    if ( $args->{periode} ) {
+	my $p = parse_date_range($args->{periode});
+	delete($self->{pref_bky});
+	$self->{pref_per} = $p;
+    }
+
     $self->refresh;
 }
 
 sub refresh {
     my ($self) = @_;
     my $output = "";
+
+    delete($self->{pref_rel}) if $self->{prefs_changed};
 
     my @period;
 
@@ -41,7 +52,7 @@ sub refresh {
 
     eval {
     EB::Report::Debcrd->new->$fun
-	(undef,
+	($self->{pref_rel},
 	 { generate => "wxhtml",
 	   @period,
 	   $self->{pref_open} ? ("openstaand" => 1) : (),

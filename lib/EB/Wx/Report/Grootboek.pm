@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Grootboek.pm,v 1.5 2008/03/06 14:36:36 jv Exp $
+# $Id: Grootboek.pm,v 1.6 2008/03/25 22:32:19 jv Exp $
 
 package main;
 
@@ -13,16 +13,28 @@ use strict;
 use EB;
 
 sub init {
-    my ($self, $me) = @_;
+    my ($self, $me, $args) = @_;
     $self->SetTitle(_T("Grootboek"));
     $self->{pref_from_to} = 3;
     $self->SetDetails(2,0,2);
+
+    if ( $args->{select} ) {
+	$self->{pref_acct} = $args->{select};
+	$self->{detail} = 2;
+    }
+    if ( $args->{periode} ) {
+	my $p = parse_date_range($args->{periode});
+	delete($self->{pref_bky});
+	$self->{pref_per} = $p;
+    }
     $self->refresh;
 }
 
 sub refresh {
     my ($self) = @_;
     my $output = "";
+
+    delete($self->{pref_acct}) if $self->{prefs_changed};
 
     my @period;
 
