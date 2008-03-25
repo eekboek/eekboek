@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: AmountCtrl.pm,v 1.4 2008/02/11 15:22:19 jv Exp $
+# $Id: AmountCtrl.pm,v 1.5 2008/03/25 22:24:31 jv Exp $
 
 package EB::Wx::UI::AmountCtrl;
 
@@ -19,12 +19,13 @@ use EB::Format qw(numfmt amount);
 
 sub new {
     my ($class, @args) = @_;
-    $args[5] |= wxTE_RIGHT;
+    $args[5] |= wxTE_RIGHT|wxTE_PROCESS_ENTER;
     my $self = $class->SUPER::new(@args);
     Wx::Event::EVT_CHAR($self,        \&OnKbdInput);
     Wx::Event::EVT_KILL_FOCUS($self,  \&OnLoseFocus);
     #Wx::Event::EVT_SET_FOCUS($self,  \&OnGetFocus);
     Wx::Event::EVT_TEXT($self, $self, \&OnChange);
+    Wx::Event::EVT_TEXT_ENTER($self, $self, \&OnChange);
     $self;
 }
 
@@ -87,10 +88,8 @@ sub OnChange {
 	$self->SetInsertionPoint($self->{cursor});
     }
 
-    my $event =
-      EB::Wx::Perl::AmountCtrl::Event->new($evt_change, $self->GetId);
-    $self->GetEventHandler->ProcessEvent($event);
-
+    $self->GetEventHandler->ProcessEvent
+      (EB::Wx::Perl::AmountCtrl::Event->new($evt_change, $self->GetId));
 }
 
 sub OnLoseFocus {
