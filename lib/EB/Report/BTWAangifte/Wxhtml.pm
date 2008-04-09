@@ -1,12 +1,12 @@
 #! perl
 
 # Wxhtml.pm -- WxHtml backend for BTW Aangifte
-# RCS Info        : $Id: Wxhtml.pm,v 1.2 2008/03/10 17:41:32 jv Exp $
+# RCS Info        : $Id: Wxhtml.pm,v 1.3 2008/04/09 21:02:22 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Mar  6 14:20:53 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 10 18:29:56 2008
-# Update Count    : 9
+# Last Modified On: Fri Mar 28 17:50:41 2008
+# Update Count    : 11
 # Status          : Unknown, Use with caution!
 
 package EB::Report::BTWAangifte::Wxhtml;
@@ -15,7 +15,7 @@ use strict;
 use warnings;
 use base qw(EB::Report::Reporter::WxHtml);
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
 
 sub style {
     my ($self, $row, $cell) = @_;
@@ -38,11 +38,11 @@ sub style {
 sub finish {
     my $self = shift;
     if ( @_ ) {
-	print { $self->{fh} } ("</table>\n");
-	print { $self->{fh} } ("<p class=\"warning\">\n");
-	print { $self->{fh} } (join("<br>\n", map { $self->html($_) } @_) );
-	print { $self->{fh} } ("</p>\n");
-	print { $self->{fh} } ("<table>\n");
+	$self->_print("</table>\n");
+	$self->_print("<p class=\"warning\">\n");
+	$self->_print(join("<br>\n", map { $self->html($_) } @_) );
+	$self->_print("</p>\n");
+	$self->_print("<table>\n");
     }
     $self->SUPER::finish;
 }
