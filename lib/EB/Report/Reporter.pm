@@ -1,12 +1,12 @@
 #! perl
 
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.13 2008/03/06 14:34:13 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.14 2008/04/09 21:02:06 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  6 15:11:32 2008
-# Update Count    : 148
+# Last Modified On: Fri Mar 28 17:49:21 2008
+# Update Count    : 149
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -168,7 +168,7 @@ sub start {
 
     $self->{_needhdr} = 1;
     $self->{_needskip} = 0;
-    $self->{fd} ||= *STDOUT;
+    $self->{fh} ||= *STDOUT;
 }
 
 sub finish {
