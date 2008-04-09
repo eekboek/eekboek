@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Booking::BKM;
 
-# RCS Id	  : $Id: BKM.pm,v 1.69 2008/03/10 17:40:00 jv Exp $
+# RCS Id	  : $Id: BKM.pm,v 1.70 2008/04/09 21:01:26 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 10 12:01:15 2008
-# Update Count    : 515
+# Last Modified On: Thu Apr  3 21:36:33 2008
+# Update Count    : 517
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Booking::BKM;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.69 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.70 $ =~ /(\d+)/g;
 
 # Dagboek type 3: Bank
 # Dagboek type 4: Kas
@@ -310,7 +310,7 @@ sub perform {
 		    $fail++;
 		    next;
 		}
-		$sql = "SELECT bsk_nr, bsk_id, dbk_id, bsk_desc, bsk_amount, bsr_rel_code".
+		$sql = "SELECT bsk_nr, bsk_id, dbk_id, dbk_acc_id, bsk_desc, bsk_amount, bsr_rel_code".
 		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
 		    " WHERE bsk_id = ?".
 		      "  AND bsk_dbk_id = dbk_id".
@@ -344,7 +344,7 @@ sub perform {
 		$rel = $rr->[0];
 
 		# Zoek open posten.
-		$sql = "SELECT bsk_open, bsk_nr, bsk_id, dbk_id, bsk_desc, bsk_amount ".
+		$sql = "SELECT bsk_open, bsk_nr, bsk_id, dbk_id, dbk_acc_id, bsk_desc, bsk_amount ".
 		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
 		    " WHERE bsk_open != 0".
 			"  AND dbk_type = ?".
@@ -446,7 +446,7 @@ sub perform {
 		    elsif ( @$res ) {
 			warn("%".__x("Open posten voor relatie {rel}:", rel => $rel)."\n");
 			foreach ( @$res ) {
-			    my ($open, $bsknr, $bskid, $dbk_id, $bsk_desc, $bsk_amount) = @$_;
+			    my ($open, $bsknr, $bskid, $dbk_id, $dbk_acc_id, $bsk_desc, $bsk_amount) = @$_;
 			    warn(sprintf("%% %s %s %s\n",
 					 join(":",
 					      $dbh->lookup($dbk_id,
@@ -477,7 +477,7 @@ sub perform {
 		$rel = $rr->[0];
 
 		# Find associated booking.
-		$sql = "SELECT bsk_id, dbk_id, bsk_desc, bsk_amount ".
+		$sql = "SELECT bsk_id, dbk_id, dbk_acc_id, bsk_desc, bsk_amount ".
 		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
 		    " WHERE bsk_open != 0".
 		      ($amt ? "  AND bsk_open = ?" : "").
@@ -500,8 +500,9 @@ sub perform {
 		$rr = [@$rr, $rel];
 	    }
 
-	    my ($bsknr, $bskid, $dbk_id, $bsk_desc, $bsk_amount, $bsr_rel) = @$rr;
-	    my $acct = $dbh->std_acc($debcrd ? "deb" : "crd");
+	    my ($bsknr, $bskid, $dbk_id, $dbk_acc_id, $bsk_desc, $bsk_amount, $bsr_rel) = @$rr;
+	    #my $acct = $dbh->std_acc($debcrd ? "deb" : "crd");
+	    my $acct = $dbk_acc_id;
 
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
