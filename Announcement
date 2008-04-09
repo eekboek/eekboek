@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.10 (unstable) is beschikbaar
+Subject: EekBoek 1.03.11 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,20 +9,20 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.10, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.11, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.10-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.03.10.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.11-1.src.rpm
+* http://www.eekboek.nl/dl/EekBoek-1.03.11.tar.gz
 
 Kits:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.10-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.10-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.10-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.11-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.11-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.11-1.noarch.rpm
 * http://www.eekboek.nl/dl/ppms/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
-ervan vind je op http://www.eekboek.nl/fedora/RPM-PGP-KEY-EekBoek.
+ervan vind je op http://www.eekboek.nl/dl/RPM-PGP-KEY-EekBoek.
 
 YUM liefhebbers kunnen een (experimentele) repository toevoegen door
 het installeren van
@@ -32,14 +32,48 @@ Zie voor meer informatie http://www.eekboek.nl/fedora/repoview .
 De aanbevolen manier van installeren is door middel van de RPM
 "EekBoek-unstable" samen met tenminste een van de "db" rpms.
 
-Belangrijkste wijzigingen t.o.v. 1.03.09:
+Debian gebruikers kunnen zelf een .deb te maken:
 
-* CPAN testing: Skip PostgreSQL tests if no database access.
+   cd EekBoek-1.03.11
+   fakeroot dpkg-buildpackage -b 
 
-* CPAN testing: Encode reference data to UTF-8 if running in
-  an Unicode environment.
+En dan naar believen eekboek-db-postgres of eekboek-db-sqlite
+installeren.
 
-* Fix issue 1901436.
+Belangrijkste wijzigingen t.o.v. 1.03.10:
+
+* BTW tariefgroepen Privé en Anders.
+
+  In schema:
+
+     5  BTW Privé    :tariefgroep=privé :perc=12,00 :exclusief
+     6  BTW Anders   :tariefgroep=anders :perc=14,50 :exclusief
+
+  Als deze taeriefgroepen worden opgevoerd dan moeten de
+  betreffende koppelingen ook worden opgegeven:
+
+     4240  D   BTW Inkoop Anders    :koppeling=btw_ia
+     4250  C   BTW Verkoop Anders   :koppeling=btw_va
+
+  Etc.
+
+  BTW 'Privé' komt in de BTW aangifte in groep 1d, BTW
+  'Anders' komt in groep 1e. Deze groepen worden niet op het
+  aangifteformulier vermeld als de betreffende tariefgroep
+  ontbreekt.
+
+* BTW Aangifte: Uitgebreidere signalering discrepanties in BTW
+  posten.
+
+* Kleine wijzigingen in de BTW rapportage.
+
+* EekBoek shell opdrachten zijn nu case-insensitive.
+
+* contrib/afschr.pl: tooltje om afschrijvingen te berekenen.
+
+* Fix regressie in debiteuren/crediteuren overzichten.
+
+* CPAN testing: Skip silently if perl < 5.8.3.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
