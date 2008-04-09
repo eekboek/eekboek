@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Opening.pm,v 1.38 2008/03/02 15:04:29 jv Exp $
+# RCS Id          : $Id: Opening.pm,v 1.39 2008/04/09 21:03:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  2 16:01:31 2008
-# Update Count    : 259
+# Last Modified On: Wed Apr  2 21:27:34 2008
+# Update Count    : 268
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::Tools::Opening;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.38 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.39 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -165,6 +165,7 @@ sub set_relatie {
       if $self->{o}->{begindatum} && $self->{o}->{begindatum} le $t;
     $bky = substr($date, 0, 4) unless defined $bky;
 
+    my $acct;
     unless ( defined($dbk) ) {
 	my $sth = $dbh->sql_exec("SELECT min(dbk_id)".
 				 " FROM Dagboeken".
@@ -174,11 +175,11 @@ sub set_relatie {
 	$sth->finish;
     }
     else {
-	my $sth = $dbh->sql_exec("SELECT dbk_id".
+	my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_acc_id".
 				 " FROM Dagboeken".
 				 " WHERE UPPER(dbk_desc) = ?",
 				 uc($dbk));
-	$dbk = $sth->fetchrow_arrayref->[0];
+	($dbk, $acct) = @{$sth->fetch};
     }
 
     my $rr = $dbh->do("SELECT rel_code FROM Relaties" .
@@ -194,7 +195,7 @@ sub set_relatie {
     return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($anew = amount($amt));
 
     $self->check_open(0);
-    push(@{$self->{o}->{relatie}}, [$bky, $nr, $date, $desc, $type, $code, $anew]);
+    push(@{$self->{o}->{relatie}}, [$bky, $nr, $date, $desc, $type, $code, $acct, $anew]);
     "";
 }
 
@@ -315,9 +316,10 @@ sub open {
 
 	    # Process relations.
 	    foreach my $r ( @{$o->{relatie}} ) {
-		my ($bky, $nr, $date, $desc, $debcrd, $code, $amt) = @$r;
+		my ($bky, $nr, $date, $desc, $debcrd, $code, $acct, $amt) = @$r;
 
 		if ( $debcrd ) {
+		    $adeb = $acct;
 		    $adeb ||= $dbh->std_acc("deb", $adeb);
 		    unless ( defined $adeb ) {
 			$adeb = (keys(%adeb))[0] if scalar(keys(%adeb)) == 1;
@@ -332,6 +334,7 @@ sub open {
 		    $adeb{$adeb} -= $amt;
 		}
 		else {
+		    $acrd = $acct;
 		    $acrd ||= $dbh->std_acc("crd", $acrd);
 		    unless ( defined $acrd ) {
 			$acrd = (keys(%acrd))[0] if scalar(keys(%acrd)) == 1;
@@ -439,26 +442,30 @@ sub open {
 	my $dbk_inkoop;
 	my $dbk_verkoop;
 	foreach my $r ( @{$o->{relatie}} ) {
-	    my ($bky, $nr, $date, $desc, $debcrd, $code, $amt) = @$r;
+	    my ($bky, $nr, $date, $desc, $debcrd, $code, $acct, $amt) = @$r;
 
 	    $nr = $dbh->get_sequence("bsk_nr_0_seq") unless defined $nr;
 
-	    my $dagboek;
+	    my ($dagboek) = @{$dbh->do("SELECT dbk_id".
+				       " FROM Dagboeken".
+				       " WHERE dbk_acc_id = ?",
+				       $acct)};
+
 	    if ( $debcrd ) {
-		unless ( $dbk_verkoop ) {
-		    ($dbk_verkoop) = @{$dbh->do("SELECT dbk_id FROM Dagboeken".
-						" WHERE dbk_type = ?",
-						DBKTYPE_VERKOOP)};
-		}
-		$dagboek = $dbk_verkoop;
+#		unless ( $dbk_verkoop ) {
+#		    ($dbk_verkoop) = @{$dbh->do("SELECT dbk_id FROM Dagboeken".
+#						" WHERE dbk_type = ?",
+#						DBKTYPE_VERKOOP)};
+#		}
+#		$dagboek = $dbk_verkoop;
 	    }
 	    else {
-		unless ( $dbk_inkoop ) {
-		    ($dbk_inkoop) = @{$dbh->do("SELECT dbk_id FROM Dagboeken".
-					       " WHERE dbk_type = ?",
-					       DBKTYPE_INKOOP)};
-		}
-		$dagboek = $dbk_inkoop;
+#		unless ( $dbk_inkoop ) {
+#		    ($dbk_inkoop) = @{$dbh->do("SELECT dbk_id FROM Dagboeken".
+#					       " WHERE dbk_type = ?",
+#					       DBKTYPE_INKOOP)};
+#		}
+#		$dagboek = $dbk_inkoop;
 		$amt = -$amt;
 	    }
 
