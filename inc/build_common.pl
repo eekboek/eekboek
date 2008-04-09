@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.17 2008/03/22 16:08:57 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.18 2008/04/09 20:39:16 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar 22 17:07:09 2008
-# Update Count    : 75
+# Last Modified On: Wed Apr  9 22:38:27 2008
+# Update Count    : 83
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -106,23 +106,32 @@ sub WriteSpecfile {
     my $name    = shift;
     my $version = shift;
 
+    my ($mv) = $version =~ /^\d+\.(\d+)/;
+
     vcopy( _tag	    => "RPM spec file",
 	   _dst	    => "$name.spec",
-	   pkgname  => $name,
+	   PkgName  => $name,
+	   pkgname  => lc($name),
 	   version  => $version,
+	   stable   => $mv % 2 ? "-unstable" : "",
 	 );
 }
 
 sub WriteDebianControl {
     my $version = shift;
 
+    my ($mv) = $version =~ /^\d+\.(\d+)/;
+
     vcopy( _tag	    => "Debian control file",
 	   _dst	    => "debian/control",
 	   version  => $version,
+	   stable   => $mv % 2 ? "-unstable" : "",
 	 );
+
     vcopy( _tag	    => "Debian changelog file",
 	   _dst	    => "debian/changelog",
 	   version  => $version,
+	   stable   => $mv % 2 ? "unstable" : "stable",
 	 );
 }
 
