@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: DB.pm,v 1.57 2008/02/25 10:50:09 jv Exp $
+# RCS Id          : $Id: DB.pm,v 1.58 2008/04/09 21:00:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 25 10:42:49 2008
-# Update Count    : 425
+# Last Modified On: Thu Mar 27 14:54:58 2008
+# Update Count    : 429
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,7 +19,7 @@ package EB::DB;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.57 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.58 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -385,6 +385,39 @@ sub accts {
 	$accts->{$sel}->{$rr->[0]} = $rr->[1];
     }
     $accts->{$sel};
+}
+
+sub acc_inuse {
+    my ($dbh, $acc) = @_;
+
+    my $rr;
+    $rr = $dbh->do("SELECT jnl_acc_id FROM Journal".
+		   " WHERE jnl_acc_id = ?".
+		   " LIMIT 1", $acc);
+    return 1 if $rr && $rr->[0];
+
+    $rr = $dbh->do("SELECT dbk_acc_id FROM Dagboeken".
+		   " WHERE dbk_acc_id = ?".
+		   " LIMIT 1", $acc);
+    return 1 if $rr && $rr->[0];
+
+    $rr = $dbh->do("SELECT rel_acc_id FROM Relaties".
+		   " WHERE rel_acc_id = ?".
+		   " LIMIT 1", $acc);
+    return 1 if $rr && $rr->[0];
+
+    $rr = $dbh->do("SELECT bkb_acc_id FROM Boekjaarbalans".
+		   " WHERE bkb_acc_id = ?",
+		   $acc);
+    return 1 if $rr && $rr->[0];
+
+    if ( $rr = $dbh->do("SELECT * FROM Standaardrekeningen") ) {
+	for ( @$rr ) {
+	    return 1 if defined($_) && $_ == $acc;
+	}
+    }
+
+    return;
 }
 
 sub dbh{
