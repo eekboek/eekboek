@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.11 (unstable) is beschikbaar
+Subject: EekBoek 1.03.12 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,16 +9,22 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.11, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.12, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.11-1.src.rpm
-* http://www.eekboek.nl/dl/EekBoek-1.03.11.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.03.12.tar.gz
 
-Kits:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.11-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.11-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.11-1.noarch.rpm
+Kits voor RPM gebaseerde systemen:
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.12-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.12-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.12-1.noarch.rpm
+
+Kits voor Debian systemen:
+* http://www.eekboek.nl/dl/eekboek-1.03.12.all.deb
+* http://www.eekboek.nl/dl/eekboek-db-postgresql-1.03.12.all.deb
+* http://www.eekboek.nl/dl/eekboek-db-sqlite-1.03.12.all.deb
+
+Kits voor Microsoft Windows
 * http://www.eekboek.nl/dl/ppms/EekBoek.ppd
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
@@ -29,51 +35,17 @@ het installeren van
 http://www.eekboek.nl/fedora/EekBoek-yum-1.0-1.noarch.rpm.
 Zie voor meer informatie http://www.eekboek.nl/fedora/repoview .
 
-De aanbevolen manier van installeren is door middel van de RPM
-"EekBoek-unstable" samen met tenminste een van de "db" rpms.
+De aanbevolen manier van installeren is door middel van RPM of DPKG.
+Installeer de gewenste -db- kit en de rest wordt automatisch meegenomen.
 
-Debian gebruikers kunnen zelf een .deb te maken:
+Belangrijkste wijzigingen t.o.v. 1.03.11:
 
-   cd EekBoek-1.03.11
-   fakeroot dpkg-buildpackage -b 
-
-En dan naar believen eekboek-db-postgres of eekboek-db-sqlite
-installeren.
-
-Belangrijkste wijzigingen t.o.v. 1.03.10:
-
-* BTW tariefgroepen Privé en Anders.
-
-  In schema:
-
-     5  BTW Privé    :tariefgroep=privé :perc=12,00 :exclusief
-     6  BTW Anders   :tariefgroep=anders :perc=14,50 :exclusief
-
-  Als deze taeriefgroepen worden opgevoerd dan moeten de
-  betreffende koppelingen ook worden opgegeven:
-
-     4240  D   BTW Inkoop Anders    :koppeling=btw_ia
-     4250  C   BTW Verkoop Anders   :koppeling=btw_va
-
-  Etc.
-
-  BTW 'Privé' komt in de BTW aangifte in groep 1d, BTW
-  'Anders' komt in groep 1e. Deze groepen worden niet op het
-  aangifteformulier vermeld als de betreffende tariefgroep
-  ontbreekt.
-
-* BTW Aangifte: Uitgebreidere signalering discrepanties in BTW
-  posten.
+* BKM deb/crd boeking gebruikt altijd de standaardrekeningen
+  voor deb/crd i.p.v. de aan het dagboek gekoppelde rekening.
 
 * Kleine wijzigingen in de BTW rapportage.
 
-* EekBoek shell opdrachten zijn nu case-insensitive.
-
-* contrib/afschr.pl: tooltje om afschrijvingen te berekenen.
-
-* Fix regressie in debiteuren/crediteuren overzichten.
-
-* CPAN testing: Skip silently if perl < 5.8.3.
+* Debian kit is nu ook 'unstable'.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl

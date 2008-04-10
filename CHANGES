@@ -1,4 +1,8 @@
-1.03.12
+1.03.13
+
+
+
+1.03.12	10-04-2008 13:47
 
 	* BKM deb/crd boeking gebruikt altijd de standaardrekeningen
           voor deb/crd i.p.v. de aan het dagboek gekoppelde rekening.
