@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Info        : $Id: GenBase.pm,v 1.25 2008/03/02 15:21:16 jv Exp $
+# RCS Info        : $Id: GenBase.pm,v 1.26 2008/04/10 18:58:10 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  2 16:19:09 2008
-# Update Count    : 149
+# Last Modified On: Thu Apr 10 20:57:21 2008
+# Update Count    : 150
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::Report::GenBase;
 use strict;
 use EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)/g;
 
 use IO::File;
 use EB::Format;
@@ -77,7 +77,7 @@ sub backend {
     $pkg .= ".pm";
 
     # Try to load backend. Gives user the opportunity to override.
-    eval { require $pkg };
+    eval { require $pkg } unless $ENV{AUTOMATED_TESTING};
     if ( ! _loaded($class) ) {
 	my $err = $@;
 	if ( $err =~ /^can't locate /i ) {
