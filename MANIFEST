@@ -172,7 +172,6 @@ lib/EB/migrate/001000009001000010.sql
 lib/EB/migrate/001000010001000011.sql
 lib/EB/migrate/001000011001000012.sql
 lib/EB/migrate/001000012001000013.sql
-lib/EB/schema/cleanup.sql
 lib/EB/schema/eekboek.sql
 lib/EB/schema/sampledb.ebz
 lib/EekBoek.pm
