@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: BTWAangifte.pm,v 1.46 2008/04/09 21:01:51 jv Exp $
+# RCS Id          : $Id: BTWAangifte.pm,v 1.47 2008/04/13 13:06:31 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 17 17:01:22 2008
-# Update Count    : 630
+# Last Modified On: Sun Apr 13 15:06:03 2008
+# Update Count    : 633
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::BTWAangifte;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.46 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.47 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -528,7 +528,7 @@ sub collect {
 			  " AND jnl_bsr_date >= ? AND jnl_bsr_date <= ?",
 			  $dbh->std_acc("btw_ih"), $dbh->std_acc("btw_il"),
 			  $begin, $end)};
-
+    $vb ||= 0;	# prevent warnings
     my $btw_i_delta = $vb - $crd_btw - $intra_crd_btw;
     $v = roundup($vb);
     $data{vb} = $v;
