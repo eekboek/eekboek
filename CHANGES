@@ -1,6 +1,16 @@
 1.03.13
 
+	* Voorkom warnings indien bij de BTWaangifte er geen
+          voorheffingen hebben plaatsgevonden in de periode waarover
+          aangifte wordt gedaan.
 
+	* (EB::Report::Genbase) Geen backends laden indien
+          AUTOMATED_TESTING. Hiermee worden test failures vermeden
+          indien er achterhaalde EekBoek installaties rondzwerven.
+
+	* Oplossen installatieprobleem met RPM.
+
+	* Uitbreidingen contrib/afschr.pl .
 
 1.03.12	10-04-2008 13:47
 

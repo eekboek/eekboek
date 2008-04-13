@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.12 (unstable) is beschikbaar
+Subject: EekBoek 1.03.13 (unstable) is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,20 +9,20 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.12, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+EekBoek 1.03.13, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.03.12.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.03.13.tar.gz
 
 Kits voor RPM gebaseerde systemen:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.12-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.12-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.12-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.13-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.13-1.noarch.rpm
+* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.13-1.noarch.rpm
 
 Kits voor Debian systemen:
-* http://www.eekboek.nl/dl/eekboek-1.03.12.all.deb
-* http://www.eekboek.nl/dl/eekboek-db-postgresql-1.03.12.all.deb
-* http://www.eekboek.nl/dl/eekboek-db-sqlite-1.03.12.all.deb
+* http://www.eekboek.nl/dl/eekboek-1.03.13.all.deb
+* http://www.eekboek.nl/dl/eekboek-db-postgresql-1.03.13.all.deb
+* http://www.eekboek.nl/dl/eekboek-db-sqlite-1.03.13.all.deb
 
 Kits voor Microsoft Windows
 * http://www.eekboek.nl/dl/ppms/EekBoek.ppd
@@ -38,14 +38,19 @@ Zie voor meer informatie http://www.eekboek.nl/fedora/repoview .
 De aanbevolen manier van installeren is door middel van RPM of DPKG.
 Installeer de gewenste -db- kit en de rest wordt automatisch meegenomen.
 
-Belangrijkste wijzigingen t.o.v. 1.03.11:
+Belangrijkste wijzigingen t.o.v. 1.03.12:
 
-* BKM deb/crd boeking gebruikt altijd de standaardrekeningen
-  voor deb/crd i.p.v. de aan het dagboek gekoppelde rekening.
+* Oplossen installatieprobleem met RPM.
 
-* Kleine wijzigingen in de BTW rapportage.
+* Voorkom warnings indien bij de BTWaangifte er geen
+  voorheffingen hebben plaatsgevonden in de periode waarover
+  aangifte wordt gedaan.
 
-* Debian kit is nu ook 'unstable'.
+* (EB::Report::Genbase) Geen backends laden tijdens CPAN tests.
+  Hiermee worden test failures vermeden indien er achterhaalde EekBoek
+  installaties rondzwerven.
+
+* Uitbreidingen contrib/afschr.pl .
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
