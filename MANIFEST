@@ -9,6 +9,8 @@ QUICKSTART
 README
 TODO
 contrib/afschr.pl
+contrib/afschr-gewoon.dat
+contrib/afschr-group.dat
 debian/changelog
 debian/compat
 debian/control
