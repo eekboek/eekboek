@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: DB.pm,v 1.58 2008/04/09 21:00:53 jv Exp $
+# RCS Id          : $Id: DB.pm,v 1.59 2008/04/14 14:39:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar 27 14:54:58 2008
-# Update Count    : 429
+# Last Modified On: Sun Apr 13 18:06:04 2008
+# Update Count    : 431
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,7 +19,7 @@ package EB::DB;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.58 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.59 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -443,6 +443,23 @@ sub does_btw {
     $self->do("SELECT COUNT(*)".
 	      " FROM BTWTabel".
 	      " WHERE btw_tariefgroep != 0")->[0];
+}
+
+################ API calls for simple applications ################
+
+sub connect {
+    my $dataset = $cfg->val(qw(database name));
+    if ( !$dataset ) {
+	die(_T("Geen dataset opgegeven.".
+	       " Specificeer een dataset in de configuratiefile.").
+	    "\n");
+    }
+    $::dbh = EB::DB::->new();
+}
+
+sub disconnect {
+    $::dbh->disconnectdb;
+    undef $::dbh;
 }
 
 ################ API calls for database backend ################
