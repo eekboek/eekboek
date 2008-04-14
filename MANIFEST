@@ -111,6 +111,7 @@ lib/EB/DB.pm
 lib/EB/DB/Postgres.pm
 lib/EB/DB/Sqlite.pm
 lib/EB/Export.pm
+lib/EB/Export/XAF.pm
 lib/EB/Expression.pm
 lib/EB/Format.pm
 lib/EB/Globals.pm
