@@ -1,12 +1,12 @@
 #! perl
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.14 2008/02/18 10:31:19 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.15 2008/04/14 11:44:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 18 11:07:50 2008
-# Update Count    : 88
+# Last Modified On: Mon Apr 14 13:43:45 2008
+# Update Count    : 92
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Config;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
 
 use EB::Config::IniFiles;
 use File::Spec;
@@ -103,10 +103,12 @@ sub init_config {
 	     $i+1 < @ARGV && $ARGV[$i+1] =~ /^(\w+(?:::\w+)*)::?(\w+)=(.*)/ ) {
 	    $cfg->newval($1, $2, $3);
 	    splice(@ARGV, $i, 2);
+	    next;
 	}
 	elsif ( $ARGV[$i] =~ /^--define=(\w+(?:::\w+)*)::?(\w+)=(.*)/ ) {
 	    $cfg->newval($1, $2, $3);
 	    splice(@ARGV, $i, 1);
+	    next;
 	}
 	$i++;
     }
