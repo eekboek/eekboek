@@ -11,6 +11,7 @@ TODO
 contrib/afschr.pl
 contrib/afschr-gewoon.dat
 contrib/afschr-group.dat
+contrib/example.pl
 debian/changelog
 debian/compat
 debian/control
