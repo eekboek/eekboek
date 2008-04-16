@@ -10,7 +10,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.106 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.107 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -991,8 +991,13 @@ sub do_export {
     check_open(1);
 
     if ( $opts->{xaf} ) {
-	require EB::Export::XAF;
-	EB::Export::XAF->export($opts);
+	if ( findlib "Export/XAF.pm" ) {
+	    require EB::Export::XAF;
+	    EB::Export::XAF->export($opts);
+	}
+	else {
+	    warn("?"._T("Export naar XML Auditfile Financieel is niet beschikbaar")."\n");
+	}
     }
     else {
 	require EB::Export;
@@ -1012,7 +1017,7 @@ Opties:
 
   --file=<bestand>          Selecteer uitvoerbestand
   --dir=<directory>         Selecteer uitvoerdirectory
-  --xaf=<bestand>           Export XML Audit File
+  --xaf=<bestand>           Export XML Auditfile Financieel
   --boekjaar=<code>         Selecteer boekjaar
 
 Er moet een --file, --dir of een --xaf optie worden opgegeven.
