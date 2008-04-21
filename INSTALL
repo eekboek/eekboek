@@ -5,22 +5,28 @@ Let op: Dit document gebruikt de ISO-8859.1 (Latin1) tekenset.
 Niet-ASCII tekens worden alleen juist getoond indien je programma op
 deze tekenset is ingesteld.
 
+DIT DOCUMENT IS INDICATIEF. DE ACTUELE INFORMATIE VINDT U OP
+http://www.eekboek.nl/docs/ . 
+
 Benodigdheden
 -------------
 
 Perl5.8.x met DBI (zit standaard in Perl)
-PostgreSQL (zit standaard in de meeste Linux systemen)
+
+Eén van:
+  PostgreSQL (zit standaard in de meeste Linux systemen)
+  SQLite (zit standaard in de meeste Linux systemen)
 
 Perl modules (zelf te installeren):
-       DBD::Pg 1.41 of later
-       Config::IniFiles
-       (Text::CSV_XS voor de Exact importprogramma's)
+  DBD::Pg 1.41 of later
+  DBD::SQLite 1.13 of later
 
 De volgende Perl modules zijn optioneel, maar worden sterk aangeraden
 vanwege de extra functionaliteit:
 
-       Term::ReadLine::Gnu
-       HTML::Entities 1.32
+  Term::ReadLine::Gnu
+  Archive::Zip
+  HTML::Entities 1.32 of later
 
 Installeren (RPM systemen)
 --------------------------
@@ -73,7 +79,7 @@ Pak de kit uit en cd naar de uitpakdirectory.
   $ tar -zxf EekBoek-x.yy.tar.gz
   $ cd EekBoek-x.yy
   $ perl Build.PL
-  $ perl Build
+  $ ./Build
 
 Het verifiëren vereist generieke toegang tot een draaiende PostgreSQL
 database server, alsmede de mogelijkheid om een database met de naam
@@ -81,11 +87,11 @@ database server, alsmede de mogelijkheid om een database met de naam
 daartoe de environment variabelen PGHOST PGPORT en PGUSER worden
 toegepast; zie de PostgreSQL documentatie.
 
-  $ perl Build test
+  $ ./Build test
 
 Als het niet mogelijk is de database server te benaderen, gebruik dan
 
-  $ Build test --skipdbtests
+  $ ./Build test --skipdbtests
 
 Zonder een succesvolle afronding van de testprocedure inclusief
 database tests heeft het echter weinig zin om verder te gaan.
@@ -124,10 +130,11 @@ Aantekeningen
 
     $ rpmbuild ... --with dbtests ...
 
-* Om EekBoek te kunnen gebruiken moet je de beschikking hebben over
-  een PostgreSQL database server en een database. EekBoek kan deze
-  database voor je aanmaken, maar dan moet je daartoe bevoegd zijn.
-  Dat kun je bereiken met (veronderstel dat je user 'piet' bent):
+* Om EekBoek te kunnen gebruiken met PostgreSQL moet je de beschikking
+  hebben over een operationele PostgreSQL database server en een
+  database. EekBoek kan deze database voor je aanmaken, maar dan moet
+  je daartoe bevoegd zijn. Dat kun je bereiken met (veronderstel dat
+  je user 'piet' bent):
 
    $ su 
    # su - postgres
