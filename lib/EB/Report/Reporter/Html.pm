@@ -1,12 +1,12 @@
 #! perl
 
 # Html.pm -- HTML backend for Reporters.
-# RCS Info        : $Id: Html.pm,v 1.16 2008/03/10 17:41:45 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.17 2008/04/29 16:33:19 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 10 18:26:18 2008
-# Update Count    : 67
+# Last Modified On: Tue Apr 29 18:25:19 2008
+# Update Count    : 68
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter::Html;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format qw(datefmt_full);
@@ -112,7 +112,7 @@ sub header {
     print {$self->{fh}}
       ("<html>\n",
        "<head>\n",
-       "<title>", $html->($self->{_title1}), "</title>\n");
+       "<title>", $html->($self->{_title0} || $self->{_title1}), "</title>\n");
 
     if ( my $style = $self->{_style} ) {
 	if ( $style =~ /\W/ ) {
