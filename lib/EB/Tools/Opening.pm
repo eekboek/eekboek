@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Opening.pm,v 1.39 2008/04/09 21:03:57 jv Exp $
+# RCS Id          : $Id: Opening.pm,v 1.40 2008/04/30 20:09:22 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Apr  2 21:27:34 2008
-# Update Count    : 268
+# Last Modified On: Wed Apr 30 22:08:44 2008
+# Update Count    : 289
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::Tools::Opening;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.39 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.40 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -166,26 +166,35 @@ sub set_relatie {
     $bky = substr($date, 0, 4) unless defined $bky;
 
     my $acct;
+    my $sth;
     unless ( defined($dbk) ) {
-	my $sth = $dbh->sql_exec("SELECT min(dbk_id)".
-				 " FROM Dagboeken".
-				 " WHERE dbk_type = ?",
-				 $type ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP);
-	$dbk = $sth->fetchrow_arrayref->[0];
+	$sth = $dbh->sql_exec("SELECT rel_code, rel_ledger".
+			      " FROM Relaties".
+			      " WHERE UPPER(rel_code) = ?".
+			      " AND ".($type ? "" : "NOT ")." rel_debcrd",
+			      uc($code));
+	my $rr = $sth->fetch;
+	return __x("Onbekende relatie: {rel}", rel => $code)."\n"
+	  unless defined $rr;
+	($code, $dbk) = @$rr;
 	$sth->finish;
+	$sth = $dbh->sql_exec("SELECT dbk_id, dbk_acc_id".
+			      " FROM Dagboeken".
+			      " WHERE dbk_id = ?",
+			      $dbk);
     }
     else {
-	my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_acc_id".
-				 " FROM Dagboeken".
-				 " WHERE UPPER(dbk_desc) = ?",
-				 uc($dbk));
-	($dbk, $acct) = @{$sth->fetch};
+	$sth = $dbh->sql_exec("SELECT dbk_id, dbk_acc_id".
+			      " FROM Dagboeken".
+			      " WHERE UPPER(dbk_desc) = ?",
+			      uc($dbk));
     }
+    ($dbk, $acct) = @{$sth->fetch};
 
     my $rr = $dbh->do("SELECT rel_code FROM Relaties" .
-			   " WHERE UPPER(rel_code) = ?" .
-			   "  AND " . ($type ? "" : "NOT ") . "rel_debcrd" .
-		           "  AND rel_ledger = ?",
+		      " WHERE UPPER(rel_code) = ?" .
+		      "  AND " . ($type ? "" : "NOT ") . "rel_debcrd" .
+		      "  AND rel_ledger = ?",
 		      uc($code), $dbk);
 
     return __x("Onbekende relatie: {rel}", rel => $code)."\n"
@@ -443,7 +452,6 @@ sub open {
 	my $dbk_verkoop;
 	foreach my $r ( @{$o->{relatie}} ) {
 	    my ($bky, $nr, $date, $desc, $debcrd, $code, $acct, $amt) = @$r;
-
 	    $nr = $dbh->get_sequence("bsk_nr_0_seq") unless defined $nr;
 
 	    my ($dagboek) = @{$dbh->do("SELECT dbk_id".
