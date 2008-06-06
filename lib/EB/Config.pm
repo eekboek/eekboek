@@ -1,12 +1,12 @@
 #! perl
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.15 2008/04/14 11:44:02 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.16 2008/06/06 21:31:15 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Apr 14 13:43:45 2008
-# Update Count    : 92
+# Last Modified On: Fri Jun  6 22:28:42 2008
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Config;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
 
 use EB::Config::IniFiles;
 use File::Spec;
@@ -56,44 +56,43 @@ sub init_config {
 	$i++;
     }
 
+    # Resolve extraconf to a file name. It must exist.
+    if ( $extraconf ) {
+	if ( -d $extraconf ) {
+	    my $f = File::Spec->catfile($extraconf, "$app.conf");
+	    if ( -e $f ) {
+		$extraconf = $f;
+	    }
+	    else {
+		$extraconf = File::Spec->catfile($extraconf, ".$app.conf");
+	    }
+	}
+	die("$extraconf: $!\n") unless -f $extraconf;
+    }
+
+    # Build the list of config files.
+    my @cfgs;
+    if ( !$skipconfig ) {
+	@cfgs = ( "/etc/$app/$app.conf",
+		  glob("~/.$app") . "/$app.conf" );
+	push(@cfgs, ".$app.conf") unless $extraconf;
+    }
+    push(@cfgs, $extraconf) if $extraconf;
+
     # Load configs.
     my $cfg;
-    for my $dir ( "/etc/$app/",
-		  glob("~/.$app") . "/",
-		  ".",
-		  undef		# placeholder for extraconf
-		 ) {
-	my $file;
-	if ( !defined($dir) ) {
-	    last unless $extraconf;
-	    $file = $extraconf;
-	    if ( -d $file ) {
-		my $f = File::Spec->catfile($file, "$app.conf");
-		if ( -e $f ) {
-		    $file = $f;
-		}
-		else {
-		    $file = File::Spec->catfile($file, ".$app.conf");
-		}
-	    }
-	    die("$file: $!\n") unless -f $file;
-	}
-	else {
-	    next if $skipconfig;
-	    $file = $dir . "$app.conf";
-	}
+    for my $file ( @cfgs ) {
 	next unless -s $file;
 	#warn("Config: $file\n");
-	$cfg = EB::Config::IniFiles::Wrapper->new
-	  ( -file => $file, -nocase => 1,
-	    $EB::Config::IniFiles::VERSION >= 2.39 ? (-allowcode => 0) : (),
-	    $cfg ? (-import => $cfg) : () );
+	my @args = ( -file => $file, -nocase => 1 );
+	push(@args, -allowcode => 0) if $EB::Config::IniFiles::VERSION >= 2.39;
+	push(@args, -import => $cfg) if $cfg;
+	$cfg = EB::Config::IniFiles::Wrapper->new(@args);
 	unless ( $cfg ) {
 	    # Too early for localisation.
 	    die(join("\n", @Config::IniFiles::errors)."\n");
 	}
     }
-
     # Make sure we have an object, even if no config files.
     $cfg ||= EB::Config::IniFiles::Wrapper->new;
 
@@ -115,7 +114,8 @@ sub init_config {
 
     $ENV{EB_LANG} = $cfg->val('locale','lang',
 			      $ENV{EB_LANG}||$ENV{LANG}||
-			      ($^O =~ /^(ms)?win/i ? "nl_NL.utf8" : "nl_NL"));
+			      ($^O =~ /^(ms)?win/i ? "nl_NL.utf8" : "nl_NL"))
+      unless $] == 5.010000;	# FIXME
 
     $cfg->_plug(qw(locale       lang         EB_LANG));
     unless ( defined($cfg->val(qw(locale unicode), undef)) ) {
@@ -132,7 +132,8 @@ sub init_config {
 	$db =~ s/^eekboek_//;
 	$cfg->newval(qw(database     name), $db);
 	$cfg->newval(qw(database fullname), "eekboek_".$db);
-	$ENV{EB_DB_NAME} = $db;
+	$ENV{EB_DB_NAME} = $db
+	  unless $] == 5.010000; # FIXME
     }
 
     $cfg->_plug(qw(database     host         EB_DB_HOST));
