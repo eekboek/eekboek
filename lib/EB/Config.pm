@@ -1,12 +1,12 @@
 #! perl
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.16 2008/06/06 21:31:15 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.17 2008/07/19 16:49:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  6 22:28:42 2008
-# Update Count    : 110
+# Last Modified On: Wed Jul  2 15:28:02 2008
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Config;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)/g;
 
 use EB::Config::IniFiles;
 use File::Spec;
@@ -114,8 +114,7 @@ sub init_config {
 
     $ENV{EB_LANG} = $cfg->val('locale','lang',
 			      $ENV{EB_LANG}||$ENV{LANG}||
-			      ($^O =~ /^(ms)?win/i ? "nl_NL.utf8" : "nl_NL"))
-      unless $] == 5.010000;	# FIXME
+			      ($^O =~ /^(ms)?win/i ? "nl_NL.utf8" : "nl_NL"));
 
     $cfg->_plug(qw(locale       lang         EB_LANG));
     unless ( defined($cfg->val(qw(locale unicode), undef)) ) {
@@ -132,8 +131,7 @@ sub init_config {
 	$db =~ s/^eekboek_//;
 	$cfg->newval(qw(database     name), $db);
 	$cfg->newval(qw(database fullname), "eekboek_".$db);
-	$ENV{EB_DB_NAME} = $db
-	  unless $] == 5.010000; # FIXME
+	$ENV{EB_DB_NAME} = $db;
     }
 
     $cfg->_plug(qw(database     host         EB_DB_HOST));
