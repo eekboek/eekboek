@@ -1,4 +1,18 @@
-1.03.13
+1.03.90
+
+	* Alle rapporten in HTML kunnen een expliciete titel
+          meekrijgen:
+
+	    balans --title="Voorlopige balans 2009" --out=x.html
+
+	* Bugfix: Meer dan één -D / --define op de command line
+          mogelijk.
+
+	* Kleine wijzigingen in het verwerken van de config files. De
+          ".eekboek.conf" in de huidige directory wordt niet langer
+          meegenomen indien ebshell wordt opgestart met een "-f" optie.
+
+1.03.13 2008-04-13 16:09
 
 	* Voorkom warnings indien bij de BTWaangifte er geen
           voorheffingen hebben plaatsgevonden in de periode waarover
