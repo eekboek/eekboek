@@ -19,7 +19,7 @@
 %{?_without_dbtests: %{expand: %%define dbtests 0}}
 ################ End Build Options ################
 
-Name: %pkgname%{pkgsuffix}
+Name: %pkgname
 Version: %pkgversion
 Release: 1
 Source: http://www.eekboek.nl/dl/%{pkgname}-%{version}.tar.gz
@@ -41,7 +41,7 @@ Requires: %{name}-db
 BuildRequires: perl >= 5.8
 BuildRequires: perl(DBI)
 
-Provides: %{pkgname}%{pkgsuffix} = %{version}
+Provides: %{pkgname} = %{version}
 
 Summary: Bookkeeping software for small and medium-size businesses
 License: Artistic
@@ -117,7 +117,7 @@ mv blib/lib/EB/examples .
 %install
 
 %define ebconf  %{_sysconfdir}/%{lcname}
-%define ebshare %{_datadir}/%{pkgname}%{pkgsuffix}-%{version}
+%define ebshare %{_datadir}/%{pkgname}-%{version}
 
 %{__rm} -rf $RPM_BUILD_ROOT
 
@@ -196,6 +196,9 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell.1
 %post
 
 %changelog
+* Sat Jul 19 2008 Johan Vromans <jvromans@squirrel.nl> - 1.03.90
+- Remove debian stuff
+- Don't use unstable.
 * Fri Apr 11 2008 Johan Vromans <jvromans@squirrel.nl> - 1.03.12
 - Simplify by setting variables from the .in template
 * Sun Apr 01 2007 Johan Vromans <jvromans@squirrel.nl> - 1.03.03
