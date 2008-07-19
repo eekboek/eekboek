@@ -1,26 +1,27 @@
-Source: eekboek
+Source: [% pkgname %]
 Section: perl
 Priority: optional
-Build-Depends: debhelper (>= 5.0.0), libipc-run3-perl (>= 0.034), libmodule-build-perl (>= 0.26), libdbi-perl (>= 1.40)
-Build-Depends-Indep: perl (>= 5.8.8-7etch1)
-Maintainer: Johan Vromans <jvromans.squirrel.nl>
+Build-Depends: debhelper (>= 5.0.0), libdbi-perl (>= 1.40)
+Build-Depends-Indep: perl (>= 5.8.8)
+Maintainer: Johan Vromans <info@eekboek.nl>
 Standards-Version: 3.7.2
 
-Package: eekboek[% stable %]
+Package: [% pkgname %][% stable %]
 Architecture: all
-Depends: perl (>= 5.8.0), libterm-readline-gnu-perl, libipc-run3-perl (>= 0.034), libmodule-build-perl (>= 0.26), libdbi-perl (>= 1.40)
-Suggests: libterm-readline-gnu-perl
+Depends: perl (>= 5.8.0), [% pkgname %][% stable %]-db (= [% version %]), libdbi-perl (>= 1.40)
+Suggests: libterm-readline-gnu-perl, libhtml-parser-perl, libarchive-zip-perl
 Description: Elementary Bookkeeping (for the Dutch/European market)
  For a description how to use the program,
- see http://www.squirrel.nl/eekboek/docs/index.html.
+ see http://www.eekboek.nl/docs/index.html.
 
-Package: eekboek[% stable %]-db-postgresql
+Package: [% pkgname %][% stable %]-db-postgresql
 Architecture: all
-Depends: eekboek (= [% version %]), libdbd-pg-perl (>= 1.41)
-Description: PostgreSQL database driver for EekBoek.
+Depends: [% pkgname %][% stable %] (= [% version %]), libdbd-pg-perl (>= 1.41)
+Provides: [% pkgname %][% stable %]-db
+Description: PostgreSQL database driver for [% PkgName %].
 
-Package: eekboek[% stable %]-db-sqlite
+Package: [% pkgname %][% stable %]-db-sqlite
 Architecture: all
-Depends: eekboek (= [% version %]), libdbd-sqlite3-perl (>= 1.13)
-Provides: eekboek-db
-Description: SQLite database driver for EekBoek.
+Depends: [% pkgname %][% stable %] (= [% version %]), libdbd-sqlite3-perl (>= 1.13)
+Provides: [% pkgname %][% stable %]-db
+Description: SQLite database driver for [% PkgName %].

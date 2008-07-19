@@ -20,7 +20,7 @@ ifndef PERL
 PERL = /usr/bin/perl
 endif
 
-TMP     =$(CURDIR)/debian/$(PACKAGE)
+TMP     =$(CURDIR)/debian/[% pkgname %][% stable %]
 
 build: build-stamp
 build-stamp:
@@ -50,6 +50,11 @@ install-stamp:
 	# Add commands to install the package into debian/$PACKAGE_NAME here
 	$(PERL) Build test
 	$(PERL) Build install destdir=$(TMP)
+
+	-mkdir -p $(TMP)-db-postgresql/usr/share/perl5/EB/DB/
+	mv $(TMP)/usr/share/perl5/EB/DB/Postgres.pm $(TMP)-db-postgresql/usr/share/perl5/EB/DB/
+	-mkdir -p $(TMP)-db-sqlite/usr/share/perl5/EB/DB/
+	mv $(TMP)/usr/share/perl5/EB/DB/Sqlite.pm $(TMP)-db-sqlite/usr/share/perl5/EB/DB/
 
 	touch install-stamp
 

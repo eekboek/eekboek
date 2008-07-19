@@ -1,4 +1,4 @@
-eekboek ([% version %]) [% stable %]; urgency=low
+[% pkgname %] ([% version %]) [% stablility %]; urgency=low
 
   * Initial Release.
 
