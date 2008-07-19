@@ -12,11 +12,6 @@ contrib/afschr.pl
 contrib/afschr-gewoon.dat
 contrib/afschr-group.dat
 contrib/example.pl
-debian/changelog
-debian/compat
-debian/control
-debian/copyright
-debian/rules
 doc/html/bookings/bank.html
 doc/html/bookings/btw.html
 doc/html/bookings/cash.html
