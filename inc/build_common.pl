@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.18 2008/04/09 20:39:16 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.19 2008/07/19 16:28:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Apr  9 22:38:27 2008
-# Update Count    : 83
+# Last Modified On: Sat Jul 19 18:27:56 2008
+# Update Count    : 91
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -102,37 +102,43 @@ sub filelist_dyn {
     $pm;
 }
 
-sub WriteSpecfile {
+sub ProcessTemplates {
     my $name    = shift;
     my $version = shift;
 
     my ($mv) = $version =~ /^\d+\.(\d+)/;
+    my %vars =
+      ( PkgName	   => $name,
+	pkgname	   => lc($name),
+	version	   => $version,
+	stable	   => $mv % 2 ? "-unstable" : "",
+	stability  => $mv % 2 ? "unstable" : "stable",
+      );
 
     vcopy( _tag	    => "RPM spec file",
 	   _dst	    => "$name.spec",
-	   PkgName  => $name,
-	   pkgname  => lc($name),
-	   version  => $version,
-	   stable   => $mv % 2 ? "-unstable" : "",
-	 );
-}
+	   %vars);
 
-sub WriteDebianControl {
-    my $version = shift;
-
-    my ($mv) = $version =~ /^\d+\.(\d+)/;
+=begin Debian
 
     vcopy( _tag	    => "Debian control file",
 	   _dst	    => "debian/control",
-	   version  => $version,
-	   stable   => $mv % 2 ? "-unstable" : "",
+	   %vars);
+
+    vcopy( _tag	    => "Debian rules file",
+	   _dst	    => "debian/rules",
+	   %vars);
 	 );
+    chmod((((stat("debian/rules"))[2] & 0777) | 0111), "debian/rules");
 
     vcopy( _tag	    => "Debian changelog file",
 	   _dst	    => "debian/changelog",
-	   version  => $version,
-	   stable   => $mv % 2 ? "unstable" : "stable",
-	 );
+	   %vars);
+
+=end
+
+=cut
+
 }
 
 sub vcopy {
