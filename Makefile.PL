@@ -1,10 +1,10 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.15 2008/03/22 15:28:04 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.16 2008/07/19 16:24:39 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  8 16:30:27 2008
-# Update Count    : 98
+# Last Modified On: Sun Apr 27 11:54:15 2008
+# Update Count    : 100
 # Status          : Unknown, Use with caution!
 
 # Ease the life of the CPAN testers.
@@ -45,7 +45,5 @@ WriteMakefile(
 	      PM          => filelist("lib", '$(INST_LIBDIR)/'),
 	     );
 
-# Write .spec file.
-WriteSpecfile($data->{distname}, $x->{VERSION});
-# Write Debian control file.
-WriteDebianControl($x->{VERSION});
+# Write .spec file, Debian control, ...
+ProcessTemplates($data->{distname}, $x->{VERSION});

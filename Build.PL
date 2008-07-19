@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  8 16:30:48 2008
-# Update Count    : 100
+# Last Modified On: Sun Apr 27 11:54:40 2008
+# Update Count    : 102
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -69,8 +69,8 @@ my $build = $class->new
 $build->create_build_script;
 
 if ( $build->os_type eq "Unix" ) {
-    WriteSpecfile($build->dist_name, $build->dist_version);
-    WriteDebianControl($build->dist_version);
+    # Write .spec file, Debian control, ...
+    ProcessTemplates($build->dist_name, $build->dist_version);
 }
 
 # Debian needs this.
