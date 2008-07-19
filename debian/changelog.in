@@ -1,6 +1,0 @@
-[% pkgname %] ([% version %]) [% stablility %]; urgency=low
-
-  * Initial Release.
-
- -- Johan Vromans <jvromans@squirrel.nl>  Wed, 27 Feb 2008 20:40:38 +0100
-
