@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Opening.pm,v 1.40 2008/04/30 20:09:22 jv Exp $
+# RCS Id          : $Id: Opening.pm,v 1.41 2008/07/19 16:49:56 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Apr 30 22:08:44 2008
-# Update Count    : 289
+# Last Modified On: Thu May  1 17:55:43 2008
+# Update Count    : 290
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::Tools::Opening;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.40 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.41 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -135,12 +135,17 @@ sub set_balans {
 }
 
 sub set_relatie {
+
+    # adm_relatie verkoop:2000:31 2000-12-30 ACME Cursus 1000
+    # adm_relatie 2000-12-31 Cons deb ACME 1000
+
     return shellhelp() unless @_ == 6;
     my $self = shift;
     my ($date, $desc, $type, $code, $amt);
     my ($dbk, $bky, $nr);
 
     if ( $_[0] =~ /^(\w+):(\w+):(\d+)$/ ) {
+	# adm_relatie verkoop:2000:31 2000-12-30 ACME Cursus 1000
 	($dbk, $bky, $nr) = ($1, $2, $3);
 	shift;
 	($date, $code, $desc, $amt) = @_;
@@ -150,6 +155,7 @@ sub set_relatie {
 	$type = $t == DBKTYPE_VERKOOP;
     }
     else {
+	# adm_relatie 2000-12-31 Cons deb ACME 1000
 	($date, $desc, $type, $code, $amt) = @_;
 	return _T("Relatietype moet \"deb\" of \"crd\" zijn")."\n"
 	  unless $type =~ /^crd|deb$/;
