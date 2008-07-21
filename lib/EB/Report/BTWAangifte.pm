@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: BTWAangifte.pm,v 1.47 2008/04/13 13:06:31 jv Exp $
+# RCS Id          : $Id: BTWAangifte.pm,v 1.48 2008/07/21 14:56:06 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Apr 13 15:06:03 2008
-# Update Count    : 633
+# Last Modified On: Mon Jul 21 16:07:15 2008
+# Update Count    : 637
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::BTWAangifte;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.47 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.48 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -777,30 +777,36 @@ sub kleine_ondernemers {
     # officiële documentatie spreeekt over "Als de afdracht van
     # omzetbelasting beneden de 1.345 per jaar blijft, ...".
 
-    my %mmtab = ( 2002 => [ 1345, 1883 ],
-		  2003 => [ 1345, 1883 ],
-		  2004 => [ 1345, 1883 ],
-		  2005 => [ 1345, 1883 ],
-		  2006 => [ 1345, 1883 ],
-		  2007 => [ 1345, 1883 ],
-		);
+    # Code change: beschouw de huidige bedragen als vaststaand.
 
-    $mmtab{$year} ||= [ 1345, 1883 ] if $year >= 2002;
+    return if $year < 2002;
 
-    return unless exists $mmtab{$year};
+    # my %mmtab = ( 2002 => [ 1345, 1883 ],
+    #		  2003 => [ 1345, 1883 ],
+    #		  2004 => [ 1345, 1883 ],
+    #		  2005 => [ 1345, 1883 ],
+    #		  2006 => [ 1345, 1883 ],
+    #		  2007 => [ 1345, 1883 ],
+    #		);
+    #
+    # $mmtab{$year} ||= [ 1345, 1883 ] if $year >= 2002;
+    #
+    # return unless exists $mmtab{$year};
+    #
+    # my ($min, $max) = @{$mmtab{$year}};
 
-    my ($min, $max) = @{$mmtab{$year}};
+    my ($min, $max) = ( 1345, 1883 );
+
     if ( $noround ) {
 	$min *= AMTSCALE;
 	$max *= AMTSCALE;
     }
-    if ( $amount <= $min ) {
-	return $amount;
-    }
-    elsif ( $amount > $min && $amount <= $max ) {
-	return roundup(250 * ($max - $amount)) / ($noround ? AMTSCALE : 1);
-    }
-    return 0;
+
+    return $amount if $amount <= $min;
+    return 0       if $amount >  $max;
+
+    my $kko = ($min / ($max - $min)) * ($max - $amount);
+    return $noround ? $kko : roundup($kko*AMTSCALE);
 }
 
 sub warnings {
