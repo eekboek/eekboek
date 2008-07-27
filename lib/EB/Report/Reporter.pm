@@ -1,12 +1,12 @@
 #! perl
 
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.14 2008/04/09 21:02:06 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.15 2008/07/27 17:39:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 28 17:49:21 2008
-# Update Count    : 149
+# Last Modified On: Sun Jul 27 19:39:18 2008
+# Update Count    : 150
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -44,12 +44,11 @@ sub new {
 		$self->{_colsep} = $col->{sep} || (" " x $col->{width});
 		next;
 	    }
-	    my $a = { name  => $col->{name},
-		      title => $col->{title} || ucfirst(lc(_T($a->{name}))),
-		      width => $col->{width} || length($a->{title}),
-		      align => $col->{align} || "<",
-		      style => $col->{style} || $col->{name},
-		    };
+	    my $a = { name  => $col->{name} };
+	    $a->{title} = $col->{title} || ucfirst(lc(_T($a->{name})));
+	    $a->{width} = $col->{width} || length($a->{title});
+	    $a->{align} = $col->{align} || "<";
+	    $a->{style} = $col->{style} || $col->{name};
 	    $self->{_fdata}->{$a->{name}} = $a;
 	    push(@{$self->{_fields}}, $a);
 	    if ( my $t = $cfg->val("layout $style", $col->{name}."_width", undef) ) {
