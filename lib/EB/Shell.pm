@@ -10,7 +10,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.107 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.108 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -707,7 +707,7 @@ sub _do_btwaangifte {
 	       ], $opts)
       or goto &_help_btwaangifte;
 
-    if ( lc($args[-1]) eq "definitief" ) {
+    if ( @args && lc($args[-1]) eq "definitief" ) {
 	$opts->{close} = 1;
 	pop(@args);
     }
