@@ -1,12 +1,12 @@
 #! perl
 
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.15 2008/07/27 17:39:57 jv Exp $
+# RCS Info        : $Id: Reporter.pm,v 1.16 2008/08/02 13:06:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 27 19:39:18 2008
-# Update Count    : 150
+# Last Modified On: Sat Aug  2 15:05:06 2008
+# Update Count    : 151
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -45,7 +45,7 @@ sub new {
 		next;
 	    }
 	    my $a = { name  => $col->{name} };
-	    $a->{title} = $col->{title} || ucfirst(lc(_T($a->{name})));
+	    $a->{title} = $col->{title} || "";
 	    $a->{width} = $col->{width} || length($a->{title});
 	    $a->{align} = $col->{align} || "<";
 	    $a->{style} = $col->{style} || $col->{name};
