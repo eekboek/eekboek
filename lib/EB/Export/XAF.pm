@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sun Apr 13 17:25:07 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Apr 14 16:32:52 2008
-# Update Count    : 232
+# Last Modified On: Sun Aug  3 21:36:58 2008
+# Update Count    : 235
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Export::XAF;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.1 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -41,7 +41,7 @@ sub export {
     $self->{fh} = $xaf;
 
     # Default to current boekjaar.
-    $self->{bky} = $opts->{bky} || $dbh->adm("bky");
+    $self->{bky} = $opts->{boekjaar} || $dbh->adm("bky");
 
     $self->{indent} = 0;
     $self->{openingdata} = [];
@@ -269,7 +269,7 @@ sub transactions {
 	   " AND jnl_bsk_id = bsk_id".
 	   " AND jnl_date >= ?".
 	   " AND jnl_date <= ?".
-	   " ORDER BY jnl_date, jnl_bsk_id, jnl_bsr_seq",
+	   " ORDER BY bsk_nr, jnl_date, jnl_bsk_id, jnl_bsr_seq",
 	   $dbk->[0], $self->{begin}, $self->{end});
 
 	$sth->bind_columns

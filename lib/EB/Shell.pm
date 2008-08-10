@@ -10,7 +10,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.108 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.109 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -993,6 +993,8 @@ sub do_export {
     if ( $opts->{xaf} ) {
 	if ( findlib "Export/XAF.pm" ) {
 	    require EB::Export::XAF;
+	    # XAF bevat altijd maar één boekjaar.
+	    $opts->{boekjaar} ||= $bky;
 	    EB::Export::XAF->export($opts);
 	}
 	else {
@@ -1000,6 +1002,10 @@ sub do_export {
 	}
     }
     else {
+	if ( $opts->{boekjaar} ) {
+	    warn("?"._T("Optie --boekjaar wordt niet ondersteunt door deze export")."\n");
+	return;
+	}
 	require EB::Export;
 	EB::Export->export($opts);
     }
@@ -1018,12 +1024,11 @@ Opties:
   --file=<bestand>          Selecteer uitvoerbestand
   --dir=<directory>         Selecteer uitvoerdirectory
   --xaf=<bestand>           Export XML Auditfile Financieel
-  --boekjaar=<code>         Selecteer boekjaar
+  --boekjaar=<code>         Selecteer boekjaar (alleen met --xaf)
 
 Er moet een --file, --dir of een --xaf optie worden opgegeven.
 De XAF export exporteert altijd één enkel boekjaar. Voor de andere
-exports wordt zonder --boekjaar selectie de gehele administratie
-geëxporteerd.
+exports wordt altijd de gehele administratie geëxporteerd.
 Eventueel bestaande files worden overschreven.
 EOS
 }
