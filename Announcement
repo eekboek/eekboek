@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.03.13 (unstable) is beschikbaar
+Subject: EekBoek 1.04 Release Candidate 1 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,48 +9,52 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek 1.03.13, de opvolger van 1.02 en voorbereidend op 1.04 is beschikbaar.
+De eerste release candidate voor 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.03.13.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.03.92.tar.gz
 
 Kits voor RPM gebaseerde systemen:
-* http://www.eekboek.nl/dl/EekBoek-unstable-1.03.13-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-postgresql-1.03.13-1.noarch.rpm
-* http://www.eekboek.nl/dl/EekBoek-unstable-db-sqlite-1.03.13-1.noarch.rpm
-
-Kits voor Debian systemen:
-* http://www.eekboek.nl/dl/eekboek-1.03.13.all.deb
-* http://www.eekboek.nl/dl/eekboek-db-postgresql-1.03.13.all.deb
-* http://www.eekboek.nl/dl/eekboek-db-sqlite-1.03.13.all.deb
+* http://www.eekboek.nl/repo/fedora-testing/EekBoek-1.03.92-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora-testing/EekBoek-db-postgresql-1.03.92-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora-testing/EekBoek-db-sqlite-1.03.92-1.noarch.rpm
 
 Kits voor Microsoft Windows
-* http://www.eekboek.nl/dl/ppms/EekBoek.ppd
+* http://www.eekboek.nl/repo/windows-testing/EekBoek-1_03_92.ppd
+
+Kits voor Debian komen hopenlijk snel beschikbaar.
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
 ervan vind je op http://www.eekboek.nl/dl/RPM-PGP-KEY-EekBoek.
 
 YUM liefhebbers kunnen een (experimentele) repository toevoegen door
 het installeren van
-http://www.eekboek.nl/fedora/EekBoek-yum-1.0-1.noarch.rpm.
-Zie voor meer informatie http://www.eekboek.nl/fedora/repoview .
+http://www.eekboek.nl/repo/fedora/EekBoek-yum-1.04-3.noarch.rpm.
+Zie voor meer informatie http://www.eekboek.nl/repo/fedora-testing/repoview .
 
 De aanbevolen manier van installeren is door middel van RPM of DPKG.
 Installeer de gewenste -db- kit en de rest wordt automatisch meegenomen.
 
-Belangrijkste wijzigingen t.o.v. 1.03.12:
+Belangrijkste wijzigingen t.o.v. 1.03.13:
 
-* Oplossen installatieprobleem met RPM.
+* Kleine verbeteringen XAF export.
+  Fix --boekjaar voor --xaf export.
 
-* Voorkom warnings indien bij de BTWaangifte er geen
-  voorheffingen hebben plaatsgevonden in de periode waarover
-  aangifte wordt gedaan.
+* Verwijder --boekjaar optie voor gewone export.
 
-* (EB::Report::Genbase) Geen backends laden tijdens CPAN tests.
-  Hiermee worden test failures vermeden indien er achterhaalde EekBoek
-  installaties rondzwerven.
+* Bugfix headerinderdrukking van de BTW-aangifte.
 
-* Uitbreidingen contrib/afschr.pl .
+* Alle rapporten in HTML kunnen een expliciete titel
+  meekrijgen:
+
+  balans --title="Voorlopige balans 2009" --out=x.html
+
+* Bugfix: Meer dan één -D / --define op de command line
+  mogelijk.
+
+* Kleine wijzigingen in het verwerken van de config files. De
+  ".eekboek.conf" in de huidige directory wordt niet langer
+  meegenomen indien ebshell wordt opgestart met een "-f" optie.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
