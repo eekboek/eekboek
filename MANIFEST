@@ -6,7 +6,6 @@ INSTALL
 MANIFEST
 META.yml
 Makefile.PL
-QUICKSTART
 README
 TODO
 contrib/afschr.pl
