@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Apr 27 11:54:40 2008
-# Update Count    : 102
+# Last Modified On: Tue Sep  9 21:13:36 2008
+# Update Count    : 113
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -46,23 +46,29 @@ my $build = $class->new
    dist_abstract       => $data->{abstract},
    license	       => $data->{license},
    requires	       => $data->{prereq_pm},
+   build_requires      => $data->{buildreq_pm},
    recommends	       => $data->{recomm_pm},
    script_files	       => $data->{script_files},
    pm_files	       => filelist("lib"),
    get_options	       => { skipdbtests => { } },
-   add_to_cleanup      => [ 'pod2htm*',
-			    map { +"t/ivp/*.$_" }
-				qw(sql log txt html csv)
-			  ],
+   add_to_cleanup      =>
+     [ 'pod2htm*',
+       map { +"t/ivp/*.$_" } qw(sql log txt html csv)
+     ],
    meta_merge	       =>
      { resources =>
-	{
-	   homepage => 'http://www.eekboek.nl',
-	   MailingList => 'http://lists.sourceforge.net/lists/listinfo/eekboek',
-	 }
+	{ homepage    => 'http://www.eekboek.nl',
+	  MailingList => 'http://lists.sourceforge.net/lists/listinfo/eekboek',
+	}
      },
    meta_add            => {
-     no_index          => { directory => [ qw(inc) ] },
+     no_index          => { directory => [ qw(inc lib) ] },
+     provides	       => {
+       'EekBoek' =>
+	  { file => "lib/EekBoek.pm",
+	    version => "1.04.00_01",
+	  },
+     },
    },
   );
 
