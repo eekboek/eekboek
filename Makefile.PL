@@ -1,10 +1,10 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.16 2008/07/19 16:24:39 jv Exp $
+# RCS Info        : $Id: Makefile.PL,v 1.17 2008/09/09 19:16:33 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Apr 27 11:54:15 2008
-# Update Count    : 100
+# Last Modified On: Tue Sep  9 15:23:47 2008
+# Update Count    : 102
 # Status          : Unknown, Use with caution!
 
 # Ease the life of the CPAN testers.
@@ -40,7 +40,7 @@ WriteMakefile(
 	      EXE_FILES   => $data->{script_files},
 	      VERSION_FROM => "lib/EekBoek.pm",
 	      PREREQ_PM   => { %{$data->{prereq_pm}},
-			       'IPC::Run3' => 0,
+			       %{$data->{buildreq_pm}},
 			     },
 	      PM          => filelist("lib", '$(INST_LIBDIR)/'),
 	     );
