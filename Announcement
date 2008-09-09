@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.04 Release Candidate 1 is beschikbaar
+Subject: EekBoek 1.04 Release Candidate 2 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,18 +9,18 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-De eerste release candidate voor 1.04 is beschikbaar.
+De tweede release candidate voor 1.04 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.03.92.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.03.93.tar.gz
 
 Kits voor RPM gebaseerde systemen:
-* http://www.eekboek.nl/repo/fedora-testing/EekBoek-1.03.92-1.noarch.rpm
-* http://www.eekboek.nl/repo/fedora-testing/EekBoek-db-postgresql-1.03.92-1.noarch.rpm
-* http://www.eekboek.nl/repo/fedora-testing/EekBoek-db-sqlite-1.03.92-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora-testing/EekBoek-1.03.93-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora-testing/EekBoek-db-postgresql-1.03.93-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora-testing/EekBoek-db-sqlite-1.03.93-1.noarch.rpm
 
 Kits voor Microsoft Windows
-* http://www.eekboek.nl/repo/windows-testing/EekBoek-1_03_92.ppd
+* http://www.eekboek.nl/repo/windows-testing/EekBoek-1_03_93.ppd
 
 Kits voor Debian komen hopenlijk snel beschikbaar.
 
@@ -36,6 +36,9 @@ De aanbevolen manier van installeren is door middel van RPM of DPKG.
 Installeer de gewenste -db- kit en de rest wordt automatisch meegenomen.
 
 Belangrijkste wijzigingen t.o.v. 1.03.13:
+
+* Herziening en actualisatie on-line documentatie.
+  Alles is nu overeenkomstig de meegeleverde voorbeeldadministratie.
 
 * Kleine verbeteringen XAF export.
   Fix --boekjaar voor --xaf export.
