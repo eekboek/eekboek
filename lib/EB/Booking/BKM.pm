@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Booking::BKM;
 
-# RCS Id	  : $Id: BKM.pm,v 1.70 2008/04/09 21:01:26 jv Exp $
+# RCS Id	  : $Id: BKM.pm,v 1.71 2008/11/11 14:06:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Apr  3 21:36:33 2008
-# Update Count    : 517
+# Last Modified On: Tue Nov 11 14:03:22 2008
+# Update Count    : 518
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Booking::BKM;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.70 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.71 $ =~ /(\d+)/g;
 
 # Dagboek type 3: Bank
 # Dagboek type 4: Kas
@@ -391,7 +391,7 @@ sub perform {
 			    foreach ( @{$k[0]} ) {
 				push(@t, numfmt($amts[$_]));
 				# Push back the data in the input queue.
-				unshift(@$args, $type, $dd, $rel, $t[-1]);
+				unshift(@$args, $type, $dd, $rel, numfmt_plain($amts[$_]));
 			    }
 			    # Inform the user.
 			    my $t = shift(@t);
