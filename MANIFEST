@@ -162,6 +162,7 @@ lib/EB/css/openstaand.css
 lib/EB/css/proef.css
 lib/EB/css/result.css
 lib/EB/examples/README
+lib/EB/examples/Kasverkoop.pm
 lib/EB/examples/Userdefs.pm
 lib/EB/examples/bvnv.dat
 lib/EB/examples/eekboek.conf
