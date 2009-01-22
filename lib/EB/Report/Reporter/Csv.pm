@@ -1,12 +1,12 @@
 #! perl
 
 # Csv.pm -- Reporter backend for CSV reports.
-# RCS Info        : $Id: Csv.pm,v 1.6 2008/03/06 12:58:06 jv Exp $
+# RCS Info        : $Id: Csv.pm,v 1.7 2009/01/22 21:30:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jan  5 18:47:37 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  6 13:52:34 2008
-# Update Count    : 14
+# Last Modified On: Thu Jan 22 22:28:51 2009
+# Update Count    : 15
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter::Csv;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -84,7 +84,7 @@ sub _csv {
     $value =~ s/"/""/g;
     # Quote if anything non-simple.
     $value = '"' . $value . '"'
-      if $value =~ /\s|$sep|"/
+      if $value =~ /\s|\Q$sep\E|"/
 	|| $value !~ /^[+-]?\d+([.,]\d+)?/;
 
     return $value;
