@@ -49,6 +49,14 @@ tr { vertical-align: top }
     color: #0000FF;
     border-top: thin solid #000000;
 }
+.r_chead {
+    color: #0000FF;
+    border-top: thin solid #000000;
+}
+.r_dhead {
+    color: #0000FF;
+    border-top: thin solid #000000;
+}
 .r_total {
     color: #FF0000;
     border-top: thin solid #000000;
