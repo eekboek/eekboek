@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.20 2008/09/09 19:11:32 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.21 2009/04/03 09:43:43 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep  9 15:19:52 2008
-# Update Count    : 92
+# Last Modified On: Sun Jan 25 21:02:53 2009
+# Update Count    : 93
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -109,7 +109,7 @@ sub ProcessTemplates {
       ( PkgName	   => $name,
 	pkgname	   => lc($name),
 	version	   => $version,
-	stable	   => $mv % 2 ? "-unstable" : "",
+	stable	   => $mv % 2 ? "-unstable" : "\%nil",
 	stability  => $mv % 2 ? "unstable" : "stable",
       );
 
