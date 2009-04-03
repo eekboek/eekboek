@@ -1,4 +1,22 @@
-1.04	2008-08-30
+1.04.03
+
+	* Consolidatie. Geen wijzigingen.
+
+1.04.02	2009-01-25 21:20
+
+	* Nieuwe voorbeeldmodule voor userdefs: examples/Kasveroop.pm .
+
+	* bkm_multi: Fix probleem dat de intern aangemaakte boekingen
+          worden geformatteerd volgens thousandsep, wat ongeldige
+          invoer kan opleveren.
+
+	* Fix bug 2172095.
+
+1.04.01	2008-09-04
+
+	* Fix probleem met Windows Vista.
+
+1.04	2008-08-30 10:53
 
 	* Versienummer aangepast.
 
