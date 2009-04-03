@@ -10,7 +10,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.109 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.110 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -746,6 +746,7 @@ Opties:
   --noreport                  Geen rapportage. Dit is enkel zinvol samen
                               met --definitief om de afgesloten BTW periode
                               aan te passen.
+  --noround		      Alle bedragen zonder af te ronden.
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
