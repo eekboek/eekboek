@@ -1,12 +1,12 @@
 #! perl
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.16 2008/02/07 12:30:04 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.17 2009/04/03 09:46:26 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:30:02 2008
-# Update Count    : 224
+# Last Modified On: Fri Oct 17 00:03:36 2008
+# Update Count    : 225
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Tools::Einde;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -54,7 +54,11 @@ sub perform {
     my $def = $opts->{definitief};
     my $eb;
     if ( $opts->{eb} ) {
-	open($eb, '>', $opts->{eb});
+	unless ( open($eb, '>', $opts->{eb}) ) {
+	    warn("?", __x("Fout tijdens het aanmaken van bestand {file}: {err}",
+			 file => $opts->{eb}, err => $!."")."\n");
+	    return;
+	}
 	$opts->{eb_handle} = $eb;
     }
 
