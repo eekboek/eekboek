@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Booking::BKM;
 
-# RCS Id	  : $Id: BKM.pm,v 1.71 2008/11/11 14:06:59 jv Exp $
+# RCS Id	  : $Id: BKM.pm,v 1.72 2009/04/03 10:10:11 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov 11 14:03:22 2008
-# Update Count    : 518
+# Last Modified On: Fri Apr  3 12:09:00 2009
+# Update Count    : 527
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Booking::BKM;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.71 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.72 $ =~ /(\d+)/g;
 
 # Dagboek type 3: Bank
 # Dagboek type 4: Kas
@@ -344,6 +344,10 @@ sub perform {
 		$rel = $rr->[0];
 
 		# Zoek open posten.
+		my $ddd;
+		my $delta = $cfg->val(qw(strategy bkm_multi_delta), 0);
+		$delta = undef;	# disable for now.
+		$ddd = parse_date($dd, substr($begin, 0, 4), $delta) if $delta;
 		$sql = "SELECT bsk_open, bsk_nr, bsk_id, dbk_id, dbk_acc_id, bsk_desc, bsk_amount ".
 		  " FROM Boekstukken, Boekstukregels, Dagboeken" .
 		    " WHERE bsk_open != 0".
@@ -352,8 +356,10 @@ sub perform {
 			    "  AND bsr_bsk_id = bsk_id".
 			      "  AND bsr_rel_code = ?".
 				" AND bsr_nr = 1".
-				  " ORDER BY bsk_id";
-		@sql_args = ( $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP, $rel);
+				  ( $delta ? " AND bsr_date <= ?" : "" ).
+				    " ORDER BY bsk_id";
+		@sql_args = ( $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP,
+			      $rel, $delta ? $ddd : () );
 
 		# Resultset of candidates.
 		my $res = [];
