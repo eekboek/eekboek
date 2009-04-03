@@ -1,12 +1,12 @@
 #! perl
 
 # Userdefs.pm -- User definable stuff
-# RCS Info        : $Id: Userdefs.pm,v 1.3 2008/02/07 13:46:14 jv Exp $
+# RCS Info        : $Id: Userdefs.pm,v 1.4 2009/04/03 09:46:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Feb  7 14:28:50 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:46:05 2008
-# Update Count    : 3
+# Last Modified On: Tue Dec 30 12:22:37 2008
+# Update Count    : 4
 # Status          : Unknown, Use with caution!
 
 package EB::Shell::Userdefs;
@@ -14,7 +14,7 @@ package EB::Shell::Userdefs;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -28,7 +28,7 @@ use EB;
 sub EB::Shell::pp_kasverkoop {
     my ($self, $cmd, @args) = @_;
 
-    # Kontroleer argumenten. "--nr=.." is een intern doorgegeven
+    # Controleer argumenten. "--nr=.." is een intern doorgegeven
     # argument wanneer de vorm "kasverkoop:boekstuknummer" wordt
     # gebruikt.
 
@@ -38,7 +38,7 @@ sub EB::Shell::pp_kasverkoop {
     # Nieuwe opdracht.
     $cmd = "kas";
 
-    # Opbouwen niewe lijst argumenten.
+    # Opbouwen nieuwe lijst argumenten.
     my @a;
     if ( $args[0] =~ /^--?nr=(.+)/ ) {
 	push(@a, shift(@args));	# boekstuknummer
