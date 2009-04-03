@@ -139,7 +139,7 @@ sed -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
 
 cat <<EOD > .files
 %defattr(-,root,root)
-%doc CHANGES README INSTALL QUICKSTART examples doc/html TODO
+%doc CHANGES README INSTALL examples doc/html TODO
 %dir %{_sysconfdir}/%{lcname}
 %config(noreplace) %{_sysconfdir}/%{lcname}/%{lcname}.conf
 %dir %{ebshare}
@@ -196,6 +196,8 @@ pod2man blib/script/ebshell > ${RPM_BUILD_ROOT}%{_mandir}/man1/ebshell.1
 %post
 
 %changelog
+* Sun Jan 26 2009 Johan Vromans <jvromans@squirrel.nl> - 1.04.02
+- Remove QUICKSTART.
 * Sat Jul 19 2008 Johan Vromans <jvromans@squirrel.nl> - 1.03.90
 - Remove debian stuff
 - Don't use unstable.
