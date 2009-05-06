@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.04 Release Candidate 2 is beschikbaar
+Subject: EekBoek 1.04.02 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,55 +9,49 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-De tweede release candidate voor 1.04 is beschikbaar.
+EekBoek versie 1.04.02 is beschikbaar. Dit is een bugfix release van
+de 'stabiele' 1.04 versie.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.03.93.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.04.02.tar.gz
 
 Kits voor RPM gebaseerde systemen:
-* http://www.eekboek.nl/repo/fedora-testing/EekBoek-1.03.93-1.noarch.rpm
-* http://www.eekboek.nl/repo/fedora-testing/EekBoek-db-postgresql-1.03.93-1.noarch.rpm
-* http://www.eekboek.nl/repo/fedora-testing/EekBoek-db-sqlite-1.03.93-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-1.04.02-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-db-postgresql-1.04.02-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-db-sqlite-1.04.02-1.noarch.rpm
 
 Kits voor Microsoft Windows
-* http://www.eekboek.nl/repo/windows-testing/EekBoek-1_03_93.ppd
+* http://www.eekboek.nl/repo/windows/EekBoek-1_04_02.ppd
 
 Kits voor Debian komen hopenlijk snel beschikbaar.
 
 Alle kits zijn voorzien van een aparte digitale handtekening. De key
 ervan vind je op http://www.eekboek.nl/dl/RPM-PGP-KEY-EekBoek.
 
-YUM liefhebbers kunnen een (experimentele) repository toevoegen door
-het installeren van
+YUM liefhebbers kunnen een repository toevoegen door het installeren van
 http://www.eekboek.nl/repo/fedora/EekBoek-yum-1.04-3.noarch.rpm.
-Zie voor meer informatie http://www.eekboek.nl/repo/fedora-testing/repoview .
+Zie voor meer informatie http://www.eekboek.nl/repo/fedora/repoview .
 
 De aanbevolen manier van installeren is door middel van RPM of DPKG.
 Installeer de gewenste -db- kit en de rest wordt automatisch meegenomen.
 
-Belangrijkste wijzigingen t.o.v. 1.03.13:
+Versie 1.04.01 was een 'Windows only' release.
 
-* Herziening en actualisatie on-line documentatie.
-  Alles is nu overeenkomstig de meegeleverde voorbeeldadministratie.
+Belangrijkste wijzigingen t.o.v. 1.04.01:
 
-* Kleine verbeteringen XAF export.
-  Fix --boekjaar voor --xaf export.
+* Fix probleem dat de intern aangemaakte boekingen worden
+  geformatteerd volgens thousandsep, wat ongeldige invoer kan
+  opleveren.
 
-* Verwijder --boekjaar optie voor gewone export.
+* Voorbeeld voor een user module: examples/Kasverkoop.pm.
 
-* Bugfix headerinderdrukking van de BTW-aangifte.
+* Fix probleem met regex speciaal teken als CSV scheider.
 
-* Alle rapporten in HTML kunnen een expliciete titel
-  meekrijgen:
+* Toevoegen enkele ontbrekende class definities in journaal.css.
 
-  balans --title="Voorlopige balans 2009" --out=x.html
+Belangrijkste wijzigingen 1.04.01 t.o.v. 1.04:
 
-* Bugfix: Meer dan één -D / --define op de command line
-  mogelijk.
-
-* Kleine wijzigingen in het verwerken van de config files. De
-  ".eekboek.conf" in de huidige directory wordt niet langer
-  meegenomen indien ebshell wordt opgestart met een "-f" optie.
+* [security] sectie in config file t.b.v. Windows Vista.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
