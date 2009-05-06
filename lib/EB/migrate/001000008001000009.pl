@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-
 # -- Migratie EekBoek database van versie 1.0.8 naar 1.0.9 (EB 0.92).
 
 package main;
