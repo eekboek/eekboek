@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Main.pm,v 1.3 2009/04/03 09:45:08 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.4 2009/05/13 20:38:13 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 30 19:30:06 2008
-# Update Count    : 905
+# Last Modified On: Wed May 13 21:57:01 2009
+# Update Count    : 907
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Main;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)/g;
 
 use EekBoek;
 
@@ -86,6 +86,32 @@ sub run {
     my $userdir = glob("~/.".lc($app));
     mkdir($userdir) unless -d $userdir;
 
+    if ( $createsampleconfig ) {
+	$command = 1;
+	my $cfg = ".".lc($EekBoek::PACKAGE).".conf";
+	if ( -f $cfg ) {
+	    die("?".__x("Opdracht geweigerd, {conf} bestaat reeds",
+		    conf => $cfg)."\n");
+	}
+	my $file = findlib("schema/sample.conf");
+	die("?".__x("Geen voorbeeldgegevens: {conf}",
+		    conf => "schema/sample.conf")."\n") unless $file;
+	open(my $f, '<', $file)
+	  or die("?".__x("Fout bij openen {file}: {err}",
+			 file => $file, err => "$!")."\n");
+	my @data = map { s/[\n\r]+\Z//; $_ } <$f>;
+	close($f);
+	$f = undef;
+	open($f, '>', $cfg)
+	  or die("?".__x("Fout bij openen {file}: {err}",
+			 file => $cfg, err => "$!")."\n");
+	print { $f } "$_\n" foreach @data;
+	close($f)
+	  or die("?".__x("Fout bij afsluiten {file}: {err}",
+			 file => $cfg, err => "$!")."\n");
+	exit(0);
+    }
+
     $echo = "eb> " if $echo;
     if ( $createsampledb ) {
 	$dataset = "sample" unless defined $dataset;
@@ -121,31 +147,6 @@ sub run {
 	    push(@ARGV, "--file", $inex_file) if defined $inex_file;
 	    push(@ARGV, "--dir", $inex_dir) if defined $inex_dir;
 	}
-    }
-
-    if ( $createsampleconfig ) {
-	$command = 1;
-	my $cfg = ".".lc($EekBoek::PACKAGE).".conf";
-	if ( -f $cfg ) {
-	    die("?".__x("Opdracht geweigerd, {conf} bestaat reeds",
-		    conf => $cfg)."\n");
-	}
-	my $file = findlib("schema/sample.conf");
-	die("?".__x("Geen voorbeeldgegevens: {conf}",
-		    conf => "schema/sample.conf")."\n") unless $file;
-	open(my $f, '<', $file)
-	  or die("?".__x("Fout bij openen {file}: {err}",
-			 file => $file, err => "$!")."\n");
-	my @data = map { s/[\n\r]+\Z//; $_ } <$f>;
-	close($f);
-	$f = undef;
-	open($f, '>', $cfg)
-	  or die("?".__x("Fout bij openen {file}: {err}",
-			 file => $cfg, err => "$!")."\n");
-	print { $f } "$_\n" foreach @data;
-	close($f)
-	  or die("?".__x("Fout bij afsluiten {file}: {err}",
-			 file => $cfg, err => "$!")."\n");
     }
 
     if ( $createsampledb ) {
