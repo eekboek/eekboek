@@ -7,11 +7,14 @@ MANIFEST
 META.yml
 Makefile.PL
 README
+README.postgres
 TODO
-contrib/afschr.pl
-contrib/afschr-gewoon.dat
-contrib/afschr-group.dat
-contrib/example.pl
+contrib/API/example.pl
+contrib/afschrijvingen/afschr.pl
+contrib/afschrijvingen/afschr-gewoon.dat
+contrib/afschrijvingen/afschr-group.dat
+contrib/bankafschriften/bank2eekboek.csv.dat
+contrib/bankafschriften/bank2eekboek.py
 doc/html/bookings/bank.html
 doc/html/bookings/btw.html
 doc/html/bookings/cash.html
@@ -168,6 +171,7 @@ lib/EB/examples/bvnv.dat
 lib/EB/examples/eekboek.conf
 lib/EB/examples/eenmanszaak.dat
 lib/EB/examples/mutaties.eb
+lib/EB/examples/ondernemer.dat
 lib/EB/examples/opening.eb
 lib/EB/examples/relaties.eb
 lib/EB/examples/schema.dat
@@ -179,6 +183,7 @@ lib/EB/migrate/001000011001000012.sql
 lib/EB/migrate/001000012001000013.sql
 lib/EB/schema/eekboek.sql
 lib/EB/schema/sampledb.ebz
+lib/EB/schema/sample.conf
 lib/EekBoek.pm
 script/ebshell
 t/10_basic.t
