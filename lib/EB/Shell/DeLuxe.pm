@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.19 2008/03/02 15:22:25 jv Exp $
+# RCS Id          : $Id: DeLuxe.pm,v 1.20 2009/06/16 21:45:11 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  2 16:17:56 2008
-# Update Count    : 258
+# Last Modified On: Tue Jun 16 23:44:39 2009
+# Update Count    : 259
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,7 +18,7 @@ package EB::Shell::DeLuxe;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;
@@ -237,8 +237,6 @@ reference to a hash of name => value parameters:
   my $shell = EB::Shell::DeLuxe->new($opts);
 
 EB::Shell::DeLuxe extends the options of EB::Shell::Base with:
-
-=over 4
 
 =item interactive
 
