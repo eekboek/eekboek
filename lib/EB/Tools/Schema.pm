@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Schema.pm,v 1.57 2008/03/10 17:41:58 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.58 2009/09/20 18:36:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  9 15:24:14 2008
-# Update Count    : 651
+# Last Modified On: Sun Sep 20 20:32:04 2009
+# Update Count    : 662
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,12 +20,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.57 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.58 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.57 2008/03/10 17:41:58 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.58 2009/09/20 18:36:05 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -194,7 +194,8 @@ sub scan_btw {
 	    warn("!"._T("Gelieve BTW tariefgroep \"Geen\" te vervangen door \"Nul\"")."\n")
 	      if lc($1) eq "geen";
 	}
-	elsif ( $extra =~ m/^tariefgroep=priv(e|é)?$/i ) {
+	#### TODO: Fix unicode confusion!
+	elsif ( $extra =~ m/^tariefgroep=priv(e|é|Ã©)?$/i ) {
 	    $groep = BTWTARIEF_PRIV;
 	}
 	elsif ( $extra =~ m/^tariefgroep=anders??$/i ) {
@@ -298,7 +299,8 @@ sub scan_balres {
 		    if ( $balres && /^(kosten|omzet)$/ ) {
 			$btw_ko = substr($1, 0, 1) eq "k";
 		    }
-		    elsif ( /^(hoog|laag|nul|priv(e|é)?|anders?)$/ ) {
+		    #### TODO: Fix unicode confusion!
+		    elsif ( /^(hoog|laag|nul|priv(e|é|Ã©)?|anders?)$/ ) {
 			$btw_type = substr($1, 0, 1);
 		    }
 		    elsif ( /^\d+$/ ) {
