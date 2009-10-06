@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: DB.pm,v 1.59 2008/04/14 14:39:20 jv Exp $
+# RCS Id          : $Id: DB.pm,v 1.60 2009/10/06 08:12:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Apr 13 18:06:04 2008
-# Update Count    : 431
+# Last Modified On: Tue Oct  6 10:11:39 2009
+# Update Count    : 432
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,7 +19,7 @@ package EB::DB;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.59 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.60 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -571,6 +571,13 @@ sub set_sequence {
 sub _loaddbbackend {
     my ($self) = @_;
     my $dbtype = $cfg->val(qw(database driver), "postgres");
+
+    # Trim whitespace for stupid users.
+    for ( $dbtype ) {
+	s/^\s+//;
+	s/\s+$//;
+    }
+
     my $pkg = __PACKAGE__ . "::" . ucfirst(lc($dbtype));
     my $pkgfile = __PACKAGE__ . "::" . ucfirst(lc($dbtype)) . ".pm";
     $pkgfile =~ s/::/\//g;
