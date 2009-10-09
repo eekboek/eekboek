@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWAangifte.pm,v 1.10 2008/03/25 22:30:49 jv Exp $
+# $Id: BTWAangifte.pm,v 1.11 2009/10/09 15:41:32 jv Exp $
 
 package main;
 
@@ -13,6 +13,8 @@ use base qw(EB::Wx::Report::GenBase);
 use strict;
 use EB;
 use Wx qw(wxICON_ERROR wxOK);
+
+#### TODO: BOEKJAAR MEENEMEN ####
 
 sub init {
     my ($self) = @_;
@@ -46,6 +48,7 @@ sub refresh {
     EB::Report::BTWAangifte->new->perform
 	({ generate => 'wxhtml',
 	   compat_periode => $self->{compat_periode},
+	   boekjaar => $self->{pref_bky},
 	   output   => \$output,
 	   detail   => $self->{detail} });
 
