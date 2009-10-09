@@ -15,7 +15,7 @@ use base qw(Wx::Frame);
 use EB;
 use base qw(EB::Wx::Window);
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
 
 my %cmds;
 
@@ -62,7 +62,7 @@ sub new {
 	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("Log venster schoonmaken"), "");
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_SAVE, _T("Exporteer EekBoek..."), _T("Exporteer administratie"));
-	$wxglade_tmp_menu->Append(MENU_XAF, _T("Exporteer XML Audit File..."), _T("Exporteer administratie"));
+	$wxglade_tmp_menu->Append(MENU_XAF, _T("Aanmaken XML Audit File..."), _T("Exporteer administratie"));
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_PROPERTIES, _T("Eigenschappen...\tAlt+Enter"), _T("Toon administratiegegevens"));
 	$wxglade_tmp_menu->AppendSeparator();
@@ -111,7 +111,7 @@ sub new {
 # Menu Bar end
 
 	$self->{mainframe_statusbar} = $self->CreateStatusBar(0, 0);
-	$self->{eb_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("/home/jv/src/eekboek/src/libgui/EB/Wx/icons/eb.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxDOUBLE_BORDER);
+	$self->{eb_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("eb.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxDOUBLE_BORDER);
 	$self->{pp_logo} = Wx::StaticBitmap->new($self, -1, Wx::Bitmap->new("/home/jv/src/eekboek/src/libgui/EB/Wx/icons/perl_powered.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, );
 	$self->{tx_log} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
 
@@ -196,7 +196,10 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::MainFrame::__set_properties
 
 	$self->SetTitle(_T("EekBoek"));
-	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(372, 204)));
+	my $icon = Wx::Icon->new();
+	$icon->CopyFromBitmap(Wx::Bitmap->new(_T("/home/jv/src/eekboek/src/libgui/EB/Wx/icons/eb.jpg"), wxBITMAP_TYPE_ANY));
+	$self->SetIcon($icon);
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(372, 203)));
 	$self->SetBackgroundColour(Wx::Colour->new(255, 255, 255));
 	$self->{mainframe_statusbar}->SetStatusWidths();
 	
@@ -231,7 +234,7 @@ sub __do_layout {
 	$self->{sz_main}->Add($self->{tx_log}, 1, wxALL|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->SetSizer($self->{sz_main});
 	$self->Layout();
-	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(372, 204)));
+	$self->SetSize($self->ConvertDialogSizeToPixels(Wx::Size->new(372, 203)));
 
 # end wxGlade
 }
