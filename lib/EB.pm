@@ -1,12 +1,12 @@
 #! perl
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.87 2009/04/03 09:41:55 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.88 2009/10/09 15:31:25 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct  6 14:50:32 2008
-# Update Count    : 221
+# Last Modified On: Fri Oct  9 17:18:19 2009
+# Update Count    : 222
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,7 +16,7 @@ our $cfg;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.87 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.88 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -81,9 +81,7 @@ our $ident;
 our $imsg;
 our $url = "http://www.eekboek.nl";
 
-# Most elegant (and correct) would be to use an INIT block here, but
-# currently PAR is not able to handle INIT blocks.
-INIT {
+BEGIN {
     return if $ident;		# already done
     my $incompatibleOS = 0;
 
