@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Main.pm,v 1.7 2008/03/25 22:38:55 jv Exp $ ';
+my $RCS_Id = '$Id: Main.pm,v 1.8 2009/10/09 15:38:37 jv Exp $ ';
 
 package main;
 
@@ -13,15 +13,15 @@ package EB::Wx::Main;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar 25 19:27:44 2008
-# Update Count    : 315
+# Last Modified On: Fri Oct  9 17:38:28 2009
+# Update Count    : 319
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 
-our $VERSION = "0.20";
+our $VERSION = "0.21";
 
 use EekBoek;
 
@@ -77,7 +77,7 @@ BEGIN {
 use EB;
 use EekBoek;
 BEGIN {
-    my $req = "1.03.11";
+    my $req = "1.05";
     die("EekBoek $EekBoek::VERSION -- GUI vereist EekBoek versie $req of nieuwer\n")
       if $req gt $EekBoek::VERSION;
 }
