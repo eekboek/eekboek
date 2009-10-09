@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-08 20:48+0100\n"
-"PO-Revision-Date: 2006-11-08 22:22+0100\n"
+"POT-Creation-Date: 2006-11-08 20:53+0100\n"
+"PO-Revision-Date: 2006-11-09 13:35+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -50,7 +50,7 @@ msgstr "Error accessing schema data: {err}"
 
 #: lib/EB/Tools/Schema.pm:68
 #, perl-brace-format
-msgid "Schema {schema} ge茂nitialiseerd"
+msgid "Schema {schema} ge侊nitialiseerd"
 msgstr "Schema {schema} initialised"
 
 #: lib/EB/Tools/Schema.pm:117
@@ -95,13 +95,13 @@ msgstr "Please change VAT group \"Geen\" to \"Nul\""
 #: lib/EB/Tools/Schema.pm:200
 #, perl-brace-format
 msgid "BTW tarief {id}: onbekende info \"{info}\""
-msgstr "VAT tariff {id}: unknown info \"{info}\""
+msgstr "VAT code {id}: unknown info \"{info}\""
 
 #: lib/EB/Tools/Schema.pm:205
 #, perl-brace-format
 msgid "BTW tarief {id}: geen percentage en de tariefgroep is niet \"{none}\""
 msgstr ""
-"VAT tariff {id}: no percentage given, and tariff group is not \"{none}\""
+"VAT code {id}: no percentage given, and tariff group is not \"{none}\""
 
 #: lib/EB/Tools/Schema.pm:206
 msgid "geen"
@@ -145,12 +145,12 @@ msgstr "Error in VAT specification: {spec}"
 #: lib/EB/Tools/Schema.pm:302
 #, perl-brace-format
 msgid "Rekening {id}: onbekende koppeling \"{std}\""
-msgstr "Account {id}: unknown special \"{std}\""
+msgstr "Account {id}: unknown attachment to \"{std}\""
 
 #: lib/EB/Tools/Schema.pm:305
 #, perl-brace-format
 msgid "Rekening {id}: extra koppeling voor \"{std}\""
-msgstr "Account {id}: extra special \"{std}\""
+msgstr "Account {id}: extra attachment to \"{std}\""
 
 #: lib/EB/Tools/Schema.pm:312
 #, perl-brace-format
@@ -162,19 +162,21 @@ msgstr "Account {id}: It is invalid to attach a {acc} to VAT code '{ko}'"
 msgid ""
 "Rekening {id}: BTW koppeling met neutrale resultaatrekening is niet "
 "toegestaan"
-msgstr "Account {id}: It is invalid to attach a VAT code to neutral account"
+msgstr "Account {id}: Can't attach a VAT code to neutral account"
 
 #: lib/EB/Tools/Schema.pm:318
 #, perl-brace-format
 msgid ""
 "Rekening {id}: BTW koppeling met een balansrekening vereist kosten/omzet "
 "specificatie"
-msgstr "Account {id}: To attach a VAT code to a balance account requires a KO specification"
+msgstr ""
+"Account {id}: Attaching a VAT code to a balance account requires a KO "
+"specification"
 
 #: lib/EB/Tools/Schema.pm:379
 #, perl-brace-format
 msgid "Geen geldige {cs} tekens in regel {line} van de invoer"
-msgstr "Line {line} contains characters that are no valid {cs}"
+msgstr "Line {line} contains characters with no valid {cs}"
 
 #: lib/EB/Tools/Schema.pm:420
 #, perl-brace-format
@@ -186,8 +188,8 @@ msgid ""
 "Men beginne met \"Balansrekeningen\", \"Resultaatrekeningen\", \"Dagboeken\" "
 "of \"BTW Tarieven\""
 msgstr ""
-"Please start with \"Balansrekeningen\", \"Resultaatrekeningen\", \"Dagboeken"
-"\" or \"BTW Tarieven\""
+"Please start with \"BalanceAccount\", \"ResultAccount\", \"Batch"
+"\" or \"VAT Rates\""
 
 #: lib/EB/Tools/Schema.pm:448
 #, perl-brace-format
@@ -197,7 +199,7 @@ msgstr "Account {id} has no associated account"
 #: lib/EB/Tools/Schema.pm:460
 #, perl-brace-format
 msgid "Geen BTW tarief gevonden met tariefgroep {gr}, inclusief"
-msgstr "No VAT tariff found with group {gr} and inclusive"
+msgstr "No VAT code found with group {gr} and inclusive"
 
 #: lib/EB/Tools/Schema.pm:473
 #, perl-brace-format
@@ -239,17 +241,17 @@ msgstr "{id} SHOULD HAVE BEEN A RESULT ACCOUNT"
 
 #: lib/EB/Tools/Einde.pm:61
 msgid "Geen boekjaar opgegeven"
-msgstr "Missing book year"
+msgstr "Missing financial year"
 
 #: lib/EB/Tools/Einde.pm:66 lib/EB/DB.pm:208
 #, perl-brace-format
 msgid "Onbekend boekjaar: {bky}"
-msgstr "Unknown book year: {bky}<"
+msgstr "Unknown financial year: {bky}<"
 
 #: lib/EB/Tools/Einde.pm:71
 #, perl-brace-format
 msgid "Boekjaar {bky} is definitief afgesloten"
-msgstr "Book year {bky} has been closed definitively"
+msgstr "Financial year {bky} has been closed definitively"
 
 #: lib/EB/Tools/Einde.pm:74
 #, perl-brace-format
@@ -278,7 +280,7 @@ msgstr "Credit"
 
 #: lib/EB/Tools/Einde.pm:92
 msgid "Boekstuk/regel"
-msgstr "Booking/line"
+msgstr "Posting/line"
 
 #: lib/EB/Tools/Einde.pm:93
 msgid "Relatie"
@@ -292,7 +294,7 @@ msgstr "Journal"
 #: lib/EB/Tools/Einde.pm:230
 #, perl-brace-format
 msgid "Afsluiting boekjaar {bky}"
-msgstr "Closing book year {bky}"
+msgstr "Closing financial year {bky}"
 
 #: lib/EB/Tools/Einde.pm:126 lib/EB/Tools/Einde.pm:188
 msgid "Systeemdagboek"
@@ -301,12 +303,12 @@ msgstr "Internal batch"
 #: lib/EB/Tools/Einde.pm:144
 #, perl-brace-format
 msgid "Winst boekjaar {bky}"
-msgstr "Profit for book year {bky}"
+msgstr "Profit for financial year {bky}"
 
 #: lib/EB/Tools/Einde.pm:145
 #, perl-brace-format
 msgid "Verlies boekjaar {bky}"
-msgstr "Loss book year {bky}"
+msgstr "Loss financial year {bky}"
 
 #: lib/EB/Tools/Einde.pm:230
 #, perl-brace-format
@@ -316,7 +318,7 @@ msgstr "Total {pfx}"
 #: lib/EB/Tools/Einde.pm:240
 #, perl-brace-format
 msgid "Eindbalans bij afsluiting boekjaar {bky}"
-msgstr "Final balance closing book year {bky}"
+msgstr "Final balance closing financial year {bky}"
 
 #: lib/EB/Tools/Einde.pm:281 lib/EB/Export.pm:208
 #, perl-brace-format
@@ -330,7 +332,7 @@ msgstr "Total"
 #: lib/EB/Tools/Einde.pm:289
 #, perl-brace-format
 msgid "Openstaande posten bij afsluiting boekjaar {bky}"
-msgstr "Unsettled bookings at book year {bky} close"
+msgstr "Unsettled postings at financial year {bky} close"
 
 #: lib/EB/Tools/Opening.pm:48 lib/EB/Tools/Opening.pm:52 lib/EB/Utils.pm:149
 msgid "jaar"
@@ -357,12 +359,12 @@ msgstr "Invalid year: {year}"
 #: lib/EB/Tools/Opening.pm:72
 #, perl-brace-format
 msgid "Ongeldige boekjaar-code: {year}"
-msgstr "Invalid book year code: {year}"
+msgstr "Invalid financial year code: {year}"
 
 #: lib/EB/Tools/Opening.pm:73
 #, perl-brace-format
 msgid "Boekjaar-code {year} bestaat al ({desc}"
-msgstr "Book year code {year} already exists ({desc})"
+msgstr "financial year code {year} already exists ({desc})"
 
 #: lib/EB/Tools/Opening.pm:85 lib/EB/Tools/Opening.pm:111
 #: lib/EB/Tools/Opening.pm:171
@@ -396,8 +398,8 @@ msgstr "Invalid date: {date}"
 
 #: lib/EB/Tools/Opening.pm:151
 #, perl-brace-format
-msgid "Datum {date} valt niet v贸贸r het boekjaar"
-msgstr "Date {date} does not precede the book year"
+msgid "Datum {date} valt niet v侒侒r het boekjaar"
+msgstr "Date {date} does not precede the financial year"
 
 #: lib/EB/Tools/Opening.pm:166
 #, perl-brace-format
@@ -411,26 +413,26 @@ msgstr "Invalid relation: {rel}."
 
 #: lib/EB/Tools/Opening.pm:190
 msgid "De naam van de administratie is nog niet opgegeven"
-msgstr "The name for the administration has not yet been supplied"
+msgstr "The name for the configuration has not yet been supplied"
 
 #: lib/EB/Tools/Opening.pm:192
 msgid "De begindatum is nog niet opgegeven"
-msgstr "The starting date for the administration has not yet been supplied"
+msgstr "The starting date for the configuration has not yet been supplied"
 
 #: lib/EB/Tools/Opening.pm:198 lib/EB/Tools/Opening.pm:498
 #, perl-brace-format
 msgid "Er is geen boekjaarcode opgegeven, de waarde {val} wordt gebruikt"
-msgstr "No book year code supplied, using {val}"
+msgstr "No financial year code supplied, using {val}"
 
 #: lib/EB/Tools/Opening.pm:200
 #, perl-brace-format
 msgid "Boekjaarcode \"{code}\" is reeds in gebruik"
-msgstr "Book year code \"{code}\" is already in use"
+msgstr "Financial year code \"{code}\" is already in use"
 
 #: lib/EB/Tools/Opening.pm:205
 #, perl-brace-format
 msgid "Ongeldige boekjaarcode: {code}"
-msgstr "Illegal value for book year: {code}"
+msgstr "Illegal value for financial year: {code}"
 
 #: lib/EB/Tools/Opening.pm:210
 msgid "De BTW periode is nog niet opgegeven"
@@ -442,11 +444,11 @@ msgstr "The total amount for the initial balance has not yet been specified"
 
 #: lib/EB/Tools/Opening.pm:240
 msgid "De openingsbalans is nog niet opgegeven"
-msgstr "The initial balance has not yet been supplied"
+msgstr "The opening balance has not yet been supplied"
 
 #: lib/EB/Tools/Opening.pm:270
 msgid "De openingsbalans is niet correct!"
-msgstr "The initial balance is not correct!"
+msgstr "The opening balance is not correct!"
 
 #: lib/EB/Tools/Opening.pm:271
 #, perl-brace-format
@@ -456,7 +458,7 @@ msgstr "Total as specified = {total}"
 #: lib/EB/Tools/Opening.pm:273
 #, perl-brace-format
 msgid "Rekenkundig residu debet = {rdeb}, credit = {rcrd}"
-msgstr "Arithmetic residue debet = {rdeb}, credit = {rcrd}"
+msgstr "Arithmetic difference debit = {rdeb}, credit = {rcrd}"
 
 #: lib/EB/Tools/Opening.pm:277 lib/EB/Tools/Opening.pm:283
 #, perl-brace-format
@@ -466,30 +468,30 @@ msgstr "(Balance total {total})"
 #: lib/EB/Tools/Opening.pm:279
 #, perl-brace-format
 msgid "Boekhoudkundig residu debet = {rdeb}, credit = {rcrd}"
-msgstr "Accounting residue debet = {rdeb}, credit = {rcrd}"
+msgstr "Accounting difference debit = {rdeb}, credit = {rcrd}"
 
 #: lib/EB/Tools/Opening.pm:288
 msgid "Er zijn geen openstaande posten opgegeven"
-msgstr "Unsettled bookings have not been specified"
+msgstr "Unsettled postings have not been specified"
 
 #: lib/EB/Tools/Opening.pm:290
 msgid ""
 "Er zijn openstaande posten opgegeven, maar geen corresponderende balansposten"
 msgstr ""
-"There are open bookings, but no associated balance accounts have been "
+"There are open postings, but no associated balance accounts have been "
 "specified"
 
 #: lib/EB/Tools/Opening.pm:303
 msgid "Deze administratie kent geen koppeling voor verkoopboekingen"
-msgstr "This administration doesn't handle receivable accounts"
+msgstr "This configuration doesn't handle receivable accounts"
 
 #: lib/EB/Tools/Opening.pm:317
 msgid "Deze administratie kent geen koppeling voor inkoopboekingen"
-msgstr "This administration doesn't handle payable accounts"
+msgstr "This configuration doesn't handle payable accounts"
 
 #: lib/EB/Tools/Opening.pm:336
 msgid "Boekingsdatum valt niet binnen het boekjaar"
-msgstr "Date of booking falls outside of this book year"
+msgstr "Date of posting falls outside of this financial year"
 
 #: lib/EB/Tools/Opening.pm:359 lib/EB/Tools/Opening.pm:379
 #, perl-brace-format
@@ -504,7 +506,7 @@ msgstr "Debtors"
 #: lib/EB/Tools/Opening.pm:364 lib/EB/Tools/Opening.pm:374
 #, perl-brace-format
 msgid "Er is {amt} te veel aan openstaande {dc} (rekening {acct}) opgegeven"
-msgstr "Unsettled {dc} (account {acct} exceeds by {amt}"
+msgstr "Unsettled {dc} (account {acct}) has an {amt} excess"
 
 #: lib/EB/Tools/Opening.pm:376 lib/EB/Tools/Opening.pm:381 lib/EB/DB.pm:117
 #: lib/EB/DB.pm:121
@@ -518,23 +520,23 @@ msgstr "OPENING IS NOT COMPLETED!"
 #: lib/EB/Tools/Opening.pm:487
 #, perl-brace-format
 msgid "Begindatum {year} komt in de toekomst te liggen"
-msgstr "Starting date {year} would be future"
+msgstr "Starting date {year} would be in the future"
 
 #: lib/EB/Tools/Opening.pm:494
 msgid "Er is geen nieuwe BTW periode opgegeven, deze blijft ongewijzigd"
-msgstr "Using current VAT period specification"
+msgstr "Using current VAT period codes"
 
 #: lib/EB/Tools/Opening.pm:501
 msgid "HET NIEUWE BOEKJAAR IS NIET GEOPEND!"
-msgstr "START OF BOOK YEAR FAILED!"
+msgstr "PERIOD END FAILED!"
 
 #: lib/EB/Tools/Opening.pm:702 lib/EB/Shell.pm:1569 lib/EB/Booking.pm:36
 msgid "De administratie is nog niet geopend"
-msgstr "The administration has not yet been opened"
+msgstr "The configuration has not yet been opened"
 
 #: lib/EB/Tools/Opening.pm:705 lib/EB/Shell.pm:1584
 msgid "De administratie is reeds in gebruik"
-msgstr "The administration is already in use"
+msgstr "The configuration is already in use"
 
 #: lib/EB/Tools/SQLEngine.pm:53
 #, perl-brace-format
@@ -550,7 +552,9 @@ msgstr "Incomplete SQL command: {sql}"
 msgid ""
 "Geen dataset opgegeven. Specificeer een dataset in de configuratiefile, of "
 "geef een dataset naam mee op de command line met \"--dataset=...\"."
-msgstr "No dataset. Please specify a dataset name in the configuration file, or pass it on the command line with \"--dataset=...\""
+msgstr ""
+"No dataset. Please specify a dataset name in the configuration file, or pass "
+"it on the command line with \"--dataset=...\""
 
 #: lib/EB/Shell.pm:120
 #, perl-brace-format
@@ -613,14 +617,14 @@ msgstr ""
 "    --journal           show journal entry after each command\n"
 "    --dataset=DB        specify database\n"
 "    --db=DB             specify database\n"
-"    --boekjaar=XXX      specificy book year\\n\"\n"
+"    --boekjaar=XXX      specify financial year\\n\"\n"
 "    --createdb          create a new database\\n\"\n"
 "    --schema=XXX        initialise database with schema\\n\"\n"
-"    --import            import administration\\n\"\n"
-"    --export            export administration\\n\"\n"
+"    --import            import configuration\\n\"\n"
+"    --export            export configuration\\n\"\n"
 "    --dir=XXX           directory for im/export\\n\"\n"
 "    --file=XXX          file for im/export\\n\"\n"
-"    --define=XXX -D     definie configuration setting\\n\"\n"
+"    --define=XXX -D     define configuration setting\\n\"\n"
 "    --help              this message\n"
 "    --ident             show identification\n"
 "    --verbose           verbose information\n"
@@ -632,7 +636,7 @@ msgstr "Pending transaction rolled-back"
 #: lib/EB/Shell.pm:350
 #, perl-brace-format
 msgid "Pas op! Boekjaar {bky} is nog niet afgesloten"
-msgstr "Warning! Boek year {bky} hasn't been closed yet"
+msgstr "Warning! year {bky} hasn't been closed yet"
 
 #: lib/EB/Shell.pm:559
 msgid "Te weinig argumenten voor deze opdracht"
@@ -680,11 +684,11 @@ msgstr "Unknown or erroneous batch: {dbk} [{type}]"
 #: lib/EB/Shell.pm:663
 #, perl-brace-format
 msgid "Geboekt: {bsk}"
-msgstr "Booked: {bsk}"
+msgstr "Posted: {bsk}"
 
 #: lib/EB/Shell.pm:735
 msgid "Openingsbalans kent geen einddatum"
-msgstr "The initial balance does not have an end date"
+msgstr "The opening balance does not have an end date"
 
 #: lib/EB/Shell.pm:865
 #, perl-brace-format
@@ -726,16 +730,16 @@ msgstr "Please specify --dir or --file"
 #: lib/EB/Shell.pm:1312
 #, perl-brace-format
 msgid "Onbekend boekjaar: {code}"
-msgstr "Unknown book year: {code}"
+msgstr "Unknown financial year: {code}"
 
 #: lib/EB/Shell.pm:1315
 #, perl-brace-format
 msgid "Boekjaar voor deze sessie: {bky} ({desc})"
-msgstr "Book year for this session: {bky} ({desc})"
+msgstr "financial year for this session: {bky} ({desc})"
 
 #: lib/EB/Shell.pm:1381 lib/EB/Shell.pm:1439
 msgid "Gaarne een boekstuk"
-msgstr "Please supply a booking"
+msgstr "Please supply a posting"
 
 #: lib/EB/Shell.pm:1486
 msgid "Opties \"definitief\" en \"verwijder\" sluiten elkaar uit"
@@ -744,7 +748,7 @@ msgstr "Options \"definitief\" and \"verwijder\" are mutual exclusive"
 #: lib/EB/Shell.pm:1549
 #, perl-brace-format
 msgid "Ongeldige periode-aanduiding: {per}"
-msgstr "Invalid period specification: {per}"
+msgstr "Invalid period: {per}"
 
 #: lib/EB/Shell.pm:1560
 #, perl-brace-format
@@ -753,11 +757,11 @@ msgstr "Invalid date: {per}"
 
 #: lib/EB/Shell.pm:1572
 msgid "De administratie is reeds geopend"
-msgstr "The administration has already been opened"
+msgstr "The configuration has already been opened"
 
 #: lib/EB/Shell.pm:1581
 msgid "De administratie is nog niet in gebruik"
-msgstr "The administration has not yet been used"
+msgstr "The configuration has not yet been used"
 
 #: lib/EB/Import.pm:31
 #, perl-brace-format
@@ -792,26 +796,26 @@ msgstr "Error {code} reading file {file}"
 #: lib/EB/Import.pm:90
 #, perl-brace-format
 msgid "Het schema ontbreekt in bestand {file}"
-msgstr "File {file} is missing the schema data"
+msgstr "File {file} schema data is missing"
 
 #: lib/EB/Import.pm:97
 #, perl-brace-format
 msgid "De relatiegegevens ontbreken in bestand {file}"
-msgstr "File {file} is missing the relations data"
+msgstr "File {file} relations data is missing"
 
 #: lib/EB/Import.pm:104
 #, perl-brace-format
 msgid "De openingsgegevens ontbreken in bestand {file}"
-msgstr "File {file} is missing the opening data"
+msgstr "File {file} opening data is missing"
 
 #: lib/EB/Import.pm:111
 #, perl-brace-format
 msgid "De mutatiegegevens ontbreken in bestand {file}"
-msgstr "File {file} is missing the bookings data"
+msgstr "File {file} postings data is missing"
 
 #: lib/EB/Import.pm:118
 msgid "DE IMPORT IS NIET UITGEVOERD"
-msgstr "IMPORT IS NOT COMPLETED!"
+msgstr "IMPORT NOT COMPLETED!"
 
 #: lib/EB/Export.pm:31
 #, perl-brace-format
@@ -850,7 +854,7 @@ msgstr "Error {err} closing file {file}"
 #: lib/EB/Export.pm:124 lib/EB/Export.pm:155 lib/EB/Export.pm:249
 #, perl-brace-format
 msgid "# {what} voor administratie {adm}"
-msgstr "# {what} for administration {adm}"
+msgstr "# {what} for configuration {adm}"
 
 #: lib/EB/Export.pm:125 lib/EB/Export.pm:145
 msgid "Relaties"
@@ -868,28 +872,28 @@ msgstr "End of {what}"
 
 #: lib/EB/Export.pm:156 lib/EB/Export.pm:242
 msgid "Openingsgegevens"
-msgstr "Initial data"
+msgstr "Opening data"
 
 #: lib/EB/Export.pm:177
 msgid "Openingsbalans"
-msgstr "Initial balance"
+msgstr "Opening balance"
 
 #: lib/EB/Export.pm:222
 msgid "Openstaande posten"
-msgstr "Unsettled bookings"
+msgstr "Open postings"
 
 #: lib/EB/Export.pm:241
 msgid "Openen van de administratie"
-msgstr "Starting the administration"
+msgstr "Entering configuration mode"
 
 #: lib/EB/Export.pm:250 lib/EB/Export.pm:331
 msgid "Boekingen"
-msgstr "Bookings"
+msgstr "Postings"
 
 #: lib/EB/DB.pm:44
 #, perl-brace-format
 msgid "Tabel {table} ontbreekt in database {db}"
-msgstr "Tabel {table} missing in database {db}"
+msgstr "Database Table {table} missing in {db}"
 
 #: lib/EB/DB.pm:48
 #, perl-brace-format
@@ -897,12 +901,12 @@ msgid "Ongeldige EekBoek database: {db}."
 msgstr "Invalid EekBoek database: {db}."
 
 #: lib/EB/DB.pm:50
-msgid "Wellicht is de database nog niet ge茂nitialiseerd?"
+msgid "Wellicht is de database nog niet ge侊nitialiseerd?"
 msgstr "Has the database been initialised?"
 
 #: lib/EB/DB.pm:65 lib/EB/DB.pm:80
 msgid "De database wordt aangepast aan de nieuwere versie"
-msgstr "The database is upgraded to the required version"
+msgstr "The database has been upgraded to the latest version"
 
 #: lib/EB/DB.pm:90
 msgid "De migratie is mislukt. Gelieve de documentatie te raadplegen."
@@ -912,7 +916,8 @@ msgstr "Database upgrade failed. Please consult the documentation"
 #, perl-brace-format
 msgid ""
 "Ongeldige EekBoek database: {db} versie {ver}. Benodigde versie is {req}."
-msgstr "Invalid Eekboek database: {db} version {ver}. Need at least version {req}."
+msgstr ""
+"Invalid Eekboek database: {db} version {ver}. Need at least version {req}."
 
 #: lib/EB/DB.pm:104 lib/EB/DB.pm:116 lib/EB/DB.pm:128 lib/EB/DB.pm:138
 #, perl-brace-format
@@ -934,27 +939,27 @@ msgstr "profit transfer"
 
 #: lib/EB/DB.pm:146
 msgid "CONSISTENTIE-VERIFICATIE STANDAARDREKENINGEN MISLUKT"
-msgstr "CONSISTENCY-VERIFICATION OF STANDARD ACCOUNTS FAILED"
+msgstr "TRAIL BALANCE OF STANDARD ACCOUNTS FAILED"
 
 #: lib/EB/DB.pm:218
 #, perl-brace-format
 msgid "Onbekend boekstuk {bsk} in dagboek {dbk}"
-msgstr "Unknown booking {bsk} in batch {dbk}"
+msgstr "Unknown posting {bsk} in batch {dbk}"
 
 #: lib/EB/DB.pm:231
 #, perl-brace-format
 msgid "Onbekend boekstuk: {bsk}"
-msgstr "Unknown booking: {bsk}"
+msgstr "Unknown posting: {bsk}"
 
 #: lib/EB/DB.pm:240
 #, perl-brace-format
 msgid "Ongeldige boekstukaanduiding: {bsk}"
-msgstr "Invalid booking specification: {bsk}"
+msgstr "Invalid posting specification: {bsk}"
 
 #: lib/EB/DB.pm:283
 #, perl-brace-format
 msgid "Niet-bestaande administratie-eigenschap: {adm}"
-msgstr "Unknown administration property: {adm}"
+msgstr "Unknown configuration property: {adm}"
 
 #: lib/EB/DB.pm:318
 #, perl-brace-format
@@ -973,32 +978,36 @@ msgstr "No support for database type {db}"
 
 #: lib/EB/Booking.pm:48
 msgid "Het boekstuknummer moet een geheel getal (volgnummer) zijn"
-msgstr "The booking must be identified with a serial number"
+msgstr "This posting must have a serial number"
 
 #: lib/EB/Booking.pm:56
 msgid ""
 "Boekstukken in voorafgaande boekjaren moeten verplicht worden voorzien van "
 "een boekstuknummer"
-msgstr "Bookings in preceeding book years must have an explicit serial number"
+msgstr "Postings in preceeding financial years must have an explicit serial number"
 
 #: lib/EB/Booking.pm:76
 #, perl-brace-format
 msgid "Boekjaar {code} is gesloten, er kan niet meer in worden gewijzigd"
-msgstr "Book year {code} is closed and cannot be modified"
+msgstr "financial year {code} is closed and cannot be modified"
 
 #: lib/EB/Booking.pm:84
 msgid "De administratie is gesloten en kan niet meer worden gewijzigd"
-msgstr "The administration has been closed and cannot be modified"
+msgstr "The configuration has been closed and cannot be modified"
+
+# "year end"?
+
+# what is "adminitstration" in this context? Do you mean "year end is closed"?
 
 #: lib/EB/Booking.pm:96
 #, perl-brace-format
-msgid "De boekingsdatum {date} valt v贸贸r aanvang van dit boekjaar"
-msgstr "Date {date} precedes the book year"
+msgid "De boekingsdatum {date} valt v侒侒r aanvang van dit boekjaar"
+msgstr "Date {date} is before the beginning of the financial year"
 
 #: lib/EB/Booking.pm:101
 #, perl-brace-format
 msgid "De boekingsdatum {date} valt na het einde van dit boekjaar"
-msgstr "Date {date} exceeds the book year"
+msgstr "Date {date} is after the financial year end"
 
 #: lib/EB/Booking.pm:134
 #, perl-brace-format
@@ -1038,22 +1047,22 @@ msgstr "Normal Delegated Intra Extra"
 #: lib/EB/Report.pm:53
 #, perl-brace-format
 msgid "Balansrekening {acct}, saldo aangepast naar {exp}"
-msgstr "Balance account {acct}, saldo changed to {exp}"
+msgstr "Balance account {acct}, changed changed to {exp}"
 
 #: lib/EB/Report.pm:67
 #, perl-brace-format
 msgid "Balansrekening {acct}, saldo aangepast met {exp}"
-msgstr "Balansrekening {acct}, saldo changed with {exp}"
+msgstr "Balance Account {acct}, total changed to {exp}"
 
 #: lib/EB/Report.pm:116
 #, perl-brace-format
 msgid "Resultaatrekening {acct}, beginsaldo is {exp}"
-msgstr "Result account {acct}, saldo changed to {exp}"
+msgstr "Result account {acct}, total changed to {exp}"
 
 #: lib/EB/Report.pm:130
 #, perl-brace-format
 msgid "Resultaatrekening {acct}, saldo aangepast met {exp}"
-msgstr "Result account {acct}, saldo changed with {exp}"
+msgstr "Result account {acct} total changed to {exp}"
 
 #: lib/EB/Report.pm:151
 #, perl-brace-format
@@ -1067,12 +1076,14 @@ msgstr "Illegal value for VAT status: \"{btw}\""
 
 #: lib/EB/Relation.pm:41
 msgid "Relaties met verlegde BTW worden nog niet ondersteund"
-msgstr "Relations with delegated VAT are not yet fully supported"
+msgstr "Transactions with delegated VAT are not yet fully supported"
+
+# what do you mean by "delegated VAT"?
 
 #: lib/EB/Relation.pm:45
 msgid ""
 "Relaties met intra-communautaire BTW worden nog niet volledig ondersteund"
-msgstr "Relations with intra-communautaire VAT are not yet fully supported<"
+msgstr "intra-EC VAT transactions are not yet fully supported<"
 
 #: lib/EB/Relation.pm:67
 #, perl-brace-format
@@ -1102,13 +1113,13 @@ msgstr "Creditor"
 msgid "Grootboekrekening {acct} ({desc}) is een balansrekening"
 msgstr "Account {acct} ({desc}) is a balance account"
 
+#~ msgid "Nederlands"
+#~ msgstr "English"
+
 #~ msgid ""
 #~ "EekBoek {version} {extra}{locale}-- Copyright {year} Squirrel Consultancy"
 #~ msgstr ""
 #~ "EekBoek {version} {extra}{locale}-- Copyright {year} Squirrel Consultancy"
-
-#~ msgid "Nederlands"
-#~ msgstr "Engels"
 
 #~ msgid "Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"
 #~ msgstr "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec"
@@ -1184,7 +1195,7 @@ msgstr "Account {acct} ({desc}) is a balance account"
 #~ msgstr "Acc"
 
 #~ msgid "Grootboek/Boekstuk"
-#~ msgstr "Ledger/Booking"
+#~ msgstr "Ledger/Posting"
 
 #~ msgid "Id"
 #~ msgstr "Id"
@@ -1197,6 +1208,8 @@ msgstr "Account {acct} ({desc}) is a balance account"
 
 #~ msgid "Totaal mutaties"
 #~ msgstr "Mutations total"
+
+# Mutations? discrepacies? differences? 
 
 #~ msgid "Totaal {adesc}"
 #~ msgstr "Total {adesc}"
@@ -1211,7 +1224,7 @@ msgstr "Account {acct} ({desc}) is a balance account"
 #~ msgstr "TOTAL"
 
 #~ msgid "Boekstuk {nr}"
-#~ msgstr "Booking {nr}"
+#~ msgstr "Posting {nr}"
 
 #~ msgid "Dagboek {nr}"
 #~ msgstr "Batch {nr}"
@@ -1224,7 +1237,7 @@ msgstr "Account {acct} ({desc}) is a balance account"
 #~ msgstr "Current balance: {bal}"
 
 #~ msgid "boekstuk"
-#~ msgstr "booking"
+#~ msgstr "posting"
 
 #~ msgid ""
 #~ "De \"D\" of \"C\" toevoeging aan het rekeningnummer is hier niet "
@@ -1235,11 +1248,11 @@ msgstr "Account {acct} ({desc}) is a balance account"
 #~ "Boekingen met BTW zijn niet mogelijk in een {dbk}. De BTW is op nul "
 #~ "gesteld."
 #~ msgstr ""
-#~ "It is not allowed to make bookings that involve VAT in a {dbk}. The VAT "
+#~ "Postings that involve VAT in a {dbk} are not allowed. The VAT "
 #~ "has been nulled."
 
 #~ msgid "Geen bijbehorende open post gevonden"
-#~ msgstr "No suitable unpaid booking found"
+#~ msgstr "No suitable unpaid posting found"
 
 #~ msgid "Onbekend transactietype: {type}"
 #~ msgstr "Unknown transaction type: {type}"
@@ -1254,10 +1267,10 @@ msgstr "Account {acct} ({desc}) is a balance account"
 #~ msgstr "Command not completed."
 
 #~ msgid " Boekstuk totaal is {act} in plaats van {exp}"
-#~ msgstr "Booking total is {act} instead of {exp}"
+#~ msgstr "Posting total is {act} instead of {exp}"
 
 #~ msgid "Boekstuk is niet in balans (verschil is {diff})"
-#~ msgstr "Booking does not balance (difference is {diff})"
+#~ msgstr "Posting does not balance (difference is {diff})"
 
 #~ msgid "Ongeldige operatie (IV) voor dagboek type {type}"
 #~ msgstr "Invalid operation (IV) voor batch type {type}"
@@ -1266,19 +1279,19 @@ msgstr "Account {acct} ({desc}) is a balance account"
 #~ msgstr "Unknown account: {acct}"
 
 #~ msgid "Boekstuk {bsk} is in gebruik door {lst}"
-#~ msgstr "Booking {bsk} is in use by {lst}"
+#~ msgstr "Posting {bsk} is in use by {lst}"
 
 #~ msgid "Boekstuk {bsk} niet verwijderd"
-#~ msgstr "Booking {bsk} not removed"
+#~ msgstr "Posting {bsk} not removed"
 
 #~ msgid "Boekstuk {bsk} verwijderd"
-#~ msgstr "Booking {bsk} removed"
+#~ msgstr "Posting {bsk} removed"
 
 #~ msgid "De openstaande debiteuren zijn nog niet opgegeven"
-#~ msgstr "Open bookings for debtors have not yet been specified"
+#~ msgstr "Open postings for debtors have not yet been specified"
 
 #~ msgid "De openstaande crediteuren zijn nog niet opgegeven"
-#~ msgstr "Open bookings for creditors have not yet been specified"
+#~ msgstr "Open postings for creditors have not yet been specified"
 
 #~ msgid "Ongeldige mode '{ctl}' in {pkg}::addline"
 #~ msgstr "Unsupported mode '{ctl}' in {pkg}::addline"
@@ -1321,7 +1334,7 @@ msgstr "Account {acct} ({desc}) is a balance account"
 #~ "administratie ({admper})"
 #~ msgstr ""
 #~ "{per} report does not match the corresponding setting ({admper}) of the "
-#~ "administration"
+#~ "configuration"
 
 #~ msgid "j(aar)?"
 #~ msgstr "y(ear)?"

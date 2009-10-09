@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Accounts.pm,v 1.10 2008/03/25 22:57:42 jv Exp $
+# $Id: Accounts.pm,v 1.11 2009/10/09 15:41:20 jv Exp $
 
 package main;
 
@@ -52,11 +52,9 @@ sub new {
 	$self->{acc_tree} = EB::Wx::Maint::Accounts::TreeCtrl->new($self->{tree_pane}, -1, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
 	$self->{l_acc_id} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Nr."), wxDefaultPosition, wxDefaultSize, );
 	$self->{l_acc_desc} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Omschrijving"), wxDefaultPosition, wxDefaultSize, );
-	$self->{t_acc_id} = EB::Wx::UI::NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{t_acc_id} = EB::Wx::UI::NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
 	$self->{t_acc_desc} = Wx::TextCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_vrd} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Indeling"), wxDefaultPosition, wxDefaultSize, );
-	$self->{bb_add} = Wx::BitmapButton->new($self->{maint_pane}, -1, Wx::Bitmap->new("/home/jv/src/eekboek/src/libgui/EB/Wx/icons/edit_add.png", wxBITMAP_TYPE_ANY));
-	$self->{bb_rem} = Wx::BitmapButton->new($self->{maint_pane}, -1, Wx::Bitmap->new("/home/jv/src/eekboek/src/libgui/EB/Wx/icons/edit_remove.png", wxBITMAP_TYPE_ANY));
 	$self->{ch_vdi} = EB::Wx::UI::VdiInput->new($self->{maint_pane}, -1, wxDefaultPosition, wxDefaultSize, [], );
 	$self->{ch_hvd} = EB::Wx::UI::HvdInput->new($self->{maint_pane}, -1, wxDefaultPosition, wxDefaultSize, [], );
 	$self->{ch_balres} = Wx::Choice->new($self->{maint_pane}, -1, wxDefaultPosition, wxDefaultSize, [_T("Resultaatrekeningen"), _T("Balansrekeningen")], );
@@ -67,8 +65,9 @@ sub new {
 	$self->{t_saldo_opening} = Wx::StaticText->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Actueel"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{b_add} = Wx::Button->new($self->{maint_pane}, wxID_ADD, "");
-	$self->{b_del} = Wx::Button->new($self->{maint_pane}, wxID_REMOVE, "");
+	$self->{b_add} = Wx::Button->new($self->{maint_pane}, -1, _T("Dupliceren"));
+	$self->{b_del} = Wx::Button->new($self->{maint_pane}, -1, _T("Verwijderen"));
+	$self->{l_msg} = Wx::StaticText->new($self->{maint_pane_outer}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{static_line_2} = Wx::StaticLine->new($self->{maint_pane_outer}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{b_accept} = Wx::Button->new($self->{maint_pane_outer}, wxID_APPLY, "");
 	$self->{b_reset} = Wx::Button->new($self->{maint_pane_outer}, wxID_REVERT_TO_SAVED, "");
@@ -112,12 +111,6 @@ sub __set_properties {
 
 # begin wxGlade: EB::Wx::Maint::Accounts::__set_properties
 
-	$self->{bb_add}->SetToolTipString(_T("Toevoegen"));
-	$self->{bb_add}->Show(0);
-	$self->{bb_add}->SetSize($self->{bb_add}->GetBestSize());
-	$self->{bb_rem}->SetToolTipString(_T("Verwijderen"));
-	$self->{bb_rem}->Show(0);
-	$self->{bb_rem}->SetSize($self->{bb_rem}->GetBestSize());
 	$self->{ch_vdi}->Show(0);
 	$self->{ch_vdi}->SetSelection(0);
 	$self->{ch_hvd}->Show(0);
@@ -166,9 +159,7 @@ sub __do_layout {
 	$self->{sz_id}->Add($self->{t_acc_desc}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_id}->Add(2, 2, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_id}->Add($self->{l_vrd}, 0, wxALIGN_BOTTOM|wxADJUST_MINSIZE, 0);
-	$self->{sz_addrem}->Add($self->{bb_add}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sz_addrem}->Add($self->{bb_rem}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sz_addrem}->Add(2, 2, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sz_addrem}->Add(2, 2, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_id}->Add($self->{sz_addrem}, 1, wxEXPAND, 0);
 	$self->{sz_vrd}->Add($self->{ch_vdi}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_vrd}->Add($self->{ch_hvd}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
@@ -190,11 +181,12 @@ sub __do_layout {
 	$self->{sz_saldo}->Add($self->{gr_saldo}, 1, wxEXPAND, 5);
 	$self->{sz_accy}->Add($self->{sz_saldo}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{sz_adddel}->Add($self->{b_add}, 0, wxLEFT|wxBOTTOM|wxADJUST_MINSIZE, 5);
-	$self->{sz_adddel}->Add($self->{b_del}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxADJUST_MINSIZE, 5);
+	$self->{sz_adddel}->Add($self->{b_del}, 0, wxLEFT|wxBOTTOM|wxADJUST_MINSIZE, 5);
 	$self->{sz_adddel}->Add(2, 2, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_accy}->Add($self->{sz_adddel}, 0, wxEXPAND, 0);
 	$self->{maint_pane}->SetSizer($self->{sz_accy});
 	$self->{sz_accx}->Add($self->{maint_pane}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sz_accx}->Add($self->{l_msg}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_accx}->Add(1, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_accx}->Add($self->{static_line_2}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
 	$self->{sz_acccan}->Add($self->{b_accept}, 0, wxLEFT|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
@@ -255,8 +247,9 @@ sub set_acc {
     $self->{_item} = $item;
 
     my $l = ($rr->[1] ? "Balans" : "Resultaat")."rekening";
+    $self->{_what} = $l;
     $self->{sz_acc}->GetStaticBox->SetLabel($l);
-    $self->{b_add}->SetToolTipString(_T("$l toevoegen"));
+    $self->{b_add}->SetToolTipString(_T("Maak een nieuwe ".lc($l)." door deze te dupliceren"));
     $self->{b_del}->SetToolTipString(_T("Deze ".lc($l)." verwijderen"));
 
     $self->{t_acc_id}->SetValue($self->{_id} = $id);
@@ -278,14 +271,14 @@ sub set_acc {
     $self->{sz_acc}->Show($self->{sz_saldo}, 1);
     $self->{sz_acc}->Layout;
 
-    $rr = $dbh->do("SELECT jnl_acc_id FROM Journal".
-		   " WHERE jnl_acc_id = ?".
-		   " LIMIT 1", $id);
-    foreach ( qw(rb_kstomz rb_debcrd b_del bb_rem) ) {
-	$self->{$_}->Enable(!$rr->[0]);
+    my $inuse = $dbh->acc_inuse($id);
+    foreach ( qw(rb_kstomz rb_debcrd b_del) ) {
+	$self->{$_}->Enable(!$inuse);
     }
     $self->{sz_adddel}->Show($self->{b_add}, 1);
     $self->{sz_adddel}->Show($self->{b_del}, 1);
+    $self->{maint_pane}->Show(1);
+    $self->{l_msg}->Show(0);
     foreach ( qw(b_add) ) {
 	#$self->{$_}->Enable($rr->[0]);
 	$self->{$_}->Enable(1);
@@ -352,6 +345,8 @@ sub set_vrd {
 	$self->{sz_vrd}->Show($self->{ch_vdi}, 0);
 	$self->{sz_vrd}->Show($self->{ch_hvd}, 0);
     }
+    $self->{maint_pane}->Show(1);
+    $self->{l_msg}->Show(0);
 
     $self->{sz_adddel}->Show($self->{b_add}, 0);
     $self->{sz_adddel}->Show($self->{b_del}, 0);
@@ -382,12 +377,9 @@ sub newentry {
     $self->{struct} = $self->{_vdi} = $pid;
 
     $self->{_type} = "acc";
-
-    $self->{sz_acc}->GetStaticBox->SetLabel
-      (($rr->[0] ? "Balans" : "Resultaat")."rekening");
     $self->{t_acc_id}->SetValue($self->{_id} = "");
     $self->{t_acc_id}->Enable(1);
-    $self->{t_acc_desc}->SetValue($self->{_desc} = "");
+    $self->{t_acc_desc}->SetValue($self->{_desc});
     $self->{_balres} = $rr->[0];
     $self->{_kstomz} = $self->_kstomz_code($rr->[1]);
     $self->{rb_kstomz}->SetSelection($self->{_kstomz});
@@ -408,6 +400,11 @@ sub newentry {
     }
     $self->{sz_adddel}->Show($self->{b_add}, 0);
     $self->{sz_adddel}->Show($self->{b_del}, 0);
+    $self->{maint_pane}->Show(1);
+    $self->{l_msg}->Show(1);
+    $self->{l_msg}->SetLabel(__x("Druk op de knop [{apply}] om deze ".lc($self->{sz_acc}->GetStaticBox->GetLabel)." toe te voegen.",
+				apply => _T("Toepassen")));
+    $self->Layout;
 
     $self->{b_accept}->Enable(0);
     $self->{b_reset}->Enable(0);
@@ -794,6 +791,13 @@ sub OnDel {
     }
 
     $self->{struct} = -1;
+    $self->{maint_pane}->Show(0);
+    $self->{l_msg}->Show(1);
+    my $l = lc($self->{sz_acc}->GetStaticBox->GetLabel);
+    $self->{l_msg}->SetLabel(__x("Druk op de knop [{apply}] om deze $l te verwijderen.",
+				apply => _T("Toepassen")));
+    $self->Layout;
+
 }
 
 

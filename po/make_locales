@@ -1,22 +1,23 @@
 #!/bin/sh
 
-GTF="-j -k__x -k__n -k__xn -k__nx -k_ -k_T -kN__ --from-code=ISO-8859-15"
+GTF="-j -k -k__x -k_T -kN__ --from-code=ISO-8859-1"
 DIR="po"
 LIB="lib"
 cd ..
 if [ "$1" = "regen" ]
 then
     cp /dev/null $DIR/ebcore.pot || exit 1
-    cp /dev/null $DIR/ebgui.pot || exit 1
+    #cp /dev/null $DIR/ebgui.pot || exit 1
 
-    find ebshell.pl -exec xgettext $GTF -o $DIR/ebcore.pot {} \;
-    find lib/EB.pm lib/EB \( -name CVS -prune \) -o \( -name '*.pm' -exec xgettext $GTF -o $DIR/ebcore.pot {} \; \)
+    find script/ebshell -exec xgettext $GTF -o $DIR/ebcore.pot {} \;
+    # Currently, Shell::DeLuxe crashes xgettext, so ignore it here.
+    find lib/EB.pm lib/EB \( -name CVS -prune \) -o \( -name '*.pm' -a ! -name 'DeLuxe.pm' -a -print -exec xgettext $GTF -o $DIR/ebcore.pot {} \; \)
 
-    find GUI/eb.pl -exec xgettext $GTF -o $DIR/ebgui.pot {} \;
-    find GUI \( -name CVS -prune \) -o \( -name '*.pm' -exec xgettext $GTF -o $DIR/ebgui.pot {} \; \)
+    #find GUI/eb.pl -exec xgettext $GTF -o $DIR/ebgui.pot {} \;
+    #find GUI \( -name CVS -prune \) -o \( -name '*.pm' -exec xgettext $GTF -o $DIR/ebgui.pot {} \; \)
 fi
 
-for pkg in core gui
+for pkg in core # gui
 do
   for locale in en
   do
@@ -32,7 +33,7 @@ do
 	then
 	    cat $DIR/eb${pkg}-${locale}.pox $DIR/eb${pkg}.pot > $DIR/eb${pkg}-${locale}.po 
 	else
-	    msginit -i $DIR/eb${pkg}.pot -o $DIR/eb${pkg}.po -l $locale --no-translator
+	    msginit -i $DIR/eb${pkg}.pot -o $DIR/eb${pkg}-${locale}.po -l $locale --no-translator
         fi
     fi
   done
