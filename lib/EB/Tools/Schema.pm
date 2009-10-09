@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Schema.pm,v 1.58 2009/09/20 18:36:05 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.59 2009/10/09 15:36:55 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 20 20:32:04 2009
-# Update Count    : 662
+# Last Modified On: Thu Oct  8 23:46:42 2009
+# Update Count    : 682
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,12 +20,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.58 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.59 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.58 2009/09/20 18:36:05 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.59 2009/10/09 15:36:55 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -194,8 +194,7 @@ sub scan_btw {
 	    warn("!"._T("Gelieve BTW tariefgroep \"Geen\" te vervangen door \"Nul\"")."\n")
 	      if lc($1) eq "geen";
 	}
-	#### TODO: Fix unicode confusion!
-	elsif ( $extra =~ m/^tariefgroep=priv(e|é|Ã©)?$/i ) {
+	elsif ( $extra =~ m/^tariefgroep=priv(e|é)?$/i ) {
 	    $groep = BTWTARIEF_PRIV;
 	}
 	elsif ( $extra =~ m/^tariefgroep=anders??$/i ) {
@@ -271,11 +270,13 @@ sub scan_balres {
 	error(__x("Rekening {id} heeft geen verdichting", id => $id)."\n") unless defined($cvdi);
 	my $debcrd;
 	my $kstomz;
-	if ( ($balres ? $flags =~ /^[dc]$/i : $flags =~ /^[kon]$/i)
+	my $dcfixed;
+	if ( ($balres ? $flags =~ /^[dc]\!?$/i : $flags =~ /^[kon]$/i)
 	     ||
 	     $flags =~ /^[dc][ko]$/i ) {
 	    $debcrd = $flags =~ /d/i;
 	    $kstomz = $flags =~ /k/i if $flags =~ /[ko]/i;
+	    $dcfixed = $flags =~ /\!/;
 	}
 	else {
 	    error(__x("Rekening {id}: onherkenbare vlaggetjes {flags}",
@@ -299,8 +300,7 @@ sub scan_balres {
 		    if ( $balres && /^(kosten|omzet)$/ ) {
 			$btw_ko = substr($1, 0, 1) eq "k";
 		    }
-		    #### TODO: Fix unicode confusion!
-		    elsif ( /^(hoog|laag|nul|priv(e|é|Ã©)?|anders?)$/ ) {
+		    elsif ( /^(hoog|laag|nul|priv(e|é)?|anders?)$/ ) {
 			$btw_type = substr($1, 0, 1);
 		    }
 		    elsif ( /^\d+$/ ) {
@@ -345,7 +345,7 @@ sub scan_balres {
 	}
 	$desc =~ s/\s+$//;
 	$kstomz = $btw_ko unless defined($kstomz);
-	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz, $btw_type ];
+	$acc{$id} = [ $desc, $cvdi, $balres, $debcrd, $kstomz, $btw_type, $dcfixed ];
     }
     else {
 	0;
@@ -408,6 +408,23 @@ sub load_schema {
 		next;
 	    }
 	}
+
+=begin thisshouldwork
+
+	my $s = $_;
+	eval {
+	    $_ = decode($unicode ? 'utf8' : 'latin1', $s, 1);
+	};
+	if ( $@ ) {
+	    warn("?".__x("Geen geldige {cs} tekens in regel {line} van de invoer",
+			 cs => $unicode ? "UTF-8" : "Latin1",
+			 line => $.)."\n".$_."\n");
+	    warn($@);
+	    $fail++;
+	    next;
+	}
+
+=cut
 
 	next if /^\s*#/;
 	next unless /\S/;
@@ -592,7 +609,7 @@ sub sql_acc {
     my $out = <<ESQL;
 -- Grootboekrekeningen
 COPY Accounts
-     (acc_id, acc_desc, acc_struct, acc_balres, acc_debcrd,
+     (acc_id, acc_desc, acc_struct, acc_balres, acc_debcrd, acc_dcfixed,
       acc_kstomz, acc_btw, acc_ibalance, acc_balance)
      FROM stdin;
 ESQL
@@ -600,10 +617,12 @@ ESQL
     for my $i ( sort { $a <=> $b } keys(%acc) ) {
 	my $g = $acc{$i};
 	croak(__x("Geen BTW tariefgroep voor code {code}",
-		  code => $g->[5])) unless exists $btwmap{$g->[5]};
+		  code => $g->[5]))
+	  unless exists $btwmap{$g->[5]} || exists $btwmap{$g->[5]."-"};
 	$out .= _tsv($i, $g->[0], $g->[1],
 		     _tf($g->[2]),
 		     _tf($g->[3]),
+		     _tfn($g->[2] ? $g->[6] : undef),
 		     _tfn($g->[4]),
 		     defined($btwmap{$g->[5]}) ? $btwmap{$g->[5]} : "\\N",
 		     0, 0);
@@ -752,6 +771,8 @@ print {$fh}  <<EOD;
 #   :btw=nul
 #   :btw=hoog
 #   :btw=laag
+#   :btw=privé
+#   :btw=anders
 #
 # Ook is het mogelijk aan te geven dat een rekening een koppeling
 # (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
@@ -763,6 +784,10 @@ print {$fh}  <<EOD;
 #   btw_il	idem, laag tarief
 #   btw_vh	idem, verkopen, hoog tarief
 #   btw_vl	idem, laag tarief
+#   btw_ph	idem, privé, hoog tarief
+#   btw_pl	idem, laag tarief
+#   btw_ah	idem, anders, hoog tarief
+#   btw_al	idem, laag tarief
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
 #
@@ -827,16 +852,18 @@ EOD
 
 # BTW TARIEVEN
 #
-# Er zijn drie tariefgroepen: "hoog", "laag" en "nul". De tariefgroep
-# bepaalt het rekeningnummer waarop de betreffende boeking plaatsvindt.
+# Er zijn vijf tariefgroepen: "hoog", "laag", "nul", "privé" en
+# "anders". De tariefgroep bepaalt het rekeningnummer waarop de
+# betreffende boeking plaatsvindt.
 # Binnen elke tariefgroep zijn meerdere tarieven mogelijk, hoewel dit
 # in de praktijk niet snel zal voorkomen.
 # In de eerste kolom wordt de (numerieke) code voor dit tarief
 # opgegeven. Deze kan o.m. worden gebruikt om expliciet een BTW tarief
-# op te geven bij het boeken. Voor elk tarief (behalve die van groep
-# "nul") moet het percentage worden opgegeven. Met de aanduiding
-# :exclusief kan worden opgegeven dat boekingen op rekeningen met deze
-# tariefgroep standaard het bedrag exclusief BTW aangeven.
+# op te geven bij het boeken. Voor elk gebruikt tarief (behalve die
+# van groep "nul") moet het percentage worden opgegeven. Met de
+# aanduiding :exclusief kan worden opgegeven dat boekingen op
+# rekeningen met deze tariefgroep standaard het bedrag exclusief BTW
+# aangeven.
 #
 # BELANGRIJK: Mutaties die middels de command line shell of de API
 # worden uitgevoerd maken gebruik van het geassocieerde BTW tarief van
@@ -878,7 +905,8 @@ sub dump_acc {
 	    print {$fh} ("# ".__x("VERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN",
 			   min => $max_hvd+1, max => $max_vrd)."\n")
 	      if $id <= $max_hvd || $id > $max_vrd;
-	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres, acc_debcrd, acc_kstomz,".
+	    my $sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balres,".
+				     " acc_debcrd, acc_dcfixed, acc_kstomz,".
 				     " acc_btw, btw_tariefgroep, btw_incl".
 				     " FROM Accounts, BTWTabel ".
 				     " WHERE acc_struct = ?".
@@ -886,10 +914,11 @@ sub dump_acc {
 				     " OR btw_id = 0 AND acc_btw IS NULL)".
 				     " ORDER BY acc_id", $id);
 	    while ( my $rr = $sth->fetchrow_arrayref ) {
-		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_kstomz, $btw_id, $btw, $btwincl) = @$rr;
+		my ($id, $desc, $acc_balres, $acc_debcrd, $acc_dcfixed, $acc_kstomz, $btw_id, $btw, $btwincl) = @$rr;
 		my $flags = "";
 		if ( $balres ) {
 		    $flags .= $acc_debcrd ? "D" : "C";
+		    $flags .= '!' if $acc_dcfixed;
 		}
 		else {
 		    $flags .= defined($acc_kstomz)
