@@ -5,12 +5,12 @@ package main;
 our $dbh;
 
 # Report.pm -- Report tools
-# RCS Info        : $Id: Report.pm,v 1.7 2008/02/07 12:13:27 jv Exp $
+# RCS Info        : $Id: Report.pm,v 1.8 2009/10/09 15:33:08 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Nov 14 21:46:04 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:13:25 2008
-# Update Count    : 42
+# Last Modified On: Wed Oct  7 11:32:02 2009
+# Update Count    : 43
 # Status          : Unknown, Use with caution!
 
 package EB::Report;
@@ -18,7 +18,7 @@ package EB::Report;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format qw(numfmt);
@@ -35,9 +35,9 @@ sub GetTAccountsBal {
     # balans(r, t0)
     $dbh->sql_exec("DELETE FROM TAccounts");
     $dbh->sql_exec("INSERT INTO TAccounts".
-		   " (acc_id,acc_desc,acc_balres,acc_debcrd,".
+		   " (acc_id,acc_desc,acc_balres,acc_debcrd,acc_dcfixed,".
 		   "acc_ibalance,acc_balance,acc_struct)".
-		   " SELECT acc_id,acc_desc,acc_balres,acc_debcrd,".
+		   " SELECT acc_id,acc_desc,acc_balres,acc_debcrd,acc_dcfixed,".
 		   "acc_ibalance,acc_ibalance AS acc_balance,acc_struct".
 		   " FROM Accounts")->finish;
 
