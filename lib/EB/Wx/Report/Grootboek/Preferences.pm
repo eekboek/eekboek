@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.2 2008/03/25 22:28:53 jv Exp $
+# $Id: Preferences.pm,v 1.3 2009/10/09 15:43:33 jv Exp $
 
 package main;
 
@@ -110,7 +110,6 @@ sub init {
 	$self->{p_period}->allow_fromto(1) if $args->{pref_from_to} & 1;
 	$self->{p_period}->allow_to(1)     if $args->{pref_from_to} & 2;
     }
-    $self->{b_apply}->Enable(0);
     $self->refresh;
     $self->{p_period}->set_bky($args->{pref_bky}) if $args->{pref_bky};
 }
@@ -119,6 +118,12 @@ my @choices;
 sub refresh {
     my ($self) = @_;
 
+    $self->{b_apply}->Enable(0);
+    if ( $self->{pref_acct} ) {
+	$self->{t_acct}->SetValue($self->{pref_acct});
+	$self->{t_acct}->Enable(1);
+	$self->{cb_acct}->SetValue(1);
+    }
     $self->{p_period}->refresh;
 }
 

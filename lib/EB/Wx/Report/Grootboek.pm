@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Grootboek.pm,v 1.6 2008/03/25 22:32:19 jv Exp $
+# $Id: Grootboek.pm,v 1.7 2009/10/09 15:43:20 jv Exp $
 
 package main;
 
@@ -33,8 +33,6 @@ sub init {
 sub refresh {
     my ($self) = @_;
     my $output = "";
-
-    delete($self->{pref_acct}) if $self->{prefs_changed};
 
     my @period;
 
