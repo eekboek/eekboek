@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.20 2009/06/16 21:45:11 jv Exp $
+# RCS Id          : $Id: DeLuxe.pm,v 1.21 2009/10/09 15:34:54 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun 16 23:44:39 2009
-# Update Count    : 259
+# Last Modified On: Sun Sep 20 21:35:01 2009
+# Update Count    : 260
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,7 +18,7 @@ package EB::Shell::DeLuxe;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;
@@ -106,6 +106,21 @@ sub readline_file {
 		next;
 	    }
 	}
+
+=begin thismustbefixed
+
+	my $s = $line;
+	eval {
+	    $line = decode($self->{unicode} ? 'utf8' : 'latin1', $s, 1);
+	};
+	if ( $@ ) {
+	    warn("?".__x("Geen geldige {cs} tekens in regel {line} van de invoer",
+			 cs => $self->{unicode} ? "UTF-8" : "Latin1",
+			 line => $.)."\n".$line."\n");
+	    next;
+	}
+
+=cut
 	if ( $self->{echo} ) {
 	    my $pr = $self->{echo};
 	    $pr =~ s/\>/>>/ if $pre;
