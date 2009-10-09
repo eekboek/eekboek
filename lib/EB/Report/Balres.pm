@@ -7,12 +7,12 @@ our $dbh;
 
 package EB::Report::Balres;
 
-# RCS Id          : $Id: Balres.pm,v 1.26 2008/02/07 13:15:31 jv Exp $
+# RCS Id          : $Id: Balres.pm,v 1.27 2009/10/09 15:33:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:15:28 2008
-# Update Count    : 369
+# Last Modified On: Wed Oct  7 11:36:20 2009
+# Update Count    : 400
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Report::Balres;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.27 $ =~ /(\d+)/g;
 
 ################ The Process ################
 
@@ -148,7 +148,7 @@ sub perform {
 	    my $cstot = 0;
 	    foreach my $vd ( @{$hvd->[2]} ) {
 		my $did_vd = 0;
-		$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balance".
+		$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_balance, acc_debcrd, acc_dcfixed".
 				      " FROM ${table}".
 				      " WHERE".($balans ? "" : " NOT")." acc_balres".
 				      "  AND acc_struct = ?".
@@ -168,8 +168,9 @@ sub perform {
 				desc => $vd->[1]
 			      })
 		      unless $detail < 2 || $did_vd++;
-		    my ($acc_id, $acc_desc, $acc_balance) = @$rr;
-		    if ( $acc_balance >= 0 ) {
+		    my ($acc_id, $acc_desc, $acc_balance, $acc_debcrd, $acc_dcfixed) = @$rr;
+		    $acc_balance = -$acc_balance if $acc_dcfixed && !$acc_debcrd;
+		    if ( $acc_dcfixed ? $acc_debcrd : ($acc_balance >= 0) ) {
 			$dsstot += $acc_balance;
 			$rep->add({ _style => 'd2',
 				    acct   => $acc_id,
@@ -179,11 +180,12 @@ sub perform {
 			  if $detail >= 2;
 		    }
 		    else {
-			$csstot -= $acc_balance;
+			$acc_balance = -$acc_balance unless $acc_dcfixed;
+			$csstot += $acc_balance;
 			$rep->add({ _style => 'd2',
 				    acct   => $acc_id,
 				    desc   => $acc_desc,
-				    crd    => numfmt(-$acc_balance),
+				    crd    => numfmt($acc_balance),
 				  })
 			  if $detail >= 2;
 		    }
@@ -215,16 +217,17 @@ sub perform {
 
     }
     else {			# Op Grootboek
-	$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_debcrd, acc_balance, acc_ibalance".
+	$sth = $dbh->sql_exec("SELECT acc_id, acc_desc, acc_debcrd, acc_dcfixed, acc_balance, acc_ibalance".
 			      " FROM ${table}".
 			      " WHERE".($balans ? "" : " NOT")." acc_balres".
 			      "  AND acc_balance <> 0".
 			      " ORDER BY acc_id");
 
 	while ( $rr = $sth->fetchrow_arrayref ) {
-	    my ($acc_id, $acc_desc, $acc_debcrd, $acc_balance, $acc_ibalance) = @$rr;
+	    my ($acc_id, $acc_desc, $acc_debcrd, $acc_dcfixed, $acc_balance, $acc_ibalance) = @$rr;
 	    $acc_balance -= $acc_ibalance unless $opts->{balans};
-	    if ( $acc_balance >= 0 ) {
+	    $acc_balance = -$acc_balance if $acc_dcfixed && !$acc_debcrd;
+	    if ( $acc_dcfixed ? $acc_debcrd : ($acc_balance >= 0) ) {
 		$dtot += $acc_balance;
 		$rep->add({ _style => 'd',
 			    acct   => $acc_id,
@@ -233,11 +236,12 @@ sub perform {
 			  });
 	    }
 	    else {
-		$ctot -= $acc_balance;
+		$acc_balance = -$acc_balance unless $acc_dcfixed;
+		$ctot += $acc_balance;
 		$rep->add({ _style => 'd',
 			    acct   => $acc_id,
 			    desc   => $acc_desc,
-			    crd    => numfmt(-$acc_balance),
+			    crd    => numfmt($acc_balance),
 			  });
 	    }
 	}
