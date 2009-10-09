@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: GenBase.pm,v 1.5 2008/03/25 22:36:27 jv Exp $
+# $Id: GenBase.pm,v 1.6 2009/10/09 15:43:07 jv Exp $
 
 package main;
 
@@ -56,13 +56,19 @@ sub new {
 
 # end wxGlade
 
-	my $cc = Wx::NewId();
-	$self->SetAcceleratorTable
-	  ( Wx::AcceleratorTable->new
-	    ( [ wxACCEL_ALT,  'Z', $cc ] ) );
-
 	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
-	Wx::Event::EVT_MENU($self, $cc, \&OnClose);
+
+=begin notneeded
+
+	# Accelerators do not work with Dialog windows.
+	# Attach one to the inner w_report window.
+	$self->{w_report}->SetAcceleratorTable
+	  ( Wx::AcceleratorTable->new
+	    ( [ wxACCEL_ALT, WXK_F4, wxID_CLOSE ] ) );
+	Wx::Event::EVT_MENU($self->{w_report}, wxID_CLOSE, \&OnClose);
+
+=cut
+
 	$self->{_PRINTER} =  Wx::HtmlEasyPrinting->new('Print');
 
 	return $self;
@@ -236,6 +242,11 @@ sub OnLess {
 # wxGlade: EB::Wx::Report::GenBase::OnClose <event_handler>
 sub OnClose {
     my ($self, $event) = @_;
+
+    # OnClose can be triggered from the inner window.
+    while ( ! $self->can("sizepos_save") ) {
+	$self = $self->GetParent;
+    }
 
     $self->sizepos_save;
     $self->Show(0);
