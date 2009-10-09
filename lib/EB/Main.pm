@@ -1,11 +1,11 @@
 #! perl
 
-# RCS Id          : $Id: Main.pm,v 1.4 2009/05/13 20:38:13 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.5 2009/10/09 15:32:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed May 13 21:57:01 2009
-# Update Count    : 907
+# Last Modified On: Tue Oct  6 16:35:11 2009
+# Update Count    : 908
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Main;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)/g;
 
 use EekBoek;
 
@@ -299,20 +299,27 @@ Gebruik: {prog} [options] [file ...]
     --command  -c       voer de rest van de opdrachtregel uit als command
     --echo  -e          toon ingelezen opdrachten
     --boekjaar=XXX	specificeer boekjaar
-    --createdb		maak nieuwe database aan
-    --createsampledb	maak nieuwe demo database aan
-    --schema=XXX        initialisser database met schema
     --import            importeer een nieuwe administratie
     --export            exporteer een administratie
     --dir=XXX           directory voor im/export
     --file=XXX          bestand voor im/export
-    --init		creëer nieuwe administratie
-    --define=XXX -D     definieer configuratiesetting
-    --[no]interactive   forceer [non]interactieve modus
-    --errexit           stop direct na een fout in de invoer
+    --init		(re)creëer administratie
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
+
+Voor beginners:
+
+    --createsampleconfig   maak nieuwe demo config aan
+    --createsampledb	   maak nieuwe demo database aan
+
+Voor experts:
+
+    --createdb		maak nieuwe database aan
+    --schema=XXX        initialiseer database met schema
+    --define=XXX -D     definieer configuratiesetting
+    --[no]interactive   forceer [non]interactieve modus
+    --errexit           stop direct na een fout in de invoer
 EndOfUsage
     exit $exit if defined $exit && $exit != 0;
 }
