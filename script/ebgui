@@ -1,337 +1,64 @@
-#!/usr/bin/perl -w
-my $RCS_Id = '$Id: ebgui,v 1.4 2005/09/16 20:31:42 jv Exp $ ';
-
-# Author          : Johan Vromans
-# Created On      : Sun Jul 31 23:35:10 2005
-# Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 16 22:24:23 2005
-# Update Count    : 91
-# Status          : Unknown, Use with caution!
-
-################ Common stuff ################
+#! perl
 
 use strict;
+# use lib qw(EekBoekLibrary);
 
-# Package or program libraries, if appropriate.
-# $LIBDIR = $ENV{'LIBDIR'} || '/usr/local/lib/sample';
-# use lib qw($LIBDIR);
-# require 'common.pl';
+use EB::Wx::Main;
+run();
 
-# Package name.
-my $my_package = 'EekBoek';
-# Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
-# Tack '*' if it is not checked in into RCS.
-$my_version .= '*' if length('$Locker:  $ ') > 12;
+=head1 NAME
 
-################ Command line parameters ################
+EekBoek - Bookkeeping software for small and medium-size businesses
 
-use Getopt::Long 2.13;
+=head1 SYNOPSIS
 
-# Command line options.
-my $dataset;
-our $trace = 1;
-our $verbose = 1;
-my $precmd;
+  perl -MEB::Wx::Main -e run --
 
-# Development options (not shown with -help).
-my $debug = 0;			# debugging
-my $test = 0;			# test mode.
+If properly installed:
 
-# Save options array (for restart).
-my @opts = @ARGV;
+  ebgui
 
-# Process command line options.
-app_options();
+EekBoek is a bookkeeping package for small and medium-size businesses.
+Unlike other accounting software, EekBoek has both a command-line
+interface (CLI) and a graphical user-interface (GUI). Furthermore, it
+has a complete Perl API to create your own custom applications.
 
-# Post-processing.
-$trace |= ($debug || $test);
+EekBoek is designed for the Dutch/European market and currently
+available in Dutch only. An English translation is in the works (help
+appreciated).
 
-################ Presets ################
+=head1 DESCRIPTION
 
-my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
+For a description how to use the program, see L<http://www.eekboek.nl/docs/index.html>.
 
-################ The Process ################
+=head1 BUGS AND PROBLEMS
 
-use EB;
+Please use the eekboek-users mailing list at SourceForge.
 
-our $config;
+=head1 AUTHOR AND CREDITS
 
-use Wx 0.15 qw[:allclasses];
-use strict;
+Johan Vromans (jvromans@squirrel.nl) wrote this package.
 
-our $dbh;
-our $app;
-our $appname = $my_package;
-my $appclass = lc($appname);
+Web site: L<http://www.eekboek.nl>.
 
-our $restart = 0;
+=head1 COPYRIGHT AND DISCLAIMER
 
-package MainApp;
+This program is Copyright 2005-2008 by Squirrel Consultancy. All
+rights reserved.
 
-use base qw(Wx::App);
-use strict;
+This program is free software; you can redistribute it and/or modify
+it under the terms of either: a) the GNU General Public License as
+published by the Free Software Foundation; either version 1, or (at
+your option) any later version, or b) the "Artistic License" which
+comes with Perl.
 
-use MainFrame;
-use AccPanel;
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See either the
+GNU General Public License or the Artistic License for more details.
 
-sub min { $_[0] < $_[1] ? $_[0] : $_[1] }
-sub max { $_[0] > $_[1] ? $_[0] : $_[1] }
+=cut
 
-sub OnInit {
-    my( $self ) = shift;
+1;
 
-    Wx::InitAllImageHandlers();
-
-    my $frame = MainFrame->new
-      (undef, undef, $appname,
-       [ max($config->mainw->{xpos}, 0),
-	 max($config->mainw->{ypos}, 0) ],
-       [ max($config->mainw->{xwidth}, 50),
-	 max($config->mainw->{ywidth}, 50) ],
-       undef,
-       $appname);
-
-    $frame->SetTitle("EekBoek: $ENV{EB_DB_NAME}")
-      if $ENV{EB_DB_NAME};
-
-    $self->SetTopWindow($frame);
-    $::app->{TOP} = $frame;
-
-    $frame->Show(1);
-    $frame->SetSize([ max($config->mainw->{xwidth}, 50),
-		      max($config->mainw->{ywidth}, 50) ]);
-
-    ::showtips($config->showtips);
-    ::set_status("Administratie: $ENV{EB_DB_NAME}")
-      if $ENV{EB_DB_NAME};
-
-    $frame->command($precmd) if $precmd;
-
-    return 1;
-}
-
-sub OnExit {
-    main::exit();
-}
-
-# end of class MainApp
-
-package main;
-
-sub set_status {
-    my ($text, $ix) = @_;
-    return unless $app && $app->{TOP} && $app->{TOP}->{mainframe_statusbar};
-    $app->{TOP}->{mainframe_statusbar}->SetStatusText($text, $ix||0);
-}
-
-sub exit {
-    store_state();
-    if ( $restart ) {		# for development
-	warn("=== restarting ===\n");
-	exec($^X, $0, @opts);
-    }
-}
-
-sub showtips {
-    if ( shift ) {
-	my $t = Wx::CreateFileTipProvider("/etc/passwd", $config->lasttip);
-	$config->showtips(Wx::ShowTip($app->{TOP}, $t, $config->showtips) || 0);
-	$config->lasttip($t->GetCurrentTip);
-    }
-}
-
-################ Configuration / State ################
-
-sub init_state {
-    use AppConfig qw(:argcount);
-    $config = AppConfig->new();
-
-    # Predefine config variables.
-    $config->define("showtips", { DEFAULT => 1, ARGCOUNT => ARGCOUNT_ONE });
-    $config->define("lasttip",  { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-    $config->define("lastdb",   { DEFAULT => 0, ARGCOUNT => ARGCOUNT_ONE });
-
-    # MainFrame.
-    $config->define("mainw",    { ARGCOUNT => ARGCOUNT_HASH });
-    $config->mainw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Open...
-    $config->define("openw",    { ARGCOUNT => ARGCOUNT_HASH });
-    $config->openw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # New...
-    $config->define("neww",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->neww->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # ListDialog.
-    $config->define("lsdw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->lsdw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Maint -- AccPanel
-    $config->define("accw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->define("accsash",  { DEFAULT => 400, ARGCOUNT => ARGCOUNT_ONE });
-    $config->define("accexp",   { ARGCOUNT => ARGCOUNT_HASH });
-    $config->accw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Maint -- RelPanel
-    $config->define("relw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->relw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Maint -- BtwPanel
-    $config->define("btww",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->btww->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Maint -- MStdAccPanel
-    $config->define("stdw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->stdw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Report -- RepPrf
-    $config->define("rprfw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->rprfw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Report -- RepBalRes
-    $config->define("rbalw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->rbalw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Report -- RepBalRes
-    $config->define("rresw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->rresw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Report -- RepGbk
-    $config->define("rgbkw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->rgbkw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Report -- RepJnl
-    $config->define("rjnlw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->rjnlw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Report -- RepBtw
-    $config->define("rbtww",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->rbtww->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Report -- RepDebCrd
-    $config->define("rdebw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->rdebw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Report -- RepDebCrd
-    $config->define("rcrdw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->rcrdw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Bookings -- IV
-    $config->define("ivw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->ivw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Bookings -- BKM
-    $config->define("bkmw",     { ARGCOUNT => ARGCOUNT_HASH });
-    $config->bkmw->{$_} = -1 foreach qw(xpos ypos xwidth ywidth);
-
-    # Load config (actually, state) file.
-    my $f = $ENV{HOME} . "/.$appclass/$my_name";
-    $config->file($f) if -f $f;
-}
-
-sub store_state {
-    my $f = $ENV{HOME} . "/.$appclass/$my_name";
-    mkdir($ENV{HOME} . "/.$appclass") unless -d $ENV{HOME} . "/.$appclass";
-    open (my $cfg, ">$f");
-
-    my %vars = $config->{STATE}->varlist(".");
-    #my %vars = %{$config->{STATE}->{VARIABLE}};  # voids warranty
-
-    my $p = sub { $_[0] eq "" ? '"<empty>"' : $_[0] };
-
-    while ( my ($var, $value) = each(%vars) ) {
-	unless ( ref($value) ) {
-	    print $cfg ("$var = ", $p->($value), "\n");
-	}
-	elsif ( ref($value) eq 'ARRAY' ) {
-	    foreach my $v ( @$value ) {
-		print $cfg ("$var = $v\n");
-	    }
-	}
-	elsif ( ref($value) eq 'HASH' ) {
-	    while ( my($k,$v) = each(%$value) ) {
-		print $cfg ("$var = $k=$v\n");
-	    }
-	}
-    }
-
-    close($cfg);
-}
-
-
-################ Subroutines ################
-
-sub app_options {
-    my $help = 0;		# handled locally
-    my $ident = 0;		# handled locally
-
-    # Process options, if any.
-    # Make sure defaults are set before returning!
-    return unless @ARGV > 0;
-
-    if ( !GetOptions(
-		     'dataset|db=s' => \$dataset,
-		     'open=s'	=> \$precmd,
-		     'ident'	=> \$ident,
-		     'verbose'	=> \$verbose,
-		     'trace!'	=> \$trace,
-		     'help|?'	=> \$help,
-		     'debug'	=> \$debug,
-		    ) or $help )
-    {
-	app_usage(2);
-    }
-    app_ident() if $ident;
-}
-
-sub app_ident {
-    print STDERR ("This is $my_package [$my_name $my_version]\n");
-}
-
-sub app_usage {
-    my ($exit) = @_;
-    app_ident();
-    print STDERR <<EndOfUsage;
-Usage: $0 [options] [file ...]
-    -help		this message
-    -ident		show identification
-    -verbose		verbose information
-EndOfUsage
-    CORE::exit $exit if defined $exit && $exit != 0;
-}
-
-################ ################
-
-unless(caller){
-
-    # This is for my temporary convenience. I always forget to set up
-    # the right environment variable...
-    use POSIX qw(locale_h);
-    setlocale(LC_ALL, "nl_NL");
-
-#    use Wx::Locale;
-#    my $local = Wx::Locale->new("English");
-#    $local->AddCatalog("wxstd");
-#    $local->Init();
-
-    use EB::DB;
-
-    init_state();
-
-    $dataset ||= $config->lastdb || $ENV{EB_DB_NAME};
-    if ( $dataset ) {
-	$ENV{EB_DB_NAME} = $dataset;
-	$ENV{EB_DB} = "dbi:Pg:dbname=".$dataset;
-    }
-    else {
-	die(_T("?Geen dataset. Specificeer een database met --dataset of zet de environment variabele EB_DB_NAME\n"));
-    }
-    $::dbh = EB::DB->new(trace => $ENV{EB_SQL_TRACE});
-    $config->set(lastdb => $dataset);
-
-    my $acc = MainApp->new();
-    $dbh->dbh->{HandleError} = sub { Wx::LogMessage(shift); return 0 };
-    $acc->MainLoop();
-}
+# $Id: ebgui,v 1.5 2009/10/09 08:57:12 jv Exp $
