@@ -1,10 +1,10 @@
 # MiniAdm.pm -- 
-# RCS Info        : $Id: MiniAdm.pm,v 1.2 2009/10/12 17:26:57 jv Exp $
+# RCS Info        : $Id: MiniAdm.pm,v 1.3 2009/10/12 17:44:27 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 12 19:23:45 2009
-# Update Count    : 82
+# Last Modified On: Mon Oct 12 19:41:08 2009
+# Update Count    : 86
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -65,7 +65,7 @@ sub sanitize {
     $opts->{adm_boekjaarcode} ||= 1900 + (localtime(time))[5];
 
     for ( qw(naam boekjaarcode) ) {
-	s/"/_/g;
+	$opts->{ "adm_$_" } =~ s/"/_/g;
     }
 
     $opts->{db_naam}          ||= "demoadm";
@@ -75,6 +75,7 @@ sub sanitize {
 }
 
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+use Encode;
 
 sub generate_file {
     my ( $self, $file, $type, $opts, $writer ) = @_;
@@ -108,6 +109,7 @@ sub generate_file {
 	}
 
 	$data =~ s/\r//g;
+	$data = decode_utf8($data);
 	$data = [ split(/\n/, $data) ];
 	$writer = sub { print { $fd } $_, "\n" foreach @$data };
 	$type = undef;
@@ -116,8 +118,8 @@ sub generate_file {
     open( $fd, '>', $file )
       or die( "?".__x("Probleem met het aanmaken van {file}: {err}",
 		      file => $file, err => "$!")."\n" );
+    binmode( $fd, ':encoding(utf-8)');
     if ( $type ) {
-	binmode( $fd, ':encoding(utf-8)');
 	print { $fd } ("# EekBoek $type\n",
 		       "# Content-Type: text/plain; charset = UTF-8\n\n");
     }
