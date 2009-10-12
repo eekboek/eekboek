@@ -372,8 +372,6 @@ sub OnWizardFinished {
 
     $opts{template} = @ebz[ $self->{ch_template}->GetSelection ];
 
-    use Data::Dumper;
-    warn Dumper(\%opts);
     eval {
 
 	EB::Tools::MiniAdm->sanitize(\%opts);
