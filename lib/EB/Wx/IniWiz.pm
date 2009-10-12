@@ -148,7 +148,7 @@ sub __set_properties {
 	$self->{cb_btw}->SetToolTipString(_T("BTW toepassen"));
 	$self->{cb_btw}->SetValue(1);
 	$self->{ch_btw_period}->SetToolTipString(_T("De aangifteperiode voor de omzetbelasting"));
-	$self->{ch_btw_period}->SetSelection(2);
+	$self->{ch_btw_period}->SetSelection(1);
 	$self->{wiz_p03}->Show(0);
 	$self->{t_db_name}->SetToolTipString(_T("De naam van de aan te maken database, b.v. \"admin2009\"."));
 	$self->{ch_db_driver}->SetToolTipString(_T("Het databasesysteem waar de database wordt opgeslagen"));
@@ -327,8 +327,21 @@ sub OnWizardFinished {
 					    cfg => $c));
 	    if ( $self->{"cb_cr_$c"}->IsChecked ) {
 		if ( $c eq "database" ) {
+
 		    # Using EB::Main->run crashes ...
-		    my $ret = system("ebshell --init");
+		    # Need to run ebshell externally.
+
+		    my $script = $0;
+		    my @cmd;
+
+		    # Try to run the shell that comes with this kit.
+		    if ( $script =~ s;(.*[/\\])ebgui;${1}ebshell; ) {
+			push( @cmd, $^X, $script, "--init" );
+		    }
+		    else {
+			push( @cmd, "ebshell", "--init");
+		    }
+		    my $ret = system(@cmd);
 		    $self->{t_main}->AppendText(_T( $ret ? "Mislukt" : "Gereed")."\n");
 		}
 		else {
