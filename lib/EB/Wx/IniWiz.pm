@@ -6,6 +6,7 @@ package main;
 
 our $app; BEGIN { $app = {} };
 our $runeb;
+our @ebz;
 
 our @configs = qw( .eekboek.conf schema.dat
 		   mutaties.eb relaties.eb opening.eb );
@@ -17,6 +18,8 @@ use EekBoek;
 use EB::Config $EekBoek::PACKAGE;
 use EB::Tools::MiniAdm;
 use EB::Wx::Main;
+
+use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 package EB::Wx::IniWiz;
 
@@ -48,8 +51,8 @@ sub new {
 	$self->{wiz_p01} = Wx::WizardPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{wiz_p00} = Wx::WizardPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{sizer_5_staticbox} = Wx::StaticBox->new($self->{wiz_p01}, -1, _T("Administratie") );
-	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{wiz_p02}, -1, _T("Dagboeken") );
-	$self->{sizer_8_staticbox} = Wx::StaticBox->new($self->{wiz_p03}, -1, _T("BTW") );
+	$self->{sizer_8_staticbox} = Wx::StaticBox->new($self->{wiz_p02}, -1, _T("BTW") );
+	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{wiz_p03}, -1, _T("Dagboeken") );
 	$self->{sizer_4_staticbox} = Wx::StaticBox->new($self->{wiz_p04}, -1, _T("Database") );
 	$self->{sizer_2_staticbox} = Wx::StaticBox->new($self->{wiz_p05}, -1, _T("Bevestiging") );
 	$self->{sizer_12_staticbox} = Wx::StaticBox->new($self->{wiz_p00}, -1, _T("Welkom bij EekBoek") );
@@ -62,13 +65,15 @@ sub new {
 	$self->{label_4} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Begindatum"), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_6} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("01-01-"), wxDefaultPosition, wxDefaultSize, );
 	$self->{sp_adm_begin} = Wx::SpinCtrl->new($self->{wiz_p01}, -1, "", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_AUTO_URL, 0, 100, );
-	$self->{cb_debiteuren} = Wx::CheckBox->new($self->{wiz_p02}, -1, _T("Verkoop"), wxDefaultPosition, wxDefaultSize, );
-	$self->{cb_crediteuren} = Wx::CheckBox->new($self->{wiz_p02}, -1, _T("Inkoop"), wxDefaultPosition, wxDefaultSize, );
-	$self->{cb_kas} = Wx::CheckBox->new($self->{wiz_p02}, -1, _T("Kas"), wxDefaultPosition, wxDefaultSize, );
-	$self->{cb_bank} = Wx::CheckBox->new($self->{wiz_p02}, -1, _T("Bank"), wxDefaultPosition, wxDefaultSize, );
-	$self->{cb_btw} = Wx::CheckBox->new($self->{wiz_p03}, -1, _T("BTW toepassen op deze administratie"), wxDefaultPosition, wxDefaultSize, );
-	$self->{l_btw_period} = Wx::StaticText->new($self->{wiz_p03}, -1, _T("Aangifteperiode"), wxDefaultPosition, wxDefaultSize, );
-	$self->{ch_btw_period} = Wx::Choice->new($self->{wiz_p03}, -1, wxDefaultPosition, wxDefaultSize, [_T("Maand"), _T("Kwartaal"), _T("Jaar")], );
+	$self->{label_9} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Sjabloon"), wxDefaultPosition, wxDefaultSize, );
+	$self->{ch_template} = Wx::Choice->new($self->{wiz_p01}, -1, wxDefaultPosition, wxDefaultSize, [_T("Lege administratie")], );
+	$self->{cb_btw} = Wx::CheckBox->new($self->{wiz_p02}, -1, _T("BTW toepassen op deze administratie"), wxDefaultPosition, wxDefaultSize, );
+	$self->{l_btw_period} = Wx::StaticText->new($self->{wiz_p02}, -1, _T("Aangifteperiode"), wxDefaultPosition, wxDefaultSize, );
+	$self->{ch_btw_period} = Wx::Choice->new($self->{wiz_p02}, -1, wxDefaultPosition, wxDefaultSize, [_T("Maand"), _T("Kwartaal"), _T("Jaar")], );
+	$self->{cb_debiteuren} = Wx::CheckBox->new($self->{wiz_p03}, -1, _T("Verkoop"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cb_crediteuren} = Wx::CheckBox->new($self->{wiz_p03}, -1, _T("Inkoop"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cb_kas} = Wx::CheckBox->new($self->{wiz_p03}, -1, _T("Kas"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cb_bank} = Wx::CheckBox->new($self->{wiz_p03}, -1, _T("Bank"), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_1} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database naam"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_db_name} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{label_2} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database type"), wxDefaultPosition, wxDefaultSize, );
@@ -80,13 +85,12 @@ sub new {
 	$self->{cb_cr_opening} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Openingsgegevens"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_mutaties} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Mutaties (boekingen)"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_database} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Database"), wxDefaultPosition, wxDefaultSize, );
-	$self->{label_8} = Wx::StaticText->new($self->{wiz_p05}, -1, _T("Let op! Niet geselecteerde bestanden bestaan reeds.\nAls u deze toch selecteert wordt de inhoud ervan overschreven!"), wxDefaultPosition, wxDefaultSize, );
+	$self->{label_8} = Wx::StaticText->new($self->{wiz_p05}, -1, _T("Let op! Eventuele bestaande bestanden worden overschreven!"), wxDefaultPosition, wxDefaultSize, );
 
 	$self->__set_properties();
 	$self->__do_layout();
 
 	Wx::Event::EVT_BUTTON($self, $self->{b_ok}->GetId, \&OnOk);
-	Wx::Event::EVT_CHECKBOX($self, $self->{cb_btw}->GetId, \&OnToggleBTW);
 
 # end wxGlade
 
@@ -100,18 +104,37 @@ sub new {
 	    $prev = $page;
 	}
 
-	Wx::Event::EVT_WIZARD_PAGE_CHANGING($self, $self->{wiz}->GetId, \&OnWizardPageChanging );
+	@ebz = glob( EB_LIB . "EB/schema/*.ebz" );
+
+	#### WHAT THE ***** IS GOING ON HERE????
+	*Fcntl::O_NOINHERIT = sub() { 0 };
+	*Fcntl::O_EXLOCK = sub() { 0 };
+	*Fcntl::O_TEMPORARY = sub() { 0 };
+
+	foreach my $ebz ( @ebz ) {
+	    require Archive::Zip;
+	    my $zip = Archive::Zip->new();
+	    next unless $zip->read($ebz) == ::AZ_OK;
+	    my $desc = $zip->zipfileComment;
+	    $desc = $1 if $desc =~ /export van (.*) aangemaakt door eekboek/i;
+	    $desc ||= $1 if $ebz =~ m/([\w-.]+)\.ebz$/i;
+	    $self->{ch_template}->Append($desc);
+	}
+	unshift (@ebz, undef );	# skeleton
+
 	Wx::Event::EVT_WIZARD_FINISHED($self, $self->{wiz}->GetId, \&OnWizardFinished );
 	Wx::Event::EVT_WIZARD_CANCEL($self, $self->{wiz}->GetId, \&OnWizardCancel );
+	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_btw}->GetId, \&OnToggleBTW );
+	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_schema}->GetId, \&OnToggleCreate );
+	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_opening}->GetId, \&OnToggleCreate );
+	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_relaties}->GetId, \&OnToggleCreate );
+	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_mutaties}->GetId, \&OnToggleCreate );
+	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_template}->GetId, \&OnSelectTemplate );
 
 	$self->{wiz}->SetPageSize([600,-1]);
-
 	$self->SetSize([450,300]);
 
-#	$self->{p_info}->refresh;
-
-	return $self;		# just for fun
-
+	return $self;
 }
 
 sub runwiz {
@@ -135,7 +158,13 @@ sub __set_properties {
 	$self->{wiz_p00}->Show(0);
 	$self->{t_adm_name}->SetToolTipString(_T("Een omschrijving van deze administratie, bijvoorbeeld \"Boekhouding 2009\"."));
 	$self->{sp_adm_begin}->SetToolTipString(_T("De begindatum. Het boekjaar begint op 1 januari van dit jaar."));
+	$self->{ch_template}->SetSelection(0);
 	$self->{wiz_p01}->Show(0);
+	$self->{cb_btw}->SetToolTipString(_T("BTW toepassen"));
+	$self->{cb_btw}->SetValue(1);
+	$self->{ch_btw_period}->SetToolTipString(_T("De aangifteperiode voor de omzetbelasting"));
+	$self->{ch_btw_period}->SetSelection(1);
+	$self->{wiz_p02}->Show(0);
 	$self->{cb_debiteuren}->SetToolTipString(_T("Verkoop- en Debiteurenadministratie"));
 	$self->{cb_debiteuren}->SetValue(1);
 	$self->{cb_crediteuren}->SetToolTipString(_T("Inkoop- en Crediteurenadministratie"));
@@ -144,11 +173,6 @@ sub __set_properties {
 	$self->{cb_kas}->SetValue(1);
 	$self->{cb_bank}->SetToolTipString(_T("Er wordt gebruik gemaakt van een bankrekening"));
 	$self->{cb_bank}->SetValue(1);
-	$self->{wiz_p02}->Show(0);
-	$self->{cb_btw}->SetToolTipString(_T("BTW toepassen"));
-	$self->{cb_btw}->SetValue(1);
-	$self->{ch_btw_period}->SetToolTipString(_T("De aangifteperiode voor de omzetbelasting"));
-	$self->{ch_btw_period}->SetSelection(1);
 	$self->{wiz_p03}->Show(0);
 	$self->{t_db_name}->SetToolTipString(_T("De naam van de aan te maken database, b.v. \"admin2009\"."));
 	$self->{ch_db_driver}->SetToolTipString(_T("Het databasesysteem waar de database wordt opgeslagen"));
@@ -188,17 +212,17 @@ sub __do_layout {
 	$self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_2}= Wx::StaticBoxSizer->new($self->{sizer_2_staticbox}, wxVERTICAL);
 	$self->{grid_sizer_5} = Wx::FlexGridSizer->new(6, 1, 5, 5);
-	$self->{sz_p04} = Wx::BoxSizer->new(wxHORIZONTAL);
+	$self->{sizer_16} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_4}= Wx::StaticBoxSizer->new($self->{sizer_4_staticbox}, wxVERTICAL);
 	$self->{grid_sizer_1} = Wx::FlexGridSizer->new(2, 2, 5, 5);
-	$self->{sz_p03} = Wx::BoxSizer->new(wxHORIZONTAL);
+	$self->{sizer_15} = Wx::BoxSizer->new(wxHORIZONTAL);
+	$self->{sizer_6}= Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
+	$self->{grid_sizer_3} = Wx::FlexGridSizer->new(4, 1, 5, 5);
+	$self->{sizer_14} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_8}= Wx::StaticBoxSizer->new($self->{sizer_8_staticbox}, wxHORIZONTAL);
 	$self->{grid_sizer_4} = Wx::FlexGridSizer->new(2, 1, 5, 5);
 	$self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sz_p02} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sizer_6}= Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
-	$self->{grid_sizer_3} = Wx::FlexGridSizer->new(4, 1, 5, 5);
-	$self->{sz_p01} = Wx::BoxSizer->new(wxHORIZONTAL);
+	$self->{sizer_13} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_5}= Wx::StaticBoxSizer->new($self->{sizer_5_staticbox}, wxHORIZONTAL);
 	$self->{grid_sizer_2} = Wx::FlexGridSizer->new(3, 2, 5, 5);
 	$self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
@@ -222,27 +246,29 @@ sub __do_layout {
 	$self->{sizer_3}->Add($self->{label_6}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add($self->{sp_adm_begin}, 0, wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->Add($self->{sizer_3}, 1, wxEXPAND, 0);
+	$self->{grid_sizer_2}->Add($self->{label_9}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_sizer_2}->Add($self->{ch_template}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->AddGrowableCol(1);
 	$self->{sizer_5}->Add($self->{grid_sizer_2}, 1, wxALL|wxEXPAND, 5);
-	$self->{sz_p01}->Add($self->{sizer_5}, 1, wxEXPAND, 0);
-	$self->{wiz_p01}->SetSizer($self->{sz_p01});
+	$self->{sizer_13}->Add($self->{sizer_5}, 1, wxEXPAND, 0);
+	$self->{wiz_p01}->SetSizer($self->{sizer_13});
 	$self->{sz_main}->Add($self->{wiz_p01}, 0, wxEXPAND, 0);
-	$self->{grid_sizer_3}->Add($self->{cb_debiteuren}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{grid_sizer_3}->Add($self->{cb_crediteuren}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{grid_sizer_3}->Add($self->{cb_kas}, 0, wxADJUST_MINSIZE, 0);
-	$self->{grid_sizer_3}->Add($self->{cb_bank}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sizer_6}->Add($self->{grid_sizer_3}, 1, wxALL|wxEXPAND, 5);
-	$self->{sz_p02}->Add($self->{sizer_6}, 1, wxEXPAND, 0);
-	$self->{wiz_p02}->SetSizer($self->{sz_p02});
-	$self->{sz_main}->Add($self->{wiz_p02}, 0, wxEXPAND, 0);
 	$self->{grid_sizer_4}->Add($self->{cb_btw}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_7}->Add($self->{l_btw_period}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sizer_7}->Add($self->{ch_btw_period}, 0, wxLEFT|wxEXPAND|wxADJUST_MINSIZE, 5);
 	$self->{grid_sizer_4}->Add($self->{sizer_7}, 1, wxEXPAND, 0);
 	$self->{grid_sizer_4}->AddGrowableCol(0);
 	$self->{sizer_8}->Add($self->{grid_sizer_4}, 1, wxALL|wxEXPAND, 5);
-	$self->{sz_p03}->Add($self->{sizer_8}, 1, wxEXPAND, 0);
-	$self->{wiz_p03}->SetSizer($self->{sz_p03});
+	$self->{sizer_14}->Add($self->{sizer_8}, 1, wxEXPAND, 0);
+	$self->{wiz_p02}->SetSizer($self->{sizer_14});
+	$self->{sz_main}->Add($self->{wiz_p02}, 0, wxEXPAND, 0);
+	$self->{grid_sizer_3}->Add($self->{cb_debiteuren}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_sizer_3}->Add($self->{cb_crediteuren}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_sizer_3}->Add($self->{cb_kas}, 0, wxADJUST_MINSIZE, 0);
+	$self->{grid_sizer_3}->Add($self->{cb_bank}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sizer_6}->Add($self->{grid_sizer_3}, 1, wxALL|wxEXPAND, 5);
+	$self->{sizer_15}->Add($self->{sizer_6}, 1, wxEXPAND, 0);
+	$self->{wiz_p03}->SetSizer($self->{sizer_15});
 	$self->{sz_main}->Add($self->{wiz_p03}, 0, wxEXPAND, 0);
 	$self->{grid_sizer_1}->Add($self->{label_1}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_1}->Add($self->{t_db_name}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
@@ -250,8 +276,8 @@ sub __do_layout {
 	$self->{grid_sizer_1}->Add($self->{ch_db_driver}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_1}->AddGrowableCol(1);
 	$self->{sizer_4}->Add($self->{grid_sizer_1}, 1, wxALL|wxEXPAND, 5);
-	$self->{sz_p04}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
-	$self->{wiz_p04}->SetSizer($self->{sz_p04});
+	$self->{sizer_16}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
+	$self->{wiz_p04}->SetSizer($self->{sizer_16});
 	$self->{sz_main}->Add($self->{wiz_p04}, 0, wxEXPAND, 0);
 	$self->{sizer_2}->Add($self->{label_5}, 0, wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 	$self->{grid_sizer_5}->Add($self->{cb_cr_config}, 0, wxADJUST_MINSIZE, 0);
@@ -277,6 +303,8 @@ sub OnToggleBTW {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OnToggleBTW <event_handler>
 
+    $self = $self->GetParent;
+
     my $x = $self->{cb_btw}->IsChecked ? 1 : 0;
     $self->{ch_btw_period}->Enable($x);
     $self->{l_btw_period}->Enable($x);
@@ -284,13 +312,37 @@ sub OnToggleBTW {
 # end wxGlade
 }
 
-sub OnWizardPageChanging {
+sub OnSelectTemplate {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OnSelectTemplate <event_handler>
+
+    $self = $self->GetParent;
+
+    my $x = $self->{ch_template}->GetSelection;
+    if ( $x ) {
+	$self->{cb_btw}->SetValue(1);
+	$self->{cb_btw}->Enable(0);
+	$self->{ch_btw_period}->Enable(1);
+	$self->{l_btw_period}->Enable(1);
+	Wx::WizardPageSimple::Chain( $self->{wiz_p02}, $self->{wiz_p04} );
+    }
+    else {
+	$self->{cb_btw}->Enable(1);
+	Wx::WizardPageSimple::Chain( $self->{wiz_p02}, $self->{wiz_p03} );
+    }
+
+# end wxGlade
+}
+
+sub OnToggleCreate {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OnToggleBTW <event_handler>
 
-    my $x = $self->{cb_btw}->IsChecked ? 1 : 0;
-    $self->{ch_btw_period}->Enable($x);
-    $self->{l_btw_period}->Enable($x);
+    $self = $self->GetParent;
+
+    my $x = $event->GetEventObject->IsChecked ? 1 : 0;
+    $self->{ "cb_cr_$_" }->SetValue($x)
+      foreach qw(schema relaties opening mutaties);
 
 # end wxGlade
 }
@@ -318,6 +370,10 @@ sub OnWizardFinished {
     $opts{adm_btwperiode} = qw(maand kwartaal jaar)[$self->{ch_btw_period}->GetSelection]
 	if $opts{has_btw};
 
+    $opts{template} = @ebz[ $self->{ch_template}->GetSelection ];
+
+    use Data::Dumper;
+    warn Dumper(\%opts);
     eval {
 
 	EB::Tools::MiniAdm->sanitize(\%opts);
@@ -408,28 +464,6 @@ sub new {
 						      wxBITMAP_TYPE_ANY
 						     ));
     Wx::WizardPageSimple->new( $self->{wiz} );
-}
-
-package EB::Wx::ConfigWizard::Page::HtmlWindow;
-
-use strict;
-use Wx::Html;
-use base qw(Wx::HtmlWindow);
-
-sub refresh {
-    my ($self) = @_;
-
-    my $info = <<EOD;
-<p>Dit programma kan u helpen bij het initiëel opzetten van een eenvoudige administratie.</p>
-EOD
-    $self->SetPage($info);
-}
-
-sub OnLinkClicked {
-    my ($self, $link ) = @_;
-
-    Wx::LaunchDefaultBrowser($link->GetHref);
-
 }
 
 package EB::Wx::IniWiz;

@@ -1,10 +1,10 @@
 # MiniAdm.pm -- 
-# RCS Info        : $Id: MiniAdm.pm,v 1.1 2009/10/09 15:35:22 jv Exp $
+# RCS Info        : $Id: MiniAdm.pm,v 1.2 2009/10/12 17:26:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 11:39:47 2009
-# Update Count    : 45
+# Last Modified On: Mon Oct 12 19:23:45 2009
+# Update Count    : 82
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -64,15 +64,56 @@ sub sanitize {
     $opts->{adm_begindatum}   ||= 1900 + (localtime(time))[5];
     $opts->{adm_boekjaarcode} ||= 1900 + (localtime(time))[5];
 
+    for ( qw(naam boekjaarcode) ) {
+	s/"/_/g;
+    }
+
     $opts->{db_naam}          ||= "demoadm";
     $opts->{db_driver}        ||= "sqlite";
 
     1;
 }
 
+use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+
 sub generate_file {
-    my ( $self, $file, $type, $code ) = @_;
-    open( my $fd, '>', $file )
+    my ( $self, $file, $type, $opts, $writer ) = @_;
+
+    if ( ! $opts->{_zip} && $opts->{template} ) {
+	$opts->{_zip} = Archive::Zip->new();
+	die( "?".__x("Probleem met het benaderen van {file}: {err}",
+		     file => $opts->{template}, err => "$!")."\n" )
+	  unless $opts->{_zip}->read( $opts->{template} ) == AZ_OK;
+    }
+
+    my $m;
+    if ( $opts->{_zip} ) {
+	$m = $opts->{_zip}->memberNamed($file);
+    }
+
+    my $fd;
+    if ( $opts->{_zip} && $m ) {
+	my $data = $opts->{_zip}->contents($m);
+	die( "?".__x("Probleem met het aanmaken van {file}: Zip error",
+		     file => $file)."\n" ) unless $data;
+
+	#### TODO: Make more generic.
+	if ( $file eq "opening.eb" ) {
+	    for ( $data ) {
+		s/^(\s*adm_naam\s+).*$        /$1"$opts->{adm_naam}"        /mgx;
+		s/^(\s*adm_btwperiode\s+).*$  /$1"$opts->{adm_btwperiode}"  /mgx;
+		s/^(\s*adm_begindatum\s+).*$  /$1"$opts->{adm_begindatum}"  /mgx;
+		s/^(\s*adm_boekjaarcode\s+).*$/$1"$opts->{adm_boekjaarcode}"/mgx;
+	    }
+	}
+
+	$data =~ s/\r//g;
+	$data = [ split(/\n/, $data) ];
+	$writer = sub { print { $fd } $_, "\n" foreach @$data };
+	$type = undef;
+    }
+
+    open( $fd, '>', $file )
       or die( "?".__x("Probleem met het aanmaken van {file}: {err}",
 		      file => $file, err => "$!")."\n" );
     if ( $type ) {
@@ -80,7 +121,11 @@ sub generate_file {
 	print { $fd } ("# EekBoek $type\n",
 		       "# Content-Type: text/plain; charset = UTF-8\n\n");
     }
-    $code->( $self, $fd ) if $code;
+
+    if ( $writer ) {
+	$writer->( $self, $fd );
+    }
+
     close( $fd )
       or die( "?".__x("Probleem met het afsluiten van {file}: {err}",
 		      file => $file, err => "$!")."\n" );
@@ -92,12 +137,12 @@ sub generate_config {
     return if exists $opts->{create_config} && !$opts->{create_config};
 
     $self->generate_file
-      ( ".eekboek.conf", undef,
+      ( ".eekboek.conf", undef, $opts,
 	sub {
 	    my ( $self, $fd ) = @_;
 	    print { $fd }
 	      ( "[database]\n",
-		"name = ", $opts->{db_naam}, "\n",
+		"name =   ", $opts->{db_naam},   "\n",
 		"driver = ", $opts->{db_driver}, "\n",
 	      );
 	  }
@@ -116,7 +161,7 @@ sub generate_schema {
     # has_bank
 
     $self->generate_file
-      ( "schema.dat", _T("Rekeningschema"),
+      ( "schema.dat", _T("Rekeningschema"), $opts,
 	sub {
 	    my ( $self, $fd ) = @_;
 	    print { $fd } ( <<'EOD' );
@@ -422,7 +467,7 @@ sub generate_relaties {
 
     return if exists $opts->{create_relaties} && !$opts->{create_relaties};
 
-    $self->generate_file( "relaties.eb", _T("Relaties") );
+    $self->generate_file( "relaties.eb", _T("Relaties"), $opts );
 }
 
 sub generate_opening {
@@ -431,7 +476,7 @@ sub generate_opening {
     return if exists $opts->{create_opening} && !$opts->{create_opening};
 
     $self->generate_file
-      ( "opening.eb", _T("Opening"),
+      ( "opening.eb", _T("Opening"), $opts,
 	sub {
 	    my ( $self, $fd ) = @_;
 	    print { $fd }
@@ -454,7 +499,7 @@ sub generate_mutaties {
 
     return if exists $opts->{create_mutaties} && !$opts->{create_mutaties};
 
-    $self->generate_file( "mutaties.eb", _T("Mutaties") );
+    $self->generate_file( "mutaties.eb", _T("Mutaties"), $opts );
 }
 
 1;
