@@ -1,12 +1,12 @@
 #! perl
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.17 2008/07/19 16:49:20 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.18 2009/10/12 10:04:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul  2 15:28:02 2008
-# Update Count    : 111
+# Last Modified On: Mon Oct 12 12:03:28 2009
+# Update Count    : 112
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Config;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)/g;
 
 use EB::Config::IniFiles;
 use File::Spec;
@@ -74,7 +74,7 @@ sub init_config {
     my @cfgs;
     if ( !$skipconfig ) {
 	@cfgs = ( "/etc/$app/$app.conf",
-		  glob("~/.$app") . "/$app.conf" );
+		  $ENV{HOME}."/.$app/$app.conf" );
 	push(@cfgs, ".$app.conf") unless $extraconf;
     }
     push(@cfgs, $extraconf) if $extraconf;
