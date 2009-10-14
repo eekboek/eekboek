@@ -1,4 +1,6 @@
-# perl
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
 
 package main;
 
@@ -15,7 +17,7 @@ use base qw(Wx::Frame);
 use EB;
 use base qw(EB::Wx::Window);
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
 
 my %cmds;
 
@@ -69,12 +71,12 @@ sub new {
 	$wxglade_tmp_menu->Append(MENU_SHELL, _T("EekBoek Shell\tAlt-!"), _T("EekBoek Shell"));
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_REFRESH, _T("Opnieuw starten\tAlt-R"), _T("Herstart (voor testen)"));
-	$wxglade_tmp_menu->Append(wxID_EXIT, _T("Beëindigen\tAlt-x"), _T("Beëindig het programma"));
+	$wxglade_tmp_menu->Append(wxID_EXIT, _T("BeÃ«indigen\tAlt-x"), _T("BeÃ«indig het programma"));
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Bestand"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_CUT, _T("Knip"), "");
 	$wxglade_tmp_menu->Append(wxID_PASTE, _T("Plak"), "");
-	$wxglade_tmp_menu->Append(wxID_COPY, _T("Kopiëer"), "");
+	$wxglade_tmp_menu->Append(wxID_COPY, _T("KopiÃ«er"), "");
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_PREFERENCES, _T("Instellingen..."), _T("Instellingen"));
 	$self->{mainframe_menubar}->Append($wxglade_tmp_menu, _T("&Edit"));

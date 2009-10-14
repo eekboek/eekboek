@@ -1,12 +1,14 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.88 2009/10/09 15:31:25 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.89 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  9 17:18:19 2009
-# Update Count    : 222
+# Last Modified On: Wed Oct 14 23:04:23 2009
+# Update Count    : 226
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,7 +18,7 @@ our $cfg;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.88 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.89 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -48,8 +50,6 @@ BEGIN {
     # The core and GUI use a different EB::Locale module.
     if ( $app ) {
 	require EB::Wx::Locale;
-	# Force UNICODE for Wx.
-	$cfg->newval(qw(locale unicode), 1);
     }
     else {
 	require EB::Locale;
@@ -93,7 +93,6 @@ BEGIN {
 		 version => $EekBoek::VERSION);
     my @locextra;
     push(@locextra, _T("Nederlands")) if LOCALISER;
-    push(@locextra, "Latin1") unless $cfg->val(qw(locale unicode), 0);
     $imsg = __x("{ident}{extra}{locale} -- Copyright {year} Squirrel Consultancy",
 		ident   => $ident,
 		extra   => ($app ? " Wx " : ""),

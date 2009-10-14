@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sun Apr 13 17:25:07 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug  3 21:36:58 2008
-# Update Count    : 235
+# Last Modified On: Tue Oct 13 21:29:10 2009
+# Update Count    : 238
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Export::XAF;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -33,11 +33,10 @@ sub export {
     $self = bless {}, $self unless ref $self;
 
     my $xaf;
-    open($xaf, '>', $opts->{xaf})
+    open($xaf, '>:encoding(utf-8)', $opts->{xaf})
       or die("?". __x("Fout tijdens het aanmaken van exportbestand {name}: {err}",
 		      name => $opts->{xaf},
 		      msg => $!)."\n");
-    binmode($xaf, ":encoding(UTF-8)") if $cfg->val(qw(locale unicode));
     $self->{fh} = $xaf;
 
     # Default to current boekjaar.
@@ -82,9 +81,7 @@ sub auditfile_begin {
     @{$self}{qw(begin end)} = @$r;
 
     $self->print
-      ('<?xml version="1.0" encoding="',
-       $cfg->val(qw(locale unicode)) ? "UTF-8" : "ISO-8859-1",
-       '" standalone="yes"?>', "\n");
+      ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>', "\n");
 
     $self->xml_elt_open("auditfile");
       $self->xml_elt_open("header");

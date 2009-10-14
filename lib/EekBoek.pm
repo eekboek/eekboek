@@ -1,15 +1,16 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
 package EekBoek;
 
 # NOTE: This is a documentation-only module.
 
 use strict;
+use utf8;
 
 # Minimal version to prevent many Unicode bugs.
 use 5.008003;
 
-my $RCS_Id = '$Id: EekBoek.pm,v 1.75 2009/10/09 15:51:27 jv Exp $ ';
+my $RCS_Id = '$Id: EekBoek.pm,v 1.76 2009/10/14 21:14:02 jv Exp $ ';
 our $PACKAGE = 'EekBoek';
 our $VERSION = '1.05.01';
 
@@ -62,4 +63,4 @@ GNU General Public License or the Artistic License for more details.
 
 1;
 
-# $Id: EekBoek.pm,v 1.75 2009/10/09 15:51:27 jv Exp $ 
+# $Id: EekBoek.pm,v 1.76 2009/10/14 21:14:02 jv Exp $ 

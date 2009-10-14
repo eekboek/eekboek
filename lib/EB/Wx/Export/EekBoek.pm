@@ -1,6 +1,8 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# $Id: EekBoek.pm,v 1.6 2008/03/25 22:23:24 jv Exp $
+use utf8;
+
+# $Id: EekBoek.pm,v 1.7 2009/10/14 21:14:02 jv Exp $
 
 package main;
 
@@ -33,7 +35,7 @@ sub new {
 	$self->{sizer_4_staticbox} = Wx::StaticBox->new($self, -1, "Uitvoeropties" );
 	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self, -1, "" );
 	$self->{p_period} = EB::Wx::UI::PeriodPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{cb_single} = Wx::CheckBox->new($self, -1, "Eén regel per boekstuk", wxDefaultPosition, wxDefaultSize, );
+	$self->{cb_single} = Wx::CheckBox->new($self, -1, "EÃ©n regel per boekstuk", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_bsknr} = Wx::CheckBox->new($self, -1, "Expliciteer boekstuknummers", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_explicit} = Wx::CheckBox->new($self, -1, "Expliciteer BTW", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_totals} = Wx::CheckBox->new($self, -1, "Totaalbedragen opnemen", wxDefaultPosition, wxDefaultSize, );
@@ -165,7 +167,7 @@ sub DoExport {
 	Wx::LogMessage("Export: $path");
 	EB::Wx::MessageDialog
 	    ($self,
-	     "De administratie is succesvol geëxporteerd.",
+	     "De administratie is succesvol geÃ«xporteerd.",
 	     "Succes",
 	     wxICON_INFORMATION|wxOK,
 	    );

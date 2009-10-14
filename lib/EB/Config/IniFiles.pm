@@ -1,5 +1,9 @@
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
+
 package EB::Config::IniFiles;
-$EB::Config::IniFiles::VERSION = (qw($Revision: 1.1 $))[1];
+$EB::Config::IniFiles::VERSION = (qw($Revision: 1.2 $))[1];
 require 5.004;
 use strict;
 use Carp;
@@ -7,7 +11,7 @@ use Symbol 'gensym','qualify_to_ref';   # For the 'any data type' hack
 
 @EB::Config::IniFiles::errors = ( );
 
-#	$Header: /home/jv/src/Repository/eekboek-src/lib/EB/Config/IniFiles.pm,v 1.1 2009/10/09 15:33:32 jv Exp $
+#	$Header: /home/jv/src/Repository/eekboek-src/lib/EB/Config/IniFiles.pm,v 1.2 2009/10/14 21:14:02 jv Exp $
 
 =head1 NAME
 
@@ -542,18 +546,10 @@ sub ReadConfig {
     } # end if
   } # end if
 
-  # If there's a UTF BOM (Byte-Order-Mark) in the first character of the first line
-  # then remove it before processing (http://www.unicode.org/unicode/faq/utf_bom.html#22)
-  ($lines[0] =~ s/^﻿//);
-# Disabled the utf8 one for now (JW) because it doesn't work on all perl distros
-# e.g. 5.6.1 works with or w/o 'use utf8' 5.6.0 fails w/o it. 5.005_03 
-# says "invalid hex value", etc. If anyone has a clue how to make this work 
-# please let me know!
-#  ($lines[0] =~ s/^﻿//) || (eval('use utf8; $lines[0] =~ s/^\x{FEFF}//;'));
-#  $@ = ''; $! = undef;  # Clear any error messages
+  # If there's a UTF BOM (Byte-Order-Mark) in the first character of
+  # the first line then remove it before processing.
+  ($lines[0] =~ s/^\x{FEFF}//); # UNTESTED
 
-  
-  
   # The first lines of the file must be blank, comments or start with [
   my $first = '';
   my $allCmt = $self->{allowed_comment_char};
@@ -983,7 +979,7 @@ sub WriteConfig {
   
     my $new_file = $file . "-new";
     local(*F);
-    open(F, "> $new_file") || do {
+    open(F, ">:encoding(utf-8)", $new_file) || do {
       carp "Unable to write temp config file $new_file: $!";
       return undef;
     };
@@ -2129,7 +2125,7 @@ In particular, special thanks go to (in roughly chronological order):
 Bernie Cosell, Alan Young, Alex Satrapa, Mike Blazer, Wilbert van de Pieterman,
 Steve Campbell, Robert Konigsberg, Scott Dellinger, R. Bernstein,
 Daniel Winkelmann, Pires Claudio, Adrian Phillips, 
-Marek Rouchal, Luc St Louis, Adam Fischler, Kay R�pke, Matt Wilson, 
+Marek Rouchal, Luc St Louis, Adam Fischler, Kay Röpke, Matt Wilson, 
 Raviraj Murdeshwar and Slaven Rezic, Florian Pfaff
 
 Geez, that's a lot of people. And apologies to the folks who were missed.
@@ -2154,6 +2150,12 @@ modify it under the same terms as Perl itself.
 =head1 Change log
 
      $Log: IniFiles.pm,v $
+     Revision 1.2  2009/10/14 21:14:02  jv
+     Make everything UTF8 clean.
+     Eliminates locale:unicode.
+     Discontinues support for latin1 files.
+     Eliminates the need for a lot of trickery.
+
      Revision 1.1  2009/10/09 15:33:32  jv
      Own version to prevent CPAN conflicts.
 
@@ -2188,7 +2190,7 @@ modify it under the same terms as Perl itself.
      - Made file parsing portable for s390/EBCDIC, etc. (Adam Fischler)
      - Fixed import bug with Perl 5.8.0 (Marek Rouchal)
      - Fixed precedence bug in WriteConfig (Luc St Louis)
-     - Fixed broken group detection in SetGroupMember and RemoveGroupMember (Kay R�pke)
+     - Fixed broken group detection in SetGroupMember and RemoveGroupMember (Kay Röpke)
      - Added line continuation character (/) support (Marek Rouchal)
      - Added configurable comment character support (Marek Rouchal)
 

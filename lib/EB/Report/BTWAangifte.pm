@@ -1,11 +1,13 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# RCS Id          : $Id: BTWAangifte.pm,v 1.48 2008/07/21 14:56:06 jv Exp $
+use utf8;
+
+# RCS Id          : $Id: BTWAangifte.pm,v 1.49 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jul 21 16:07:15 2008
-# Update Count    : 637
+# Last Modified On: Wed Oct 14 23:09:09 2009
+# Update Count    : 641
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +22,7 @@ package EB::Report::BTWAangifte;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.48 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.49 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -403,7 +405,7 @@ sub collect {
 		    $deb_0 += $amt;
 		}
 		elsif ( $btg_id == BTWTARIEF_PRIV ) {
-		    $tr->("Privé");
+		    $tr->("PrivÃ©");
 		    $deb_p += $amt;
 		    $deb_btw_p += $btw;
 		}
@@ -774,7 +776,7 @@ sub kleine_ondernemers {
 
     # Formule lijkt linds 1995 ongwijzigd, alleen de bedragen
     # veranderen. Sinds 2002 zijn de bedragen ongewijzigd. Alle
-    # officiële documentatie spreeekt over "Als de afdracht van
+    # officiÃ«le documentatie spreeekt over "Als de afdracht van
     # omzetbelasting beneden de 1.345 per jaar blijft, ...".
 
     # Code change: beschouw de huidige bedragen als vaststaand.

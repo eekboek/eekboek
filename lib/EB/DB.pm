@@ -1,11 +1,13 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# RCS Id          : $Id: DB.pm,v 1.60 2009/10/06 08:12:23 jv Exp $
+use utf8;
+
+# RCS Id          : $Id: DB.pm,v 1.61 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 10:11:39 2009
-# Update Count    : 432
+# Last Modified On: Wed Oct 14 23:05:15 2009
+# Update Count    : 439
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,7 +21,7 @@ package EB::DB;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.60 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.61 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -50,7 +52,7 @@ sub check_db {
     warn(join(" ", sort keys %tables)."\n") if $fail;
     die("?".__x("Ongeldige EekBoek database: {db}.",
 		db => $dbh->{Name}) . " " .
-	_T("Wellicht is de database nog niet geïnitialiseerd?")."\n") if $fail;
+	_T("Wellicht is de database nog niet geÃ¯nitialiseerd?")."\n") if $fail;
 
     # Check version, and try automatic upgrade.
     my ($maj, $min, $rev)
@@ -64,7 +66,7 @@ sub check_db {
 	my @a = reverse sort glob($tmpl);
 	last unless @a == 1;
 
-	if ( $a[0] =~ /\.sql$/ && open(my $fh, "<$a[0]")) {
+	if ( $a[0] =~ /\.sql$/ && open(my $fh, "<:encoding(utf-8)", $a[0])) {
 	    warn("!"._T("De database wordt aangepast aan de nieuwere versie")."\n");
 
 	    local($/);		# slurp mode

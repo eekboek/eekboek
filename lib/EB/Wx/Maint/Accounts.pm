@@ -1,6 +1,8 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# $Id: Accounts.pm,v 1.11 2009/10/09 15:41:20 jv Exp $
+use utf8;
+
+# $Id: Accounts.pm,v 1.12 2009/10/14 21:14:01 jv Exp $
 
 package main;
 
@@ -709,7 +711,7 @@ sub OnAccept {
 	    if ( $self->{_ctrl} ) {
 		$self->{_ctrl}->SetItemText($self->{_item}, "$self->{_id}   $self->{_desc}");
 		$self->{_ctrl}->SetPlData($self->{_item},
-					  GrootboekHandler->new
+					  EB::Wx::Maint::Accounts::TreeCtrl::GrootboekHandler->new
 					  ([$self->{_id}, $self->{_desc}, 2]));
 	    }
 

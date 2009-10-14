@@ -1,12 +1,12 @@
 #! perl
 
 # Html.pm -- HTML backend for Reporters.
-# RCS Info        : $Id: Html.pm,v 1.17 2008/04/29 16:33:19 jv Exp $
+# RCS Info        : $Id: Html.pm,v 1.18 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Dec 29 15:46:47 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr 29 18:25:19 2008
-# Update Count    : 68
+# Last Modified On: Tue Oct 13 21:36:09 2009
+# Update Count    : 69
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Report::Reporter::Html;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format qw(datefmt_full);
@@ -179,7 +179,7 @@ sub __html {
 sub copy_style {
     my ($out, $css) = @_;
     my $in;
-    unless ( open($in, "<", $css) ) {
+    unless ( open($in, "<:encoding(utf-8)", $css) ) {
 	print {$out} ("/**** stylesheet $css: $! ****/\n");
 	return;
     }

@@ -1,11 +1,13 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.21 2009/10/09 15:34:54 jv Exp $
+use utf8;
+
+# RCS Id          : $Id: DeLuxe.pm,v 1.22 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Sep 20 21:35:01 2009
-# Update Count    : 260
+# Last Modified On: Wed Oct 14 17:11:11 2009
+# Update Count    : 274
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -18,7 +20,7 @@ package EB::Shell::DeLuxe;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;
@@ -51,7 +53,6 @@ sub new {
 	$self->{readline} = sub { $self->readline_file(sub { <STDIN> }) };
     }
     $self->{inputstack} = [];
-    $self->{unicode} = $cfg->unicode;
     $self->{errexit} = $opts->{errexit};
     $self;
 }
@@ -65,8 +66,6 @@ use Encode;
 
 sub readline_file {
     my ($self, $rl) = @_;
-    # binmode($fd, ":utf8") conflicts with UNICODE checking.
-    #binmode($fd, ":encoding(utf8)") if $cfg->unicode;
     my $line;
     my $pre = "";
     while ( 1 ) {
@@ -79,15 +78,13 @@ sub readline_file {
                        charset \s* = \s* (\S+) \s* $/ix ) {
 
 	    my $charset = lc($1);
-	    if ( $charset =~ /^(?:latin[19]|iso-?8859[-.]15?)$/i ) {
-		$self->{unicode} = 0;
+	    if ( $charset =~ /^(?:utf-?8)$/i ) {
 		next;
 	    }
-	    if ( $charset =~ /^(?:unicode|utf-?8)$/i ) {
-		$self->{unicode} = 1;
-		next;
-	    }
+	    die("Invoer moet Unicode (UTF-8) zijn.\n");
 	}
+
+=begin thismustbefixed
 
 	if ( $self->{unicode} xor $cfg->unicode  ) {
 	    my $s = $line;
@@ -107,20 +104,20 @@ sub readline_file {
 	    }
 	}
 
-=begin thismustbefixed
+=cut
 
 	my $s = $line;
+	my $t = "".$line;
+	warn("$s") if $s =~ /Priv/;
 	eval {
-	    $line = decode($self->{unicode} ? 'utf8' : 'latin1', $s, 1);
+	    $line = decode('utf8', $s, 1);
 	};
 	if ( $@ ) {
-	    warn("?".__x("Geen geldige {cs} tekens in regel {line} van de invoer",
-			 cs => $self->{unicode} ? "UTF-8" : "Latin1",
-			 line => $.)."\n".$line."\n");
+	    warn("?".__x("Geen geldige UTF-8 tekens in regel {line} van de invoer",
+			 line => $.)."\n".$t."\n");
 	    next;
 	}
 
-=cut
 	if ( $self->{echo} ) {
 	    my $pr = $self->{echo};
 	    $pr =~ s/\>/>>/ if $pre;
@@ -147,15 +144,13 @@ sub readline_file {
 
 sub attach_file {
     my ($self, $file) = @_;
-    push(@{$self->{inputstack}}, [$self->{readline}, $self->{unicode}]);
+    push( @{ $self->{inputstack} }, [ $self->{readline} ] );
     $self->{readline} = sub { shift->readline_file(sub { <$file> }) };
-    $self->{unicode} = $cfg->unicode;
 }
 
 sub attach_lines {
     my ($self, $lines) = @_;
-    push(@{$self->{inputstack}}, [$self->{readline}, $self->{unicode}]);
-    $self->{unicode} = $cfg->unicode;
+    push( @{ $self->{inputstack} }, [ $self->{readline} ] );
     my @lines = @$lines;
     $self->{readline} = sub {
 	shift->readline_file(sub {
@@ -183,7 +178,7 @@ sub readline {
     my $ret;
     while ( !defined($ret = $self->{readline}->($self, $prompt)) ) {
 	return unless @{$self->{inputstack}};
-	($self->{readline}, $self->{unicode}) = @{pop(@{$self->{inputstack}})};
+	( $self->{readline} ) = @{pop(@{$self->{inputstack}})};
     }
     # Command parsing gets stuck on leading blanks.
     $ret =~ s/^\s+//;

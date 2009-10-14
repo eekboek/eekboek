@@ -1,12 +1,14 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.18 2009/05/06 18:13:20 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.19 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon May  4 21:17:03 2009
-# Update Count    : 226
+# Last Modified On: Tue Oct 13 21:31:40 2009
+# Update Count    : 228
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +21,7 @@ package EB::Tools::Einde;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -54,14 +56,10 @@ sub perform {
     my $def = $opts->{definitief};
     my $eb;
     if ( $opts->{eb} ) {
-	unless ( open($eb, '>', $opts->{eb}) ) {
+	unless ( open($eb, '>:encoding(utf-8)', $opts->{eb}) ) {
 	    warn("?", __x("Fout tijdens het aanmaken van bestand {file}: {err}",
 			 file => $opts->{eb}, err => $!."")."\n");
 	    return;
-	}
-	if ( $cfg->unicode ) {
-	    require Encode;
-	    binmode($eb, ":encoding(utf8)");
 	}
 	$opts->{eb_handle} = $eb;
     }

@@ -1,6 +1,8 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# $Id: XAF.pm,v 1.1 2009/10/09 15:40:09 jv Exp $
+use utf8;
+
+# $Id: XAF.pm,v 1.2 2009/10/14 21:14:02 jv Exp $
 
 package main;
 
@@ -32,7 +34,7 @@ sub new {
 	$self->{sz_opts_staticbox} = Wx::StaticBox->new($self, -1, "Uitvoeropties" );
 	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self, -1, "" );
 	$self->{p_period} = EB::Wx::UI::PeriodPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{cb_single} = Wx::CheckBox->new($self, -1, "Eén regel per boekstuk", wxDefaultPosition, wxDefaultSize, );
+	$self->{cb_single} = Wx::CheckBox->new($self, -1, "EÃ©n regel per boekstuk", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_bsknr} = Wx::CheckBox->new($self, -1, "Expliciteer boekstuknummers", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_explicit} = Wx::CheckBox->new($self, -1, "Expliciteer BTW", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_totals} = Wx::CheckBox->new($self, -1, "Totaalbedragen opnemen", wxDefaultPosition, wxDefaultSize, );

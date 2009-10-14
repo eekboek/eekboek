@@ -1,11 +1,13 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
 
 package EB::Globals;
 
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.31 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.32 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
@@ -43,7 +45,7 @@ BEGIN {
     $i = 0;
     map { _newconst("BTWTARIEF_$_", $i++) }
       qw(NUL HOOG LAAG PRIV ANDERS);
-    _newconst("BTWTARIEVEN", "[qw(".N__("Nul Hoog Laag Privé Anders").")]");
+    _newconst("BTWTARIEVEN", "[qw(".N__("Nul Hoog Laag PrivÃ© Anders").")]");
     _newconst("BTWPERIODES", "[qw(".N__("Geen Jaar 2 3 Kwartaal 5 6 7 8 9 10 11 Maand").")]");
     _newconst("BTWPER_GEEN", 0);
     _newconst("BTWPER_JAAR", 1);

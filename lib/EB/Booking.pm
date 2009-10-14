@@ -1,12 +1,14 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
 
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.21 2008/02/25 10:51:11 jv Exp $
+# RCS Info        : $Id: Booking.pm,v 1.22 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 25 11:51:01 2008
-# Update Count    : 138
+# Last Modified On: Wed Oct 14 23:04:44 2009
+# Update Count    : 141
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +21,7 @@ package EB::Booking;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -113,7 +115,7 @@ sub begindate {
 sub in_bky {
     my ($self, $date, $begin, $end) = @_;
     if ( $date lt $begin ) {
-	warn("?".__x("De boekingsdatum {date} valt vóór aanvang van dit boekjaar",
+	warn("?".__x("De boekingsdatum {date} valt vÃ³Ã³r aanvang van dit boekjaar",
 		     date => datefmt_full($date))."\n");
 	return;
     }

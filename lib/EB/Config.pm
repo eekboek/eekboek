@@ -1,12 +1,14 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.18 2009/10/12 10:04:52 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.19 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 12 12:03:28 2009
-# Update Count    : 112
+# Last Modified On: Tue Oct 13 21:21:25 2009
+# Update Count    : 113
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,12 +21,10 @@ package EB::Config;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
 
 use EB::Config::IniFiles;
 use File::Spec;
-
-my $unicode;
 
 sub init_config {
     my ($app) = @_;
@@ -117,13 +117,6 @@ sub init_config {
 			      ($^O =~ /^(ms)?win/i ? "nl_NL.utf8" : "nl_NL"));
 
     $cfg->_plug(qw(locale       lang         EB_LANG));
-    unless ( defined($cfg->val(qw(locale unicode), undef)) ) {
-	$cfg->newval(qw(locale unicode),
-		     ($^O =~ /^(ms)?win/i)
-		     || ($cfg->val(qw(locale lang)) =~ /\.utf-?8$/i)
-		     || 0);
-    }
-    $unicode = $cfg->val(qw(locale unicode));
 
     $cfg->_plug(qw(database     name         EB_DB_NAME));
 
@@ -189,10 +182,6 @@ sub val {
     Carp::cluck("=> missing config: \"$section\" \"$parameter\"\n")
       unless defined $res || @_ > 3;
     $res;
-}
-
-sub unicode {
-    $unicode;
 }
 
 1;

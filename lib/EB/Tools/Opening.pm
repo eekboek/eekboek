@@ -1,11 +1,13 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# RCS Id          : $Id: Opening.pm,v 1.41 2008/07/19 16:49:56 jv Exp $
+use utf8;
+
+# RCS Id          : $Id: Opening.pm,v 1.42 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May  1 17:55:43 2008
-# Update Count    : 290
+# Last Modified On: Wed Oct 14 23:10:37 2009
+# Update Count    : 296
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +20,7 @@ package EB::Tools::Opening;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.41 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.42 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -166,7 +168,7 @@ sub set_relatie {
     return __x("Ongeldige datum: {date}", date => $date)."\n"
       unless $t;
     $date = $t;
-    return __x("Datum {date} valt niet vóór het boekjaar",
+    return __x("Datum {date} valt niet vÃ³Ã³r het boekjaar",
 	       date => datefmt_full($date))."\n"
       if $self->{o}->{begindatum} && $self->{o}->{begindatum} le $t;
     $bky = substr($date, 0, 4) unless defined $bky;
@@ -578,22 +580,22 @@ sub reopen {
 sub shellhelp {
     my ($self, $cmd) = @_;
     <<EOS;
-Het openen van een administratie kan slechts éénmaal gebeuren, vóór
+Het openen van een administratie kan slechts Ã©Ã©nmaal gebeuren, vÃ³Ã³r
 het invoeren van de eerste mutatie. Het openen van een nieuw boekjaar
-kan te allen tijde worden uitgevoerd, uiteraard maar één keer per
+kan te allen tijde worden uitgevoerd, uiteraard maar Ã©Ã©n keer per
 boekjaar.
 
 Het openen kan een aantal opdrachten omvatten, en wordt afgesloten met
 de opdracht "adm_open". Zolang deze laatste opdracht niet is gegeven
 blijft de administratie ongewijzigd. Alle benodigde opdrachten moeten
-dan ook in één enkele EekBoek shell sessie worden afgehandeld.
+dan ook in Ã©Ã©n enkele EekBoek shell sessie worden afgehandeld.
 
 Mogelijke opdrachten voor openen van een boekjaar:
 
   adm_btwperiode [ jaar | kwartaal | maand ]
   adm_boekjaarcode <code>
                 Een code van max 4 letters en/of cijfers waarmee het
-		boekjaar kan worden geïdentificeerd.
+		boekjaar kan worden geÃ¯dentificeerd.
 		Standaard wordt het jaartal van het boekjaar genomen.
   adm_open
 		Alle informatie die met de bovenstaande opdrachten is
@@ -608,10 +610,10 @@ Opdrachten voor het openen van een administratie:
 		met 31 december van een kalenderjaar.
   adm_boekjaarcode <code>
                 Een code van max 4 letters en/of cijfers waarmee het
-		boekjaar kan worden geïdentificeerd.
+		boekjaar kan worden geÃ¯dentificeerd.
 		Standaard wordt het jaartal van het boekjaar genomen.
 		De boekjaarcode is alleen relevant indien er meerdere
-		boekjaren in één administratie worden bijgehouden.
+		boekjaren in Ã©Ã©n administratie worden bijgehouden.
   adm_balanstotaal <bedrag>
 		Als een balanstotaal is opgegeven, moeten er ook
 		openingsbalansboekingen worden uitgevoerd met een of
@@ -652,7 +654,7 @@ Specificeert de boekjaarcode voor het nieuw te openen jaar.
 
 De boekjaarcode telt maximaal 4 letters en/of cijfers.
 Standaard wordt het jaartal van het te openen boekjaar genomen.
-De boekjaarcode is alleen belangrijk indien er meerdere boekjaren in één
+De boekjaarcode is alleen belangrijk indien er meerdere boekjaren in Ã©Ã©n
 administratie worden bijgehouden.
 
 Deze opdracht kan worden gebruikt bij het openen van een boekjaar.

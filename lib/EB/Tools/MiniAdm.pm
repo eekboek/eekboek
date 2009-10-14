@@ -1,10 +1,14 @@
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
+
 # MiniAdm.pm -- 
-# RCS Info        : $Id: MiniAdm.pm,v 1.3 2009/10/12 17:44:27 jv Exp $
+# RCS Info        : $Id: MiniAdm.pm,v 1.4 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 12 19:41:08 2009
-# Update Count    : 86
+# Last Modified On: Wed Oct 14 23:10:32 2009
+# Update Count    : 92
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -115,10 +119,9 @@ sub generate_file {
 	$type = undef;
     }
 
-    open( $fd, '>', $file )
+    open( $fd, '>:encoding(utf-8)', $file )
       or die( "?".__x("Probleem met het aanmaken van {file}: {err}",
 		      file => $file, err => "$!")."\n" );
-    binmode( $fd, ':encoding(utf-8)');
     if ( $type ) {
 	print { $fd } ("# EekBoek $type\n",
 		       "# Content-Type: text/plain; charset = UTF-8\n\n");
@@ -167,20 +170,20 @@ sub generate_schema {
 	sub {
 	    my ( $self, $fd ) = @_;
 	    print { $fd } ( <<'EOD' );
-# Dit bestand definiëert alle vaste gegevens van een administratie of
+# Dit bestand definiÃ«ert alle vaste gegevens van een administratie of
 # groep administraties: het rekeningschema (balansrekeningen en
 # resultaatrekeningen), de dagboeken en de BTW tarieven.
 #
 # Algemene syntaxregels:
 #
 # * Lege regels en regels die beginnen met een hekje # worden niet
-#   geïnterpreteerd.
+#   geÃ¯nterpreteerd.
 # * Een niet-ingesprongen tekst introduceert een nieuw onderdeel.
 # * Alle ingesprongen regels zijn gegevens voor dat onderdeel.
 
 # REKENINGSCHEMA
 #
-# Het rekeningschema is hiërarchisch opgezet volgende de beproefde
+# Het rekeningschema is hiÃ«rarchisch opgezet volgende de beproefde
 # methode Bakker. De hoofdverdichtingen lopen van 1 t/m 9, de
 # verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
 # balansrekeningen en resultaatrekeningen.
@@ -269,7 +272,7 @@ EOD
 Balansrekeningen
 
   1  Vaste Activa
-     11  Materiële vaste activa
+     11  MateriÃ«le vaste activa
 
   2  Vlottende activa
      21  Handelsvoorraden
@@ -299,8 +302,8 @@ EOD
   3  Eigen vermogen
      31  Kapitaal
          3100  C   Kapitaal de heer/mevrouw                   :koppeling=winst
-         3110  C   Privé stortingen
-         3120  D   Privé opnamen
+         3110  C   PrivÃ© stortingen
+         3120  D   PrivÃ© opnamen
 
   4  Vreemd vermogen
      41  Leveranciers kredieten
@@ -364,7 +367,7 @@ EOD
 	    }
 	    print { $fd } ( <<"EOD" );
 
-  9  Financiële baten & lasten
+  9  FinanciÃ«le baten & lasten
      91  Rente baten
 EOD
 	    if ( $opts->{has_bank} ) {
@@ -373,7 +376,7 @@ EOD
 EOD
 	    }
 	    print { $fd } ( <<"EOD" );
-     92  Rente- en overige financiële lasten
+     92  Rente- en overige financiÃ«le lasten
 EOD
 	    if ( $opts->{has_bank} ) {
 		print { $fd } ( <<"EOD" );

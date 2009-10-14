@@ -1,12 +1,12 @@
 #! perl
 
 # State.pm -- State persistency
-# RCS Info        : $Id: State.pm,v 1.1 2008/03/25 23:03:34 jv Exp $
+# RCS Info        : $Id: State.pm,v 1.2 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Feb 15 22:48:51 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Feb 16 21:46:26 2008
-# Update Count    : 7
+# Last Modified On: Tue Oct 13 21:35:37 2009
+# Update Count    : 8
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -15,7 +15,7 @@ our $state;
 
 package EB::Wx::State;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.1 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
 
 use strict;
 use warnings;
@@ -45,7 +45,7 @@ sub newval {
 sub load {
     my ($self, $file) = @_;
     my $state;
-    open(my $fh, '<', $file)
+    open(my $fh, '<:encoding(utf-8)', $file)
       or croak("Loading state: $file: $!");
     my $data = <$fh>;
     croak("Invalid state file: $file")
@@ -63,7 +63,7 @@ sub load {
 sub store {
     my ($self, $file) = @_;
     $file = $self->{file} unless defined $file;
-    open(my $fh, '>', $file)
+    open(my $fh, '>:encoding(utf-8)', $file)
       or carp("Saving state: $file: $!");
     print { $fh } ("# EekBoek Wx State 1.00 -- DO NOT EDIT / NIET WIJZIGEN!\n\n");
     local $Data::Dumper::Purity = 1;

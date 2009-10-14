@@ -1,11 +1,13 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# RCS Id          : $Id: Main.pm,v 1.5 2009/10/09 15:32:20 jv Exp $
+use utf8;
+
+# RCS Id          : $Id: Main.pm,v 1.6 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 16:35:11 2009
-# Update Count    : 908
+# Last Modified On: Wed Oct 14 23:07:13 2009
+# Update Count    : 914
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +22,7 @@ package EB::Main;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)/g;
 
 use EekBoek;
 
@@ -58,6 +60,8 @@ use base qw(Exporter);
 our @EXPORT = qw(run);
 
 sub run {
+    binmode(STDOUT, ":encoding(utf8)");
+    binmode(STDERR, ":encoding(utf8)");
 
     if ( @ARGV && ( $ARGV[0] eq '-P' || $ARGV[0] =~ /^--?printcfg$/ ) ) {
 	shift(@ARGV);
@@ -96,13 +100,13 @@ sub run {
 	my $file = findlib("schema/sample.conf");
 	die("?".__x("Geen voorbeeldgegevens: {conf}",
 		    conf => "schema/sample.conf")."\n") unless $file;
-	open(my $f, '<', $file)
+	open(my $f, '<:encoding(utf-8)', $file)
 	  or die("?".__x("Fout bij openen {file}: {err}",
 			 file => $file, err => "$!")."\n");
 	my @data = map { s/[\n\r]+\Z//; $_ } <$f>;
 	close($f);
 	$f = undef;
-	open($f, '>', $cfg)
+	open($f, '>:encoding(utf-8)', $cfg)
 	  or die("?".__x("Fout bij openen {file}: {err}",
 			 file => $cfg, err => "$!")."\n");
 	print { $f } "$_\n" foreach @data;
@@ -303,7 +307,7 @@ Gebruik: {prog} [options] [file ...]
     --export            exporteer een administratie
     --dir=XXX           directory voor im/export
     --file=XXX          bestand voor im/export
-    --init		(re)creëer administratie
+    --init		(re)creÃ«er administratie
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information

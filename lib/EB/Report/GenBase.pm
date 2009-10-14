@@ -1,11 +1,13 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
 
-# RCS Info        : $Id: GenBase.pm,v 1.28 2008/04/29 17:18:31 jv Exp $
+use utf8;
+
+# RCS Info        : $Id: GenBase.pm,v 1.29 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr 29 19:18:21 2008
-# Update Count    : 153
+# Last Modified On: Wed Oct 14 23:09:31 2009
+# Update Count    : 160
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +20,7 @@ package EB::Report::GenBase;
 use strict;
 use EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.28 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.29 $ =~ /(\d+)/g;
 
 use IO::File;
 use EB::Format;
@@ -97,10 +99,7 @@ sub backend {
     else {
 	$be->{fh} = IO::File->new_from_fd(fileno(STDOUT), "w");
     }
-    if ( $cfg->val(qw(locale unicode), 0) ) {
-	require Encode;
-	binmode($be->{fh}, ":encoding(utf8)");
-    }
+    binmode($be->{fh}, ":encoding(utf8)");
 
     # Handle pagesize.
     $be->{fh}->format_lines_per_page($be->{page} = defined($opts->{page}) ? $opts->{page} : 999999);
@@ -164,12 +163,12 @@ sub backend {
 		    now   => datefmt_full($be->{now}))."\n");
     }
     if ( $be->{per_begin} lt $opendate ) {
-	die("?".__x("Datum {per} valt v篌r het begin van de administratie {begin}",
+	die("?".__x("Datum {per} valt v贸贸r het begin van de administratie {begin}",
 		    per   => datefmt_full($be->{per_begin}),
 		    begin => datefmt_full($opendate))."\n");
     }
     if ( $be->{per_end} lt $opendate ) {
-	die("?".__x("Datum {per} valt v篌r het begin van de administratie {begin}",
+	die("?".__x("Datum {per} valt v贸贸r het begin van de administratie {begin}",
 		    per   => datefmt_full($be->{per_end}),
 		    begin => datefmt_full($opendate))."\n");
     }

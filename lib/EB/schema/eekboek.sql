@@ -1,5 +1,5 @@
--- EekBoek Database Schema
--- $Id: eekboek.sql,v 1.36 2009/10/09 15:44:51 jv Exp $
+-- EekBoek Database Schema			-*- coding: utf-8 -*-
+-- $Id: eekboek.sql,v 1.37 2009/10/14 21:14:01 jv Exp $
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -43,8 +43,8 @@ CREATE TABLE Standaardrekeningen (
     std_acc_btw_il   int references Accounts,	-- BTW inkoop laag
     std_acc_btw_vh   int references Accounts,	-- BTW verkoop hoog
     std_acc_btw_vl   int references Accounts,	-- BTW verkoop laag
-    std_acc_btw_vp   int references Accounts,	-- BTW verkoop privé
-    std_acc_btw_ip   int references Accounts,	-- BTW inkoop privé
+    std_acc_btw_vp   int references Accounts,	-- BTW verkoop privÃ©
+    std_acc_btw_ip   int references Accounts,	-- BTW inkoop privÃ©
     std_acc_btw_va   int references Accounts,	-- BTW verkoop anders
     std_acc_btw_ia   int references Accounts,	-- BTW inkoop anders
     std_acc_btw_ok   int references Accounts,	-- BTW betaald

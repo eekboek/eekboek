@@ -1,12 +1,14 @@
-#! perl
+#! perl --			-*- coding: utf-8 -*-
+
+use utf8;
 
 # Import.pm -- Import EekBoek administratie
-# RCS Info        : $Id: Import.pm,v 1.10 2008/02/20 11:10:37 jv Exp $
+# RCS Info        : $Id: Import.pm,v 1.11 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Feb 20 12:10:22 2008
-# Update Count    : 61
+# Last Modified On: Wed Oct 14 23:06:21 2009
+# Update Count    : 89
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +21,7 @@ package EB::Import;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;			# needs to be setup before we can use Schema
@@ -41,6 +43,8 @@ sub do_import {
 	-r "$dir/schema.dat"
 	  or die("?".__x("Bestand \"{file}\" ontbreekt ({err})",
 			 file => "schema.dat", err => $!)."\n");
+
+	# Do not open these with :encoding(utf-8) -- we'll do it ourselves.
 	open(my $relaties, "<", "$dir/relaties.eb")
 	  or die("?".__x("Bestand \"{file}\" ontbreekt ({err})",
 			 file => "relaties.eb", err => $!)."\n");
@@ -74,7 +78,7 @@ sub do_import {
 
     my $inp = $opts->{file};
     if ( defined $inp ) {
-	# die("?"._T("Import van bestand is nog niet geïmplementeerd")."\n");
+	# die("?"._T("Import van bestand is nog niet geÃ¯mplementeerd")."\n");
 
 	eval { require Archive::Zip }
 	  or die("?"._T("Module Archive::Zip, nodig voor import van file, is niet beschikbaar")."\n");
@@ -129,7 +133,8 @@ sub do_import {
 	die("?"._T("DE IMPORT IS NIET UITGEVOERD")."\n") if $fail;
 
 	foreach ( $d_mutaties, $d_relaties, $d_opening, $d_schema ) {
-	    $_ = [ split(/[\n\r]+/, $_) ];
+	    # Do not recode, the input loop will do that for us.
+	    $_ = [ map { "$_\n" } split(/[\n\r]+/, $_) ];
 	}
 
 	eval {
