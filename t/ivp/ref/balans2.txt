@@ -5,12 +5,12 @@ EekBoek Demo Administratie                         EekBoek, 2007-12-31
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit
 ----------------------------------------------------------------------
 1       Vaste Activa
-11       Materiële vaste activa
+11       MateriÃ«le vaste activa
 1100      Inventaris en inrichting                  1344,37
 1101      Afschrijving inv. & inr.                             1716,07
 1110      Computers                                13378,48
 1111      Afschrijving computers                              12503,60
-11       Totaal Materiële vaste activa               503,18
+11       Totaal MateriÃ«le vaste activa               503,18
 
 1       Totaal Vaste Activa                          503,18
 

@@ -5,7 +5,7 @@ EekBoek Demo Administratie                                               EekBoek
 RekNr   Verdichting/Grootboekrekening                 Debet     Credit   Saldo Db   Saldo Cr
 --------------------------------------------------------------------------------------------
 1       Vaste Activa
-11       Totaal Materiële vaste activa             14722,85   14219,67     503,18
+11       Totaal MateriÃ«le vaste activa             14722,85   14219,67     503,18
 1       Totaal Vaste Activa                        14722,85   14219,67     503,18
 
 2       Vlottende activa
