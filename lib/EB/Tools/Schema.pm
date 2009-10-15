@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Schema.pm,v 1.60 2009/10/14 21:14:02 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.61 2009/10/15 14:17:33 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:10:45 2009
-# Update Count    : 717
+# Last Modified On: Thu Oct 15 16:17:29 2009
+# Update Count    : 718
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,12 +22,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.60 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.61 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.60 2009/10/14 21:14:02 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.61 2009/10/15 14:17:33 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -401,8 +401,6 @@ sub load_schema {
 
 	next if /^\s*#/;
 	next unless /\S/;
-
-	warn($_) if /opnamen/;
 
 	# Scanner selectie.
 	if ( /^balans/i ) {
