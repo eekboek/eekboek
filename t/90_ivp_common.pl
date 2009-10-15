@@ -1,13 +1,13 @@
 #! perl
 
-# $Id: 90_ivp_common.pl,v 1.1 2009/10/15 16:27:04 jv Exp $  -*-perl-*-
+# $Id: 90_ivp_common.pl,v 1.2 2009/10/15 16:48:35 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
 
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => 43);
+  : (tests => 44);
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
@@ -44,12 +44,15 @@ for ( qw(ivp.conf opening.eb relaties.eb mutaties.eb reports.eb schema.dat ) ) {
     die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
 }
 
+mkdir("out") unless -d "out";
+ok( -w "out" && -d "out", "writable output dir" );
+
 # Cleanup old files.
-unlink(<*.sql>);
-unlink(<*.log>);
-unlink(<*.txt>);
-unlink(<*.html>);
-unlink(<*.csv>);
+unlink(<out/*.sql>);
+unlink(<out/*.log>);
+unlink(<out/*.txt>);
+unlink(<out/*.html>);
+unlink(<out/*.csv>);
 
 my @ebcmd = qw(-MEB::Main -e run -- -X -f ivp.conf --echo);
 push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
@@ -70,27 +73,27 @@ eval {
     }
 };
 
-for my $log ( "createdb.log" ) {
+for my $log ( "out/createdb.log" ) {
     ok(syscmd([@ebcmd, qw(--createdb --schema=schema -c)], undef, $log), "createdb");
     checkerr($log);
 }
 
-for my $log ( "relaties.log" ) {
+for my $log ( "out/relaties.log" ) {
     ok(syscmd(\@ebcmd, "relaties.eb", $log), "relaties");
     checkerr($log);
 }
 
-for my $log ( "opening.log" ) {
+for my $log ( "out/opening.log" ) {
     ok(syscmd(\@ebcmd, "opening.eb", $log), "openen administratie");
     checkerr($log);
 }
 
-for my $log ( "mutaties.log" ) {
+for my $log ( "out/mutaties.log" ) {
     ok(syscmd(\@ebcmd, "mutaties.eb", $log), "mutaties");
     checkerr($log);
 }
 
-for my $log ( "reports.log" ) {
+for my $log ( "out/reports.log" ) {
     ok(syscmd(\@ebcmd, "reports.eb", $log), "reports");
     checkerr($log);
 }
@@ -145,8 +148,8 @@ vfy([@ebcmd, qw(-c btwaangifte j)], "btw.html");
 # Verify: CSV generatie.
 vfy([@ebcmd, qw(-c balans --detail=2 --gen-csv)], "balans2.csv");
 
-}	# end SKIP section
-}	# end SKIP section
+}	# end SKIP db access
+}	# end SKIP have dbd driver
 
 ################ subroutines ################
 
@@ -166,6 +169,7 @@ sub vfyxx {
 sub diff {
     my ($file1, $file2) = @_;
     $file2 = "ref/$file1" unless $file2;
+    $file1 = "out/$file1";
     my ($str1, $str2);
     local($/);
     open(my $fd1, "<:encoding(utf-8)", $file1) or die("$file1: $!\n");
