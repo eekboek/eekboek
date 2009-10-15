@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.6 2009/10/14 21:14:02 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.7 2009/10/15 10:05:03 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:07:13 2009
-# Update Count    : 914
+# Last Modified On: Thu Oct 15 12:03:19 2009
+# Update Count    : 917
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,7 +22,7 @@ package EB::Main;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
 
 use EekBoek;
 
@@ -47,6 +47,7 @@ my $journal;
 my $inexport;			# in/export
 my $inex_file;			# file voor in/export
 my $inex_dir;			# directory voor in/export
+my $inex_title;			# title for export
 my $errexit = 0;		# disallow errors in batch
 my $verbose = 0;		# verbose processing
 my $bky;
@@ -150,6 +151,7 @@ sub run {
 	    @ARGV = qw(export);
 	    push(@ARGV, "--file", $inex_file) if defined $inex_file;
 	    push(@ARGV, "--dir", $inex_dir) if defined $inex_dir;
+	    push(@ARGV, "--titel", $inex_title) if defined $inex_title;
 	}
     }
 
@@ -261,6 +263,7 @@ sub app_options {
 				 arg => $_[1])."\n");
 		     },
 		     'schema=s'     => \$schema,
+		     'title|titel=s' => \$inex_title,
 		     'echo|e!'	    => \$echo,
 		     'ident'	    => \$ident,
 		     'journaal'     => \$journal,
@@ -307,6 +310,7 @@ Gebruik: {prog} [options] [file ...]
     --export            exporteer een administratie
     --dir=XXX           directory voor im/export
     --file=XXX          bestand voor im/export
+    --titel=XXX		omschrijving voor export
     --init		(re)creëer administratie
     --help		deze hulpboodschap
     --ident		toon identificatie

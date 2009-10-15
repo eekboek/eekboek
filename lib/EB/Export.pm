@@ -3,12 +3,12 @@
 use utf8;
 
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.30 2009/10/14 21:14:02 jv Exp $
+# RCS Info        : $Id: Export.pm,v 1.31 2009/10/15 10:05:03 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 17:41:49 2009
-# Update Count    : 229
+# Last Modified On: Thu Oct 15 11:35:50 2009
+# Update Count    : 233
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -21,7 +21,7 @@ package EB::Export;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.30 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.31 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -54,10 +54,13 @@ sub export {
 	  or die("?"._T("Module Archive::Zip, nodig voor export naar file, is niet beschikbaar")."\n");
 
 	my $zip = Archive::Zip->new();
-	$zip->zipfileComment(__x("Export van dataset {db} aangemaakt door {id} op {date}",
-				 id => $EB::ident,
-				 db => $cfg->val(qw(database name)),
-				 date => datefmt_full(iso8601date())));
+	my $comment = __x("Export van dataset {db} aangemaakt door {id} op {date}",
+			  id => $EB::ident,
+			  db => $cfg->val(qw(database name)),
+			  date => datefmt_full(iso8601date()));
+	$comment .= "\n".__x("Omschrijving: {desc}", desc => $opts->{desc})
+	  if $opts->{desc};
+	$zip->zipfileComment($comment);
 	my $m;
 
 	# For the schema, we need a temp file.

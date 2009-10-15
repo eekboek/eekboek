@@ -2,7 +2,7 @@
 
 use utf8;
 
-# $Id: EekBoek.pm,v 1.7 2009/10/14 21:14:02 jv Exp $
+# $Id: EekBoek.pm,v 1.8 2009/10/15 10:05:03 jv Exp $
 
 package main;
 
@@ -35,6 +35,8 @@ sub new {
 	$self->{sizer_4_staticbox} = Wx::StaticBox->new($self, -1, "Uitvoeropties" );
 	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self, -1, "" );
 	$self->{p_period} = EB::Wx::UI::PeriodPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{label_1} = Wx::StaticText->new($self, -1, "Omschrijving", wxDefaultPosition, wxDefaultSize, );
+	$self->{t_desc} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_single} = Wx::CheckBox->new($self, -1, "Eén regel per boekstuk", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_bsknr} = Wx::CheckBox->new($self, -1, "Expliciteer boekstuknummers", wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_explicit} = Wx::CheckBox->new($self, -1, "Expliciteer BTW", wxDefaultPosition, wxDefaultSize, );
@@ -80,14 +82,18 @@ sub __do_layout {
 	$self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_4}= Wx::StaticBoxSizer->new($self->{sizer_4_staticbox}, wxHORIZONTAL);
 	$self->{sizer_5} = Wx::BoxSizer->new(wxVERTICAL);
+	$self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_6}= Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
 	$self->{sizer_6}->Add($self->{p_period}, 1, wxEXPAND, 0);
 	$self->{sizer_2}->Add($self->{sizer_6}, 0, wxLEFT|wxRIGHT|wxEXPAND, 5);
+	$self->{sizer_7}->Add($self->{label_1}, 0, wxRIGHT|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
+	$self->{sizer_7}->Add($self->{t_desc}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sizer_5}->Add($self->{sizer_7}, 1, wxEXPAND, 0);
 	$self->{sizer_5}->Add($self->{cb_single}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_5}->Add($self->{cb_bsknr}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_5}->Add($self->{cb_explicit}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_5}->Add($self->{cb_totals}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sizer_4}->Add($self->{sizer_5}, 0, wxTOP|wxEXPAND, 2);
+	$self->{sizer_4}->Add($self->{sizer_5}, 1, wxTOP|wxEXPAND, 2);
 	$self->{sizer_2}->Add($self->{sizer_4}, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
 	$self->{sizer_2}->Add(2, 2, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add(2, 2, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
@@ -147,6 +153,7 @@ sub DoExport {
     }
 
 #    $opts->{boekjaar} = ;
+    $opts->{desc} = $self->{t_desc}->GetValue;
     $opts->{single} = $self->{cb_single}->GetValue;
     $opts->{bsknr} = $self->{cb_bsknr}->GetValue;
     $opts->{explicit} = $self->{cb_explicit}->GetValue;

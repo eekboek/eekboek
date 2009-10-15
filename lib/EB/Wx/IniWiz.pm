@@ -116,8 +116,15 @@ sub new {
 	    my $zip = Archive::Zip->new();
 	    next unless $zip->read($ebz) == ::AZ_OK;
 	    my $desc = $zip->zipfileComment;
-	    $desc = $1 if $desc =~ /export van (.*) aangemaakt door eekboek/i;
-	    $desc ||= $1 if $ebz =~ m/([\w-.]+)\.ebz$/i;
+	    if ( $desc =~ /omschrijving:\s+(.*)/i ) {
+		$desc = $1;
+	    }
+	    elsif ( $desc =~ /export van (.*) aangemaakt door eekboek/i ) {
+		$desc = $1;
+	    }
+	    else {
+		$desc = $1 if $ebz =~ m/([^\\\/]+)\.ebz$/i;
+	    }
 	    $self->{ch_template}->Append($desc);
 	}
 	unshift (@ebz, undef );	# skeleton

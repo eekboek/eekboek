@@ -12,7 +12,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.111 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.112 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -970,6 +970,7 @@ sub do_export {
 	       [ 'dir=s',
 		 'file|output=s',
 		 'boekjaar=s',
+		 'titel=s',
 		 'xaf=s',
 		 'single',
 		 'explicit',
@@ -1007,8 +1008,9 @@ sub do_export {
     else {
 	if ( $opts->{boekjaar} ) {
 	    warn("?"._T("Optie --boekjaar wordt niet ondersteund door deze export")."\n");
-	return;
+	    return;
 	}
+	$opts->{desc} = delete $opts->{titel};
 	require EB::Export;
 	EB::Export->export($opts);
     }
