@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.19 2009/10/14 21:14:02 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.20 2009/10/16 18:24:16 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 13 21:21:25 2009
-# Update Count    : 113
+# Last Modified On: Fri Oct 16 20:23:40 2009
+# Update Count    : 134
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -20,10 +20,11 @@ package EB::Config;
 
 use strict;
 use warnings;
+use Carp;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)/g;
 
-use EB::Config::IniFiles;
+#use EB::Config::IniFiles;
 use File::Spec;
 
 sub init_config {
@@ -83,18 +84,11 @@ sub init_config {
     my $cfg;
     for my $file ( @cfgs ) {
 	next unless -s $file;
-	#warn("Config: $file\n");
-	my @args = ( -file => $file, -nocase => 1 );
-	push(@args, -allowcode => 0) if $EB::Config::IniFiles::VERSION >= 2.39;
-	push(@args, -import => $cfg) if $cfg;
-	$cfg = EB::Config::IniFiles::Wrapper->new(@args);
-	unless ( $cfg ) {
-	    # Too early for localisation.
-	    die(join("\n", @Config::IniFiles::errors)."\n");
-	}
+	$cfg = EB::Config::Data->new($file);
+
     }
     # Make sure we have an object, even if no config files.
-    $cfg ||= EB::Config::IniFiles::Wrapper->new;
+    $cfg ||= EB::Config::Data->new;
 
     $i = 0;
     while ( $i < @ARGV ) {
@@ -155,10 +149,38 @@ sub import {
     $cfg = init_config($app);
 }
 
-package EB::Config::IniFiles::Wrapper;
+package EB::Config::Data;
 
-use base qw(EB::Config::IniFiles);
-use constant ATTR_PREF => __PACKAGE__."::"."pref";
+# Very simple inifile handler (read-only).
+
+sub _key {
+    my ($section, $parameter) = @_;
+    $section.'::'.$parameter;
+}
+
+sub val {
+    my ($self, $section, $parameter, $default) = @_;
+    my $res;
+    $res = $self->{_data_}->{ _key($section, $parameter) };
+     defined $res ? $res : "<undef>", "\n");
+    $res = $default unless defined $res;
+    Carp::cluck("=> missing config: \"" . _key($section, $parameter) . "\"\n")
+      unless defined $res || @_ > 3;
+    $res;
+}
+
+sub newval {
+    my ($self, $section, $parameter, $value) = @_;
+    $self->{_data_}->{ _key($section, $parameter) } = $value;
+}
+
+sub setval {
+    my ($self, $section, $parameter, $value) = @_;
+    my $key = _key( $section, $parameter );
+    Carp::cluck("=> missing config: \"$key\"\n")
+      unless exists $self->{_data_}->{ $key };
+    $self->{_data_}->{ $key } = $value;
+}
 
 sub _plug {
     my ($self, $section, $parameter, $env) = @_;
@@ -166,22 +188,37 @@ sub _plug {
       if $ENV{$env} && !$self->val($section, $parameter, undef);
 }
 
-sub prefer {
-    my ($self, $pref) = @_;
-    $self->{ATTR_PREF} = $pref;
-}
+sub new {
+    my ($package, $file) = @_;
+    my $self = bless {}, $package;
+    $self->{_data_} = {};
 
-sub val {
-    my ($self, $section, $parameter, $default) = @_;
-    my $res;
-    if ( my $pref = $self->{ATTR_PREF} ) {
-	$res = $self->SUPER::val("$pref $section", $parameter);
+    return $self unless $file;
+
+    open( my $fd, "<:encoding(utf-8)", $file )
+      or Carp::croak("Error opening config $file: $!\n");
+
+    my $section = "global";
+    my $fail;
+    while ( <$fd> ) {
+	chomp;
+	next unless /\S/;
+	next if /^[#;]/;
+	if ( /^\s*\[\s*(.*?)\s*\]\s*$/ ) {
+	    $section = lc $1;
+	    next;
+	}
+	if ( /^\s*(.*?)\s*=\s*(.*?)\s*$/ ) {
+	    $self->{_data_}->{ _key($section, lc($1)) } = $2;
+	    next;
+	}
+	Carp::cluck("Error in config $file, line $.:\n$_\n");
+	$fail++;
     }
-    $res = $self->SUPER::val($section, $parameter, $default)
-      unless defined $res;
-    Carp::cluck("=> missing config: \"$section\" \"$parameter\"\n")
-      unless defined $res || @_ > 3;
-    $res;
+    Carp::croak("Error processing config $file, aborted\n")
+	if $fail;
+
+    $self;
 }
 
 1;
