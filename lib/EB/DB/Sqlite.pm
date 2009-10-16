@@ -1,12 +1,12 @@
 #! perl
 
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.9 2009/10/14 21:14:02 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.10 2009/10/16 18:22:19 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 22:16:25 2009
-# Update Count    : 154
+# Last Modified On: Fri Oct 16 12:30:30 2009
+# Update Count    : 157
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,10 +18,11 @@ package EB::DB::Sqlite;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
+use File::Spec;
 
 my $CONCURRENT;
 sub CONCURRENT() {
@@ -41,6 +42,8 @@ sub type { "SQLite" }
 sub _dbname {
     my ($dbname) = @_;
 
+    $dbname = File::Spec->catfile( $cfg->val(qw(database path)), $dbname )
+      if $cfg->val(qw(database path), undef);
     $dbname =~ s;(^|.*[/\\])(ebsqlite_|eekboek_)?([^/\\]+)$;${1}ebsqlite_$3;;
 
     return $dbname;
