@@ -117,7 +117,6 @@ lib/EB/CPAN/File/HomeDir/MacOS9.pm
 lib/EB/CPAN/File/HomeDir/Unix.pm
 lib/EB/CPAN/File/HomeDir/Windows.pm
 lib/EB/Config.pm
-lib/EB/Config/IniFiles.pm
 lib/EB/DB.pm
 lib/EB/DB/Postgres.pm
 lib/EB/DB/Sqlite.pm
@@ -252,9 +251,9 @@ script/ebshell
 script/ebgui
 t/10_basic.t
 t/20_dates.t
-t/80_postgresql.t
-t/81_sqlite.t
-t/90_ivp.t
+t/80_db_postgresql.t
+t/81_db_sqlite.t
+t/90_ivp_postgres.t
 t/91_ivp_sqlite.t
 t/ivp/ivp.conf
 t/ivp/ref/balans.html
