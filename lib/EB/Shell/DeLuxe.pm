@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.22 2009/10/14 21:14:02 jv Exp $
+# RCS Id          : $Id: DeLuxe.pm,v 1.23 2009/10/17 09:49:26 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 17:11:11 2009
-# Update Count    : 274
+# Last Modified On: Sat Oct 17 11:49:14 2009
+# Update Count    : 275
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Shell::DeLuxe;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.23 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;
@@ -108,7 +108,6 @@ sub readline_file {
 
 	my $s = $line;
 	my $t = "".$line;
-	warn("$s") if $s =~ /Priv/;
 	eval {
 	    $line = decode('utf8', $s, 1);
 	};
