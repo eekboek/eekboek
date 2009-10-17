@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Main.pm,v 1.8 2009/10/09 15:38:37 jv Exp $ ';
+my $RCS_Id = '$Id: Main.pm,v 1.9 2009/10/17 22:01:16 jv Exp $ ';
 
 package main;
 
@@ -13,8 +13,8 @@ package EB::Wx::Main;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  9 17:38:28 2009
-# Update Count    : 319
+# Last Modified On: Sat Oct 17 23:57:57 2009
+# Update Count    : 320
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -91,7 +91,6 @@ sub Wx::wxTHICK_FRAME() { 0 }
 use POSIX qw(locale_h);
 use Wx::Locale;
 use EB::DB;
-use lib EB::findlib("CPAN");
 use File::Basename ();
 use File::Spec ();
 use File::HomeDir ();
