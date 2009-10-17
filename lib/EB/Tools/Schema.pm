@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Schema.pm,v 1.61 2009/10/15 14:17:33 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.62 2009/10/17 22:03:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 15 16:17:29 2009
-# Update Count    : 718
+# Last Modified On: Sat Oct 17 11:39:41 2009
+# Update Count    : 719
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,12 +22,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.61 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.62 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.61 2009/10/15 14:17:33 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.62 2009/10/17 22:03:20 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -197,7 +197,7 @@ sub scan_btw {
 	    warn("!"._T("Gelieve BTW tariefgroep \"Geen\" te vervangen door \"Nul\"")."\n")
 	      if lc($1) eq "geen";
 	}
-	elsif ( $extra =~ m/^tariefgroep=priv(e|ë)?$/i ) {
+	elsif ( $extra =~ m/^tariefgroep=priv(e|é)?$/i ) {
 	    $groep = BTWTARIEF_PRIV;
 	}
 	elsif ( $extra =~ m/^tariefgroep=anders??$/i ) {
