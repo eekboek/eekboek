@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.20 2009/10/16 18:24:16 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.21 2009/10/17 09:38:04 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct 16 20:23:40 2009
-# Update Count    : 134
+# Last Modified On: Sat Oct 17 11:38:00 2009
+# Update Count    : 135
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -22,7 +22,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
 
 #use EB::Config::IniFiles;
 use File::Spec;
@@ -162,7 +162,6 @@ sub val {
     my ($self, $section, $parameter, $default) = @_;
     my $res;
     $res = $self->{_data_}->{ _key($section, $parameter) };
-     defined $res ? $res : "<undef>", "\n");
     $res = $default unless defined $res;
     Carp::cluck("=> missing config: \"" . _key($section, $parameter) . "\"\n")
       unless defined $res || @_ > 3;
