@@ -12,7 +12,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.112 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.113 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -1101,7 +1101,9 @@ sub do_include {
 	       ], $opts);
     return unless argcnt(scalar(@args), 1);
     my $file = shift(@args);
-    if ( open(my $fd, '<:encoding(utf-8)', $file) ) {
+
+    # Note: no :encoding, this is handled by the input loop.
+    if ( open(my $fd, '<', $file) ) {
 	$self->attach_file($fd);
     }
     elsif ( !$opts->{optional} ) {
