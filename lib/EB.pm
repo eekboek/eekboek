@@ -3,12 +3,12 @@
 use utf8;
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.89 2009/10/14 21:14:02 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.90 2009/10/17 22:00:47 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:04:23 2009
-# Update Count    : 226
+# Last Modified On: Sun Oct 18 00:00:15 2009
+# Update Count    : 230
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ our $cfg;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.89 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.90 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -81,8 +81,20 @@ our $ident;
 our $imsg;
 our $url = "http://www.eekboek.nl";
 
+sub findlib {
+    my ($file) = @_;
+    foreach ( @INC ) {
+	return "$_/EB/$file" if -e "$_/EB/$file";
+    }
+    undef;
+}
+
 BEGIN {
     return if $ident;		# already done
+
+    unshift( @INC, $_ )
+      foreach ( grep { defined } findlib("CPAN") );
+
     my $incompatibleOS = 0;
 
     my $year = 2005;
@@ -126,14 +138,6 @@ BEGIN {
     @day_names =
       split(" ", _T("Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag"));
     die("?"._T("FATALE FOUT: Ongeschikt besturingssysteem")."\n") if $incompatibleOS;
-}
-
-sub findlib {
-    my ($file) = @_;
-    foreach ( @INC ) {
-	return "$_/EB/$file" if -e "$_/EB/$file";
-    }
-    undef;
 }
 
 1;
