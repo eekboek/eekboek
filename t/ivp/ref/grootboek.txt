@@ -144,7 +144,7 @@ EekBoek Demo Administratie                                                      
          BTW ADSL                      2007-10-11       3,64       0,00  Inkoop:15
          BTW ADSL                      2007-11-07       3,64       0,00  Inkoop:16
          BTW ADSL + Telefoon           2007-11-17      17,51       0,00  Inkoop:17
-         BTW ADSL                      2007-12-06       3,64       0,00  Inkoop:18
+         BTW ÁDSL                      2007-12-06       3,64       0,00  Inkoop:18
          BTW ADSL                      2007-12-07       3,64       0,00  Inkoop:20
         Totaal mutaties                               148,13
  4220  Totaal BTW Inkoop Hoog                         148,13
@@ -188,7 +188,7 @@ EekBoek Demo Administratie                                                      
          ADSL                          2007-09-06      19,16       0,00  Inkoop:13
          ADSL                          2007-10-11      19,16       0,00  Inkoop:15
          ADSL                          2007-11-07      19,16       0,00  Inkoop:16
-         ADSL                          2007-12-06      19,16       0,00  Inkoop:18
+         ÁDSL                          2007-12-06      19,16       0,00  Inkoop:18
          ADSL                          2007-12-07      19,16       0,00  Inkoop:20
         Totaal mutaties                               269,42
  6905  Totaal Internetkosten                          269,42

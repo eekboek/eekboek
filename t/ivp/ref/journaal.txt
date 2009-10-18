@@ -188,8 +188,8 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2007-11-30    Postbank                       2320                135,17    Afschrift 11
 
 2007-12-06  Inkoop:18                                                    Internet                        XS4ALL
-2007-12-06    BTW Inkoop Hoog                4220       3,64               BTW ADSL
-2007-12-06    Internetkosten                 6905      19,16               ADSL
+2007-12-06    BTW Inkoop Hoog                4220       3,64               BTW ÁDSL
+2007-12-06    Internetkosten                 6905      19,16               ÁDSL
 2007-12-06    Crediteuren                    4100                 22,80    Internet
 
 2007-12-07  Inkoop:20                                                    Internet                        XS4ALL
