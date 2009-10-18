@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.21 2009/10/17 09:38:04 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.22 2009/10/18 20:40:10 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 17 11:38:00 2009
-# Update Count    : 135
+# Last Modified On: Sun Oct 18 20:26:54 2009
+# Update Count    : 175
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -22,13 +22,15 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)/g;
 
-#use EB::Config::IniFiles;
 use File::Spec;
 
 sub init_config {
     my ($app) = @_;
+
+    Carp::croak("Internal error -- missing package arg for __PACKAGE__\n")
+	unless $app;
 
     $app = lc($app);
 
@@ -81,14 +83,12 @@ sub init_config {
     push(@cfgs, $extraconf) if $extraconf;
 
     # Load configs.
-    my $cfg;
+    my $cfg = EB::Config::Data->new($app);
     for my $file ( @cfgs ) {
 	next unless -s $file;
-	$cfg = EB::Config::Data->new($file);
-
+	$cfg->load($file);
     }
     # Make sure we have an object, even if no config files.
-    $cfg ||= EB::Config::Data->new;
 
     $i = 0;
     while ( $i < @ARGV ) {
@@ -136,16 +136,19 @@ sub init_config {
 
     if ( $cfg->val(__PACKAGE__, "showfiles", 0) ) {
 	warn("Config files:\n  ",
-	     $cfg->{imported}
-	     ? join("\n  ", @{$cfg->{imported}}, $cfg->{cf})
-	     : $cfg->{cf}, "\n");
+	     join( "\n  ", $cfg->files ),  "\n");
     }
 
+    if ( $cfg->val(__PACKAGE__, "dumpcfg", 0) ) {
+	use Data::Dumper;
+	warn(Dumper($cfg));
+    }
     return $cfg;
 }
 
 sub import {
     my ($self, $app) = @_;
+    return if $cfg && $app && $cfg->{app} eq lc($app);
     $cfg = init_config($app);
 }
 
@@ -161,7 +164,7 @@ sub _key {
 sub val {
     my ($self, $section, $parameter, $default) = @_;
     my $res;
-    $res = $self->{_data_}->{ _key($section, $parameter) };
+    $res = $self->{data}->{ _key($section, $parameter) };
     $res = $default unless defined $res;
     Carp::cluck("=> missing config: \"" . _key($section, $parameter) . "\"\n")
       unless defined $res || @_ > 3;
@@ -170,15 +173,15 @@ sub val {
 
 sub newval {
     my ($self, $section, $parameter, $value) = @_;
-    $self->{_data_}->{ _key($section, $parameter) } = $value;
+    $self->{data}->{ _key($section, $parameter) } = $value;
 }
 
 sub setval {
     my ($self, $section, $parameter, $value) = @_;
     my $key = _key( $section, $parameter );
     Carp::cluck("=> missing config: \"$key\"\n")
-      unless exists $self->{_data_}->{ $key };
-    $self->{_data_}->{ $key } = $value;
+      unless exists $self->{data}->{ $key };
+    $self->{data}->{ $key } = $value;
 }
 
 sub _plug {
@@ -187,15 +190,37 @@ sub _plug {
       if $ENV{$env} && !$self->val($section, $parameter, undef);
 }
 
-sub new {
-    my ($package, $file) = @_;
-    my $self = bless {}, $package;
-    $self->{_data_} = {};
+sub files {
+    my ($self) = @_;
+    return $self->{files}->[-1] unless wantarray;
+    return @{ $self->{files} };
+}
 
-    return $self unless $file;
+sub app {
+    my ($self) = @_;
+    $self->{app};
+}
+
+sub new {
+    my ($package, $app, $file) = @_;
+    my $self = bless {}, $package;
+    $self->{files} = [ '<empty>' ];
+    $self->{data} = {};
+    $self->{app} = $app;
+    $self->load($file) if defined $file;
+    return $self;
+}
+
+sub load {
+    my ($self, $file) = @_;
 
     open( my $fd, "<:encoding(utf-8)", $file )
       or Carp::croak("Error opening config $file: $!\n");
+
+    if ( $self->{files}->[0] eq '<empty>' ) {
+	$self->{files} = [];
+    }
+    push( @{ $self->{files} }, $file );
 
     my $section = "global";
     my $fail;
@@ -208,7 +233,7 @@ sub new {
 	    next;
 	}
 	if ( /^\s*(.*?)\s*=\s*(.*?)\s*$/ ) {
-	    $self->{_data_}->{ _key($section, lc($1)) } = $2;
+	    $self->{data}->{ _key($section, lc($1)) } = $2;
 	    next;
 	}
 	Carp::cluck("Error in config $file, line $.:\n$_\n");
