@@ -122,7 +122,6 @@ lib/EB/DB/Postgres.pm
 lib/EB/DB/Sqlite.pm
 lib/EB/Export.pm
 lib/EB/Export/XAF.pm
-lib/EB/Expression.pm
 lib/EB/Format.pm
 lib/EB/Globals.pm
 lib/EB/Import.pm
@@ -251,10 +250,13 @@ script/ebshell
 script/ebgui
 t/10_basic.t
 t/20_dates.t
+t/30_amounts.t
+t/31_expr.t
 t/80_db_postgresql.t
 t/81_db_sqlite.t
-t/90_ivp_postgres.t
+t/90_ivp_common.pl
 t/91_ivp_sqlite.t
+t/92_ivp_postgres.t
 t/ivp/ivp.conf
 t/ivp/ref/balans.html
 t/ivp/ref/balans.txt
