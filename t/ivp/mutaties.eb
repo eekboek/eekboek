@@ -1,4 +1,4 @@
-# $Id: mutaties.eb,v 1.1 2009/10/18 14:54:47 jv Exp $
+# $Id: mutaties.eb,v 1.2 2009/10/18 14:57:38 jv Exp $
 # Content-Type: text/plain; charset = UTF-8
 
 # Inkopen (Dagboek: Inkoop)
@@ -87,7 +87,7 @@ verwijder inkoop:23
 
 verkoop 18-02 "Perl Cursus" ACME "Perl Cursus 1e bet."      3.570 8400
 
-verkoop 18-03 "Perl Cursus" ACME "Perl Cursus 2e bet."      3.570 8400
+verkoop 18-03 "Perl Cursus" ACME "Perl Cursus 2e bet."      3,570 8400
 
 verkoop 18-04 "Perl Cursus" ACME "Perl Cursus rest"          595 8400
 
@@ -182,13 +182,13 @@ postbank 30-11 "Afschrift 11" --saldo=10.382,98     \
          crd 30-11 KPN                -109,67
 
 # Er kan een expliciet volgnummer worden opgegeven.
-postbank:12 07-12 "Afschrift 12" --saldo 10357,48  \
+postbank:12 07-12 "Afschrift 12" --saldo 10357.48  \
          std 06-12 "Girotel"            -2,70 6980 \
          crd 07-12 XS4ALL              -22,80
 
 # Partiele betalingen door het boekstuk op te geven i.p.v. de
 # debiteur/crediteur.
-postbank 09-12 "Eerste deel ADSL" --saldo=10347,48 \
+postbank 09-12 "Eerste deel ADSL" --saldo=10,347.48 \
          crd 09-12 Inkoop:20           -10,00
 
 # De rest van de betaling kan met opgave van boekstuk, maar natuurlijk
