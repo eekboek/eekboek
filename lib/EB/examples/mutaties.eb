@@ -1,4 +1,4 @@
-# $Id: mutaties.eb,v 1.13 2009/10/18 20:41:30 jv Exp $
+# $Id: mutaties.eb,v 1.14 2009/10/19 09:44:01 jv Exp $
 # Content-Type: text/plain; charset = UTF-8
 
 # Inkopen (Dagboek: Inkoop)
@@ -216,11 +216,11 @@ memoriaal 31-12 "Afschrijving computers" \
 
 
 # Rapportages voor de accountant.
-balans                 --output=out/balans.html
-balans   --detail=2    --output=out/balans2.html
-result                 --output=out/result.html
-result   --detail=2    --output=out/result2.html
-journaal               --output=out/journaal.html
-grootboek              --output=out/grootboek.html
-btwaangifte            --output=out/btwaangifte.html
-openstaand             --output=out/openstaand.html
+# balans                 --output=out/balans.html
+# balans   --detail=2    --output=out/balans2.html
+# result                 --output=out/result.html
+# result   --detail=2    --output=out/result2.html
+# journaal               --output=out/journaal.html
+# grootboek              --output=out/grootboek.html
+# btwaangifte            --output=out/btwaangifte.html
+# openstaand             --output=out/openstaand.html
