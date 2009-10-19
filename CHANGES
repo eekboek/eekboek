@@ -1,6 +1,15 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.01
+1.05.02
+
+	* !!! SNAPSHOT !!! SNAPSHOT !!! SNAPSHOT !!!
+
+	* (GUI) Verhelpen probleem van opstarten GUI vanuit Wizard.
+
+	* Verhelpen probleem met de voorbeeldadmin (mutaties waren nog niet
+	  omgezet naar UTF-8).
+
+1.05.01	2009-10-18 22:46
 
 	* !!! SNAPSHOT !!! SNAPSHOT !!! SNAPSHOT !!!
 

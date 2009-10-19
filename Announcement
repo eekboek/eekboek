@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.05.01 **SNAPSHOT** is beschikbaar
+Subject: EekBoek 1.05.02 **SNAPSHOT** is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,7 +9,7 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.05.01 is beschikbaar. Dit is de eerste aanzet tot
+EekBoek versie 1.05.02 is beschikbaar. Dit is de eerste aanzet tot
 EekBoek 1.06 of misschien wel 2.00.
 
 Dit is een SNAPSHOT omdat het nog verre van compleet is. Bestanden als
@@ -35,52 +35,19 @@ Als je deze laatste opdracht uitvoert in een directory waar geen
 skelet-administratie op te zetten.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.05.01.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.05.02.tar.gz
 
 RPM sources en binaries:
 * http://www.eekboek.nl/repo/fedora-testing/
 
 Geen install kits. Die komen als deze versie wat meer stabiel is geworden.
 
-Belangrijkste wijzigingen t.o.v. 1.05.00 (zie ook de file CHANGES):
+Belangrijkste wijzigingen t.o.v. 1.05.01 (zie ook de file CHANGES):
 
-* (GUI) Templates voor de setup wizard.
+* (GUI) Verhelpen probleem van opstarten GUI vanuit Wizard.
 
-* Discontinueer ondersteuning voor latin1 bestanden. Alles is
-  nu UTF-8.
-
-* Export ondersteunt --titel (omschrijving van de export kit).
-  Vooralsnog alleen relevant voor export naar ebz file.
-
-* (GUI) Export/EekBoek: Omschrijving kan worden opgegeven.
-
-* (GUI) IniWiz: Gebruik omschrijving in de templates lijst.
-
-* (SQLite) Config database::path bepaalt waar de databases
-  worden neergezet.
-
-* Andere processing van de configuratiefiles. Mag geen
-  zichtbare gevolgen hebben.
-
-* Andere processing van numerieke expressies in bedragen. Mag
-  geen zichtbare gevolgen hebben.
-
-* Bedragen mogen nu ook worden ingegeven met
-  duizendtalscheidingstekens, dus b.v. 1.234,56 of 1,234.56 .
-
-* (IVP) Verbetering opzet en afhandeling.
-
-* (Config) format:amount vervangt locale:decimalpt,
-  locale:thousandsep en text:numwidth.
-
-  1234.56      -> dpt = "."
-  1234,56      -> dpt = ","
-  1.234,56     -> dpt = ",", sep = "."
-  1,234.56     -> dpt = ".", sep = ","
-  1.234.567,89 -> dpt = ",", sep = ".", width = 12
-
-  De width wordt alleen aangepast als het format breder is dan
-  9 tekens.
+* Verhelpen probleem met de voorbeeldadmin (mutaties waren nog niet
+  omgezet naar UTF-8).
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
