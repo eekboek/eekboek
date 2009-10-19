@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: IVPanel.pm,v 1.7 2008/03/25 23:03:51 jv Exp $
+# $Id: IVPanel.pm,v 1.8 2009/10/19 10:28:23 jv Exp $
 
 package main;
 
@@ -25,13 +25,14 @@ use Wx::Grid;
 # end wxGlade
 
 sub new {
-	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
+	my( $self, $parent, $id, $title, $pos, $size, $type ) = @_;
 	$parent = undef              unless defined $parent;
 	$id     = -1                 unless defined $id;
 	$title  = ""                 unless defined $title;
 	$pos    = wxDefaultPosition  unless defined $pos;
 	$size   = wxDefaultSize      unless defined $size;
-	$name   = ""                 unless defined $name;
+	my $style;
+	my $name = "";
 
 # begin wxGlade: EB::Wx::Booking::IVPanel::new
 
@@ -53,6 +54,7 @@ sub new {
 	Wx::Event::EVT_MENU($self, wxID_CLOSE, \&OnClose);
 	Wx::Event::EVT_GRID_CELL_LEFT_DCLICK($self->{gr_main}, \&OnDClick);
 
+	$self->SetTitle($title);
 	return $self;
 
 }
@@ -110,6 +112,7 @@ sub init {
     $self->{dbk_id} = $id;
     $self->{dbk_desc} = $desc;
     $self->{dbk_type} = $type;
+    $self->refresh;
 }
 
 my @bskmap;
