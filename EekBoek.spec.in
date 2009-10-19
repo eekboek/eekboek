@@ -17,10 +17,6 @@ Group: Applications/Productivity
 Version: [% version %]
 Release: 1%{?dist}
 Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
-Source1: README.postgres
-Source2: README.gui
-Source3: README.contrib
-Source9: %{name}-%{version}-build_common.pl
 URL: http://www.eekboek.nl
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
 
@@ -120,15 +116,6 @@ User contributed tools and files for %{name}.
 %prep
 %setup -q
 
-# Create docs for the subpackages.
-cp -p %SOURCE1 .
-cp -p %SOURCE2 .
-cp -p %SOURCE3 .
-
-# FIX.
-%{__rm} -f inc/build.common
-%{__cp} -p %SOURCE9 inc/build_common.pl
-
 # Remove some build helper sources since we BuildRequire them.
 %{__rm} -fr inc/IPC inc/Module
 %{__perl} -ni~ -e 'print unless m;^inc/(Module|IPC)/;;' MANIFEST
@@ -137,7 +124,7 @@ cp -p %SOURCE3 .
 # These files NEED to be Latin-1 (ISO 8859.1).
 
 # Remove modules that have been included for convenience. Require the
-# real package instead.
+# real packages instead.
 %{__rm} -fr lib/CPAN
 
 %build
@@ -149,7 +136,9 @@ mv blib/lib/EB/examples .
 ( cd examples;
   %{__mv} ../eekboek-mode.el .;
   %{__rm} -f ../blib/lib/EB/schema/sampledb.ebz;
-  %{__zip} -q ../blib/lib/EB/schema/sampledb.ebz *.eb schema.dat )
+  ( echo "Dataset sampledb.ebz aangemaakt door rpmbuild EekBoek %{version}"
+    echo "Omschrijving: EekBoek voorbeeldadministratie" ) |
+  %{__zip} -qz ../blib/lib/EB/schema/sampledb.ebz *.eb schema.dat )
 
 %install
 %{__rm} -rf %{buildroot}
@@ -239,11 +228,17 @@ pod2man blib/script/ebgui > %{buildroot}%{_mandir}/man1/ebgui.1
 %{ebshare}/contrib
 
 %changelog
+* Mon Oct 19 2009 Johan Vromans <jvromans@squirrel.nl> - 1.05.03-1
+- Provide description for rebuilt sampledb.ebz.
+
+* Mon Oct 19 2009 Johan Vromans <jvromans@squirrel.nl> - 1.05.01-1
+- Remove patches (changes are in upstream).
+
 * Sat Oct 10 2009 Johan Vromans <jvromans@squirrel.nl> - 1.05.00-2
 - Split off contrib into separate package.
 
 * Sat Oct 10 2009 Johan Vromans <jvromans@squirrel.nl> - 1.05.00-1
-- Integrate GUI,
+- Integrate GUI, package as separate package.
 
 * Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.04.04-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
