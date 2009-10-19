@@ -29,6 +29,8 @@ use base qw(Wx::Frame);
 use EB;
 use strict;
 
+my @db_drivers;
+
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
 	$parent = undef              unless defined $parent;
@@ -78,7 +80,7 @@ sub new {
 	$self->{t_db_name} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{label_2} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database type"), wxDefaultPosition, wxDefaultSize, );
 	$self->{ch_db_driver} = Wx::Choice->new($self->{wiz_p04}, -1, wxDefaultPosition, wxDefaultSize, [_T("PostgreSQL"), _T("SQLite")], );
-	$self->{label_5} = Wx::StaticText->new($self->{wiz_p05}, -1, _T("Druk op ‘Finish’ om de volgende bestanden aan te maken:"), wxDefaultPosition, wxDefaultSize, );
+	$self->{label_5} = Wx::StaticText->new($self->{wiz_p05}, -1, _T("Druk op 'Voltooien' om de volgende bestanden aan te maken:"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_config} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Configuratiebestand"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_schema} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Rekeningschema"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_relaties} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Relaties (debiteuren en crediteuren)"), wxDefaultPosition, wxDefaultSize, );
@@ -128,6 +130,16 @@ sub new {
 	    $self->{ch_template}->Append($desc);
 	}
 	unshift (@ebz, undef );	# skeleton
+
+	# Enumerate DB drivers.
+	my $drivers = find_db_drivers();
+	my $def = 0;
+	$self->{ch_db_driver}->Delete(0) while $self->{ch_db_driver}->GetCount;
+	foreach ( sort keys %$drivers ) {
+	    push( @db_drivers, $_ );
+	    $self->{ch_db_driver}->Append( $drivers->{$_} );
+	    $self->{ch_db_driver}->SetSelection(@db_drivers-1) if $_ eq "sqlite";
+	}
 
 	Wx::Event::EVT_WIZARD_FINISHED($self, $self->{wiz}->GetId, \&OnWizardFinished );
 	Wx::Event::EVT_WIZARD_CANCEL($self, $self->{wiz}->GetId, \&OnWizardCancel );
@@ -366,7 +378,7 @@ sub OnWizardFinished {
     $opts{adm_begindatum} = $self->{sp_adm_begin}->GetValue;
 
     $opts{db_naam} = $self->{t_db_name}->GetValue;
-    $opts{db_driver} = qw(postgres sqlite)[$self->{ch_db_driver}->GetSelection];
+    $opts{db_driver} = $db_drivers[$self->{ch_db_driver}->GetSelection];
 
     $opts{"has_$_"} = $self->{"cb_$_"}->IsChecked
 	foreach qw(debiteuren crediteuren kas bank btw);
@@ -452,6 +464,28 @@ sub OnOk {
 # end wxGlade
 }
 
+sub find_db_drivers {
+    my %drivers;
+
+    foreach my $lib ( @INC ) {
+	next unless -d "$lib/EB/DB";
+	foreach my $drv ( glob("$lib/EB/DB/*.pm") ) {
+	    open( my $fd, "<", $drv ) or next;
+	    while ( <$fd> ) {
+		if ( /sub\s+type\s*{\s*"([^"]+)"\s*;?\s*}/ ) {
+		    my $s = $1;
+		    my $t = substr($drv,length("$lib/EB/DB/"));
+		    $t =~ s/\.pm$//;
+		    $drivers{lc($t)} ||= $s;
+		    last;
+		}
+	    }
+	    close($fd);
+	}
+    }
+    \%drivers;
+}
+
 # end of class EB::Wx::IniWiz
 
 1;
@@ -490,10 +524,7 @@ sub run {
 	no warnings 'redefine';
 	local *Wx::App::OnInit = sub{1};
 
-    #   setlocale(LC_ALL, "nl_NL");
-
-	my $local = Wx::Locale->new("Dutch");
-	$local->AddCatalog("wxstd");
+	my $locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
 
 	$app = Wx::App->new();
 
