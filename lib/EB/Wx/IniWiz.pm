@@ -522,6 +522,7 @@ sub run {
     }
 
     if ( $runeb ) {
+	package main;
 	our $cfg;
 	undef $cfg;
 	EB::Config->import( $EekBoek::PACKAGE );
