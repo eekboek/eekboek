@@ -80,6 +80,8 @@ sub new {
 	$self->{t_db_name} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{label_2} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database type"), wxDefaultPosition, wxDefaultSize, );
 	$self->{ch_db_driver} = Wx::Choice->new($self->{wiz_p04}, -1, wxDefaultPosition, wxDefaultSize, [_T("PostgreSQL"), _T("SQLite")], );
+	$self->{l_dbpath} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database folder"), wxDefaultPosition, wxDefaultSize, );
+	$self->{l_placeholder_dbpath} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("label_11"), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_5} = Wx::StaticText->new($self->{wiz_p05}, -1, _T("Druk op 'Voltooien' om de volgende bestanden aan te maken:"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_config} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Configuratiebestand"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_schema} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Rekeningschema"), wxDefaultPosition, wxDefaultSize, );
@@ -141,6 +143,13 @@ sub new {
 	    $self->{ch_db_driver}->SetSelection(@db_drivers-1) if $_ eq "sqlite";
 	}
 
+	#### WaRNING: Hard-wired reference to wiz_p04.
+	$self->{dc_dbpath} = Wx::DirPickerCtrl->new($self->{wiz_p04}, -1, "", _T("Kies een folder"), wxDefaultPosition, wxDefaultSize, 2 );
+	$self->{grid_db}->Replace( $self->{l_placeholder_dbpath}, $self->{dc_dbpath}, 1 );
+	$self->{l_placeholder_dbpath}->Destroy;
+	$self->{dc_dbpath}->SetToolTipString(_T("Folder waar databases worden opgeslagen (niet voor alle database typen)"));
+	$self->{dc_dbpath}->SetPath(_T("-- Huidige directory --"));
+
 	Wx::Event::EVT_WIZARD_FINISHED($self, $self->{wiz}->GetId, \&OnWizardFinished );
 	Wx::Event::EVT_WIZARD_CANCEL($self, $self->{wiz}->GetId, \&OnWizardCancel );
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_btw}->GetId, \&OnToggleBTW );
@@ -149,6 +158,9 @@ sub new {
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_relaties}->GetId, \&OnToggleCreate );
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_mutaties}->GetId, \&OnToggleCreate );
 	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_template}->GetId, \&OnSelectTemplate );
+	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_db_driver}->GetId, \&OnSelectDatabaseDriver );
+	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_name}->GetId, \&OnSelectAdmName );
+	Wx::Event::EVT_SPINCTRL($self->{wiz}, $self->{sp_adm_begin}->GetId, \&OnSelectAdmName );
 
 	$self->{wiz}->SetPageSize([600,-1]);
 	$self->SetSize([450,300]);
@@ -233,7 +245,7 @@ sub __do_layout {
 	$self->{grid_sizer_5} = Wx::FlexGridSizer->new(6, 1, 5, 5);
 	$self->{sizer_16} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_4}= Wx::StaticBoxSizer->new($self->{sizer_4_staticbox}, wxVERTICAL);
-	$self->{grid_sizer_1} = Wx::FlexGridSizer->new(2, 2, 5, 5);
+	$self->{grid_db} = Wx::FlexGridSizer->new(3, 2, 5, 5);
 	$self->{sizer_15} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_6}= Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
 	$self->{grid_sizer_3} = Wx::FlexGridSizer->new(4, 1, 5, 5);
@@ -289,12 +301,14 @@ sub __do_layout {
 	$self->{sizer_15}->Add($self->{sizer_6}, 1, wxEXPAND, 0);
 	$self->{wiz_p03}->SetSizer($self->{sizer_15});
 	$self->{sz_main}->Add($self->{wiz_p03}, 0, wxEXPAND, 0);
-	$self->{grid_sizer_1}->Add($self->{label_1}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{grid_sizer_1}->Add($self->{t_db_name}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{grid_sizer_1}->Add($self->{label_2}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{grid_sizer_1}->Add($self->{ch_db_driver}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{grid_sizer_1}->AddGrowableCol(1);
-	$self->{sizer_4}->Add($self->{grid_sizer_1}, 1, wxALL|wxEXPAND, 5);
+	$self->{grid_db}->Add($self->{label_1}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{t_db_name}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{label_2}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{ch_db_driver}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{l_dbpath}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{l_placeholder_dbpath}, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->AddGrowableCol(1);
+	$self->{sizer_4}->Add($self->{grid_db}, 1, wxALL|wxEXPAND, 5);
 	$self->{sizer_16}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
 	$self->{wiz_p04}->SetSizer($self->{sizer_16});
 	$self->{sz_main}->Add($self->{wiz_p04}, 0, wxEXPAND, 0);
@@ -353,6 +367,40 @@ sub OnSelectTemplate {
 # end wxGlade
 }
 
+sub OnSelectAdmName {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OnSelectAdmName <event_handler>
+
+    $self = $self->GetParent;
+
+    my $x = lc $self->{t_adm_name}->GetValue;
+    $x =~ s/\s+/_/g;
+    $x =~ s/\W//g;
+    $x .= "_" . $self->{sp_adm_begin}->GetValue;
+    $self->{t_db_name}->SetValue($x);
+
+# end wxGlade
+}
+
+sub OnSelectDatabaseDriver {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OnSelectDatabase <event_handler>
+
+    $self = $self->GetParent;
+
+    my $x = $self->{ch_db_driver}->GetSelection;
+    if ( $db_drivers[$x] eq "sqlite" ) {
+	$self->{l_dbpath}->Enable(1);
+	$self->{dc_dbpath}->Enable(1);
+    }
+    else {
+	$self->{l_dbpath}->Enable(0);
+	$self->{dc_dbpath}->Enable(0);
+    }
+
+# end wxGlade
+}
+
 sub OnToggleCreate {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OnToggleBTW <event_handler>
@@ -379,7 +427,9 @@ sub OnWizardFinished {
 
     $opts{db_naam} = $self->{t_db_name}->GetValue;
     $opts{db_driver} = $db_drivers[$self->{ch_db_driver}->GetSelection];
-
+    $opts{db_path} = $self->{dc_dbpath}->GetPath
+      if $self->{dc_dbpath}->IsEnabled
+	&& $self->{dc_dbpath}->GetPath !~ /^--/;
     $opts{"has_$_"} = $self->{"cb_$_"}->IsChecked
 	foreach qw(debiteuren crediteuren kas bank btw);
 
