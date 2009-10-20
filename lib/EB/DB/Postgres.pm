@@ -1,12 +1,12 @@
 #! perl
 
-# Postgres.pm -- EekBoek driver for PostgreSQL dsatabase
-# RCS Info        : $Id: Postgres.pm,v 1.26 2009/10/14 21:14:02 jv Exp $
+# Postgres.pm -- EekBoek driver for PostgreSQL database
+# RCS Info        : $Id: Postgres.pm,v 1.27 2009/10/20 10:28:07 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 13 21:22:48 2009
-# Update Count    : 172
+# Last Modified On: Mon Oct 19 22:47:05 2009
+# Update Count    : 173
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::DB::Postgres;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.27 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -30,7 +30,7 @@ my $dataset;
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
 # API: type  type of driver
-sub type { "Postgres" }
+sub type { "PostgreSQL" }
 
 sub _dsn {
     my $dsn = "dbi:Pg:dbname=" . shift;
