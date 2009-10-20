@@ -3,12 +3,12 @@
 use utf8;
 
 # MiniAdm.pm -- 
-# RCS Info        : $Id: MiniAdm.pm,v 1.4 2009/10/14 21:14:02 jv Exp $
+# RCS Info        : $Id: MiniAdm.pm,v 1.5 2009/10/20 10:14:19 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:10:32 2009
-# Update Count    : 92
+# Last Modified On: Tue Oct 20 12:14:05 2009
+# Update Count    : 94
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -147,9 +147,12 @@ sub generate_config {
 	    my ( $self, $fd ) = @_;
 	    print { $fd }
 	      ( "[database]\n",
-		"name =   ", $opts->{db_naam},   "\n",
+		"name   = ", $opts->{db_naam},   "\n",
 		"driver = ", $opts->{db_driver}, "\n",
 	      );
+	    print { $fd }
+	      ( "path   = ", $opts->{db_path}, "\n",
+	      ) if $opts->{db_path};
 	  }
       );
 }
