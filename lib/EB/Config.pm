@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.22 2009/10/18 20:40:10 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.23 2009/10/22 20:56:40 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 18 20:26:54 2009
-# Update Count    : 175
+# Last Modified On: Thu Oct 22 21:18:39 2009
+# Update Count    : 179
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -22,7 +22,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.23 $ =~ /(\d+)/g;
 
 use File::Spec;
 
@@ -83,7 +83,7 @@ sub init_config {
     push(@cfgs, $extraconf) if $extraconf;
 
     # Load configs.
-    my $cfg = EB::Config::Data->new($app);
+    my $cfg = EB::Config::Handler->new($app);
     for my $file ( @cfgs ) {
 	next unless -s $file;
 	$cfg->load($file);
@@ -152,7 +152,7 @@ sub import {
     $cfg = init_config($app);
 }
 
-package EB::Config::Data;
+package EB::Config::Handler;
 
 # Very simple inifile handler (read-only).
 
@@ -196,6 +196,18 @@ sub files {
     return @{ $self->{files} };
 }
 
+sub file {
+    goto &files;		# for convenience
+}
+
+sub set_file {
+    my ( $self, $file ) = @_;
+    if ( $self->{files}->[0] eq '<empty>' ) {
+	$self->{files} = [];
+    }
+    push( @{ $self->{files} }, $file );
+}
+
 sub app {
     my ($self) = @_;
     $self->{app};
@@ -217,10 +229,7 @@ sub load {
     open( my $fd, "<:encoding(utf-8)", $file )
       or Carp::croak("Error opening config $file: $!\n");
 
-    if ( $self->{files}->[0] eq '<empty>' ) {
-	$self->{files} = [];
-    }
-    push( @{ $self->{files} }, $file );
+    $self->set_file($file);
 
     my $section = "global";
     my $fail;
