@@ -3,12 +3,12 @@
 use utf8;
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.90 2009/10/17 22:00:47 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.91 2009/10/23 08:48:18 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 18 00:00:15 2009
-# Update Count    : 230
+# Last Modified On: Fri Oct 23 10:47:36 2009
+# Update Count    : 231
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ our $cfg;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.90 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.91 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -43,7 +43,6 @@ sub EB_LIB() { $lib }
 # Some standard modules.
 use EB::Globals;
 use Carp;
-use EB::Assert;
 use Data::Dumper;
 
 BEGIN {
@@ -118,15 +117,7 @@ BEGIN {
 	my ($id, $major) = @a[4,1];
 	die unless defined $id;
 	warn(_T("EekBoek is VRIJE software, ontwikkeld om vrij over uw eigen gegevens te kunnen beschikken.")."\n");
-	if ( $cfg->val(qw(security override_security_for_vista), 0)
-	     or
-	     ( $id <= 1 || ( $id == 2 && $major <= 5) || $id >= 3 ) ) {
-	    warn(_T("Met uw keuze voor het Microsoft Windows besturingssysteem geeft u echter alle vrijheden weer uit handen. Dat is erg triest.")."\n");
-	}
-	else {
-	    $incompatibleOS++;
-	    warn(_T("Dit is niet te verenigen met uw keuze voor dit Microsoft Windows besturingssysteem.")."\n");
-	}
+	warn(_T("Met uw keuze voor het Microsoft Windows besturingssysteem geeft u echter alle vrijheden weer uit handen. Dat is erg triest.")."\n");
     } unless $ENV{AUTOMATED_TESTING};
 
     @months =
