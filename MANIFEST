@@ -105,12 +105,12 @@ inc/Module/Build/PodParser.pm
 inc/Module/Build/YAML.pm
 inc/build_common.pl
 lib/EB.pm
-lib/EB/Assert.pm
 lib/EB/Booking.pm
 lib/EB/Booking/BKM.pm
 lib/EB/Booking/Decode.pm
 lib/EB/Booking/Delete.pm
 lib/EB/Booking/IV.pm
+lib/EB/CPAN/Carp/Assert.pm
 lib/EB/CPAN/File/HomeDir.pm
 lib/EB/CPAN/File/HomeDir/Darwin.pm
 lib/EB/CPAN/File/HomeDir/MacOS9.pm
@@ -211,7 +211,7 @@ lib/EB/Wx/icons/edit_add.png
 lib/EB/Wx/icons/edit_remove.png
 lib/EB/Wx/icons/edittrash.png
 lib/EB/Wx/icons/perl_powered.png
-lib/EB/tips.txt
+lib/EB/Wx/tips.txt
 lib/EB/css/balans.css
 lib/EB/css/balres.css
 lib/EB/css/btwaangifte.css
