@@ -3,19 +3,19 @@
 use utf8;
 
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.14 2009/10/24 15:58:29 jv Exp $ 
+# RCS Info        : $Id: Locale.pm,v 1.15 2009/10/24 20:01:01 jv Exp $ 
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 24 17:55:07 2009
-# Update Count    : 112
+# Last Modified On: Sat Oct 24 22:00:58 2009
+# Update Count    : 117
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
@@ -39,7 +39,8 @@ unless ( $gotone ) {
 	our $core_localiser;
 	unless ( $core_localiser ) {
 	    $core_localiser = Locale::gettext->domain(COREPACKAGE);
-	    $core_localiser->dir($ENV{EB_LIB} . "EB/locale");
+	    # Since EB is use-ing Locale, we cannot use the EB exported libfile yet.
+	    $core_localiser->dir(EB::libfile("locale"));
 	}
 
 	eval 'sub _T($) {
@@ -75,7 +76,7 @@ setlocale(LC_MESSAGES, $ENV{EB_LANG}||"");
 our $core_localiser;
 unless ( $core_localiser ) {
     $core_localiser = Locale::gettext->domain(COREPACKAGE);
-    $core_localiser->dir($ENV{EB_LIB} . "EB/locale");
+    $core_localiser->dir( libfile("locale") );
 }
 
 sub _T($) {
@@ -124,7 +125,7 @@ sub __nx($$$@) {
 # references.
 # It also provides the utility routines __x __n __xn __nx and more.
 
-use Locale::TextDomain(COREPACKAGE, $ENV{EB_LIB} . "EB/locale");
+use Locale::TextDomain( COREPACKAGE, libfile("locale") );
 
 sub _T($) { $__->{$_[0]} }
 

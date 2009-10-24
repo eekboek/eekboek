@@ -3,12 +3,12 @@
 use utf8;
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.91 2009/10/23 08:48:18 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.92 2009/10/24 20:00:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct 23 10:47:36 2009
-# Update Count    : 231
+# Last Modified On: Sat Oct 24 21:59:42 2009
+# Update Count    : 240
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ our $cfg;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.91 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.92 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -33,22 +33,38 @@ my $lib;
 BEGIN {
     $lib = $INC{"EB.pm"};
     $lib =~ s/EB\.pm$//;
-    $ENV{EB_LIB} = $lib;
     # warn("lib = $lib\n");
 }
 
 # Make it accessible.
-sub EB_LIB() { $lib }
+sub libfile {
+    my ($f) = @_;
+    "$lib/EB/$file";
+}
+
+sub findlib {
+    my ($file) = @_;
+    foreach ( @INC ) {
+	return "$_/EB/$file" if -e "$_/EB/$file";
+    }
+    undef;
+}
+
+BEGIN {
+    unshift( @INC, $_ )
+      foreach ( grep { defined } findlib("CPAN") );
+}
 
 # Some standard modules.
 use EB::Globals;
 use Carp;
 use Data::Dumper;
+use Carp::Assert;
 
 BEGIN {
     # The core and GUI use a different EB::Locale module.
     if ( $app ) {
-	require EB::Wx::Locale;
+	require EB::Wx::Locale;	# provides EB::Locale, really
     }
     else {
 	require EB::Locale;
@@ -61,40 +77,22 @@ use EB::Utils;
 
 # Export our and the imported globals.
 BEGIN {
-    @EXPORT = ( qw(EB_LIB),
-		@EB::Globals::EXPORT,
+    @EXPORT = ( @EB::Globals::EXPORT,
 		@EB::Utils::EXPORT,
 		@EB::Locale::EXPORT,
 		qw(carp croak),
 		qw(Dumper),
-		qw(findlib),
+		qw(findlib libfile),
 		qw(assert affirm),
 	      );
 }
 
-our @months;
-our @month_names;
-our @days;
-our @day_names;
 our $ident;
 our $imsg;
 our $url = "http://www.eekboek.nl";
 
-sub findlib {
-    my ($file) = @_;
-    foreach ( @INC ) {
-	return "$_/EB/$file" if -e "$_/EB/$file";
-    }
-    undef;
-}
-
 BEGIN {
     return if $ident;		# already done
-
-    unshift( @INC, $_ )
-      foreach ( grep { defined } findlib("CPAN") );
-
-    my $incompatibleOS = 0;
 
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
@@ -120,15 +118,6 @@ BEGIN {
 	warn(_T("Met uw keuze voor het Microsoft Windows besturingssysteem geeft u echter alle vrijheden weer uit handen. Dat is erg triest.")."\n");
     } unless $ENV{AUTOMATED_TESTING};
 
-    @months =
-      split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
-    @month_names =
-      split(" ", _T("Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December"));
-    @days =
-      split(" ", _T("Zon Maa Din Woe Don Vri Zat"));
-    @day_names =
-      split(" ", _T("Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag"));
-    die("?"._T("FATALE FOUT: Ongeschikt besturingssysteem")."\n") if $incompatibleOS;
 }
 
 1;

@@ -1,10 +1,10 @@
 # Locale.pm -- EB Locale setup (GUI version)
-# RCS Info        : $Id: Locale.pm,v 1.1 2007/03/08 18:18:18 jv Exp $
+# RCS Info        : $Id: Locale.pm,v 1.2 2009/10/24 20:00:27 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb 27 20:51:00 2007
-# Update Count    : 105
+# Last Modified On: Sat Oct 24 21:59:01 2009
+# Update Count    : 109
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -16,13 +16,8 @@ use constant COREPACKAGE => "ebcore";
 
 use base qw(Exporter);
 
-our @EXPORT_OK;
-our @EXPORT;
-
-BEGIN {
-    @EXPORT_OK = qw(LOCALISER _T __x __n __nx __xn);
-    @EXPORT = ( @EXPORT_OK );
-}
+our @EXPORT_OK = qw(LOCALISER _T __x __n __nx __xn);
+our @EXPORT = @EXPORT_OK;
 
 =begin alternative
 
@@ -34,9 +29,8 @@ our $gui_localiser;
 unless ( $gui_localiser ) {
     $gui_localiser = Wx::Locale->new(wxLANGUAGE_DEFAULT,
 				     wxLOCALE_LOAD_DEFAULT);
-    # Since EB is use-ing Locale, we cannot use the EB exported EB_LIB yet.
-    # This should be the only module that uses $ENV{EB_LIB} instead.
-    $gui_localiser->AddCatalogLookupPathPrefix($ENV{EB_LIB} . "/EB/locale");
+    # Since EB is use-ing Locale, we cannot use the EB exported libfile yet.
+    $gui_localiser->AddCatalogLookupPathPrefix(EB::libfile("locale"));
     $gui_localiser->AddCatalog(GUIPACKAGE);
     $gui_localiser->AddCatalog(COREPACKAGE);
 }
