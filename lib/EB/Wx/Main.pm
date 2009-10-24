@@ -1,20 +1,21 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: Main.pm,v 1.9 2009/10/17 22:01:16 jv Exp $ ';
+my $RCS_Id = '$Id: Main.pm,v 1.10 2009/10/24 21:26:53 jv Exp $ ';
 
 package main;
 
 our $cfg;
 our $state;
-our $app;
 our $dbh;
+our $app;
+use EB::Wx::FakeApp;
 
 package EB::Wx::Main;
 
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 17 23:57:57 2009
-# Update Count    : 320
+# Last Modified On: Sat Oct 24 23:13:15 2009
+# Update Count    : 330
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -40,6 +41,7 @@ my @opts; BEGIN { @opts = @ARGV }
 
 # This will set up the config at 'use' time.
 use EB::Config $EekBoek::PACKAGE;
+use EB;
 
 ################ Command line parameters ################
 
@@ -63,33 +65,11 @@ my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 use base qw(Exporter);
 our @EXPORT = qw(run);
 
-# Note: a non-null $app is a signal for EB to load the GUI version of
-# the Locale module.
-BEGIN { $app = {} }
-
-use EB::Wx::Window;
-BEGIN {
-    *CORE::GLOBAL::die = sub(@) {
-	goto \&EB::Wx::Fatal;
-    };
-}
-
-use EB;
-use EekBoek;
-BEGIN {
-    my $req = "1.05";
-    die("EekBoek $EekBoek::VERSION -- GUI vereist EekBoek versie $req of nieuwer\n")
-      if $req gt $EekBoek::VERSION;
-}
-
-use strict;
-
 use Wx 0.74 qw[:everything];
-
 sub Wx::wxTHICK_FRAME() { 0 }
-
+use EB::Wx::Window;
 use POSIX qw(locale_h);
-use Wx::Locale;
+use Wx::Locale;			# WHY?
 use EB::DB;
 use File::Basename ();
 use File::Spec ();
@@ -103,28 +83,11 @@ my $app_state;
 our $restart = 0;
 
 use base qw(Wx::App);
-use strict;
 
 use EB::Wx::MainFrame;
 
-sub min { $_[0] < $_[1] ? $_[0] : $_[1] }
-sub max { $_[0] > $_[1] ? $_[0] : $_[1] }
-
 sub OnInit {
     my( $self ) = shift;
-
-    # Since Wx::Bitmap cannot be convinced to use a search path, we
-    # need a stronger method...
-    my $wxbitmapnew = \&Wx::Bitmap::new;
-    no warnings 'redefine';
-    *Wx::Bitmap::new = sub {
-	# Only handle Wx::Bitmap->new(file, type) case.
-	goto &$wxbitmapnew if @_ != 3 || -f $_[1];
-	my ($self, @rest) = @_;
-	$rest[0] = EB::findlib("Wx/icons/".File::Basename::basename($rest[0]));
-	$wxbitmapnew->($self, @rest);
-    };
-    use warnings 'redefine';
 
     Wx::InitAllImageHandlers();
 
@@ -166,7 +129,7 @@ sub showtips {
     if ( shift ) {
 #	require EB::Wx::Tools::TipProvider;
 #	my $t = EB::Wx::Tools::TipProvider->new($state->lasttip);
-	my $t = Wx::CreateFileTipProvider(EB::findlib("tips.txt"), $state->lasttip);
+	my $t = Wx::CreateFileTipProvider(EB::findlib("Wx/tips.txt"), $state->lasttip);
 	$state->showtips(Wx::ShowTip($app->{TOP}, $t, $state->showtips) || 0);
 	$state->lasttip($t->GetCurrentTip);
     }
@@ -239,14 +202,6 @@ sub run {
     # Post-processing.
     $trace |= ($debug || $test);
 
-    # This is for my temporary convenience. I always forget to set up
-    # the right environment variable...
-    setlocale(LC_ALL, "nl_NL");
-
-    my $local = Wx::Locale->new("Dutch");
-    $local->AddCatalog("wxstd");
-#    $local->Init();
-
     $app_dir = File::Spec->catfile(File::HomeDir->my_data,
 				   ".$app_class");
     $app_state = File::Spec->catfile($app_dir, "ebgui_state");
@@ -286,5 +241,18 @@ sub run {
 				 };
     $app->MainLoop();
 }
+
+    # Since Wx::Bitmap cannot be convinced to use a search path, we
+    # need a stronger method...
+    my $wxbitmapnew = \&Wx::Bitmap::new;
+    no warnings 'redefine';
+    *Wx::Bitmap::new = sub {
+	# Only handle Wx::Bitmap->new(file, type) case.
+	goto &$wxbitmapnew if @_ != 3 || -f $_[1];
+	my ($self, @rest) = @_;
+	$rest[0] = EB::findlib("Wx/icons/".File::Basename::basename($rest[0]));
+	$wxbitmapnew->($self, @rest);
+    };
+    use warnings 'redefine';
 
 run() unless caller;

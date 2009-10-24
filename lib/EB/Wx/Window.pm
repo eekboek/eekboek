@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Window.pm,v 1.4 2008/03/25 22:56:48 jv Exp $
+# $Id: Window.pm,v 1.5 2009/10/24 21:26:53 jv Exp $
 
 package main;
 
@@ -114,5 +114,9 @@ sub EB::Wx::Fatal {
     $app->{TOP}->ExitMainLoop if $app && $app->{TOP};
     exit(1);
 }
+
+*CORE::GLOBAL::die = sub(@) {
+    goto \&EB::Wx::Fatal;
+};
 
 1;

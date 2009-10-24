@@ -4,30 +4,27 @@ use utf8;
 
 package main;
 
-our $app; BEGIN { $app = {} };
+use strict;
+use warnings;
+
+use EekBoek;
+use EB::Config $EekBoek::PACKAGE;
+use EB::Tools::MiniAdm;
+use EB::Wx::Main;
+use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+
+our $app;
 our $runeb;
 our @ebz;
 
 our @configs = qw( .eekboek.conf schema.dat
 		   mutaties.eb relaties.eb opening.eb );
 
-use Wx 0.15 qw[:allclasses];
-use strict;
-
-use EekBoek;
-use EB::Config $EekBoek::PACKAGE;
-use EB::Tools::MiniAdm;
-use EB::Wx::Main;
-
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
-
 package EB::Wx::IniWiz;
 
 use Wx qw[:everything];
-#use Wx::Locale gettext => '_T';
 use base qw(Wx::Frame);
 use EB;
-use strict;
 
 my @db_drivers;
 
@@ -108,7 +105,7 @@ sub new {
 	    $prev = $page;
 	}
 
-	@ebz = glob( EB_LIB . "EB/schema/*.ebz" );
+	@ebz = glob( libfile("schema/*.ebz") );
 
 	#### WHAT THE ***** IS GOING ON HERE????
 	*Fcntl::O_NOINHERIT = sub() { 0 };
@@ -143,7 +140,7 @@ sub new {
 	    $self->{ch_db_driver}->SetSelection(@db_drivers-1) if $_ eq "sqlite";
 	}
 
-	#### WaRNING: Hard-wired reference to wiz_p04.
+	#### WARNING: Hard-wired reference to wiz_p04.
 	$self->{dc_dbpath} = Wx::DirPickerCtrl->new($self->{wiz_p04}, -1, "", _T("Kies een folder"), wxDefaultPosition, wxDefaultSize, 2 );
 	$self->{grid_db}->Replace( $self->{l_placeholder_dbpath}, $self->{dc_dbpath}, 1 );
 	$self->{l_placeholder_dbpath}->Destroy;
@@ -574,21 +571,7 @@ sub run {
 	no warnings 'redefine';
 	local *Wx::App::OnInit = sub{1};
 
-	my $locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
-
 	$app = Wx::App->new();
-
-	# Since Wx::Bitmap cannot be convinced to use a search path, we
-	# need a stronger method...
-	my $wxbitmapnew = \&Wx::Bitmap::new;
-	no warnings qw(redefine once);
-	*Wx::Bitmap::new = sub {
-	    # Only handle Wx::Bitmap->new(file, type) case.
-	    goto &$wxbitmapnew if @_ != 3 || -f $_[1];
-	    my ($self, @rest) = @_;
-	    $rest[0] = EB::findlib("Wx/icons/".File::Basename::basename($rest[0]));
-	    $wxbitmapnew->($self, @rest);
-	};
 
 	Wx::InitAllImageHandlers();
 
@@ -597,9 +580,6 @@ sub run {
 	$top->Centre;
 	$top->runwiz;
 	$app->MainLoop;
-
-	no warnings qw(redefine once);
-	*Wx::Bitmap::new = $wxbitmapnew;
     }
 
     if ( $runeb ) {
