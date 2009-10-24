@@ -1,5 +1,7 @@
 #! perl
 
+# $Id: ebgui,v 1.7 2009/10/24 21:27:32 jv Exp $
+
 use strict;
 # use lib qw(EekBoekLibrary);
 
@@ -56,20 +58,18 @@ package main;
 
 use strict;
 use warnings;
+use File::Spec;
+use File::Basename;
+use Getopt::Long;
 
 use Wx qw( :everything  );;
 # If we get here, we have Wx :)
 
-no warnings qw(redefine once);
-local *Wx::App::OnInit = sub{1};
+my %opts = ( wizard => 1 );
 
-#   setlocale(LC_ALL, "nl_NL");
+app_options();
 
-my $local = Wx::Locale->new("Dutch");
-$local->AddCatalog("wxstd");
-
-use File::Spec;
-use File::Basename;
+my $locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
 
 # Common case when run from unpacked dist.
 my $script = $0;
@@ -101,8 +101,14 @@ error( "De EekBoek GUI is niet geïnstalleerd, of kon niet worden gevonden.\n".
   unless findfile( "EB/Wx/Main.pm" )
   &&     findfile( "EB/Wx/IniWiz.pm" );
 
-require EB::Wx::IniWiz;
-EB::Wx::IniWiz->run;
+if ( $opts{wizard} ) {
+    require EB::Wx::IniWiz;
+    EB::Wx::IniWiz->run;
+}
+else {
+    require EB::Wx::Main;
+    EB::Wx::Main->run;
+}
 
 ################ Subroutines ################
 
@@ -145,6 +151,44 @@ sub warning {
     goto &_msg;
 }
 
-1;
+################ Command Line Options ################
 
-# $Id: ebgui,v 1.6 2009/10/09 15:45:52 jv Exp $
+sub app_options {
+
+    # Process options, if any.
+    # Make sure defaults are set before returning!
+    return unless @ARGV > 0;
+
+    Getopt::Long::Configure(qw(no_ignore_case));
+
+    if ( !GetOptions
+	 ( \%opts,
+	   'wizard!',
+	   'X',
+	   'config|f=s',
+	   'define|D=s%',
+	   'trace',
+	   'help|?',
+	   'debug',
+	 ) or delete $opts{help} )
+    {
+	app_usage(2);
+    }
+    app_usage(2) if @ARGV;
+}
+
+sub app_usage {
+    my ($exit) = @_;
+    error (<<EndOfUsage, "Oeps...");
+Gebruik: $0 [options] [file ...]
+
+    --[no]wizard        gebruik de wizard om op te starten (standaard)
+    --config -f XXX     specificeer configuratiebestand
+    --define -D key=value  specificeer configuratiewaarden
+    --X                 gebruik uitsluitend dit configuratiebestand
+    --help		deze hulpboodschap
+EndOfUsage
+    exit $exit if defined $exit && $exit != 0;
+}
+
+1;
