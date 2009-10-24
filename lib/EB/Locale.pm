@@ -3,39 +3,30 @@
 use utf8;
 
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.13 2009/10/14 21:14:02 jv Exp $ 
+# RCS Info        : $Id: Locale.pm,v 1.14 2009/10/24 15:58:29 jv Exp $ 
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:07:03 2009
-# Update Count    : 108
+# Last Modified On: Sat Oct 24 17:55:07 2009
+# Update Count    : 112
 # Status          : Unknown, Use with caution!
-
-package main;
-
-our $cfg;
 
 package EB::Locale;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
 use constant COREPACKAGE => "ebcore";
 
-our @EXPORT_OK;
-our @EXPORT;
-
-BEGIN {
-    @EXPORT_OK = qw(LOCALISER _T __x __n __nx __xn);
-    @EXPORT = ( @EXPORT_OK );
-}
+our @EXPORT_OK = qw(LOCALISER _T __x __n __nx __xn);
+our @EXPORT = @EXPORT_OK;
 
 # This module supports three different gettext implementations.
 
-use POSIX;			# for setlocale
+use POSIX qw(setlocale LC_MESSAGES);
 
 my $gotone = 0;
 
