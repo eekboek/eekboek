@@ -85,6 +85,10 @@ error( "De geïnstalleerde versie van $EekBoek::PACKAGE is niet toereikend.\n".
        "Installatiefout" )
   unless $EekBoek::VERSION ge "1.05.00";
 
+if ( my $cpan = findfile("EB/CPAN") ) {
+    unshift( @INC, $cpan );
+}
+
 require EB::Config;
 EB::Config->import( $EekBoek::PACKAGE );
 require EB;
@@ -114,4 +118,4 @@ sub error {
 
 1;
 
-# $Id: ebshell,v 1.19 2009/10/09 15:45:52 jv Exp $
+# $Id: ebshell,v 1.20 2009/10/24 21:28:02 jv Exp $
