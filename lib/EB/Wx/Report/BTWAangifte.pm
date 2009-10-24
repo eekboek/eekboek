@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: BTWAangifte.pm,v 1.11 2009/10/09 15:41:32 jv Exp $
+# $Id: BTWAangifte.pm,v 1.12 2009/10/24 21:27:05 jv Exp $
 
 package main;
 
@@ -26,7 +26,7 @@ sub init {
     $self->{compat_periode} =
       $self->{btwp} == 1 ? "j" :
 	$self->{btwp} == 4 ? "k1" :
-	  $self->{btwp} == 12 ? $EB::month_names[0] : $self->{btwp};
+	  $self->{btwp} == 12 ? $EB::Utils::month_names[0] : $self->{btwp};
 
     $self->refresh;
 }
@@ -79,7 +79,7 @@ sub set_periode {
        $self->{compat_periode} = $p;
    }
    elsif ( $p =~ /^m(\d+)$/ ) {
-       $self->{compat_periode} = $EB::month_names[$1-1];
+       $self->{compat_periode} = $EB::Utils::month_names[$1-1];
    }
 }
 
