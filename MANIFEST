@@ -117,6 +117,7 @@ lib/EB/CPAN/File/HomeDir/MacOS9.pm
 lib/EB/CPAN/File/HomeDir/Unix.pm
 lib/EB/CPAN/File/HomeDir/Windows.pm
 lib/EB/Config.pm
+lib/EB/Config/Data.pm
 lib/EB/DB.pm
 lib/EB/DB/Postgres.pm
 lib/EB/DB/Sqlite.pm
@@ -161,8 +162,10 @@ lib/EB/Utils.pm
 lib/EB/Wx/Booking/BKMPanel.pm
 lib/EB/Wx/Booking/IVPanel.pm
 lib/EB/Wx/Booking/IVPanel/BskPanel.pm
+lib/EB/Wx/Booking/IVPanel/BsrPanel.pm
 lib/EB/Wx/Export/EekBoek.pm
 lib/EB/Wx/Export/XAF.pm
+lib/EB/Wx/FakeApp.pm
 lib/EB/Wx/IniWiz.pm
 lib/EB/Wx/Locale.pm
 lib/EB/Wx/Main.pm
@@ -269,6 +272,8 @@ t/ivp/ref/balans2xxx.html
 t/ivp/ref/balans2xxx.html
 t/ivp/ref/btw.html
 t/ivp/ref/btw.txt
+t/ivp/ref/btw7.txt
+t/ivp/ref/btwk2.txt
 t/ivp/ref/crdrept.txt
 t/ivp/ref/debrept.txt
 t/ivp/ref/grootboek.txt
