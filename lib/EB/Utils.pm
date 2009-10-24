@@ -4,7 +4,7 @@ package EB::Utils;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
@@ -198,6 +198,11 @@ sub iso8601date {
 }
 
 push( @EXPORT, qw(iso8601date) );
+
+sub min { $_[0] < $_[1] ? $_[0] : $_[1] }
+sub max { $_[0] > $_[1] ? $_[0] : $_[1] }
+
+push( @EXPORT, qw(min max) );
 
 # ... more to come ...
 
