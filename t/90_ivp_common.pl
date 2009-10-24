@@ -1,13 +1,13 @@
 #! perl
 
-# $Id: 90_ivp_common.pl,v 1.2 2009/10/15 16:48:35 jv Exp $  -*-perl-*-
+# $Id: 90_ivp_common.pl,v 1.3 2009/10/24 21:28:23 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
 
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => 44);
+  : (tests => 46);
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
@@ -29,7 +29,7 @@ BAIL_OUT("Unsupported database driver: $dbdriver") unless $dbddrv;
 SKIP: {
 
 eval "require $dbddrv";
-skip("DBI $dbdriver driver ($dbddrv) not installed", 39) if $@;
+skip("DBI $dbdriver driver ($dbddrv) not installed", 41) if $@;
 
 chdir("ivp") if -d "ivp";
 my $f;
@@ -68,7 +68,7 @@ eval {
     if ( $dbdriver eq "postgres" ) {
 	my @ds = DBI->data_sources("Pg");
 	diag("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
-	skip("No access to database", 35)
+	skip("No access to database", 37)
 	  if $DBI::errstr;# && $DBI::errstr =~ /FATAL:\s*(user|role) .* does not exist/;
     }
 };
@@ -139,6 +139,8 @@ vfy([@ebcmd, qw(-c debiteuren)          ], "debrept.txt");
 
 # Verify: BTW aangifte.
 vfy([@ebcmd, qw(-c btwaangifte j)], "btw.txt");
+vfy([@ebcmd, qw(-c btwaangifte k2)], "btwk2.txt");
+vfy([@ebcmd, qw(-c btwaangifte 7)], "btw7.txt");
 
 # Verify: HTML generatie.
 vfy([@ebcmd, qw(-c balans --detail=2 --gen-html)            ], "balans2.html");

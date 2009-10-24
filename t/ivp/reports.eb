@@ -38,6 +38,8 @@ debiteuren           --output=out/debrept.txt
 
 # Verify: BTW aangifte.
 btwaangifte j --output=out/btw.txt
+btwaangifte k2 --output=out/btwk2.txt
+btwaangifte 7 --output=out/btw7.txt
 
 # Verify: HTML generatie.
 balans --detail=2 --gen-html             --output=out/balans2.html
