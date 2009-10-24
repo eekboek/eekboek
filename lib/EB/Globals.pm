@@ -7,7 +7,7 @@ package EB::Globals;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.33 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.34 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
@@ -45,6 +45,7 @@ _newconst("SCM_REVISION",   14);
 
 _newconst("AMTPRECISION",    2);
 _newconst("AMTWIDTH",        9);
+_newconst("NUMGROUPS",       3);
 _newconst("BTWPRECISION",    4);
 _newconst("BTWWIDTH",        5);
 _newconst("AMTSCALE",      100);
