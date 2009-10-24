@@ -9,7 +9,7 @@ package EB::Format;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.38 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.39 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -90,6 +90,8 @@ sub numround_bankers {
 }
 
 sub _setup  {
+
+    assert( NUMGROUPS != AMTPRECISION, "NUMGROUPS != AMTPRECISION" );
 
     ################ BTW display format ################
 
@@ -210,17 +212,6 @@ EOD
     $date_width = length(datefmt("2006-01-01"));
 }
 
-BEGIN {
-    push(@EXPORT, qw(amount numround btwfmt));
-    push(@EXPORT, qw($amount_width numfmt numfmt_plain));
-    push(@EXPORT, qw($date_width datefmt datefmt_full datefmt_plain));
-    _setup();
-}
-
-sub NUMGROUPS() { 3 }
-die("Internal error: NUMGROUPS == AMTPRECISION\n")
-  if NUMGROUPS == AMTPRECISION;
-
 sub numxform_strict {
     $_ = shift;
     my $err; # = "ERR($_)";
@@ -308,7 +299,6 @@ sub amount($) {
     return 0 + ($s.$w.$f);
 }
 
-#### USED BY GUI
 sub numfmtw {
     my $v = shift;
     if ( $v == int($v) && $v >= 0  ) {
@@ -345,5 +335,15 @@ sub btwfmt {
 }
 
 sub btwpat { $btwpat }
+
+################ Code ################
+
+push( @EXPORT,
+      qw(amount numround btwfmt),
+      qw($amount_width numfmt numfmt_plain),
+      qw($date_width datefmt datefmt_full datefmt_plain),
+    );
+
+_setup();
 
 1;
