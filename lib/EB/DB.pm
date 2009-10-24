@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: DB.pm,v 1.61 2009/10/14 21:14:02 jv Exp $
+# RCS Id          : $Id: DB.pm,v 1.62 2009/10/24 21:24:43 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:05:15 2009
-# Update Count    : 439
+# Last Modified On: Sat Oct 24 21:56:21 2009
+# Update Count    : 440
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,7 +21,7 @@ package EB::DB;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.61 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.62 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -62,7 +62,7 @@ sub check_db {
 	      sprintf("%03d%03d", $min, $rev) eq sprintf("%03d%03d", SCM_MINVERSION, SCM_REVISION)) ) {
 	# Basically, this will migrate to the highest possibly version, and then retry.
 	my $cur = sprintf("%03d%03d%03d", $maj, $min, $rev);
-	my $tmpl = EB_LIB . "EB/migrate/$cur?????????.*l";
+	my $tmpl = libfile("migrate/$cur?????????.*l");
 	my @a = reverse sort glob($tmpl);
 	last unless @a == 1;
 
