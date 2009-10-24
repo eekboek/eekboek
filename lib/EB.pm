@@ -3,22 +3,21 @@
 use utf8;
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.92 2009/10/24 20:00:12 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.93 2009/10/24 21:24:25 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 24 21:59:42 2009
-# Update Count    : 240
+# Last Modified On: Sat Oct 24 22:33:00 2009
+# Update Count    : 251
 # Status          : Unknown, Use with caution!
 
 package main;
 
 our $app;
-our $cfg;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.92 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.93 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -30,16 +29,13 @@ our @EXPORT_OK;
 
 # Establish location of our data, relative to this module.
 my $lib;
-BEGIN {
-    $lib = $INC{"EB.pm"};
-    $lib =~ s/EB\.pm$//;
-    # warn("lib = $lib\n");
-}
-
-# Make it accessible.
 sub libfile {
     my ($f) = @_;
-    "$lib/EB/$file";
+    unless ( $lib ) {
+	$lib = $INC{"EB.pm"};
+	$lib =~ s/EB\.pm$//;
+    }
+    $lib."EB/$f";
 }
 
 sub findlib {
@@ -50,19 +46,16 @@ sub findlib {
     undef;
 }
 
-BEGIN {
-    unshift( @INC, $_ )
-      foreach ( grep { defined } findlib("CPAN") );
-}
+use lib ( grep { defined } findlib("CPAN") );
 
-# Some standard modules.
+# Some standard modules (locale-free).
 use EB::Globals;
 use Carp;
 use Data::Dumper;
 use Carp::Assert;
 
 BEGIN {
-    # The core and GUI use a different EB::Locale module.
+    # The CLI and GUI use different EB::Locale modules.
     if ( $app ) {
 	require EB::Wx::Locale;	# provides EB::Locale, really
     }
@@ -72,27 +65,24 @@ BEGIN {
     EB::Locale::->import;
 }
 
-# Utilities.
+# Some standard modules (locale-dependent).
 use EB::Utils;
 
 # Export our and the imported globals.
-BEGIN {
-    @EXPORT = ( @EB::Globals::EXPORT,
-		@EB::Utils::EXPORT,
-		@EB::Locale::EXPORT,
-		qw(carp croak),
-		qw(Dumper),
-		qw(findlib libfile),
-		qw(assert affirm),
-	      );
-}
+@EXPORT = ( @EB::Globals::EXPORT,
+	    @EB::Utils::EXPORT,
+	    @EB::Locale::EXPORT,
+	    qw(carp croak),		# Carp
+	    qw(Dumper),			# Data::Dumper
+	    qw(findlib libfile),	# <self>
+	    qw(assert affirm),		# Carp::Assert
+	  );
 
 our $ident;
 our $imsg;
 our $url = "http://www.eekboek.nl";
 
-BEGIN {
-    return if $ident;		# already done
+unless ( $ident ) {		# already done (can this happen?)
 
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
