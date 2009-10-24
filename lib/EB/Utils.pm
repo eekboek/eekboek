@@ -4,7 +4,7 @@ package EB::Utils;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 
@@ -13,8 +13,36 @@ our @EXPORT_OK;
 
 use Time::Local;
 
+# We're imported by EB that exports _T. Kinda catch-22.
+*_T = *EB::_T;
+
+# These are only used by the BTW Aangifte modules.
+# Hmm. Should use locale functions instead of _T strings...
+our @months =
+      split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
+our @month_names =
+      split(" ", _T("Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December"));
+our @days =
+      split(" ", _T("Zon Maa Din Woe Don Vri Zat"));
+our @day_names =
+      split(" ", _T("Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag"));
+
+my $_i;
+
 my %rev_months;
+$_i = 1;
+foreach ( @months ) {
+    $rev_months{ lc $_  } = $_i;
+    $rev_months{ "m$_i" } = $_i;
+    $rev_months{ sprintf("m%02d", $_i) } = $_i;
+    $_i++;
+}
+
 my %rev_month_names;
+$_i = 1;
+foreach ( @month_names ) {
+    $rev_month_names{ lc $_ } = $_i++;
+}
 
 sub parse_date {
     my ($date, $default_year, $delta_d, $delta_m, $delta_y) = @_;
@@ -33,19 +61,6 @@ sub parse_date {
 	($d, $m, $y) = ($1, $2, $default_year);
     }
     elsif ( $date =~ /^(\d\d?) (\w+)$/ ) {
-	unless ( %rev_months ) {
-	    my $i = 1;
-	    foreach ( @EB::months ) {
-		$rev_months{lc $_} = $i;
-		$rev_months{"m$i"} = $i;
-		$rev_months{sprintf("m%02d", $i)} = $i;
-		$i++;
-	    }
-	    $i = 1;
-	    foreach ( @EB::month_names ) {
-		$rev_month_names{lc $_} = $i++;
-	    }
-	}
 	return unless $default_year;
 	return unless $m = $rev_month_names{$2} || $rev_months{$2};
 	($d, $y) = ($1, $default_year);
@@ -65,7 +80,7 @@ sub parse_date {
     wantarray ? @tm : sprintf("%04d-%02d-%02d", @tm);
 }
 
-BEGIN { push(@EXPORT, qw(parse_date)) }
+push( @EXPORT, qw(parse_date) );
 
 sub parse_date_range {
     my ($range, $default_year) = @_;
@@ -75,20 +90,6 @@ sub parse_date_range {
 
     my ($d1, $m1, $y1, $d2, $m2, $y2);
     my $datefix;
-
-    unless ( %rev_months ) {
-	my $i = 1;
-	foreach ( @EB::months ) {
-	    $rev_months{lc $_} = $i;
-	    $rev_months{"m$i"} = $i;
-	    $rev_months{sprintf("m%02d", $i)} = $i;
-	    $i++;
-	}
-	$i = 1;
-	foreach ( @EB::month_names ) {
-	    $rev_month_names{lc $_} = $i++;
-	}
-    }
 
     $range = lc($range);
 
@@ -188,7 +189,7 @@ sub parse_date_range {
       sprintf("%04d-%02d-%02d", @tm2) ]
 }
 
-BEGIN { push(@EXPORT, qw(parse_date_range)) }
+push( @EXPORT, qw(parse_date_range) );
 
 sub iso8601date {
     my ($time) = shift || time;
@@ -196,10 +197,10 @@ sub iso8601date {
     sprintf("%04d-%02d-%02d", 1900+$tm[5], 1+$tm[4], $tm[3]);
 }
 
-BEGIN { push(@EXPORT, qw(iso8601date)) }
+push( @EXPORT, qw(iso8601date) );
 
 # ... more to come ...
 
-BEGIN { @EXPORT_OK = @EXPORT }
+@EXPORT_OK = @EXPORT;
 
 1;
