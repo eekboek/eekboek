@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.22 2009/10/11 09:38:40 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.23 2009/10/25 14:44:37 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 10 18:20:34 2009
-# Update Count    : 94
+# Last Modified On: Sun Oct 25 15:44:22 2009
+# Update Count    : 96
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -29,6 +29,8 @@ $data =
       'Term::ReadLine'      => 0,
       $^O eq "linux" ? ('Term::ReadLine::Gnu' => 0) : (),
       'DBI'                 => '1.40',
+      'Archive::Zip'	    => '1.16',
+      'DBD::SQLite'         => '1.13',
     },
     buildreq_pm =>
     { # These are required for the build/test, and will be included.
@@ -37,10 +39,8 @@ $data =
     },
     recomm_pm =>
     { 'Getopt::Long'        => '2.32',
-      'Archive::Zip'	    => '1.16',
       'HTML::Entities'	    => '1.35',
       'DBD::Pg'             => '1.41',
-      'DBD::SQLite'         => '1.13',
     },
     usrbin => "/usr/bin",
   };
