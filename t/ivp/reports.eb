@@ -48,3 +48,7 @@ btwaangifte j --output=out/btw.html
 
 # Verify: CSV generatie.
 balans --detail=2 --gen-csv --output=out/balans2.csv
+
+# Verify: XAF generatie.
+export --xaf=out/export.xaf
+
