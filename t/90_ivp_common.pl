@@ -1,19 +1,27 @@
 #! perl
 
-# $Id: 90_ivp_common.pl,v 1.3 2009/10/24 21:28:23 jv Exp $  -*-perl-*-
+# $Id: 90_ivp_common.pl,v 1.4 2009/10/25 18:52:27 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
 
+# The actual number of database tests, as executed by report_tests.
+use constant NUMTESTS => 34;
+# There are 9 initial tests.
+# report_tests requires 1 more for the setup, and 1 for the export
+# (all but the last).
+
+my $remaining;
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => 46);
+  : (tests => ( $remaining = 3*(NUMTESTS+2)-1+9 ));
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
 BEGIN { use_ok('EB::Config', qw(ivp)) }
 BEGIN { use_ok('EB') }
 BEGIN { use_ok('File::Copy') }
+$remaining -= 4;
 
 our $dbdriver;
 my $dbddrv;
@@ -26,11 +34,6 @@ elsif ( $dbdriver eq "sqlite" ) {
 }
 BAIL_OUT("Unsupported database driver: $dbdriver") unless $dbddrv;
 
-SKIP: {
-
-eval "require $dbddrv";
-skip("DBI $dbdriver driver ($dbddrv) not installed", 41) if $@;
-
 chdir("ivp") if -d "ivp";
 my $f;
 for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
@@ -40,120 +43,151 @@ for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
     }
     ok(-s $_, $_);
 }
-for ( qw(ivp.conf opening.eb relaties.eb mutaties.eb reports.eb schema.dat ) ) {
+$remaining -= 4;
+for ( qw(ivp.conf opening.eb relaties.eb
+	 mutaties.eb reports.eb schema.dat ) ) {
     die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
 }
 
 mkdir("out") unless -d "out";
 ok( -w "out" && -d "out", "writable output dir" );
-
-# Cleanup old files.
-unlink(<out/*.sql>);
-unlink(<out/*.log>);
-unlink(<out/*.txt>);
-unlink(<out/*.html>);
-unlink(<out/*.csv>);
-
-my @ebcmd = qw(-MEB::Main -e run -- -X -f ivp.conf --echo);
-push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
-
-unshift(@ebcmd, map { ("-I",
-		       "../../$_"
-		      ) } grep { /^\w\w/ } reverse @INC);
-unshift(@ebcmd, $^X);
+$remaining--;
 
 SKIP: {
-# Check whether we can contact the database.
-eval {
-    if ( $dbdriver eq "postgres" ) {
-	my @ds = DBI->data_sources("Pg");
-	diag("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
-	skip("No access to database", 37)
-	  if $DBI::errstr;# && $DBI::errstr =~ /FATAL:\s*(user|role) .* does not exist/;
+    eval "require $dbddrv";
+    skip("DBI $dbdriver driver ($dbddrv) not installed", $remaining) if $@;
+
+    # Cleanup old files.
+    unlink( glob("out/*.sql") );
+    unlink( glob("out/*.log") );
+    unlink( glob("out/*.txt") );
+    unlink( glob("out/*.html") );
+    unlink( glob("out/*.csv") );
+    unlink( glob("ebsqlite_sample*") );
+
+    my @ebcmd = qw(-MEB::Main -e EB::Main::run -- -X -f ivp.conf --echo);
+    push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
+
+    unshift(@ebcmd, map { ("-I",
+			   "../../$_"
+			  ) } grep { /^\w\w/ } reverse @INC);
+    unshift(@ebcmd, $^X);
+
+    # Check whether we can contact the database.
+    eval {
+	if ( $dbdriver eq "postgres" ) {
+	    my @ds = DBI->data_sources("Pg");
+	    diag("Connect error:\n\t" . ($DBI::errstr||""))
+	      if $DBI::errstr;
+	    skip("No access to database", $remaining)
+	      if $DBI::errstr;
+	      # && $DBI::errstr =~ /FATAL:\s*(user|role) .* does not exist/;
+	}
+    };
+
+    #### PASS 1: Construct from distributed files.
+    for my $log ( "out/init.log" ) {
+	ok(syscmd([@ebcmd, qw(--init)], undef, $log), "init");
+	checkerr($log);
     }
-};
 
-for my $log ( "out/createdb.log" ) {
-    ok(syscmd([@ebcmd, qw(--createdb --schema=schema -c)], undef, $log), "createdb");
-    checkerr($log);
-}
+    report_tests(@ebcmd);
 
-for my $log ( "out/relaties.log" ) {
-    ok(syscmd(\@ebcmd, "relaties.eb", $log), "relaties");
-    checkerr($log);
-}
+    for my $log ( "out/export1.log" ) {
+	ok(syscmd([@ebcmd, qw(--export --dir=out)], undef, $log), "export1");
+	checkerr($log);
+    }
 
-for my $log ( "out/opening.log" ) {
-    ok(syscmd(\@ebcmd, "opening.eb", $log), "openen administratie");
-    checkerr($log);
-}
+    #### PASS 2: Construct from exported files.
+    for my $log ( "out/import1.log" ) {
+	ok(syscmd([@ebcmd, qw(--import --dir=out)], undef, $log), "import1");
+	checkerr($log);
+    }
 
-for my $log ( "out/mutaties.log" ) {
-    ok(syscmd(\@ebcmd, "mutaties.eb", $log), "mutaties");
-    checkerr($log);
-}
+    report_tests(@ebcmd);
 
-for my $log ( "out/reports.log" ) {
-    ok(syscmd(\@ebcmd, "reports.eb", $log), "reports");
-    checkerr($log);
-}
+    for my $log ( "out/export2.log" ) {
+	ok(syscmd([@ebcmd, qw(--export --file=out/export2.ebz)], undef, $log), "export2");
+	checkerr($log);
+    }
 
-# Verify: balans in varianten.
-vfy([@ebcmd, qw(-c balans)           ], "balans.txt");
-vfy([@ebcmd, qw(-c balans --detail=0)], "balans0.txt");
-vfy([@ebcmd, qw(-c balans --detail=1)], "balans1.txt");
-vfy([@ebcmd, qw(-c balans --detail=2)], "balans2.txt");
-vfy([@ebcmd, qw(-c balans --verdicht)], "balans2.txt");
-vfy([@ebcmd, qw(-c balans --opening) ], "obalans.txt");
+    #### PASS 3: Construct from exported .ebz .
+    for my $log ( "out/import2.log" ) {
+	ok(syscmd([@ebcmd, qw(--import --file=out/export2.ebz)], undef, $log), "import2");
+	checkerr($log);
+    }
 
-# Verify: verlies/winst in varianten.
-vfy([@ebcmd, qw(-c result)           ], "result.txt");
-vfy([@ebcmd, qw(-c result --detail=0)], "result0.txt");
-vfy([@ebcmd, qw(-c result --detail=1)], "result1.txt");
-vfy([@ebcmd, qw(-c result --detail=2)], "result2.txt");
-vfy([@ebcmd, qw(-c result --verdicht)], "result2.txt");
+    report_tests(@ebcmd);
 
-# Verify: Journaal.
-vfy([@ebcmd, qw(-c journaal)            ], "journaal.txt");
-# Verify: Journaal van dagboek.
-vfy([@ebcmd, qw(-c journaal postbank)   ], "journaal-postbank.txt");
-# Verify: Journaal van boekstuk.
-vfy([@ebcmd, qw(-c journaal postbank:24)], "journaal-postbank24.txt");
 
-# Verify: Proef- en Saldibalans in varianten.
-vfy([@ebcmd, qw(-c proefensaldibalans)           ], "proef.txt");
-vfy([@ebcmd, qw(-c proefensaldibalans --detail=0)], "proef0.txt");
-vfy([@ebcmd, qw(-c proefensaldibalans --detail=1)], "proef1.txt");
-vfy([@ebcmd, qw(-c proefensaldibalans --detail=2)], "proef2.txt");
-vfy([@ebcmd, qw(-c proefensaldibalans --verdicht)], "proef2.txt");
-
-# Verify: Grootboek in varianten.
-vfy([@ebcmd, qw(-c grootboek)           ], "grootboek.txt");
-vfy([@ebcmd, qw(-c grootboek --detail=0)], "grootboek0.txt");
-vfy([@ebcmd, qw(-c grootboek --detail=1)], "grootboek1.txt");
-vfy([@ebcmd, qw(-c grootboek --detail=2)], "grootboek2.txt");
-
-# Verify: Crediteuren/Debiteuren.
-vfy([@ebcmd, qw(-c crediteuren)         ], "crdrept.txt");
-vfy([@ebcmd, qw(-c debiteuren)          ], "debrept.txt");
-
-# Verify: BTW aangifte.
-vfy([@ebcmd, qw(-c btwaangifte j)], "btw.txt");
-vfy([@ebcmd, qw(-c btwaangifte k2)], "btwk2.txt");
-vfy([@ebcmd, qw(-c btwaangifte 7)], "btw7.txt");
-
-# Verify: HTML generatie.
-vfy([@ebcmd, qw(-c balans --detail=2 --gen-html)            ], "balans2.html");
-vfy([@ebcmd, qw(-c balans --detail=2 --gen-html --style=xxx)], "balans2xxx.html");
-vfy([@ebcmd, qw(-c btwaangifte j)], "btw.html");
-
-# Verify: CSV generatie.
-vfy([@ebcmd, qw(-c balans --detail=2 --gen-csv)], "balans2.csv");
-
-}	# end SKIP db access
-}	# end SKIP have dbd driver
+}	# end SKIP
 
 ################ subroutines ################
+
+sub report_tests {
+    my @ebcmd = @_;
+
+    for my $log ( "out/reports.log" ) {
+	ok(syscmd(\@ebcmd, "reports.eb", $log), "reports");
+	checkerr($log);
+	$remaining--;
+    }
+
+    # Verify: balans in varianten.
+    vfy([@ebcmd, qw(-c balans)           ], "balans.txt" );
+    vfy([@ebcmd, qw(-c balans --detail=0)], "balans0.txt");
+    vfy([@ebcmd, qw(-c balans --detail=1)], "balans1.txt");
+    vfy([@ebcmd, qw(-c balans --detail=2)], "balans2.txt");
+    vfy([@ebcmd, qw(-c balans --verdicht)], "balans2.txt");
+    vfy([@ebcmd, qw(-c balans --opening) ], "obalans.txt");
+
+    # Verify: verlies/winst in varianten.
+    vfy([@ebcmd, qw(-c result)           ], "result.txt" );
+    vfy([@ebcmd, qw(-c result --detail=0)], "result0.txt");
+    vfy([@ebcmd, qw(-c result --detail=1)], "result1.txt");
+    vfy([@ebcmd, qw(-c result --detail=2)], "result2.txt");
+    vfy([@ebcmd, qw(-c result --verdicht)], "result2.txt");
+
+    # Verify: Journaal.
+    vfy([@ebcmd, qw(-c journaal)            ], "journaal.txt");
+    # Verify: Journaal van dagboek.
+    vfy([@ebcmd, qw(-c journaal postbank)   ], "journaal-postbank.txt");
+    # Verify: Journaal van boekstuk.
+    vfy([@ebcmd, qw(-c journaal postbank:24)], "journaal-postbank24.txt");
+
+    # Verify: Proef- en Saldibalans in varianten.
+    vfy([@ebcmd, qw(-c proefensaldibalans)           ], "proef.txt");
+    vfy([@ebcmd, qw(-c proefensaldibalans --detail=0)], "proef0.txt");
+    vfy([@ebcmd, qw(-c proefensaldibalans --detail=1)], "proef1.txt");
+    vfy([@ebcmd, qw(-c proefensaldibalans --detail=2)], "proef2.txt");
+    vfy([@ebcmd, qw(-c proefensaldibalans --verdicht)], "proef2.txt");
+
+    # Verify: Grootboek in varianten.
+    vfy([@ebcmd, qw(-c grootboek)           ], "grootboek.txt" );
+    vfy([@ebcmd, qw(-c grootboek --detail=0)], "grootboek0.txt");
+    vfy([@ebcmd, qw(-c grootboek --detail=1)], "grootboek1.txt");
+    vfy([@ebcmd, qw(-c grootboek --detail=2)], "grootboek2.txt");
+
+    # Verify: Crediteuren/Debiteuren.
+    vfy([@ebcmd, qw(-c crediteuren)         ], "crdrept.txt");
+    vfy([@ebcmd, qw(-c debiteuren)          ], "debrept.txt");
+
+    # Verify: BTW aangifte.
+    vfy([@ebcmd, qw(-c btwaangifte j)       ], "btw.txt"  );
+    vfy([@ebcmd, qw(-c btwaangifte k2)      ], "btwk2.txt");
+    vfy([@ebcmd, qw(-c btwaangifte 7)       ], "btw7.txt" );
+
+    # Verify: HTML generatie.
+    vfy([@ebcmd, qw(-c balans --detail=2 --gen-html)            ], "balans2.html");
+    vfy([@ebcmd, qw(-c balans --detail=2 --gen-html --style=xxx)], "balans2xxx.html");
+    vfy([@ebcmd, qw(-c btwaangifte j)], "btw.html");
+
+    # Verify: CSV generatie.
+    vfy([@ebcmd, qw(-c balans --detail=2 --gen-csv)], "balans2.csv");
+
+    # Verify: XAF generatie.
+    vfy([@ebcmd, qw(-c export --xaf=out/export.xaf)], "export.xaf");
+}
 
 sub vfy {
     my ($cmd, $ref) = @_;
