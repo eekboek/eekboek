@@ -46,6 +46,7 @@ Requires: perl(File::HomeDir)
 BuildRequires: perl >= 5.8.8
 BuildRequires: perl(Module::Build)
 BuildRequires: perl(IPC::Run3)
+BuildRequires: perl(Archive::Zip)
 BuildRequires: perl(Term::ReadLine)
 BuildRequires: perl(Term::ReadLine::Gnu)
 BuildRequires: perl(DBI) >= 1.40
@@ -201,7 +202,7 @@ pod2man blib/script/ebgui > %{buildroot}%{_mandir}/man1/ebgui.1
 %exclude %{ebshare}/lib/EB/DB/Postgres.pm
 %exclude %{ebshare}/lib/EB/Wx
 %exclude %{ebshare}/lib/EB/Report/*/Wx[Hh]tml.pm
-%exclude %{ebshare}/lib/EB/tips.txt
+%exclude %{ebshare}/lib/EB/Wx/tips.txt
 %exclude %{ebshare}/contrib
 %{_bindir}/ebshell
 %{_mandir}/man1/ebshell.*
@@ -217,7 +218,7 @@ pod2man blib/script/ebgui > %{buildroot}%{_mandir}/man1/ebgui.1
 %doc README.gui
 %{ebshare}/lib/EB/Wx
 %{ebshare}/lib/EB/Report/*/Wx[Hh]tml.pm
-%{ebshare}/lib/EB/tips.txt
+%{ebshare}/lib/EB/Wx/tips.txt
 %{_bindir}/ebgui
 %{_mandir}/man1/ebgui.*
 %endif
