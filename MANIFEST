@@ -167,6 +167,7 @@ lib/EB/Wx/Export/EekBoek.pm
 lib/EB/Wx/Export/XAF.pm
 lib/EB/Wx/FakeApp.pm
 lib/EB/Wx/IniWiz.pm
+lib/EB/Wx/IniWiz/OpenDialog.pm
 lib/EB/Wx/Locale.pm
 lib/EB/Wx/Main.pm
 lib/EB/Wx/MainFrame.pm
@@ -276,6 +277,7 @@ t/ivp/ref/btw7.txt
 t/ivp/ref/btwk2.txt
 t/ivp/ref/crdrept.txt
 t/ivp/ref/debrept.txt
+t/ivp/ref/export.xaf
 t/ivp/ref/grootboek.txt
 t/ivp/ref/grootboek0.txt
 t/ivp/ref/grootboek1.txt
