@@ -25,8 +25,10 @@ package EB::Wx::IniWiz;
 use Wx qw[:everything];
 use base qw(Wx::Frame);
 use EB;
+use File::Basename;
 
 my @db_drivers;
+my @adm_dirs;
 
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
@@ -61,6 +63,8 @@ sub new {
 	$self->{label_7} = Wx::StaticText->new($self->{wiz_p00}, -1, _T("Dit programma kan u helpen bij het initiëel opzetten van een eenvoudige administratie."), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_3} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Naam"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_adm_name} = Wx::TextCtrl->new($self->{wiz_p01}, -1, _T("Mijn eerste EekBoek"), wxDefaultPosition, wxDefaultSize, );
+	$self->{label_10} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Code"), wxDefaultPosition, wxDefaultSize, );
+	$self->{t_adm_code} = Wx::TextCtrl->new($self->{wiz_p01}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{label_4} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Begindatum"), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_6} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("01-01-"), wxDefaultPosition, wxDefaultSize, );
 	$self->{sp_adm_begin} = Wx::SpinCtrl->new($self->{wiz_p01}, -1, "", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_AUTO_URL, 0, 100, );
@@ -157,6 +161,7 @@ sub new {
 	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_template}->GetId, \&OnSelectTemplate );
 	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_db_driver}->GetId, \&OnSelectDatabaseDriver );
 	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_name}->GetId, \&OnSelectAdmName );
+	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_code}->GetId, \&OnSelectAdmCode );
 	Wx::Event::EVT_SPINCTRL($self->{wiz}, $self->{sp_adm_begin}->GetId, \&OnSelectAdmName );
 
 	$self->{wiz}->SetPageSize([600,-1]);
@@ -166,9 +171,33 @@ sub new {
 }
 
 sub runwiz {
-    my ( $self ) = shift;
+    my ( $self, $opts ) = @_;
     $self->{wiz}->RunWizard( $self->{wiz_p00} );
     $self->{wiz}->Destroy;
+}
+
+sub getadm {			# STATIC
+    my ( $pkg, $opts ) = @_;
+    chdir($opts->{admdir});
+    my @files = glob("*/.eekboek.conf");
+    foreach ( sort @files ) {
+	push( @adm_dirs, dirname($_) );
+    }
+
+    my $ret = wxID_NEW;
+    if ( @adm_dirs ) {
+	require EB::Wx::IniWiz::OpenDialog;
+	my $d = EB::Wx::IniWiz::OpenDialog->new( undef, -1,
+						 _T("Kies"),
+						 wxDefaultPosition, wxDefaultSize, );
+	$d->init( \@adm_dirs );
+	if ( ($ret = $d->ShowModal) == wxID_OK ) {
+	    chdir( $adm_dirs[ $d->GetSelection ] ) || die("chdir");
+	}
+	$d->Destroy;
+    }
+    return $ret;
+
 }
 
 sub __set_properties {
@@ -185,6 +214,7 @@ sub __set_properties {
 	$self->{b_ok}->Enable(0);
 	$self->{wiz_p00}->Show(0);
 	$self->{t_adm_name}->SetToolTipString(_T("Een omschrijving van deze administratie, bijvoorbeeld \"Boekhouding 2009\"."));
+	$self->{t_adm_code}->SetToolTipString(_T("Een korte, unieke aanduiding van deze administratie, bijvoorbeeld \"admin2009\"."));
 	$self->{sp_adm_begin}->SetToolTipString(_T("De begindatum. Het boekjaar begint op 1 januari van dit jaar."));
 	$self->{ch_template}->SetSelection(0);
 	$self->{wiz_p01}->Show(0);
@@ -252,7 +282,7 @@ sub __do_layout {
 	$self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_13} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_5}= Wx::StaticBoxSizer->new($self->{sizer_5_staticbox}, wxHORIZONTAL);
-	$self->{grid_sizer_2} = Wx::FlexGridSizer->new(3, 2, 5, 5);
+	$self->{grid_sizer_2} = Wx::FlexGridSizer->new(4, 2, 5, 5);
 	$self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_11} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_12}= Wx::StaticBoxSizer->new($self->{sizer_12_staticbox}, wxHORIZONTAL);
@@ -270,6 +300,8 @@ sub __do_layout {
 	$self->{sz_main}->Add($self->{wiz_p00}, 0, wxEXPAND, 0);
 	$self->{grid_sizer_2}->Add($self->{label_3}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->Add($self->{t_adm_name}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid_sizer_2}->Add($self->{label_10}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_sizer_2}->Add($self->{t_adm_code}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->Add($self->{label_4}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add($self->{label_6}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add($self->{sp_adm_begin}, 0, wxADJUST_MINSIZE, 0);
@@ -374,6 +406,22 @@ sub OnSelectAdmName {
     $x =~ s/\s+/_/g;
     $x =~ s/\W//g;
     $x .= "_" . $self->{sp_adm_begin}->GetValue;
+    $self->{t_adm_code}->SetValue($x);
+    $self->{t_db_name}->SetValue($x);
+
+# end wxGlade
+}
+
+sub OnSelectAdmCode {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OnSelectAdmCode <event_handler>
+
+    $self = $self->GetParent;
+
+    my $x = lc $self->{t_adm_code}->GetValue;
+    $x =~ s/\s+/_/g;
+    $x =~ s/\W//g;
+    # $x .= "_" . $self->{sp_adm_begin}->GetValue;
     $self->{t_db_name}->SetValue($x);
 
 # end wxGlade
@@ -420,6 +468,7 @@ sub OnWizardFinished {
 
     my %opts;
     $opts{adm_naam} = $self->{t_adm_name}->GetValue;
+    $opts{adm_code} = $self->{t_adm_code}->GetValue;
     $opts{adm_begindatum} = $self->{sp_adm_begin}->GetValue;
 
     $opts{db_naam} = $self->{t_db_name}->GetValue;
@@ -438,6 +487,11 @@ sub OnWizardFinished {
 
     $opts{template} = @ebz[ $self->{ch_template}->GetSelection ];
 
+    if ( $opts{adm_code} ) {
+	mkdir($opts{adm_code}) unless -d $opts{adm_code};
+	chdir($opts{adm_code}) or die("chdir($opts{adm_code}): $!\n");;
+    }
+
     eval {
 
 	EB::Tools::MiniAdm->sanitize(\%opts);
@@ -451,16 +505,7 @@ sub OnWizardFinished {
 		    # Using EB::Main->run crashes ...
 		    # Need to run ebshell externally.
 
-		    my $script = $0;
-		    my @cmd;
-
-		    # Try to run the shell that comes with this kit.
-		    if ( $script =~ s;(.*[/\\])ebgui;${1}ebshell; ) {
-			push( @cmd, $^X, $script, "--init" );
-		    }
-		    else {
-			push( @cmd, "ebshell", "--init");
-		    }
+		    my @cmd = ( "ebshell", "--init" );	
 		    my $ret = system(@cmd);
 		    $self->{t_main}->AppendText(_T( $ret ? "Mislukt" : "Gereed")."\n");
 		}
@@ -555,16 +600,22 @@ sub new {
 package EB::Wx::IniWiz;
 
 sub run {
-
-    my $needwiz = 0;
+    my ( $self, $opts ) = @_;
+    my $needwiz = $opts->{wizard};
+    my $admdir = $opts->{admdir};
     $runeb = 1;
+
+    if ( $admdir ) {
+	mkdir($admdir) unless -d $admdir;
+	die("No admdir $admdir: $!") unless -d $admdir;
+    }
 
     # Only check for config. Start EB if any, Wiz if none.
     foreach ( $configs[0] ) {
 	$needwiz++ unless -s $_;
     }
 
-    if ( $needwiz ) {
+    if ( $needwiz || $admdir ) {
 
 	$runeb = 0;
 
@@ -575,11 +626,21 @@ sub run {
 
 	Wx::InitAllImageHandlers();
 
-	my $top = EB::Wx::IniWiz->new();
-	$app->SetTopWindow($top);
-	$top->Centre;
-	$top->runwiz;
-	$app->MainLoop;
+	my $ret = wxID_NEW;
+	$ret = EB::Wx::IniWiz->getadm($opts) if $admdir;
+	if ( $ret == wxID_CANCEL ) {
+	    $runeb = 0;
+	}
+	elsif ( $ret == wxID_NEW || ! -s $configs[0] ) {	# getadm will chdir
+	    my $top = EB::Wx::IniWiz->new();
+	    $app->SetTopWindow($top);
+	    $top->Centre;
+	    $top->runwiz;
+	    $app->MainLoop;
+	}
+	else {
+	    $runeb = 1;
+	}
     }
 
     if ( $runeb ) {
