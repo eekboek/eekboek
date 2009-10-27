@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.05.02 **SNAPSHOT** is beschikbaar
+Subject: EekBoek 1.05.03 **SNAPSHOT** is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,11 +9,10 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.05.02 is beschikbaar.
+EekBoek versie 1.05.03 is beschikbaar.
 De 1.05 versies zijn de voorlopers van EekBoek 1.06 of misschien wel 2.00.
 
-Dit is een SNAPSHOT omdat het nog verre van compleet is. Bestanden als
-CHANGES en zo zijn niet aangepast.
+Dit is een SNAPSHOT omdat het nog niet alles compleet is.
 
 *** NIET INSTALLEREN *** GEBRUIK OP EIGEN RISICO ***
 
@@ -34,20 +33,36 @@ Als je deze laatste opdracht uitvoert in een directory waar geen
 .eekboek.conf voorkomt dat zal de wizard je helpen een
 skelet-administratie op te zetten.
 
-Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.05.02.tar.gz
+    perl <uitpak_dir>/EekBoek-1.05.01/script/ebgui --admdir <directory>
 
-RPM sources en binaries:
-* http://www.eekboek.nl/repo/fedora-testing/
+Als je deze opdracht uitvoert worden nieuwe addministraties in de
+opgegeven directory aangemaakt, en kun je bij het opstarten een van je
+administraties kiezen.
+
+In deze vorm kan de GUI startup worden ondergebracht onder een desktop
+icon of menu. Aanbevolen waarde voor de admdir is
+$HOME/.eekboek/admdir .
+
+Sources:
+* http://www.eekboek.nl/dl/EekBoek-1.05.03.tar.gz
 
 Geen install kits. Die komen als deze versie wat meer stabiel is geworden.
 
-Belangrijkste wijzigingen t.o.v. 1.05.01 (zie ook de file CHANGES):
+Belangrijkste wijzigingen t.o.v. 1.05.02 (zie ook de file CHANGES):
 
-* (GUI) Verhelpen probleem van opstarten GUI vanuit Wizard.
+* (GUI) Aanmaken van en kiezen uit administraties die in een
+  folder zijn ondergebracht. --admdir command line optie.
 
-* Verhelpen probleem met de voorbeeldadmin (mutaties waren nog niet
-  omgezet naar UTF-8).
+* (GUI) Bugfix: Dagboeken -> Inkoop/Verkoop hadden geen title.
+
+* (Wizard) Toon alle beschkbare database drivers.
+
+* (Wizard) Fix vertaling <Prev and Next> buttons.
+
+* (Wizard) Ingave database folder.
+
+* (Wizard) Automatisch vormen van database naam uit de
+  naam van de administratie.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
