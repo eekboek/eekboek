@@ -1,8 +1,9 @@
 #! perl
 
-# $Id: ebgui,v 1.7 2009/10/24 21:27:32 jv Exp $
+# $Id: ebgui,v 1.8 2009/10/27 15:14:21 jv Exp $
 
 use strict;
+use utf8;
 # use lib qw(EekBoekLibrary);
 
 =head1 NAME
@@ -74,11 +75,14 @@ my $locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
 # Common case when run from unpacked dist.
 my $script = $0;
 if ( -s File::Spec->catfile( dirname( dirname ($script) ), "lib", "EekBoek.pm" ) ) {
-    unshift( @INC, File::Spec->catfile( dirname( dirname ($script) ), "lib" ) );
+    unshift( @INC, File::Spec->rel2abs( File::Spec->catfile( dirname( dirname ($script) ), "lib" ) ) );
+    my $sep = ":";
+    $sep = ";" if $ENV{PATH} =~ /;/;
+    $ENV{PATH} = File::Spec->rel2abs( File::Spec->catfile( dirname ($script) ) ) . $sep . $ENV{PATH};
 }
 
 # Check EekBoek install.
-error( "EekBoek is niet geïnstalleerd, of kon niet worden gevonden.\n".
+error( "EekBoek is niet geÃ¯nstalleerd, of kon niet worden gevonden.\n".
        "\nRaadplaag uw systeembeheerder.\n",
        "Installatiefout" )
   unless findfile( "EekBoek.pm" )
@@ -87,23 +91,23 @@ error( "EekBoek is niet geïnstalleerd, of kon niet worden gevonden.\n".
 
 require EekBoek;
 
-error( "De geïnstalleerde versie van EekBoek is niet toereikend.\n".
-       "Versie $EekBoek::VERSION is geïnstalleerd terwijl versie 1.05.00 of later\n".
+error( "De geÃ¯nstalleerde versie van EekBoek is niet toereikend.\n".
+       "Versie $EekBoek::VERSION is geÃ¯nstalleerd terwijl versie 1.05.00 of later\n".
        "is vereist.\n".
        "\nRaadplaag uw systeembeheerder.",
        "Installatiefout" )
   unless $EekBoek::VERSION ge "1.05.00";
 
 # Check EekBoek GUI install.
-error( "De EekBoek GUI is niet geïnstalleerd, of kon niet worden gevonden.\n".
+error( "De EekBoek GUI is niet geÃ¯nstalleerd, of kon niet worden gevonden.\n".
        "\nRaadplaag uw systeembeheerder.",
        "Installatiefout" )
   unless findfile( "EB/Wx/Main.pm" )
   &&     findfile( "EB/Wx/IniWiz.pm" );
 
-if ( $opts{wizard} ) {
+if ( $opts{wizard} || $opts{admdir} ) {
     require EB::Wx::IniWiz;
-    EB::Wx::IniWiz->run;
+    EB::Wx::IniWiz->run(\%opts);
 }
 else {
     require EB::Wx::Main;
@@ -123,13 +127,12 @@ sub findfile {
 
 ################ Messengers ################
 
-use Encode;
 sub _msg {
     my ( $msg, $caption, $style ) = @_;
     $style |= wxOK;
     my $d = Wx::MessageDialog->new ( undef,
-				     encode_utf8($msg),
-				     encode_utf8($caption),
+				     $msg,
+				     $caption,
 				     $style, wxDefaultPosition );
     $d->ShowModal;
     $d->Destroy;
@@ -167,6 +170,7 @@ sub app_options {
 	   'X',
 	   'config|f=s',
 	   'define|D=s%',
+	   'admdir=s',
 	   'trace',
 	   'help|?',
 	   'debug',
