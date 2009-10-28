@@ -13,8 +13,8 @@
     <endDate>2007-12-31</endDate>
     <currencyCode>EUR</currencyCode>
     <dateCreated>2007-12-31</dateCreated>
-    <productID>EekBoek</productID>
-    <productVersion>1.05.03</productVersion>
+    <productID>[% PkgName %]</productID>
+    <productVersion>[% version %]</productVersion>
   </header>
   <generalLedger>
     <taxonomy>geen</taxonomy>
