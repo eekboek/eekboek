@@ -1,4 +1,4 @@
-# $Id: 10_basic.t,v 1.8 2009/10/28 22:29:36 jv Exp $  -*-perl-*-
+# $Id: 10_basic.t,v 1.9 2009/10/28 22:43:05 jv Exp $  -*-perl-*-
 
 use strict;
 use Test::More tests => 11;
@@ -6,8 +6,7 @@ use Test::More tests => 11;
 # Some basic tests.
 
 BEGIN {
-    use_ok("EB::Config");
-    EB::Config->init_config( { app => "Test", nostdconf => 1 } );
+    use_ok("EB::Config", { app => "Test", nostdconf => 1 } );
     use_ok("EB");
     use_ok("EB::Format");
     use_ok("EB::Booking::IV");
