@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: ebgui,v 1.8 2009/10/27 15:14:21 jv Exp $
+# $Id: ebgui,v 1.9 2009/10/28 08:48:12 jv Exp $
 
 use strict;
 use utf8;
@@ -104,6 +104,13 @@ error( "De EekBoek GUI is niet geïnstalleerd, of kon niet worden gevonden.\n".
        "Installatiefout" )
   unless findfile( "EB/Wx/Main.pm" )
   &&     findfile( "EB/Wx/IniWiz.pm" );
+
+error( "De geïnstalleerde versie van wxWidgets is niet toereikend.\n".
+       "Versie $Wx::wxVERSION is geïnstalleerd terwijl versie 2.008 of later\n".
+       "is vereist.\n".
+       "\nRaadplaag uw systeembeheerder.",
+       "Installatiefout" )
+  unless $Wx::wxVERSION ge "2.008";
 
 if ( $opts{wizard} || $opts{admdir} ) {
     require EB::Wx::IniWiz;
