@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.23 2009/10/25 14:44:37 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.24 2009/10/28 22:08:03 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Oct 25 15:44:22 2009
-# Update Count    : 96
+# Last Modified On: Wed Oct 28 16:51:31 2009
+# Update Count    : 97
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -115,6 +115,10 @@ sub ProcessTemplates {
 
     vcopy( _tag	    => "RPM spec file",
 	   _dst	    => "$name.spec",
+	   %vars);
+
+    vcopy( _tag	    => "XAF ref file",
+	   _dst	    => "t/ivp/ref/export.xaf",
 	   %vars);
 
 =begin Debian
