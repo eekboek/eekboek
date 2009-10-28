@@ -17,8 +17,6 @@ use base qw(Wx::Frame);
 use EB;
 use base qw(EB::Wx::Window);
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
-
 my %cmds;
 
 sub new {
@@ -152,7 +150,6 @@ sub new {
 	$self->{OLDLOG} = Wx::Log::SetActiveTarget (Wx::LogTextCtrl->new($self->{tx_log}));
 	#Wx::Log::SetTimestamp("%T");
 	Wx::LogMessage($EB::imsg);
-	Wx::LogMessage("EekBoek GUI extension version $EB::Wx::Main::VERSION");
 	Wx::LogMessage("Huidig boekjaar: " . ($state->bky) .  " (" . $dbh->adm("name") . ")");
 
 	$self->adapt_menus;

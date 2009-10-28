@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: AboutDialog.pm,v 1.2 2008/02/08 20:27:44 jv Exp $
+# $Id: AboutDialog.pm,v 1.3 2009/10/28 22:11:31 jv Exp $
 
 package EB::Wx::Tools::AboutDialog;
 
@@ -83,7 +83,6 @@ sub refresh {
     my $info = "<p>";
 
     my $msg = $EB::imsg . "\n";
-    $msg =~ s/ -- / $EB::Wx::Main::VERSION<br>\n/;
     $info .= $msg . "</p>\n";
     my $v = $Wx::VERSION;
     $v =~ s/,/./g;
