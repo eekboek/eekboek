@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: 90_ivp_common.pl,v 1.4 2009/10/25 18:52:27 jv Exp $  -*-perl-*-
+# $Id: 90_ivp_common.pl,v 1.5 2009/10/28 22:12:17 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
@@ -65,7 +65,7 @@ SKIP: {
     unlink( glob("out/*.csv") );
     unlink( glob("ebsqlite_sample*") );
 
-    my @ebcmd = qw(-MEB::Main -e EB::Main::run -- -X -f ivp.conf --echo);
+    my @ebcmd = qw(-MEB::Main -e EB::Main->run -- -X -f ivp.conf --echo);
     push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
 
     unshift(@ebcmd, map { ("-I",
@@ -193,7 +193,13 @@ sub vfy {
     my ($cmd, $ref) = @_;
     my @c = @$cmd;
     while ( shift(@c) ne "-c" ) { }
-    ok(!diff($ref), "@c --output=$ref");
+    if ( $ref =~ /\.xaf$/ ) {
+	push( @c, "--xaf=$ref" );
+    }
+    else {
+	push( @c, "--output=$ref" );
+    }
+    ok(!diff($ref), $ref);
 }
 
 sub vfyxx {
