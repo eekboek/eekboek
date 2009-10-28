@@ -1,10 +1,112 @@
 #! perl
 
-# $Id: ebgui,v 1.9 2009/10/28 08:48:12 jv Exp $
+# $Id: ebgui,v 1.10 2009/10/28 22:11:46 jv Exp $
 
 use strict;
 use utf8;
 # use lib qw(EekBoekLibrary);
+
+package main;
+
+use strict;
+use warnings;
+use File::Spec;
+use File::Basename;
+
+use Wx qw( :everything  );;
+# If we get here, we have Wx :)
+
+# Common case when run from unpacked dist.
+my $script = $0;
+my $dir = dirname($script);
+my $lib = File::Spec->catfile( dirname($dir), "lib" );
+if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
+    # Need abs paths since we're going to chdir later.
+    unshift( @INC, File::Spec->rel2abs($lib) );
+    my $sep = $ENV{PATH} =~ m?;??q:;::q;:;;;; # just for fun
+    $ENV{PATH} = File::Spec->rel2abs($dir) . $sep . $ENV{PATH};
+}
+
+check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/schema/eekboek.sql" );
+
+require EekBoek;
+check_version( "EekBoek", $EekBoek::VERSION, "1.05.00" );
+
+check_install( "De EekBoek GUI", "EB/Wx/Main.pm", "EB/Wx/IniWiz.pm" );
+
+# Some more version checking. Wx 0.74 is somewhat arbitrary.
+check_version( "Wx", $Wx::VERSION, "0.74" );
+check_version( "wxWidgets", $Wx::wxVERSION, "2.008" );
+
+require EB::Wx::Main;
+EB::Wx::Main->run;
+
+################ Subroutines ################
+
+sub findfile {
+    my ( $file ) = @_;
+    foreach ( @INC ) {
+	my $f = File::Spec->catfile( $_, $file );
+	return $f if -s $f;
+    }
+    return;
+}
+
+sub check_install {
+    my ( $what, @checks ) = @_;
+    foreach ( @checks ) {
+	next if findfile( $_ );
+	error( <<END_MSG, "Installatiefout" );
+$what is niet geïnstalleerd, of kon niet worden gevonden.
+
+Raadplaag uw systeembeheerder.
+END_MSG
+	return;
+    }
+}
+
+sub check_version {
+    my ( $what, $version, $required ) = @_;
+    return if $version ge $required;
+    error( <<END_MSG, "Ontoereikende $what versie" );
+De geïnstalleerde versie van $what is niet toereikend.
+Versie $version is geïnstalleerd terwijl versie $required of later
+is vereist.
+
+Raadplaag uw systeembeheerder.
+END_MSG
+}
+
+################ Messengers ################
+
+sub _msg {
+    my ( $msg, $caption, $style ) = @_;
+    $style |= wxOK;
+    my $d = Wx::MessageDialog->new ( undef,
+				     $msg,
+				     $caption,
+				     $style, wxDefaultPosition );
+    $d->ShowModal;
+    $d->Destroy;
+}
+
+sub info {
+    push( @_, wxICON_INFORMATION );
+    goto &_msg;
+}
+
+sub error {
+    push( @_, wxICON_ERROR );
+    &_msg;
+    exit(1);
+}
+
+sub warning {
+    push( @_, wxICON_EXCLAMATION );
+    goto &_msg;
+}
+
+1;
 
 =head1 NAME
 
@@ -54,152 +156,3 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See either the
 GNU General Public License or the Artistic License for more details.
 
 =cut
-
-package main;
-
-use strict;
-use warnings;
-use File::Spec;
-use File::Basename;
-use Getopt::Long;
-
-use Wx qw( :everything  );;
-# If we get here, we have Wx :)
-
-my %opts = ( wizard => 1 );
-
-app_options();
-
-my $locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
-
-# Common case when run from unpacked dist.
-my $script = $0;
-if ( -s File::Spec->catfile( dirname( dirname ($script) ), "lib", "EekBoek.pm" ) ) {
-    unshift( @INC, File::Spec->rel2abs( File::Spec->catfile( dirname( dirname ($script) ), "lib" ) ) );
-    my $sep = ":";
-    $sep = ";" if $ENV{PATH} =~ /;/;
-    $ENV{PATH} = File::Spec->rel2abs( File::Spec->catfile( dirname ($script) ) ) . $sep . $ENV{PATH};
-}
-
-# Check EekBoek install.
-error( "EekBoek is niet geïnstalleerd, of kon niet worden gevonden.\n".
-       "\nRaadplaag uw systeembeheerder.\n",
-       "Installatiefout" )
-  unless findfile( "EekBoek.pm" )
-  &&     findfile( "EB.pm" )
-  &&     findfile( "EB/schema/eekboek.sql" );
-
-require EekBoek;
-
-error( "De geïnstalleerde versie van EekBoek is niet toereikend.\n".
-       "Versie $EekBoek::VERSION is geïnstalleerd terwijl versie 1.05.00 of later\n".
-       "is vereist.\n".
-       "\nRaadplaag uw systeembeheerder.",
-       "Installatiefout" )
-  unless $EekBoek::VERSION ge "1.05.00";
-
-# Check EekBoek GUI install.
-error( "De EekBoek GUI is niet geïnstalleerd, of kon niet worden gevonden.\n".
-       "\nRaadplaag uw systeembeheerder.",
-       "Installatiefout" )
-  unless findfile( "EB/Wx/Main.pm" )
-  &&     findfile( "EB/Wx/IniWiz.pm" );
-
-error( "De geïnstalleerde versie van wxWidgets is niet toereikend.\n".
-       "Versie $Wx::wxVERSION is geïnstalleerd terwijl versie 2.008 of later\n".
-       "is vereist.\n".
-       "\nRaadplaag uw systeembeheerder.",
-       "Installatiefout" )
-  unless $Wx::wxVERSION ge "2.008";
-
-if ( $opts{wizard} || $opts{admdir} ) {
-    require EB::Wx::IniWiz;
-    EB::Wx::IniWiz->run(\%opts);
-}
-else {
-    require EB::Wx::Main;
-    EB::Wx::Main->run;
-}
-
-################ Subroutines ################
-
-sub findfile {
-    my ( $file ) = @_;
-    foreach ( @INC ) {
-	my $f = File::Spec->catfile( $_, $file );
-	return $f if -s $f;
-    }
-    return;
-}
-
-################ Messengers ################
-
-sub _msg {
-    my ( $msg, $caption, $style ) = @_;
-    $style |= wxOK;
-    my $d = Wx::MessageDialog->new ( undef,
-				     $msg,
-				     $caption,
-				     $style, wxDefaultPosition );
-    $d->ShowModal;
-    $d->Destroy;
-}
-
-sub info {
-    push( @_, wxICON_INFORMATION );
-    goto &_msg;
-}
-
-sub error {
-    push( @_, wxICON_ERROR );
-    &_msg;
-    exit(1);
-}
-
-sub warning {
-    push( @_, wxICON_EXCLAMATION );
-    goto &_msg;
-}
-
-################ Command Line Options ################
-
-sub app_options {
-
-    # Process options, if any.
-    # Make sure defaults are set before returning!
-    return unless @ARGV > 0;
-
-    Getopt::Long::Configure(qw(no_ignore_case));
-
-    if ( !GetOptions
-	 ( \%opts,
-	   'wizard!',
-	   'X',
-	   'config|f=s',
-	   'define|D=s%',
-	   'admdir=s',
-	   'trace',
-	   'help|?',
-	   'debug',
-	 ) or delete $opts{help} )
-    {
-	app_usage(2);
-    }
-    app_usage(2) if @ARGV;
-}
-
-sub app_usage {
-    my ($exit) = @_;
-    error (<<EndOfUsage, "Oeps...");
-Gebruik: $0 [options] [file ...]
-
-    --[no]wizard        gebruik de wizard om op te starten (standaard)
-    --config -f XXX     specificeer configuratiebestand
-    --define -D key=value  specificeer configuratiewaarden
-    --X                 gebruik uitsluitend dit configuratiebestand
-    --help		deze hulpboodschap
-EndOfUsage
-    exit $exit if defined $exit && $exit != 0;
-}
-
-1;

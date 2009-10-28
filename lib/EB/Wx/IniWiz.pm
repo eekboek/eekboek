@@ -8,13 +8,14 @@ use strict;
 use warnings;
 
 use EekBoek;
-use EB::Config $EekBoek::PACKAGE;
+use EB;
 use EB::Tools::MiniAdm;
 use EB::Wx::Main;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 our $app;
-our $runeb;
+our $cfg;
+
 our @ebz;
 
 our @configs = qw( .eekboek.conf schema.dat
@@ -29,6 +30,7 @@ use File::Basename;
 
 my @db_drivers;
 my @adm_dirs;
+my $runeb;
 
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
@@ -81,8 +83,6 @@ sub new {
 	$self->{t_db_name} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{label_2} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database type"), wxDefaultPosition, wxDefaultSize, );
 	$self->{ch_db_driver} = Wx::Choice->new($self->{wiz_p04}, -1, wxDefaultPosition, wxDefaultSize, [_T("PostgreSQL"), _T("SQLite")], );
-	$self->{l_dbpath} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database folder"), wxDefaultPosition, wxDefaultSize, );
-	$self->{l_placeholder_dbpath} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("label_11"), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_5} = Wx::StaticText->new($self->{wiz_p05}, -1, _T("Druk op 'Voltooien' om de volgende bestanden aan te maken:"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_config} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Configuratiebestand"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_schema} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Rekeningschema"), wxDefaultPosition, wxDefaultSize, );
@@ -110,11 +110,6 @@ sub new {
 	}
 
 	@ebz = glob( libfile("schema/*.ebz") );
-
-	#### WHAT THE ***** IS GOING ON HERE????
-	*Fcntl::O_NOINHERIT = sub() { 0 };
-	*Fcntl::O_EXLOCK = sub() { 0 };
-	*Fcntl::O_TEMPORARY = sub() { 0 };
 
 	foreach my $ebz ( @ebz ) {
 	    require Archive::Zip;
@@ -145,11 +140,11 @@ sub new {
 	}
 
 	#### WARNING: Hard-wired reference to wiz_p04.
-	$self->{dc_dbpath} = Wx::DirPickerCtrl->new($self->{wiz_p04}, -1, "", _T("Kies een folder"), wxDefaultPosition, wxDefaultSize, 2 );
-	$self->{grid_db}->Replace( $self->{l_placeholder_dbpath}, $self->{dc_dbpath}, 1 );
-	$self->{l_placeholder_dbpath}->Destroy;
-	$self->{dc_dbpath}->SetToolTipString(_T("Folder waar databases worden opgeslagen (niet voor alle database typen)"));
-	$self->{dc_dbpath}->SetPath(_T("-- Huidige directory --"));
+#	$self->{dc_dbpath} = Wx::DirPickerCtrl->new($self->{wiz_p04}, -1, "", _T("Kies een folder"), wxDefaultPosition, wxDefaultSize, 2 );
+#	$self->{grid_db}->Replace( $self->{l_placeholder_dbpath}, $self->{dc_dbpath}, 1 );
+#	$self->{l_placeholder_dbpath}->Destroy;
+#	$self->{dc_dbpath}->SetToolTipString(_T("Folder waar databases worden opgeslagen (niet voor alle database typen)"));
+#	$self->{dc_dbpath}->SetPath(_T("-- Huidige directory --"));
 
 	Wx::Event::EVT_WIZARD_FINISHED($self, $self->{wiz}->GetId, \&OnWizardFinished );
 	Wx::Event::EVT_WIZARD_CANCEL($self, $self->{wiz}->GetId, \&OnWizardCancel );
@@ -179,7 +174,7 @@ sub runwiz {
 sub getadm {			# STATIC
     my ( $pkg, $opts ) = @_;
     chdir($opts->{admdir});
-    my @files = glob("*/.eekboek.conf");
+    my @files = glob( "*/" . $cfg->std_config );
     foreach ( sort @files ) {
 	push( @adm_dirs, dirname($_) );
     }
@@ -334,8 +329,6 @@ sub __do_layout {
 	$self->{grid_db}->Add($self->{t_db_name}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->Add($self->{label_2}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->Add($self->{ch_db_driver}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{grid_db}->Add($self->{l_dbpath}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{grid_db}->Add($self->{l_placeholder_dbpath}, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->AddGrowableCol(1);
 	$self->{sizer_4}->Add($self->{grid_db}, 1, wxALL|wxEXPAND, 5);
 	$self->{sizer_16}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
@@ -436,11 +429,11 @@ sub OnSelectDatabaseDriver {
     my $x = $self->{ch_db_driver}->GetSelection;
     if ( $db_drivers[$x] eq "sqlite" ) {
 	$self->{l_dbpath}->Enable(1);
-	$self->{dc_dbpath}->Enable(1);
+	#$self->{dc_dbpath}->Enable(1);
     }
     else {
 	$self->{l_dbpath}->Enable(0);
-	$self->{dc_dbpath}->Enable(0);
+	#$self->{dc_dbpath}->Enable(0);
     }
 
 # end wxGlade
@@ -473,9 +466,9 @@ sub OnWizardFinished {
 
     $opts{db_naam} = $self->{t_db_name}->GetValue;
     $opts{db_driver} = $db_drivers[$self->{ch_db_driver}->GetSelection];
-    $opts{db_path} = $self->{dc_dbpath}->GetPath
-      if $self->{dc_dbpath}->IsEnabled
-	&& $self->{dc_dbpath}->GetPath !~ /^--/;
+    #$opts{db_path} = $self->{dc_dbpath}->GetPath
+    #  if $self->{dc_dbpath}->IsEnabled
+    #	&& $self->{dc_dbpath}->GetPath !~ /^--/;
     $opts{"has_$_"} = $self->{"cb_$_"}->IsChecked
 	foreach qw(debiteuren crediteuren kas bank btw);
 
@@ -601,8 +594,7 @@ package EB::Wx::IniWiz;
 
 sub run {
     my ( $self, $opts ) = @_;
-    my $needwiz = $opts->{wizard};
-    my $admdir = $opts->{admdir};
+    my $admdir = $opts->{admdir} ||= $cfg->user_dir("admdir");
     $runeb = 1;
 
     if ( $admdir ) {
@@ -610,46 +602,30 @@ sub run {
 	die("No admdir $admdir: $!") unless -d $admdir;
     }
 
-    # Only check for config. Start EB if any, Wiz if none.
-    foreach ( $configs[0] ) {
-	$needwiz++ unless -s $_;
-    }
+    $runeb = 0;
 
-    if ( $needwiz || $admdir ) {
+    no warnings 'redefine';
+    local *Wx::App::OnInit = sub{1};
 
+    $app = Wx::App->new();
+
+    my $ret = wxID_NEW;
+    $ret = EB::Wx::IniWiz->getadm($opts) if $admdir;
+    if ( $ret == wxID_CANCEL ) {
 	$runeb = 0;
-
-	no warnings 'redefine';
-	local *Wx::App::OnInit = sub{1};
-
-	$app = Wx::App->new();
-
-	Wx::InitAllImageHandlers();
-
-	my $ret = wxID_NEW;
-	$ret = EB::Wx::IniWiz->getadm($opts) if $admdir;
-	if ( $ret == wxID_CANCEL ) {
-	    $runeb = 0;
-	}
-	elsif ( $ret == wxID_NEW || ! -s $configs[0] ) {	# getadm will chdir
-	    my $top = EB::Wx::IniWiz->new();
-	    $app->SetTopWindow($top);
-	    $top->Centre;
-	    $top->runwiz;
-	    $app->MainLoop;
-	}
-	else {
-	    $runeb = 1;
-	}
+    }
+    elsif ( $ret == wxID_NEW || ! -s $configs[0] ) {	# getadm will chdir
+	my $top = EB::Wx::IniWiz->new();
+	$app->SetTopWindow($top);
+	$top->Centre;
+	$top->runwiz;
+	$app->MainLoop;
+    }
+    else {
+	$runeb = 1;
     }
 
-    if ( $runeb ) {
-	package main;
-	our $cfg;
-	undef $cfg;
-	EB::Config->import( $EekBoek::PACKAGE );
-	EB::Wx::Main->run;
-    }
+    $opts->{runeb} = $runeb;
 
 }
 

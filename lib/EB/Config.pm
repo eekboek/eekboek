@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.23 2009/10/22 20:56:40 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.24 2009/10/28 22:08:50 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 22 21:18:39 2009
-# Update Count    : 179
+# Last Modified On: Wed Oct 28 21:19:59 2009
+# Update Count    : 203
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -21,43 +21,23 @@ package EB::Config;
 use strict;
 use warnings;
 use Carp;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.23 $ =~ /(\d+)/g;
-
+use File::HomeDir;
 use File::Spec;
 
 sub init_config {
-    my ($app) = @_;
+    my ($pkg, $opts) = @_;
+    my $app;
 
     Carp::croak("Internal error -- missing package arg for __PACKAGE__\n")
-	unless $app;
+	unless $app = delete $opts->{app};
 
     $app = lc($app);
 
+    return if $::cfg && $app && $::cfg->{app} eq lc($app);
+
     # Pre-parse @ARGV for "-f configfile".
-    my $extraconf;
-    my $skipconfig = 0;
-    my $i = 0;
-    while ( $i < @ARGV ) {
-	if ( $ARGV[$i] eq "-f" || $ARGV[$i] eq "-config" || $ARGV[$i] eq "--config" ) {
-	    if ( $i+1 < @ARGV ) {
-		$extraconf = $ARGV[$i+1];
-		splice(@ARGV, $i, 2);
-		last;
-	    }
-	}
-	elsif ( $ARGV[$i] =~ /^-f(.+)/ || $ARGV[$i] =~ /--?config=(.+)/ ) {
-	    $extraconf = $1;
-	    splice(@ARGV, $i, 1);
-	    last;
-	}
-	elsif ( $ARGV[$i] eq "-X" || $ARGV[$i] =~ /^--?no-?config$/ ) {
-	    $skipconfig++;
-	    splice(@ARGV, $i, 1);
-	    next;
-	}
-	$i++;
-    }
+    my $extraconf = $opts->{config};
+    my $skipconfig = $opts->{nostdconf};
 
     # Resolve extraconf to a file name. It must exist.
     if ( $extraconf ) {
@@ -88,22 +68,16 @@ sub init_config {
 	next unless -s $file;
 	$cfg->load($file);
     }
-    # Make sure we have an object, even if no config files.
 
-    $i = 0;
-    while ( $i < @ARGV ) {
-	if ( $ARGV[$i] eq "-D" &&
-	     $i+1 < @ARGV && $ARGV[$i+1] =~ /^(\w+(?:::\w+)*)::?(\w+)=(.*)/ ) {
-	    $cfg->newval($1, $2, $3);
-	    splice(@ARGV, $i, 2);
-	    next;
+    if ( $opts->{define} ) {
+	while ( my ($k, $v) = each( %{ $opts->{define} } ) ) {
+	    if ( $k =~ /^(\w+(?:::\w+)*)::?(\w+)/ ) {
+		$cfg->newval($1, $2, $v);
+	    }
+	    else {
+		warn("define error: \"$k\" = \"$v\"\n");
+	    }
 	}
-	elsif ( $ARGV[$i] =~ /^--define=(\w+(?:::\w+)*)::?(\w+)=(.*)/ ) {
-	    $cfg->newval($1, $2, $3);
-	    splice(@ARGV, $i, 1);
-	    next;
-	}
-	$i++;
     }
 
     $ENV{EB_LANG} = $cfg->val('locale','lang',
@@ -143,13 +117,7 @@ sub init_config {
 	use Data::Dumper;
 	warn(Dumper($cfg));
     }
-    return $cfg;
-}
-
-sub import {
-    my ($self, $app) = @_;
-    return if $cfg && $app && $cfg->{app} eq lc($app);
-    $cfg = init_config($app);
+    $::cfg = $cfg;
 }
 
 package EB::Config::Handler;
@@ -253,5 +221,36 @@ sub load {
 
     $self;
 }
+
+sub printconf {
+    my ( $self, $list ) = @_;
+    return unless @$list > 0;
+    foreach my $conf ( @$list ) {
+	unless ( $conf =~ /^(.+?):([^:]+)/ ) {
+	    print STDOUT ("<error $conf>\n");
+	    next;
+	}
+	my ($sec, $conf) = ($1, $2);
+	$sec =~ s/:+$//;
+	my $val = $self->val($sec, $conf, undef);
+	print STDOUT ($val) if defined $val;
+	print STDOUT ("\n");
+    }
+}
+
+sub user_dir {
+    my ( $self, $item ) = @_;
+
+    File::Spec->catfile( File::HomeDir->my_data,
+			 "." . lc( $self->app),
+			 defined($item) ? $item : (),
+		       );
+}
+
+sub std_config {
+    my ( $self ) = @_;
+    "." . lc( $self->app ) . ".conf";
+}
+
 
 1;

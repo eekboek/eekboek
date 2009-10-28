@@ -1,7 +1,84 @@
 #! perl
 
+# $Id: ebshell,v 1.21 2009/10/28 22:11:46 jv Exp $
+
+package main;
+
 use strict;
+use warnings;
+use utf8;
+
 # use lib qw(EekBoekLibrary);
+
+use File::Spec;
+use File::Basename;
+
+use Encode;
+binmode( STDERR, ':encoding(utf-8)' );
+
+# Common case when run from unpacked dist.
+my $script = $0;
+my $dir = dirname($script);
+my $lib = File::Spec->catfile( dirname($dir), "lib" );
+if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
+    # Need abs paths since we're going to chdir later.
+    unshift( @INC, File::Spec->rel2abs($lib) );
+    my $sep = $ENV{PATH} =~ m?;??q:;::q;:;;;; # just for fun
+    $ENV{PATH} = File::Spec->rel2abs($dir) . $sep . $ENV{PATH};
+}
+
+check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/schema/eekboek.sql" );
+
+require EekBoek;
+check_version( "EekBoek", $EekBoek::VERSION, "1.05.00" );
+
+require EB::Main;
+EB::Main->run;
+
+################ Subroutines ################
+
+sub findfile {
+    my ( $file ) = @_;
+    foreach ( @INC ) {
+	my $f = File::Spec->catfile( $_, $file );
+	return $f if -s $f;
+    }
+    return;
+}
+
+sub check_install {
+    my ( $what, @checks ) = @_;
+    foreach ( @checks ) {
+	next if findfile( $_ );
+	error( <<END_MSG, "Installatiefout" );
+$what is niet geÃ¯nstalleerd, of kon niet worden gevonden.
+
+Raadplaag uw systeembeheerder.
+END_MSG
+	return;
+    }
+}
+
+sub check_version {
+    my ( $what, $version, $required ) = @_;
+    return if $version ge $required;
+    error( <<END_MSG, "Ontoereikende $what versie" );
+De geÃ¯nstalleerde versie van $what is niet toereikend.
+Versie $version is geÃ¯nstalleerd terwijl versie $required of later is vereist.
+
+Raadplaag uw systeembeheerder.
+END_MSG
+}
+
+################ Messengers ################
+
+sub error {
+    my ( $msg, $caption, $style ) = @_;
+    warn( $caption, "\n", $msg, "\n" );
+    exit(1);
+}
+
+1;
 
 =head1 NAME
 
@@ -51,71 +128,3 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See either the
 GNU General Public License or the Artistic License for more details.
 
 =cut
-
-package main;
-
-use strict;
-use warnings;
-use File::Spec;
-use File::Basename;
-
-use Encode;
-binmode( STDERR, ':encoding(utf-8)' );
-
-# Common case when run from unpacked dist.
-my $script = $0;
-if ( -s File::Spec->catfile( dirname( dirname ($script) ), "lib", "EekBoek.pm" ) ) {
-    unshift( @INC, File::Spec->catfile( dirname( dirname ($script) ), "lib" ) );
-}
-
-# Check EekBoek install.
-error( "EekBoek is niet geïnstalleerd, of kon niet worden gevonden.\n".
-       "\nRaadplaag uw systeembeheerder.\n",
-       "Installatiefout" )
-  unless findfile( "EekBoek.pm" )
-  &&     findfile( "EB.pm" )
-  &&     findfile( "EB/schema/eekboek.sql" );
-
-require EekBoek;
-
-error( "De geïnstalleerde versie van $EekBoek::PACKAGE is niet toereikend.\n".
-       "Versie $EekBoek::VERSION is geïnstalleerd terwijl versie 1.05.00 of later\n".
-       "is vereist.\n".
-       "\nRaadplaag uw systeembeheerder.",
-       "Installatiefout" )
-  unless $EekBoek::VERSION ge "1.05.00";
-
-if ( my $cpan = findfile("EB/CPAN") ) {
-    unshift( @INC, $cpan );
-}
-
-require EB::Config;
-EB::Config->import( $EekBoek::PACKAGE );
-require EB;
-EB->import;
-require EB::Main;
-EB::Main->run;
-
-################ Subroutines ################
-
-sub findfile {
-    my ( $file ) = @_;
-    foreach ( @INC ) {
-	my $f = File::Spec->catfile( $_, $file );
-	return $f if -s $f;
-    }
-    return;
-}
-
-################ Messengers ################
-
-sub error {
-    my ( $msg, $caption, $style ) = @_;
-    warn( encode_utf8($caption), "\n",
-	  encode_utf8($msg), "\n" );
-    exit(1);
-}
-
-1;
-
-# $Id: ebshell,v 1.20 2009/10/24 21:28:02 jv Exp $
