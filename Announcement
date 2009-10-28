@@ -1,6 +1,6 @@
 To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.05.03 **SNAPSHOT** is beschikbaar
+Subject: EekBoek 1.05.04 **SNAPSHOT** is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,7 +9,7 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.05.03 is beschikbaar.
+EekBoek versie 1.05.04 is beschikbaar.
 De 1.05 versies zijn de voorlopers van EekBoek 1.06 of misschien wel 2.00.
 
 Dit is een SNAPSHOT omdat het nog niet alles compleet is.
@@ -25,44 +25,39 @@ Gebruik: Uitpakken in een lege directory, dit is de uitpak_dir.
 
 Ga naar een van je administraties, en voer daar de opdracht uit:
 
-    perl <uitpak_dir>/EekBoek-1.05.01/script/ebshell
+    perl <uitpak_dir>/EekBoek-1.05.04/script/ebshell
 of
-    perl <uitpak_dir>/EekBoek-1.05.01/script/ebgui
+    perl <uitpak_dir>/EekBoek-1.05.04/script/ebgui
 
-Als je deze laatste opdracht uitvoert in een directory waar geen
-.eekboek.conf voorkomt dat zal de wizard je helpen een
-skelet-administratie op te zetten.
-
-    perl <uitpak_dir>/EekBoek-1.05.01/script/ebgui --admdir <directory>
-
-Als je deze opdracht uitvoert worden nieuwe addministraties in de
-opgegeven directory aangemaakt, en kun je bij het opstarten een van je
-administraties kiezen.
+Als je deze opdracht uitvoert worden nieuwe addministraties in je
+$HOME/.eekboek/admin directory aangemaakt, en kun je bij het opstarten
+een van je administraties kiezen.
 
 In deze vorm kan de GUI startup worden ondergebracht onder een desktop
-icon of menu. Aanbevolen waarde voor de admdir is
-$HOME/.eekboek/admdir .
+icon of menu. Standaardwaarde voor de admdir is $HOME/.eekboek/admdir .
+
+Direct GUI starten met:
+
+    perl <uitpak_dir>/EekBoek-1.05.04/script/ebgui --nowizard
+of
+    perl <uitpak_dir>/EekBoek-1.05.04/script/ebgui -f <configfile>
+
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.05.03.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.05.04.tar.gz
+
+RPM sources en binaries:
+* http://www.eekboek.nl/repo/fedora-testing/
+
+Deze RPMs installeren ook desktop icons en menu entries.
 
 Geen install kits. Die komen als deze versie wat meer stabiel is geworden.
 
-Belangrijkste wijzigingen t.o.v. 1.05.02 (zie ook de file CHANGES):
+Belangrijkste wijzigingen t.o.v. 1.05.03 (zie ook de file CHANGES):
 
-* (GUI) Aanmaken van en kiezen uit administraties die in een
-  folder zijn ondergebracht. --admdir command line optie.
+* Many internal changes for GUI integration.
 
-* (GUI) Bugfix: Dagboeken -> Inkoop/Verkoop hadden geen title.
-
-* (Wizard) Toon alle beschkbare database drivers.
-
-* (Wizard) Fix vertaling <Prev and Next> buttons.
-
-* (Wizard) Ingave database folder.
-
-* (Wizard) Automatisch vormen van database naam uit de
-  naam van de administratie.
+* Consistent gedrag gui/wizard.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
