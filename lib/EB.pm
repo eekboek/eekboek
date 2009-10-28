@@ -3,12 +3,12 @@
 use utf8;
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.93 2009/10/24 21:24:25 jv Exp $
+# RCS Info        : $Id: EB.pm,v 1.94 2009/10/28 22:08:26 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 24 22:33:00 2009
-# Update Count    : 251
+# Last Modified On: Wed Oct 28 21:02:59 2009
+# Update Count    : 253
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -17,7 +17,7 @@ our $app;
 
 package EB;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.93 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.94 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);
@@ -94,10 +94,10 @@ unless ( $ident ) {		# already done (can this happen?)
     push(@locextra, _T("Nederlands")) if LOCALISER;
     $imsg = __x("{ident}{extra}{locale} -- Copyright {year} Squirrel Consultancy",
 		ident   => $ident,
-		extra   => ($app ? " Wx " : ""),
+		extra   => ($app ? " Wx" : ""),
 		locale  => (@locextra ? " (".join(", ", @locextra).")" : ""),
 		year    => $year);
-    warn($imsg, "\n") unless @ARGV && $ARGV[0] =~ /-(P|-?printcfg)$/;
+    warn($imsg, "\n") unless @ARGV && $ARGV[0] =~ /-(P|-?printconfig)$/;
 
     eval {
 	require Win32;
