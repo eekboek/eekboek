@@ -1,12 +1,14 @@
 #! perl
-# $Id: 31_expr.t,v 1.1 2009/10/18 18:57:42 jv Exp $
+# $Id: 31_expr.t,v 1.2 2009/10/28 22:29:36 jv Exp $
 
 use strict;
 use warnings;
 
-use EB::Config qw(EekBoek);
+use EB::Config;
 use EB;
-use EB::Format;
+EB::Config->init_config( { app => "Test", nostdconf => 1 } );
+require EB::Format;
+EB::Format->import;
 
 my @tests;
 BEGIN {
