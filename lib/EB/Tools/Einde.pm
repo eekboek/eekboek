@@ -3,12 +3,12 @@
 use utf8;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.20 2009/10/17 22:02:54 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.21 2009/11/04 16:46:57 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 17 12:50:26 2009
-# Update Count    : 241
+# Last Modified On: Wed Nov  4 17:46:40 2009
+# Update Count    : 242
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -21,7 +21,7 @@ package EB::Tools::Einde;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -35,8 +35,6 @@ sub new {
     $class = ref($class) || $class;
     return bless {} => $class;
 }
-
-sub min($$) { $_[0] lt $_[1] ? $_[0] : $_[1] }
 
 sub perform {
     my ($self, $args, $opts) = @_;
