@@ -3,12 +3,12 @@
 use utf8;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.21 2009/11/04 16:46:57 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.22 2009/11/04 22:24:03 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov  4 17:46:40 2009
-# Update Count    : 242
+# Last Modified On: Wed Nov  4 23:21:55 2009
+# Update Count    : 246
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -21,7 +21,7 @@ package EB::Tools::Einde;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -174,7 +174,8 @@ sub perform {
 
       ## Afboeken BTW
 
-      foreach my $stdacc ( @{ $dbh->std_accs } ) {
+      foreach ( @{ $dbh->std_accs } ) {
+	my $stdacc = $_;	# copy for mod
 	next unless $stdacc =~ /^btw_[iv].$/;
 	next unless defined( $stdacc = $dbh->std_acc($stdacc, undef) );
 	($acc_id, $acc_desc, $acc_balance) =
