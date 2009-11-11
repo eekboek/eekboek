@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.11 2009/10/28 22:10:44 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.12 2009/11/11 12:45:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 28 23:02:52 2009
-# Update Count    : 363
+# Last Modified On: Wed Nov 11 13:45:15 2009
+# Update Count    : 366
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -30,7 +30,7 @@ my @opts; BEGIN { @opts = @ARGV }
 
 use EekBoek;
 use EB;
-use EB::Config;
+use EB::Config ();
 use EB::DB;
 use Getopt::Long 2.13;
 
@@ -198,7 +198,7 @@ sub run {
 
     $dbh = EB::DB->new(trace => $opts->{trace} || $ENV{EB_SQL_TRACE});
 
-    if ( $state->lastdb ne $dataset ) {
+    if ( ($state->lastdb||'') ne $dataset ) {
 	$state->set(lastdb => $dataset);
 	$state->set(bky => $dbh->adm("bky"));
     }
@@ -245,6 +245,7 @@ sub app_options {
 		      'config|f=s',
 		      'admdir=s',
 		      'open=s',
+		      'nowizard|no-wizard|nw',
 		      'printconfig|P',
 		      'ident'	=> \$ident,
 		      'verbose',
