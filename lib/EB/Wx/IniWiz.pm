@@ -99,6 +99,9 @@ sub new {
 
 # end wxGlade
 
+	# Set defaults for code and db name.
+	OnSelectAdmName( $self->{wiz} );
+
 	my $prev;
 	for ( my $i = 0; ; $i++ ) {
 	    my $page = sprintf("wiz_p%02d", $i);
