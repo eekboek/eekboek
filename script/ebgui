@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: ebgui,v 1.10 2009/10/28 22:11:46 jv Exp $
+# $Id: ebgui,v 1.11 2009/11/25 09:41:53 jv Exp $
 
 use strict;
 use utf8;
@@ -67,6 +67,7 @@ END_MSG
 
 sub check_version {
     my ( $what, $version, $required ) = @_;
+    $version =~ s/,/./g;
     return if $version ge $required;
     error( <<END_MSG, "Ontoereikende $what versie" );
 De geïnstalleerde versie van $what is niet toereikend.
