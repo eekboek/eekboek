@@ -2,7 +2,7 @@
 
 use utf8;
 
-# $Id: Accounts.pm,v 1.12 2009/10/14 21:14:01 jv Exp $
+# $Id: Accounts.pm,v 1.13 2009/11/30 12:23:47 jv Exp $
 
 package main;
 
@@ -69,7 +69,7 @@ sub new {
 	$self->{t_saldo_act} = Wx::StaticText->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{b_add} = Wx::Button->new($self->{maint_pane}, -1, _T("Dupliceren"));
 	$self->{b_del} = Wx::Button->new($self->{maint_pane}, -1, _T("Verwijderen"));
-	$self->{l_msg} = Wx::StaticText->new($self->{maint_pane_outer}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{l_msg} = Wx::StaticText->new($self->{maint_pane_outer}, -1, _T("Dubbelklik op een verdichting of grootboekrekening."), wxDefaultPosition, wxDefaultSize, );
 	$self->{static_line_2} = Wx::StaticLine->new($self->{maint_pane_outer}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{b_accept} = Wx::Button->new($self->{maint_pane_outer}, wxID_APPLY, "");
 	$self->{b_reset} = Wx::Button->new($self->{maint_pane_outer}, wxID_REVERT_TO_SAVED, "");
@@ -125,6 +125,7 @@ sub __set_properties {
 	$self->{b_add}->Enable(0);
 	$self->{b_del}->Enable(0);
 	$self->{maint_pane}->Enable(0);
+	$self->{maint_pane}->Show(0);
 	$self->{b_accept}->Enable(0);
 	$self->{b_reset}->Enable(0);
 	$self->{b_cancel}->SetFocus();
