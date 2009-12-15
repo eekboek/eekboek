@@ -2,7 +2,7 @@
 
 use utf8;
 
-# $Id: Accounts.pm,v 1.13 2009/11/30 12:23:47 jv Exp $
+# $Id: Accounts.pm,v 1.14 2009/12/15 13:40:17 jv Exp $
 
 package main;
 
@@ -54,7 +54,7 @@ sub new {
 	$self->{acc_tree} = EB::Wx::Maint::Accounts::TreeCtrl->new($self->{tree_pane}, -1, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE|wxSUNKEN_BORDER);
 	$self->{l_acc_id} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Nr."), wxDefaultPosition, wxDefaultSize, );
 	$self->{l_acc_desc} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Omschrijving"), wxDefaultPosition, wxDefaultSize, );
-	$self->{t_acc_id} = EB::Wx::UI::NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+	$self->{t_acc_id} = EB::Wx::UI::NumericCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{t_acc_desc} = Wx::TextCtrl->new($self->{maint_pane}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{l_vrd} = Wx::StaticText->new($self->{maint_pane}, -1, _T("Indeling"), wxDefaultPosition, wxDefaultSize, );
 	$self->{ch_vdi} = EB::Wx::UI::VdiInput->new($self->{maint_pane}, -1, wxDefaultPosition, wxDefaultSize, [], );
@@ -113,6 +113,7 @@ sub __set_properties {
 
 # begin wxGlade: EB::Wx::Maint::Accounts::__set_properties
 
+	$self->SetSize(Wx::Size->new(750, 450));
 	$self->{ch_vdi}->Show(0);
 	$self->{ch_vdi}->SetSelection(0);
 	$self->{ch_hvd}->Show(0);
@@ -189,7 +190,7 @@ sub __do_layout {
 	$self->{sz_accy}->Add($self->{sz_adddel}, 0, wxEXPAND, 0);
 	$self->{maint_pane}->SetSizer($self->{sz_accy});
 	$self->{sz_accx}->Add($self->{maint_pane}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sz_accx}->Add($self->{l_msg}, 1, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
+	$self->{sz_accx}->Add($self->{l_msg}, 0, wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
 	$self->{sz_accx}->Add(1, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_accx}->Add($self->{static_line_2}, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5);
 	$self->{sz_acccan}->Add($self->{b_accept}, 0, wxLEFT|wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 5);
@@ -201,7 +202,6 @@ sub __do_layout {
 	$self->{w_acc_frame}->SplitVertically($self->{tree_pane}, $self->{maint_pane_outer}, 350);
 	$self->{acc_frame_sizer}->Add($self->{w_acc_frame}, 1, wxEXPAND, 0);
 	$self->SetSizer($self->{acc_frame_sizer});
-	$self->{acc_frame_sizer}->Fit($self);
 	$self->Layout();
 
 # end wxGlade
