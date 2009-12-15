@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.12 2009/11/11 12:45:35 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.13 2009/12/15 13:40:54 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov 11 13:45:15 2009
-# Update Count    : 366
+# Last Modified On: Tue Dec 15 14:09:59 2009
+# Update Count    : 367
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -180,7 +180,10 @@ sub run {
     *Fcntl::O_EXLOCK = sub() { 0 };
     *Fcntl::O_TEMPORARY = sub() { 0 };
 
-    unless ( $opts->{nowizard} || $opts->{config} ) {
+    if ( !$opts->{nowizard}
+	 && !$opts->{config}
+	 && ( -e ".eekboek.conf" ? $cfg->val( qw(general wizard), 0 ) : 0 )
+       ) {
 	require EB::Wx::IniWiz;
 	EB::Wx::IniWiz->run($opts); # sets $opts->{runeb}
 	return unless $opts->{runeb};
