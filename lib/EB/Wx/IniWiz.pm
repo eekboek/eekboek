@@ -114,6 +114,7 @@ sub new {
 
 	@ebz = glob( libfile("schema/*.ebz") );
 
+	my $i = 0;
 	foreach my $ebz ( @ebz ) {
 	    require Archive::Zip;
 	    my $zip = Archive::Zip->new();
@@ -129,12 +130,15 @@ sub new {
 		$desc = $1 if $ebz =~ m/([^\\\/]+)\.ebz$/i;
 	    }
 	    $self->{ch_template}->Append($desc);
+	    $i++;
+	    if ( $ebz =~ /\/sample(db)?\.ebz$/ ) {
+		$self->{ch_template}->SetSelection($i);
+	    }
 	}
 	unshift (@ebz, undef );	# skeleton
 
 	# Enumerate DB drivers.
 	my $drivers = find_db_drivers();
-	my $def = 0;
 	$self->{ch_db_driver}->Delete(0) while $self->{ch_db_driver}->GetCount;
 	foreach ( sort keys %$drivers ) {
 	    push( @db_drivers, $_ );
@@ -501,7 +505,7 @@ sub OnWizardFinished {
 		    # Using EB::Main->run crashes ...
 		    # Need to run ebshell externally.
 
-		    my @cmd = ( "ebshell", "--init" );	
+		    my @cmd = ( $^X, "-S", "ebshell", "--init" );
 		    my $ret = system(@cmd);
 		    $self->{t_main}->AppendText(_T( $ret ? "Mislukt" : "Gereed")."\n");
 		}
@@ -597,14 +601,14 @@ package EB::Wx::IniWiz;
 
 sub run {
     my ( $self, $opts ) = @_;
-    my $admdir = $opts->{admdir} ||= $cfg->user_dir("admdir");
+    my $admdir = $opts->{admdir} || $cfg->val(qw(general admdir), $cfg->user_dir("admdir"));
     $runeb = 1;
-
+    $admdir =~ s/\$([A-Z_]+)/$ENV{$1}/ge;
     if ( $admdir ) {
 	mkdir($admdir) unless -d $admdir;
 	die("No admdir $admdir: $!") unless -d $admdir;
     }
-
+    $opts->{admdir} = $admdir;
     $runeb = 0;
 
     no warnings 'redefine';
