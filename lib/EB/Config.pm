@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.24 2009/10/28 22:08:50 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.25 2009/12/15 13:39:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 28 21:19:59 2009
-# Update Count    : 203
+# Last Modified On: Wed Oct 28 23:41:05 2009
+# Update Count    : 207
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -118,6 +118,13 @@ sub init_config {
 	warn(Dumper($cfg));
     }
     $::cfg = $cfg;
+}
+
+sub import {
+    my ($self, $app) = @_;
+    my $opts = ref($app) ? { %$app } : { app => $app };
+    return if $cfg && $opts->{app} && $cfg->app eq lc($opts->{app});
+    $cfg = $self->init_config($opts);
 }
 
 package EB::Config::Handler;
