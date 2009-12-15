@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.8 2009/10/28 22:09:45 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.9 2009/12/15 13:41:14 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 28 21:16:23 2009
-# Update Count    : 968
+# Last Modified On: Tue Dec 15 14:36:57 2009
+# Update Count    : 973
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,7 +24,7 @@ use warnings;
 
 use EekBoek;
 use EB;
-use EB::Config;
+use EB::Config ();
 use EB::DB;
 use Getopt::Long 2.13;
 
@@ -80,6 +80,17 @@ sub run {
 
     my $userdir = $cfg->user_dir;
     mkdir($userdir) unless -d $userdir;
+
+    if ( !$opts->{nowizard}
+	 && !$opts->{config}
+	 && ( -e ".eekboek.conf" ? $cfg->val( qw(general wizard), 0 ) : 0 )
+       ) {
+	require EB::IniWiz;
+	EB::IniWiz->run($opts); # sets $opts->{runeb}
+	return unless $opts->{runeb};
+	undef $cfg;
+	EB::Config->init_config( { app => $EekBoek::PACKAGE, %$opts } );
+    }
 
     if ( $opts->{createsampleconfig} ) {
 	$opts->{command} = 1;
@@ -243,6 +254,7 @@ sub app_options {
 		      'dir=s',
 		      'file=s',
 		      'interactive!',
+		      'nowizard|no-wizard|nw',
 		      'errexit',
 		      'trace',
 		      'help|?' => $help,
