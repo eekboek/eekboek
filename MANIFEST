@@ -67,6 +67,7 @@ doc/html/setup/relaties.html
 doc/html/setup/schema.html
 doc/html/stdacc.html
 doc/html/yearend.html
+eekboek.desktop
 eekboek-mode.el
 import/daviaccount/README
 import/daviaccount/dvimport.pl
@@ -209,6 +210,7 @@ lib/EB/Wx/icons/calendar.png
 lib/EB/Wx/icons/credit.png
 lib/EB/Wx/icons/debet.png
 lib/EB/Wx/icons/eb.jpg
+lib/EB/Wx/icons/ebicon.png
 lib/EB/Wx/icons/ebwiz.jpg
 lib/EB/Wx/icons/ebsplash.jpg
 lib/EB/Wx/icons/edit_add.png
@@ -247,7 +249,11 @@ lib/EB/migrate/001000011001000012.sql
 lib/EB/migrate/001000012001000013.sql
 lib/EB/migrate/001000013001000014.sql
 lib/EB/schema/eekboek.sql
+lib/EB/schema/eenmanszaak.ebz
+lib/EB/schema/nvbv.ebz
+lib/EB/schema/ondernemer.ebz
 lib/EB/schema/sampledb.ebz
+lib/EB/schema/vereniging.ebz
 lib/EB/schema/sample.conf
 lib/EekBoek.pm
 script/ebshell
