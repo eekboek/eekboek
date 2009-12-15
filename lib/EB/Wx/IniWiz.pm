@@ -182,8 +182,19 @@ sub getadm {			# STATIC
     my ( $pkg, $opts ) = @_;
     chdir($opts->{admdir});
     my @files = glob( "*/" . $cfg->std_config );
+    my @adm_desc;
     foreach ( sort @files ) {
 	push( @adm_dirs, dirname($_) );
+	my $desc = $adm_dirs[-1];
+	if ( open( my $fd, '<:utf8', $adm_dirs[-1]."/opening.eb" ) ) {
+	    while ( <$fd> ) {
+		next unless /adm_naam\s+"(.+)"/;
+		$desc = $1;
+		last;
+	    }
+	    close($fd);
+	}
+	push( @adm_desc, $desc);
     }
 
     my $ret = wxID_NEW;
@@ -192,7 +203,7 @@ sub getadm {			# STATIC
 	my $d = EB::Wx::IniWiz::OpenDialog->new( undef, -1,
 						 _T("Kies"),
 						 wxDefaultPosition, wxDefaultSize, );
-	$d->init( \@adm_dirs );
+	$d->init( \@adm_desc );
 	if ( ($ret = $d->ShowModal) == wxID_OK ) {
 	    chdir( $adm_dirs[ $d->GetSelection ] ) || die("chdir");
 	}
