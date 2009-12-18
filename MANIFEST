@@ -190,6 +190,10 @@ lib/EB/Wx/Report/Grootboek/Preferences.pm
 lib/EB/Wx/Report/Journaal.pm
 lib/EB/Wx/Report/Journaal/Preferences.pm
 lib/EB/Wx/Report/Openstaand.pm
+lib/EB/Wx/Shell/HtmlViewer.pm
+lib/EB/Wx/Shell/MainFrame.pm
+lib/EB/Wx/Shell/Main.pm
+lib/EB/Wx/Shell/PreferencesDialog.pm
 lib/EB/Wx/State.pm
 lib/EB/Wx/Tools/AboutDialog.pm
 lib/EB/Wx/Tools/PreferencesDialog.pm
@@ -248,6 +252,7 @@ lib/EB/migrate/001000010001000011.sql
 lib/EB/migrate/001000011001000012.sql
 lib/EB/migrate/001000012001000013.sql
 lib/EB/migrate/001000013001000014.sql
+lib/EB/mo/nl/ebwxshell.mo
 lib/EB/schema/eekboek.sql
 lib/EB/schema/eenmanszaak.ebz
 lib/EB/schema/nvbv.ebz
@@ -258,6 +263,7 @@ lib/EB/schema/sample.conf
 lib/EekBoek.pm
 script/ebshell
 script/ebgui
+script/ebwxshell
 t/10_basic.t
 t/20_dates.t
 t/30_amounts.t
