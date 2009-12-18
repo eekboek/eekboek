@@ -8,6 +8,7 @@ package EB::Wx::Shell::MainFrame;
 use Wx qw[:everything];
 use base qw(Wx::Frame);
 use strict;
+use utf8;
 
 # begin wxGlade: ::dependencies
 use Wx::Locale gettext => '_T';
@@ -408,20 +409,20 @@ sub OnAbout {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnAbout <event_handler>
 
+	my $year = 1900 + (localtime(time))[5];
+
 	my $md = Wx::MessageDialog->new
 	  ($self,
-	   "wxEekBoek version $::VERSION\n".
-	   ::COPYRIGHT() . "\n\n".
+	   "EekBoek WxShell version $::VERSION\n".
+	   "Copyright 2007-$year Squirrel Consultancy\n\n".
 	   "Written by Johan Vromans\n".
 	   "<jvromans\@squirrel.nl>\n".
 	   "http://www.squirrel.nl\n\n".
 	   "GUI design with wxGlade, http://wxglade.sourceforge.net\n\n".
-	   ($self->{_eb} ? "EekBoek version: ".$self->{_eb}."\n" : "").
-	   ($self->{_db} ? "Current database: ".$self->{_db}."\n" : "").
 	   "Perl version ".sprintf("%vd",$^V)."\n".
 	   "WxPerl version $Wx::VERSION\n".
 	   "wxWidgets version ".Wx::wxVERSION."\n",
-	   "About wxKeyring",
+	   "About EekBoek WxShell",
 	   wxOK|wxICON_INFORMATION,
 	   wxDefaultPosition);
 	$md->ShowModal;
