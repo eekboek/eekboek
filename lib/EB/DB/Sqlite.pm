@@ -1,12 +1,12 @@
 #! perl
 
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.10 2009/10/16 18:22:19 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.11 2009/12/18 21:56:03 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct 16 12:30:30 2009
-# Update Count    : 157
+# Last Modified On: Fri Dec 18 20:07:56 2009
+# Update Count    : 158
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::DB::Sqlite;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -105,7 +105,12 @@ sub connect {
     }
 
     # Our database is UTF8, so deal with it properly.
-    $dbh->{unicode} = 1;
+    if ( $DBD::SQLite::VERSION ge "1.26_06" ) {
+	$dbh->{sqlite_unicode} = 1;
+    }
+    else {
+	$dbh->{unicode} = 1;
+    }
 
     # Create some missing functions.
     register_functions();
