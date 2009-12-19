@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.9 2009/12/15 13:41:14 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.10 2009/12/19 14:25:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 15 14:36:57 2009
-# Update Count    : 973
+# Last Modified On: Sat Dec 19 15:23:25 2009
+# Update Count    : 975
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -81,9 +81,10 @@ sub run {
     my $userdir = $cfg->user_dir;
     mkdir($userdir) unless -d $userdir;
 
-    if ( !$opts->{nowizard}
-	 && !$opts->{config}
-	 && ( -e ".eekboek.conf" ? $cfg->val( qw(general wizard), 0 ) : 0 )
+    if ( $opts->{wizard}
+	 or
+	 !$opts->{config}
+	 && ( -e ".eekboek.conf" ? $cfg->val( qw(general wizard), 0 ) : 1 )
        ) {
 	require EB::IniWiz;
 	EB::IniWiz->run($opts); # sets $opts->{runeb}
@@ -254,7 +255,7 @@ sub app_options {
 		      'dir=s',
 		      'file=s',
 		      'interactive!',
-		      'nowizard|no-wizard|nw',
+		      'wizard',
 		      'errexit',
 		      'trace',
 		      'help|?' => $help,
