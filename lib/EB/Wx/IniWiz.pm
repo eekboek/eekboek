@@ -10,7 +10,6 @@ use warnings;
 use EekBoek;
 use EB;
 use EB::Tools::MiniAdm;
-use EB::Wx::Main;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 our $app;
