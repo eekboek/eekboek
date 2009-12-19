@@ -3,8 +3,10 @@
 
 use Wx 0.15 qw[:allclasses];
 use strict;
+
 package EB::Wx::Shell::MainFrame;
 
+use EekBoek;
 use Wx qw[:everything];
 use base qw(Wx::Frame);
 use strict;
@@ -14,14 +16,9 @@ use utf8;
 use Wx::Locale gettext => '_T';
 # end wxGlade
 
-use Encode;
-BEGIN {
-    require Wx::Perl::ProcessStream;
-    Wx::Perl::ProcessStream->import qw[:everything];
-}
-
 use EB::Wx::Shell::HtmlViewer;
 use EB::Wx::Shell::PreferencesDialog;
+use Wx::Perl::ProcessStream qw[:everything];
 
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
@@ -413,7 +410,7 @@ sub OnAbout {
 
 	my $md = Wx::MessageDialog->new
 	  ($self,
-	   "EekBoek WxShell version $::VERSION\n".
+	   "$EekBoek::PACKAGE WxShell version $EekBoek::VERSION\n".
 	   "Copyright 2007-$year Squirrel Consultancy\n\n".
 	   "Written by Johan Vromans\n".
 	   "<jvromans\@squirrel.nl>\n".
