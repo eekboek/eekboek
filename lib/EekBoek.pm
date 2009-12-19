@@ -10,9 +10,9 @@ use utf8;
 # Minimal version to prevent many Unicode bugs.
 use 5.008003;
 
-my $RCS_Id = '$Id: EekBoek.pm,v 1.80 2009/10/28 22:55:29 jv Exp $ ';
+my $RCS_Id = '$Id: EekBoek.pm,v 1.81 2009/12/19 14:32:33 jv Exp $ ';
 our $PACKAGE = 'EekBoek';
-our $VERSION = '1.05.05';
+our $VERSION = '1.05.06';
 
 =head1 NAME
 
@@ -63,4 +63,4 @@ GNU General Public License or the Artistic License for more details.
 
 1;
 
-# $Id: EekBoek.pm,v 1.80 2009/10/28 22:55:29 jv Exp $ 
+# $Id: EekBoek.pm,v 1.81 2009/12/19 14:32:33 jv Exp $ 
