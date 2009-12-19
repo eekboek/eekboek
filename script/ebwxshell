@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: ebwxshell,v 1.1 2009/12/18 21:54:24 jv Exp $
+# $Id: ebwxshell,v 1.2 2009/12/19 14:10:59 jv Exp $
 
 use strict;
 use utf8;
@@ -32,7 +32,7 @@ check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/schema/eekboek.sql" );
 require EekBoek;
 check_version( "EekBoek", $EekBoek::VERSION, "1.05.00" );
 
-check_install( "De EekBoek GUI", "EB/Wx/Main.pm", "EB/Wx/IniWiz.pm" );
+check_install( "De EekBoek WxShell", "EB/Wx/Shell/Main.pm", "EB/Wx/IniWiz.pm" );
 
 # Some more version checking. Wx 0.74 is somewhat arbitrary.
 check_version( "Wx", $Wx::VERSION, "0.74" );
