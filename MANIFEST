@@ -128,6 +128,7 @@ lib/EB/Export/XAF.pm
 lib/EB/Format.pm
 lib/EB/Globals.pm
 lib/EB/Import.pm
+lib/EB/IniWiz.pm
 lib/EB/Locale.pm
 lib/EB/Main.pm
 lib/EB/Relation.pm
