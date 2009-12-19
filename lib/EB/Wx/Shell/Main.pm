@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.1 2009/12/18 22:04:15 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.2 2009/12/19 14:09:06 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 18 23:01:14 2009
-# Update Count    : 389
+# Last Modified On: Sat Dec 19 14:19:28 2009
+# Update Count    : 390
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -135,8 +135,6 @@ sub run {
     $app->MainLoop();
 }
 
-=begin later
-
 # Since Wx::Bitmap cannot be convinced to use a search path, we
 # need a stronger method...
 my $wxbitmapnew = \&Wx::Bitmap::new;
@@ -149,8 +147,6 @@ no warnings 'redefine';
     $wxbitmapnew->($self, @rest);
 };
 use warnings 'redefine';
-
-=cut
 
 ################ Subroutines ################
 
