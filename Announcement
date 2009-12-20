@@ -1,7 +1,7 @@
 To: eekboek-users@lists.sourceforge.net, eekboek-devel@lists.sourceforge.net
 Reply-To: eekboek-devel@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.05.05 **SNAPSHOT** is beschikbaar
+Subject: EekBoek 1.05.06 **SNAPSHOT** is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,7 +10,7 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.05.05 is beschikbaar.
+EekBoek versie 1.05.06 is beschikbaar.
 De 1.05 versies zijn de voorlopers van EekBoek 1.06 of misschien wel 2.00.
 
 Dit is een SNAPSHOT omdat het nog niet alles compleet is.
@@ -28,7 +28,7 @@ Gebruik: Uitpakken in een lege directory, dit is de uitpak_dir.
 
 Je hebt de volgende mogelijkheden.
 
-  $ perl <uitpak_dir>/EekBoek-1.05.05/script/ebwxshell
+  $ perl <uitpak_dir>/EekBoek-1.05.06/script/ebwxshell
 
 Nieuwe administraties worden in je $HOME/.eekboek/admin directory
 aangemaakt, en kun je bij het opstarten een van je administraties
@@ -41,46 +41,34 @@ De admin directory kan worden ingesteld met een config setting:
 
 Bovenstaand is de default setting.
 
-  $ perl <uitpak_dir>/EekBoek-1.05.05/script/ebwxshell -f <configfile>
+  $ perl <uitpak_dir>/EekBoek-1.05.06/script/ebwxshell -f <configfile>
 
 Start meteen op met de gewenste config file.
 
-  $ perl <uitpak_dir>/EekBoek-1.05.05/script/ebshell --wizard
+  $ perl <uitpak_dir>/EekBoek-1.05.06/script/ebshell --wizard
 
 Je kunt een van de administraties uit de admin directory kiezen.
 
-  $ perl <uitpak_dir>/EekBoek-1.05.05/script/ebshell
+  $ perl <uitpak_dir>/EekBoek-1.05.06/script/ebshell
 
 Werkt als vanouds.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.05.05.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.05.06.tar.gz
 
 Nog geen install kits. Die komen als deze versie wat meer stabiel is
 geworden.
 
-Belangrijkste wijzigingen t.o.v. 1.05.04 (zie ook de file CHANGES):
+Belangrijkste wijzigingen t.o.v. 1.05.05 (zie ook de file CHANGES):
 
-* Integratie met EB WxShell.
+* Fix probleem dat ebshell niet langer
+  create{database|sampleconfig} kon doen.
 
-* Verwijder (tijdelijk) GUI voor ombouw tot browser.
+* Missend icon toevoegen.
 
-* (Wizard) Config 'admdir' in sectie '[general]' kan worden
-  gebruikt om te bepalen waar de administraties (moeten komen
-  te) staan.
+* ebwxshell installeren ipv. ebgui.
 
-* (Wizard) Voorkom dat de verkeerde ebshell wordt opgestart.
-
-* (Wizard) Gebruik de voorbeeldadministratie als default.
-
-* Bugfix (regressie) BTW werd niet afgeboekt in de volgjaren
-  van een meerjarige boekhouding.
-
-* Bugfix: meervoudige definitie van 'min' in EB/Tools/Einde.pm.
-
-* Bugfix: ebgui kende --[no]wizard niet.
-
-* (Wizard): Defaults voor adm code en database naam.
+* Nieuwe settings toegevoegd aan examples/eekboek.conf.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
