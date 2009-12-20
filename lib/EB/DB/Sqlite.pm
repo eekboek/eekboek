@@ -1,12 +1,12 @@
 #! perl
 
 # Sqlite.pm -- EekBoek driver for SQLite database
-# RCS Info        : $Id: Sqlite.pm,v 1.11 2009/12/18 21:56:03 jv Exp $
+# RCS Info        : $Id: Sqlite.pm,v 1.12 2009/12/20 21:41:14 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Dec 18 20:07:56 2009
-# Update Count    : 158
+# Last Modified On: Sun Dec 20 19:32:13 2009
+# Update Count    : 159
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,7 +18,7 @@ package EB::DB::Sqlite;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;
@@ -179,7 +179,7 @@ sub get_tables {
     foreach ( $dbh->tables ) {
 	# SQLite returns table names with quotes.
 	# Our tables all start with an uppercase letter.
-	next unless /^"([[:upper:]].+)"$/i;
+	next unless /^"(?:main"\.")?([[:upper:]].+)"$/i;
 	push(@t, lc($1));
     }
     \@t;
