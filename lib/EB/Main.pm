@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.10 2009/12/19 14:25:20 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.11 2009/12/20 21:40:16 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec 19 15:23:25 2009
-# Update Count    : 975
+# Last Modified On: Sun Dec 20 22:29:31 2009
+# Update Count    : 979
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -81,16 +81,19 @@ sub run {
     my $userdir = $cfg->user_dir;
     mkdir($userdir) unless -d $userdir;
 
-    if ( $opts->{wizard}
+    unless ( $opts->{createsampleconfig} || $opts->{createsampledb}
+	   || defined($opts->{wizard}) && !$opts->{wizard} ) {
+      if ( $opts->{wizard}
 	 or
 	 !$opts->{config}
 	 && ( -e ".eekboek.conf" ? $cfg->val( qw(general wizard), 0 ) : 1 )
        ) {
 	require EB::IniWiz;
 	EB::IniWiz->run($opts); # sets $opts->{runeb}
-	return unless $opts->{runeb};
+	die("?"._T("Geen administratie geselecteerd")."\n") unless $opts->{runeb};
 	undef $cfg;
 	EB::Config->init_config( { app => $EekBoek::PACKAGE, %$opts } );
+      }
     }
 
     if ( $opts->{createsampleconfig} ) {
@@ -255,7 +258,7 @@ sub app_options {
 		      'dir=s',
 		      'file=s',
 		      'interactive!',
-		      'wizard',
+		      'wizard!',
 		      'errexit',
 		      'trace',
 		      'help|?' => $help,
