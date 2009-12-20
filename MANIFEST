@@ -170,6 +170,7 @@ lib/EB/Wx/Shell/HtmlViewer.pm
 lib/EB/Wx/Shell/Main.pm
 lib/EB/Wx/Shell/MainFrame.pm
 lib/EB/Wx/Shell/PreferencesDialog.pm
+lib/EB/Wx/icons/ebicon.png
 lib/EB/Wx/icons/ebwiz.jpg
 lib/EB/css/balans.css
 lib/EB/css/balres.css
