@@ -220,7 +220,7 @@ sub evt_process_stdout {
 	if ( $out eq "</html>" ) {
 	    my ($title) = ($capturing =~ m{<title>(.+?)</title>});
 	    #warn("captured $title: ", length($capturing), " characters\n");
-	    my $panel = $self->{pr_repwin} ? "d_htmlpanel" : "d_htmlpanel_$title";
+	    my $panel = $self->{prefs_repwin} ? "d_htmlpanel" : "d_htmlpanel_$title";
 	    $self->{$panel} ||= EB::Wx::Shell::HtmlViewer->new
 	      ($self, -1, $title);
 	    $self->{$panel}->html->SetPage($capturing);
@@ -277,14 +277,17 @@ sub ProcessMessages {
 	my @i;
 	if ( $err =~ /^\?+(.*)/ ) {
 	    $self->ShowText($err, wxRED);
+	    next unless $self->{prefs_errorpopup};
 	    @i = ($1, "Error", wxOK|wxICON_ERROR);
 	}
 	elsif ( $err =~ /^\!+(.*)/ ) {
 	    $self->ShowText($err, Wx::Colour->new("magenta"));
+	    next unless $self->{prefs_warnpopup};
 	    @i = ($1, "Warning", wxOK|wxICON_WARNING);
 	}
 	else {
 	    $self->ShowText($err, wxGREEN);
+	    next unless $self->{prefs_infopopup};
 	    @i = ($err, "Information", wxOK|wxICON_INFORMATION);
 	}
 	my $md = Wx::MessageDialog->new($self, @i, wxDefaultPosition);
@@ -443,6 +446,9 @@ sub OnPrefs {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnPrefs <event_handler>
     $self->{d_prefs} ||= EB::Wx::Shell::PreferencesDialog->new($self, -1, "Preferences");
+    for ( qw(repwin errorpopup warnpopup infopopup) ) {
+	$self->{d_prefs}->{"cx_$_"}->SetValue( $self->{"prefs_$_"} );
+    }
     $self->{d_prefs}->Show(1);
 # end wxGlade
 }
@@ -476,6 +482,12 @@ sub SaveHistory {
 	$self->{_cmdinit}++;
     }
     close($fh);
+
+    my $conf = Wx::ConfigBase::Get;
+    for ( qw(repwin errorpopup warnpopup infopopup) ) {
+	$conf->WriteBool( "prefs_$_", $self->{"prefs_$_"} );
+    }
+
 }
 
 

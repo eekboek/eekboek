@@ -30,6 +30,9 @@ sub new {
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{sz_prefs_inner_staticbox} = Wx::StaticBox->new($self, -1, _T("Preferences") );
 	$self->{cx_repwin} = Wx::CheckBox->new($self, -1, _T("Single window for reports"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cx_errorpopup} = Wx::CheckBox->new($self, -1, _T("Popup window for errors"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cx_warnpopup} = Wx::CheckBox->new($self, -1, _T("Popup window for warnings"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cx_infopopup} = Wx::CheckBox->new($self, -1, _T("Popup window for informational messages"), wxDefaultPosition, wxDefaultSize, );
 	$self->{b_prefs_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 	$self->{b_prefs_ok} = Wx::Button->new($self, wxID_OK, "");
 
@@ -51,6 +54,9 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::Shell::PreferencesDialog::__set_properties
 
 	$self->SetTitle(_T("Preferences"));
+	$self->{cx_errorpopup}->SetValue(1);
+	$self->{cx_warnpopup}->SetValue(1);
+	$self->{cx_infopopup}->SetValue(1);
 	$self->{b_prefs_ok}->SetDefault();
 
 # end wxGlade
@@ -66,6 +72,9 @@ sub __do_layout {
 	$self->{sz_prefs_inner}= Wx::StaticBoxSizer->new($self->{sz_prefs_inner_staticbox}, wxVERTICAL);
 	$self->{sz_prefs} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sz_prefs}->Add($self->{cx_repwin}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sz_prefs}->Add($self->{cx_errorpopup}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sz_prefs}->Add($self->{cx_warnpopup}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sz_prefs}->Add($self->{cx_infopopup}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs}->Add(1, 5, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs_inner}->Add($self->{sz_prefs}, 1, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
 	$self->{sz_prefs_outer}->Add($self->{sz_prefs_inner}, 1, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
@@ -92,7 +101,9 @@ sub OnCancel {
 sub OnAccept {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::PreferencesDialog::OnAccept <event_handler>
-	$self->GetParent->{pr_repwin} = $self->{cx_repwin}->GetValue;
+	for ( qw(repwin errorpopup warnpopup infopopup) ) {
+	    $self->GetParent->{"pr_$_"} = $self->{"cx_$_"}->GetValue;
+	}
 	$event->Skip;
 
 # end wxGlade

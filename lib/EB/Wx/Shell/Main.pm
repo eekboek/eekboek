@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.3 2009/12/22 11:19:17 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.4 2009/12/22 12:57:45 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 22 12:09:21 2009
-# Update Count    : 392
+# Last Modified On: Tue Dec 22 13:52:56 2009
+# Update Count    : 405
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -97,9 +97,8 @@ sub run {
     *Fcntl::O_EXLOCK = sub() { 0 };
     *Fcntl::O_TEMPORARY = sub() { 0 };
 
-    if ( !$opts->{nowizard}
+    if ( ( defined($opts->{wizard}) ? $opts->{wizard} : 1 )
 	 && !$opts->{config}
-	 && ( -e ".eekboek.conf" ? $cfg->val( qw(general wizard), 0 ) : 1 )
        ) {
 	require EB::Wx::IniWiz;
 	EB::Wx::IniWiz->run($opts); # sets $opts->{runeb}
@@ -109,6 +108,8 @@ sub run {
     }
 
     my $app = EB::Wx::Shell::Main->new();
+    $app->SetAppName("ebwxshell");
+    $app->SetVendorName("Squirrel Consultancy");
 
     my $locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
 
@@ -129,9 +130,21 @@ sub run {
     $frame->{_ebcfg} = $config if $config && -s $config;
     $frame->FillHistory($histfile);
 
+    my $conf;
+#    $conf = Wx::ConfigBase->new( "ebwxshell", undef, undef, undef,
+#				 wxCONFIG_USE_SUBDIR );
+#    Wx::ConfigBase::Set( $conf );
+
+    $conf = Wx::ConfigBase::Get;
+    $conf->Write('Appversion',  $EekBoek::VERSION);
+
     my $icon = Wx::Icon->new();
     $icon->CopyFromBitmap(Wx::Bitmap->new("eb.jpg", wxBITMAP_TYPE_ANY));
     $frame->SetIcon($icon);
+
+    for ( qw(repwin errorpopup warnpopup infopopup) ) {
+	$frame->{"prefs_$_"} = $conf->ReadBool("prefs_$_");
+    }
 
     $app->SetTopWindow($frame);
     $frame->Show(1);
@@ -171,7 +184,7 @@ sub app_options {
 		      'config|f=s',
 		      'admdir=s',
 		      'open=s',
-		      'nowizard|no-wizard|nw',
+		      'wizard!',
 		      'printconfig|P',
 		      'ident'	=> \$ident,
 		      'verbose',
@@ -205,6 +218,7 @@ Gebruik: {prog} [options] [file ...]
     --define=XXX -D     definieer configuratiesetting
     --printconfig -P	print config waarden
     --admdir=XXX	directory voor de config files
+    --[no]wizard	gebruik de aanmaken/selectiewizard
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
