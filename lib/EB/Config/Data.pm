@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: Data.pm,v 1.1 2009/10/24 21:30:54 jv Exp $
+# $Id: Data.pm,v 1.2 2009/12/22 12:57:06 jv Exp $
 
 use strict;
 use warnings;
@@ -21,10 +21,12 @@ my $data =
 	  { name => "taxreg", tag => "Fiscaal nummer", type => 'string', value => undef },
 	 ],
        },
-       { section => "Locale",
+       { section => "general",
+	 tag => "Algemeen",
 	 keys =>
 	 [
-	  { name => "lang", tag => "Taal", type => 'string', value => undef },
+	  { name => "admdir", tag => "Folder voor administraties", type => 'folder', value => '$HOME/.eekboek/admdir' },
+	  { name => "wizard", tag => "Forceer wizard", type => 'bool', value => undef },
 	 ],
        },
        { section => "prefs",
