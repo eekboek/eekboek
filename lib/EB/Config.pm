@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.25 2009/12/15 13:39:17 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.26 2009/12/22 21:02:36 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 28 23:41:05 2009
-# Update Count    : 207
+# Last Modified On: Tue Dec 22 22:01:51 2009
+# Update Count    : 208
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -85,6 +85,7 @@ sub init_config {
 			      ($^O =~ /^(ms)?win/i ? "nl_NL.utf8" : "nl_NL"));
 
     $cfg->_plug(qw(locale       lang         EB_LANG));
+    $ENV{LANG} = $cfg->val(qw(locale lang));
 
     $cfg->_plug(qw(database     name         EB_DB_NAME));
 
