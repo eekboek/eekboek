@@ -101,9 +101,9 @@ sub OnPrint {
 sub OnSave {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::HtmlViewer::OnSave <event_handler>
-    my $d = Wx::FileDialog->new($self, "Save as...",
-				"", "wxeb.html",
-				"HTML files (*.html)|*.html",
+    my $d = Wx::FileDialog->new($self, _T("Save as..."),
+				"", _T("report.html"),
+				_T("HTML files (*.html)|*.html"),
 				wxSAVE | wxOVERWRITE_PROMPT);
     my $result = $d->ShowModal;
     if ( $result == wxID_OK ) {
