@@ -1,7 +1,7 @@
-To: eekboek-users@lists.sourceforge.net, eekboek-devel@lists.sourceforge.net
+To: eekboek-devel@lists.sourceforge.net
 Reply-To: eekboek-devel@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.05.07 **SNAPSHOT** is beschikbaar
+Subject: EekBoek 1.05.08 **SNAPSHOT** is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,7 +10,7 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.05.07 is beschikbaar.
+EekBoek versie 1.05.08 is beschikbaar.
 De 1.05 versies zijn de voorlopers van EekBoek 1.06 of misschien wel 2.00.
 
 Dit is een SNAPSHOT omdat het nog niet alles compleet is.
@@ -28,7 +28,7 @@ Gebruik: Uitpakken in een lege directory, dit is de uitpak_dir.
 
 Je hebt de volgende mogelijkheden.
 
-  $ perl <uitpak_dir>/EekBoek-1.05.07/script/ebwxshell
+  $ perl <uitpak_dir>/EekBoek-1.05.08/script/ebwxshell
 
 Nieuwe administraties worden in je $HOME/.eekboek/admin directory
 aangemaakt, en kun je bij het opstarten een van je administraties
@@ -41,32 +41,40 @@ De admin directory kan worden ingesteld met een config setting:
 
 Bovenstaand is de default setting.
 
-  $ perl <uitpak_dir>/EekBoek-1.05.07/script/ebwxshell -f <configfile>
+  $ perl <uitpak_dir>/EekBoek-1.05.08/script/ebwxshell -f <configfile>
 
 Start meteen op met de gewenste config file.
 
-  $ perl <uitpak_dir>/EekBoek-1.05.07/script/ebshell --wizard
+  $ perl <uitpak_dir>/EekBoek-1.05.08/script/ebshell --wizard
 
 Je kunt een van de administraties uit de admin directory kiezen.
 
-  $ perl <uitpak_dir>/EekBoek-1.05.07/script/ebshell
+  $ perl <uitpak_dir>/EekBoek-1.05.08/script/ebshell
 
 Werkt als vanouds.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.05.07.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.05.08.tar.gz
 
 Nog geen install kits. Die komen als deze versie wat meer stabiel is
 geworden.
 
-Belangrijkste wijzigingen t.o.v. 1.05.06 (zie ook de file CHANGES):
+Belangrijkste wijzigingen t.o.v. 1.05.07 (zie ook de file CHANGES):
 
-* Preferences voor error/warning/info popup windows.
+* Configuratie files:
 
-* Icon.
+  [locale] lang werkt nu (weer).
 
-* (ebwxshell) Altijd wizard/sel opstarten, ook als er een
-  .eekboek.conf is.
+  [database]
+  - fullname is vervallen.
+  - name prefix "eekboek_" wordt niet langer gestript. 
+  - driver = sqlite is nu default.
+
+* (ebwxshell) Fix preferences save/restore.
+
+* examples/eekboek.conf bijgewerkt.
+
+* Meer vertaald.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
