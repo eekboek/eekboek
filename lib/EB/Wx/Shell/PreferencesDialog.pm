@@ -102,7 +102,7 @@ sub OnAccept {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::PreferencesDialog::OnAccept <event_handler>
 	for ( qw(repwin errorpopup warnpopup infopopup) ) {
-	    $self->GetParent->{"pr_$_"} = $self->{"cx_$_"}->GetValue;
+	    $self->GetParent->{"prefs_$_"} = $self->{"cx_$_"}->GetValue;
 	}
 	$event->Skip;
 

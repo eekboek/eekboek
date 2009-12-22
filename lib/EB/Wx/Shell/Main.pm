@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.4 2009/12/22 12:57:45 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.5 2009/12/22 21:25:07 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 22 13:52:56 2009
-# Update Count    : 405
+# Last Modified On: Tue Dec 22 22:00:59 2009
+# Update Count    : 407
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -129,6 +129,7 @@ sub run {
     my $config = $opts->{config} || $cfg->std_config;
     $frame->{_ebcfg} = $config if $config && -s $config;
     $frame->FillHistory($histfile);
+    $frame->GetPreferences;
 
     my $conf;
 #    $conf = Wx::ConfigBase->new( "ebwxshell", undef, undef, undef,
@@ -141,10 +142,6 @@ sub run {
     my $icon = Wx::Icon->new();
     $icon->CopyFromBitmap(Wx::Bitmap->new("eb.jpg", wxBITMAP_TYPE_ANY));
     $frame->SetIcon($icon);
-
-    for ( qw(repwin errorpopup warnpopup infopopup) ) {
-	$frame->{"prefs_$_"} = $conf->ReadBool("prefs_$_");
-    }
 
     $app->SetTopWindow($frame);
     $frame->Show(1);

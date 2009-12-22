@@ -20,6 +20,8 @@ use EB::Wx::Shell::HtmlViewer;
 use EB::Wx::Shell::PreferencesDialog;
 use Wx::Perl::ProcessStream qw[:everything];
 
+my $prefctl;
+
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
 	$parent = undef              unless defined $parent;
@@ -109,6 +111,14 @@ sub new {
 	EVT_WXP_PROCESS_STREAM_STDOUT( $self, \&evt_process_stdout);
 	EVT_WXP_PROCESS_STREAM_STDERR( $self, \&evt_process_stderr);
 	EVT_WXP_PROCESS_STREAM_EXIT( $self, \&evt_process_exit);
+
+	$prefctl ||=
+	  {
+	   repwin      => 0,
+	   errorpopup  => 1,
+	   warnpopup   => 1,
+	   infopopup   => 0,
+	  };
 
 	return $self;
 
@@ -352,6 +362,7 @@ sub OnQuit {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnQuit <event_handler>
 	$self->SaveHistory;
+	$self->SavePreferences;
 	$self->Destroy;
 
 # end wxGlade
@@ -441,12 +452,11 @@ sub OnClear {
 # end wxGlade
 }
 
-
 sub OnPrefs {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnPrefs <event_handler>
     $self->{d_prefs} ||= EB::Wx::Shell::PreferencesDialog->new($self, -1, "Preferences");
-    for ( qw(repwin errorpopup warnpopup infopopup) ) {
+    for ( keys( %$prefctl ) ) {
 	$self->{d_prefs}->{"cx_$_"}->SetValue( $self->{"prefs_$_"} );
     }
     $self->{d_prefs}->Show(1);
@@ -471,6 +481,13 @@ sub FillHistory {
     $self->{_cmdinit} = $self->{_cmdptr} = $#{$self->{_cmd}} + 1;
 }
 
+sub GetPreferences {
+    my ( $self ) = @_;
+    my $conf = Wx::ConfigBase::Get;
+    for ( keys( %$prefctl ) ) {
+	$self->{"prefs_$_"} = $conf->ReadBool( "/preferences/$_", $prefctl->{$_} );
+    }
+}
 
 sub SaveHistory {
     my $self = shift;
@@ -482,14 +499,15 @@ sub SaveHistory {
 	$self->{_cmdinit}++;
     }
     close($fh);
-
-    my $conf = Wx::ConfigBase::Get;
-    for ( qw(repwin errorpopup warnpopup infopopup) ) {
-	$conf->WriteBool( "prefs_$_", $self->{"prefs_$_"} );
-    }
-
 }
 
+sub SavePreferences {
+    my ( $self ) = @_;
+    my $conf = Wx::ConfigBase::Get;
+    for ( keys( %$prefctl ) ) {
+	$conf->WriteBool( "/preferences/$_", $self->{"prefs_$_"} );
+    }
+}
 
 sub OnMenuBal {
 	my ($self, $event) = @_;
