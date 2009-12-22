@@ -166,6 +166,11 @@ sub new {
 	Wx::Event::EVT_SPINCTRL($self->{wiz}, $self->{sp_adm_begin}->GetId, \&OnSelectAdmName );
 
 	$self->{wiz}->SetPageSize([600,-1]);
+
+	my $icon = Wx::Icon->new();
+	$icon->CopyFromBitmap(Wx::Bitmap->new("eb.jpg", wxBITMAP_TYPE_ANY));
+	$self->SetIcon($icon);
+	$self->{wiz}->SetIcon($icon);
 	$self->SetSize([450,300]);
 
 	return $self;
