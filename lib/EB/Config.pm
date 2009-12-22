@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.26 2009/12/22 21:02:36 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.27 2009/12/22 21:15:17 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 22 22:01:51 2009
-# Update Count    : 208
+# Last Modified On: Tue Dec 22 22:08:43 2009
+# Update Count    : 209
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -90,9 +90,8 @@ sub init_config {
     $cfg->_plug(qw(database     name         EB_DB_NAME));
 
     if ( my $db = $cfg->val(qw(database name), undef) ) {
-	$db =~ s/^eekboek_//;
+	$db =~ s/^eekboek_//;	# legacy
 	$cfg->newval(qw(database     name), $db);
-	$cfg->newval(qw(database fullname), "eekboek_".$db);
 	$ENV{EB_DB_NAME} = $db;
     }
 
