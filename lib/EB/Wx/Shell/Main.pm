@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.5 2009/12/22 21:25:07 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.6 2009/12/23 12:14:19 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 22 22:00:59 2009
-# Update Count    : 407
+# Last Modified On: Tue Dec 22 22:52:50 2009
+# Update Count    : 408
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -198,7 +198,7 @@ sub app_options {
 
 sub app_ident {
     return;
-    print STDERR (__x("Dit is {pkg} [{name} {version}]",
+    print STDERR (__x("This is {pkg} [{name} {version}]",
 		      pkg     => $EekBoek::PACKAGE,
 		      name    => "WxShell",
 		      version => $EekBoek::VERSION) . "\n");
