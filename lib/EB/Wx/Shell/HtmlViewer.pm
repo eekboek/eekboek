@@ -42,6 +42,8 @@ sub new {
 
 # end wxGlade
 
+	Wx::Event::EVT_HTML_LINK_CLICKED($self->{p_htmlview}, $self->{p_htmlview}->GetId, \&OnLinkClicked);
+
 	$self->{_PRINTER} =  Wx::HtmlEasyPrinting->new('Print');
 
 	$self->SetAcceleratorTable
@@ -123,6 +125,29 @@ sub OnClose {
 # end wxGlade
 }
 
+sub OnLinkClicked {
+    my ($self, $event) = @_;
+
+    my $link = $event->GetLinkInfo->GetHref;
+
+    if ( $link =~ m;^([^:]+)://(.+)$;
+	 && (my $rep = EB::Wx::Shell::MainFrame->can("ShowR" . ucfirst(lc($1)))) ) {
+	my @a = split(/[?&]/, $2);
+	my $args = { select => shift(@a) };
+	foreach ( @a ) {
+	    if ( /^([^=]+)=(.*)/ ) {
+		$args->{$1} = $2;
+	    }
+	    else {
+		$args->{$_} = 1;
+	    }
+	}
+	$rep->($self->GetParent->GetParent, $args);
+    }
+    else {
+	Wx::LogMessage('Link: "%s"', $1);
+    }
+}
 
 # end of class EB::Wx::Shell::HtmlViewer
 

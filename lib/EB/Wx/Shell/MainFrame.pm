@@ -22,6 +22,39 @@ use Wx::Perl::ProcessStream qw[:everything];
 
 my $prefctl;
 
+################ Locale ################
+
+# Variable expansion. See GNU gettext for details.
+sub __expand($%) {
+    my ($t, %args) = @_;
+    my $re = join('|', map { quotemeta($_) } keys(%args));
+    $t =~ s/\{($re)\}/defined($args{$1}) ? $args{$1} : "{$1}"/ge;
+    $t;
+}
+
+# Translation w/ variables.
+sub __x($@) {
+    my ($t, %vars) = @_;
+    __expand(_T($t), %vars);
+}
+
+# Translation w/ singular/plural handling.
+sub __n($$$) {
+    my ($sing, $plur, $n) = @_;
+    _T($n == 1 ? $sing : $plur);
+}
+
+# Translation w/ singular/plural handling and variables.
+sub __nx($$$@) {
+    my ($sing, $plur, $n, %vars) = @_;
+    __expand(__n($sing, $plur, $n), %vars);
+}
+
+# Make __xn a synonym for __nx.
+*__xn = \&__nx;
+
+################ Locale ################
+
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
 	$parent = undef              unless defined $parent;
@@ -233,6 +266,7 @@ sub evt_process_stdout {
 	    my $panel = $self->{prefs_repwin} ? "d_htmlpanel" : "d_htmlpanel_$title";
 	    $self->{$panel} ||= EB::Wx::Shell::HtmlViewer->new
 	      ($self, -1, $title);
+	    $self->{$panel}->Show(0);
 	    $self->{$panel}->html->SetPage($capturing);
 	    $self->{$panel}->htmltext = $capturing;
 	    $self->{$panel}->SetTitle($title);
@@ -288,17 +322,17 @@ sub ProcessMessages {
 	if ( $err =~ /^\?+(.*)/ ) {
 	    $self->ShowText($err, wxRED);
 	    next unless $self->{prefs_errorpopup};
-	    @i = ($1, "Error", wxOK|wxICON_ERROR);
+	    @i = ($1, _T("Error"), wxOK|wxICON_ERROR);
 	}
 	elsif ( $err =~ /^\!+(.*)/ ) {
 	    $self->ShowText($err, Wx::Colour->new("magenta"));
 	    next unless $self->{prefs_warnpopup};
-	    @i = ($1, "Warning", wxOK|wxICON_WARNING);
+	    @i = ($1, _T("Warning"), wxOK|wxICON_WARNING);
 	}
 	else {
 	    $self->ShowText($err, wxGREEN);
 	    next unless $self->{prefs_infopopup};
-	    @i = ($err, "Information", wxOK|wxICON_INFORMATION);
+	    @i = ($err, _T("Information"), wxOK|wxICON_INFORMATION);
 	}
 	my $md = Wx::MessageDialog->new($self, @i, wxDefaultPosition);
 	$md->ShowModal;
@@ -371,6 +405,8 @@ sub OnQuit {
 sub PutOnHistory {
     my ($self, $cmd) = @_;
     return if $cmd eq "";
+    $cmd =~ s/\s+--gen-wxhtml//;
+
     return if @{$self->{_cmd}} && $cmd eq $self->{_cmd}->[-1];
 
     return if exists $self->{_cmd}->[$self->{_cmdptr}]
@@ -424,16 +460,29 @@ sub OnAbout {
 
 	my $md = Wx::MessageDialog->new
 	  ($self,
-	   "$EekBoek::PACKAGE WxShell version $EekBoek::VERSION\n".
+	   __x("{pkg} {app} version {ver}",
+	       pkg => $EekBoek::PACKAGE,
+	       app => "WxShell",
+	       ver => $EekBoek::VERSION)."\n".
 	   "Copyright 2007-$year Squirrel Consultancy\n\n".
-	   "Written by Johan Vromans\n".
+	   __x("Written by {author}",
+	       author => "Johan Vromans")."\n".
 	   "<jvromans\@squirrel.nl>\n".
 	   "http://www.squirrel.nl\n\n".
-	   "GUI design with wxGlade, http://wxglade.sourceforge.net\n\n".
-	   "Perl version ".sprintf("%vd",$^V)."\n".
-	   "WxPerl version $Wx::VERSION\n".
-	   "wxWidgets version ".Wx::wxVERSION."\n",
-	   "About EekBoek WxShell",
+	   __x("GUI design with {wxglade}",
+	       wxglade => "wxGlade, http://wxglade.sourceforge.net")."\n\n".
+	   __x("{pkg} version {ver}",
+	       pkg => "Perl",
+	       ver => sprintf("%vd",$^V))."\n".
+	   __x("{pkg} version {ver}",
+	       pkg => "WxPerl",
+	       ver => $Wx::VERSION)."\n".
+	   __x("{pkg} version {ver}",
+	       pkg => "wxWidgets",
+	       ver => Wx::wxVERSION)."\n",
+	   __x("About {pkg} {app}",
+	       pkg => $EekBoek::PACKAGE,
+	       app => "WxShell"),
 	   wxOK|wxICON_INFORMATION,
 	   wxDefaultPosition);
 	$md->ShowModal;
@@ -577,6 +626,27 @@ sub OnJournal {
 
 # end wxGlade
 }
+
+#### Callbacks from HTML links
+
+sub _HTMLCallBack {
+    my ($self, $command, $args) = @_;
+
+    my $cmd = $command;
+    $cmd .= " " . delete($args->{select});
+
+    while ( my($k,$v) = each( %$args ) ) {
+	$cmd .= " --$k=$v";
+    }
+    $cmd .= " --gen-wxhtml";
+
+    $self->{_proc}->WriteProcess($cmd."\n");
+}
+
+sub ShowRJnl { shift->_HTMLCallBack( "journaal",    @_ ) }
+sub ShowRGbk { shift->_HTMLCallBack( "grootboek",   @_ ) }
+sub ShowRCrd { shift->_HTMLCallBack( "crediteuren", @_ ) }
+sub ShowRDeb { shift->_HTMLCallBack( "debiteuren",  @_ ) }
 
 # end of class EB::Wx::Shell::MainFrame
 
