@@ -170,6 +170,7 @@ lib/EB/Wx/Shell/HtmlViewer.pm
 lib/EB/Wx/Shell/Main.pm
 lib/EB/Wx/Shell/MainFrame.pm
 lib/EB/Wx/Shell/PreferencesDialog.pm
+lib/EB/Wx/icons/eb.jpg
 lib/EB/Wx/icons/ebicon.png
 lib/EB/Wx/icons/ebwiz.jpg
 lib/EB/css/balans.css
@@ -212,7 +213,6 @@ lib/EB/schema/vereniging.ebz
 lib/EB/schema/sample.conf
 lib/EekBoek.pm
 script/ebshell
-script/ebgui
 script/ebwxshell
 t/10_basic.t
 t/20_dates.t
