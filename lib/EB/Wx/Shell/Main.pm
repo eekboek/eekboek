@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.6 2009/12/23 12:14:19 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.7 2009/12/23 21:27:56 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 22 22:52:50 2009
-# Update Count    : 408
+# Last Modified On: Wed Dec 23 21:58:49 2009
+# Update Count    : 414
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -108,10 +108,27 @@ sub run {
     }
 
     my $app = EB::Wx::Shell::Main->new();
-    $app->SetAppName("ebwxshell");
+    $app->SetAppName($EekBoek::PACKAGE);
     $app->SetVendorName("Squirrel Consultancy");
 
-    my $locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
+    my $locale;
+
+    if ( $^O =~ /^mswin/i ) {
+	$locale = Wx::Locale->new( wxLANGUAGE_DUTCH );
+	Wx::ConfigBase::Get->SetPath("/ebwxshell");
+    }
+    else {
+	$locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
+	Wx::ConfigBase::Set
+	    (Wx::FileConfig->new
+	     ( $app->GetAppName() ,
+	       $app->GetVendorName() ,
+	       $cfg->user_dir("ebwxshell"),
+	       '',
+	       wxCONFIG_USE_LOCAL_FILE,
+	     ));
+    }
+
 
     if ( my $prefix = findlib("mo") ) {
 	$locale->AddCatalogLookupPathPrefix($prefix);
@@ -131,13 +148,7 @@ sub run {
     $frame->FillHistory($histfile);
     $frame->GetPreferences;
 
-    my $conf;
-#    $conf = Wx::ConfigBase->new( "ebwxshell", undef, undef, undef,
-#				 wxCONFIG_USE_SUBDIR );
-#    Wx::ConfigBase::Set( $conf );
-
-    $conf = Wx::ConfigBase::Get;
-    $conf->Write('Appversion',  $EekBoek::VERSION);
+    Wx::ConfigBase::Get->Write('general/appversion',  $EekBoek::VERSION);
 
     my $icon = Wx::Icon->new();
     $icon->CopyFromBitmap(Wx::Bitmap->new("eb.jpg", wxBITMAP_TYPE_ANY));

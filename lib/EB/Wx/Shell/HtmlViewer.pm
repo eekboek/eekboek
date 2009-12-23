@@ -7,6 +7,7 @@ package EB::Wx::Shell::HtmlViewer;
 
 use Wx qw[:everything];
 use base qw(Wx::Dialog);
+use base qw(EB::Wx::Shell::Window);
 use strict;
 
 # begin wxGlade: ::dependencies
@@ -24,7 +25,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Shell::HtmlViewer::new
 
-	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -46,11 +47,7 @@ sub new {
 
 	$self->{_PRINTER} =  Wx::HtmlEasyPrinting->new('Print');
 
-	$self->SetAcceleratorTable
-	  (Wx::AcceleratorTable->new
-	   ( [wxACCEL_CTRL, ord 'w', wxID_CLOSE],
-	     [wxACCEL_NORMAL, 27, wxID_CLOSE],
-	   ));
+	$self->sizepos_restore(lc($title));
 
 	return $self;
 
@@ -67,6 +64,7 @@ sub __set_properties {
 
 	$self->SetTitle(_T("HTML View"));
 	$self->SetSize(Wx::Size->new(618, 522));
+	$self->{p_close}->SetFocus();
 	$self->{p_close}->SetDefault();
 
 # end wxGlade
@@ -121,6 +119,7 @@ sub OnSave {
 sub OnClose {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::HtmlViewer::OnClose <event_handler>
+    $self->sizepos_save;
     $self->Show(0);
 # end wxGlade
 }

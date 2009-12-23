@@ -9,6 +9,7 @@ package EB::Wx::Shell::MainFrame;
 use EekBoek;
 use Wx qw[:everything];
 use base qw(Wx::Frame);
+use base qw(EB::Wx::Shell::Window);
 use strict;
 use utf8;
 
@@ -153,6 +154,8 @@ sub new {
 	   infopopup   => 0,
 	  };
 
+	$self->sizepos_restore("main");
+
 	return $self;
 
 }
@@ -221,7 +224,7 @@ sub RunCommand {
 	    $self->OnOpen;
 	    return;
 	}
-	my @eb = qw(ebshell --nointeractive);
+	my @eb = ($^X, qw(-S ebshell --nointeractive));
 	push(@eb, "-f", $self->{_ebcfg}) if $self->{_ebcfg};
 	$self->{_proc} =
 	  Wx::Perl::ProcessStream->OpenProcess(\@eb, 'EekBoek', $self);
@@ -260,7 +263,11 @@ sub evt_process_stdout {
     # warn("app: $out\n");
     if ( $capturing || $out eq "<html>" ) {
 	$capturing .= $out . "\n";
-	if ( $out eq "</html>" ) {
+	if ( $out eq "<html>" ) {
+	    $self->SetCursor(wxHOURGLASS_CURSOR);
+	}
+	elsif ( $out eq "</html>" ) {
+	    $self->SetCursor(wxNullCursor);
 	    my ($title) = ($capturing =~ m{<title>(.+?)</title>});
 	    #warn("captured $title: ", length($capturing), " characters\n");
 	    my $panel = $self->{prefs_repwin} ? "d_htmlpanel" : "d_htmlpanel_$title";
@@ -396,7 +403,13 @@ sub OnQuit {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnQuit <event_handler>
 	$self->SaveHistory;
+	$self->sizepos_save;
 	$self->SavePreferences;
+
+	foreach ( grep( /^d_htmlpanel/, keys(%$self) ) ) {
+	    $self->{$_}->OnClose;
+	}
+
 	$self->Destroy;
 
 # end wxGlade
@@ -534,7 +547,7 @@ sub GetPreferences {
     my ( $self ) = @_;
     my $conf = Wx::ConfigBase::Get;
     for ( keys( %$prefctl ) ) {
-	$self->{"prefs_$_"} = $conf->ReadBool( "/preferences/$_", $prefctl->{$_} );
+	$self->{"prefs_$_"} = $conf->ReadBool( "preferences/$_", $prefctl->{$_} );
     }
 }
 
@@ -554,7 +567,7 @@ sub SavePreferences {
     my ( $self ) = @_;
     my $conf = Wx::ConfigBase::Get;
     for ( keys( %$prefctl ) ) {
-	$conf->WriteBool( "/preferences/$_", $self->{"prefs_$_"} );
+	$conf->WriteBool( "preferences/$_", $self->{"prefs_$_"} );
     }
 }
 
