@@ -1,6 +1,101 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.02
+1.05.08
+
+	* (ebwxshell) Drill-down. In de rapportage windows kun je
+          klikken op (de meeste) grootboeknummers, journaalposten en
+          relatiecodes om daarmee het bijbehorende overzicht op te
+          roepen.
+
+	  Voor het beste resultaat verdient het aanbeveling de
+	  preference "Rapporten in hetzelfde venster" uit te zetten.
+
+1.05.08
+
+	* Configuratie files:
+
+	  [locale] lang werkt nu (weer).
+
+	  [database]
+	  - fullname is vervallen.
+	  - name prefix "eekboek_" wordt niet langer gestript. 
+	  - driver = sqlite is nu default.
+
+	* (ebwxshell) Fix preferences save/restore.
+
+	* examples/eekboek.conf bijgewerkt.
+
+	* Meer vertaald.
+
+1.05.07	2009-12-22 14:00
+
+	* (ebwxshell) Preferences voor error/warning/info popup windows.
+
+	* (ebwxshell) Icon.
+
+	* (ebwxshell) Altijd wizard/sel opstarten, ook als er een
+          .eekboek.conf is.
+
+1.05.06	2009-12-20 13:18
+
+	* Fix probleem dat ebshell niet langer
+          create{database|sampleconfig} kon doen.
+
+	* Missend icon toevoegen.
+
+	* ebwxshell installeren ipv. ebgui.
+
+	* Nieuwe settings toegevoegd aan examples/eekboek.conf.
+
+1.05.05	2009-12-19 15:23
+
+	* Integratie met EB WxShell.
+
+	* Verwijder (tijdelijk) GUI voor ombouw tot browser.
+
+	* (Wizard) Config 'admdir' in sectie '[general]' kan worden
+          gebruikt om te bepalen waar de administraties (moeten komen
+          te) staan.
+
+	* (Wizard) Voorkom dat de verkeerde ebshell wordt opgestart.
+
+	* (Wizard) Gebruik de voorbeeldadministratie als default.
+
+	* Bugfix (regressie) BTW werd niet afgeboekt in de volgjaren
+	  van een meerjarige boekhouding.
+
+	* Bugfix: meervoudige definitie van 'min' in
+          EB/Tools/Einde.pm.
+
+	* Bugfix: ebgui kende --[no]wizard niet.
+
+	* (Wizard): Defaults voor adm code en database naam.
+
+1.05.04	2009-10-28 23:47
+
+	* Many internal changes for GUI integration.
+
+	* Consistent gedrag gui/wizard.
+
+1.05.03	2009-10-27 16:15
+
+	* !!! SNAPSHOT !!! SNAPSHOT !!! SNAPSHOT !!!
+
+	* (GUI) Bugfix: Dagboeken -> Inkoop/Verkoop hadden geen title.
+
+	* (Wizard) Toon alle beschkbare database drivers.
+
+	* (Wizard) Fix vertaling <Prev and Next> buttons.
+
+	* (Wizard) Ingave database folder.
+
+	* (Wizard) Automatisch vormen van database naam uit de
+          naam van de administratie.
+
+	* (GUI) Aanmaken van en kiezen uit administraties die in een
+          folder zijn ondergebracht. --admdir command line optie.
+	  
+1.05.02	2009-10-19 11:47
 
 	* !!! SNAPSHOT !!! SNAPSHOT !!! SNAPSHOT !!!
 
