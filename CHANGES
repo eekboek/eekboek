@@ -1,6 +1,16 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.08
+1.05.10
+
+	* (ebwxshell) Persistent window size/positions.
+
+	* (MS-Windows) Consequent gebruik van de registry.
+
+	  HKCU\Software\Squirrel Consultancy\EekBoek\ebwxshell
+
+	* (Config) Gebruik HOMEDRIVE/HOMEPATH voor Windows.
+
+1.05.09	2009-12-23 13:18
 
 	* (ebwxshell) Drill-down. In de rapportage windows kun je
           klikken op (de meeste) grootboeknummers, journaalposten en
@@ -10,7 +20,7 @@
 	  Voor het beste resultaat verdient het aanbeveling de
 	  preference "Rapporten in hetzelfde venster" uit te zetten.
 
-1.05.08
+1.05.08	2009-12-22 23:00
 
 	* Configuratie files:
 
