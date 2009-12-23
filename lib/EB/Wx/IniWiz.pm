@@ -630,6 +630,23 @@ sub run {
     local *Wx::App::OnInit = sub{1};
 
     $app = Wx::App->new();
+    $app->SetAppName($EekBoek::PACKAGE);
+    $app->SetVendorName("Squirrel Consultancy");
+
+    if ( $^O =~ /^mswin/i ) {
+	Wx::ConfigBase::Get->SetPath("/ebwxiniwiz");
+    }
+    else {
+	Wx::ConfigBase::Set
+	    (Wx::FileConfig->new
+	     ( $app->GetAppName() ,
+	       $app->GetVendorName() ,
+	       $cfg->user_dir("ebwxiniwiz"),
+	       '',
+	       wxCONFIG_USE_LOCAL_FILE,
+	     ));
+    }
+    Wx::ConfigBase::Get->Write('general/appversion',  $EekBoek::VERSION);
 
     my $ret = wxID_NEW;
     $ret = EB::Wx::IniWiz->getadm($opts) if $admdir;
