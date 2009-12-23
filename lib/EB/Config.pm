@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.27 2009/12/22 21:15:17 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.28 2009/12/23 21:26:04 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 22 22:08:43 2009
-# Update Count    : 209
+# Last Modified On: Wed Dec 23 22:23:04 2009
+# Update Count    : 212
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -56,9 +56,19 @@ sub init_config {
     # Build the list of config files.
     my @cfgs;
     if ( !$skipconfig ) {
-	@cfgs = ( "/etc/$app/$app.conf",
-		  $ENV{HOME}."/.$app/$app.conf" );
-	push(@cfgs, ".$app.conf") unless $extraconf;
+	if ( $^O =~ /^mswin/i ) {
+	    @cfgs = ( "/etc/$app/$app.conf",
+		      File::Spec->catpath( $ENV{HOMEDRIVE}, $ENV{HOMEPATH},
+					   "$app", "$app.conf" ),
+		    );
+	    push(@cfgs, ".$app.conf") unless $extraconf;
+	}
+	else {
+	    @cfgs = ( "/etc/$app/$app.conf",
+		      $ENV{HOME}."/.$app/$app.conf",
+		    );
+	    push(@cfgs, ".$app.conf") unless $extraconf;
+	}
     }
     push(@cfgs, $extraconf) if $extraconf;
 
