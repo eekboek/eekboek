@@ -51,6 +51,7 @@ sub init {
 
     $self->{lb_adm}->Append($dirs);
     $self->{lb_adm}->SetSelection(0);
+    $self->{b_accept}->SetFocus if @$dirs == 1;
 }
 
 sub GetSelection {
