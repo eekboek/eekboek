@@ -1,12 +1,12 @@
 #! perl
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.18 2009/05/06 18:13:20 jv Exp $
+# RCS Info        : $Id: Einde.pm,v 1.18.2.1 2009/12/28 11:36:29 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon May  4 21:17:03 2009
-# Update Count    : 226
+# Last Modified On: Sun Dec 27 23:04:53 2009
+# Update Count    : 228
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,7 @@ package EB::Tools::Einde;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.18.2.1 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
@@ -178,12 +178,15 @@ sub perform {
 
       ## Afboeken BTW
 
-      for ( qw(ih il vh vl) ) {
+      foreach ( @{ $dbh->std_accs } ) {
+	my $stdacc = $_;	# copy for mod
+	next unless $stdacc =~ /^btw_[iv].$/;
+	next unless defined( $stdacc = $dbh->std_acc($stdacc, undef) );
 	($acc_id, $acc_desc, $acc_balance) =
 	  @{$dbh->do("SELECT acc_id,acc_desc,acc_balance".
 		     " FROM ${tbl}".
 		     " WHERE acc_id = ?",
-		     $dbh->std_acc("btw_$_"))};
+		     $stdacc)};
 	next unless $acc_balance;
 	$tot += $acc_balance;
 	$dbh->sql_insert("Boekjaarbalans",
