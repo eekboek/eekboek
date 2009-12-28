@@ -1,6 +1,7 @@
-To: eekboek-users@lists.sourceforge.net
+To: eekboek-users@lists.sourceforge.net, eekboek-devel@lists.sourceforge.net
+Reply-To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.04.02 is beschikbaar
+Subject: EekBoek 1.04.05 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -9,19 +10,19 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.04.02 is beschikbaar. Dit is een bugfix release van
+EekBoek versie 1.04.05 is beschikbaar. Dit is een bugfix release van
 de 'stabiele' 1.04 versie.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.04.02.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.04.05.tar.gz
 
 Kits voor RPM gebaseerde systemen:
-* http://www.eekboek.nl/repo/fedora/EekBoek-1.04.02-1.noarch.rpm
-* http://www.eekboek.nl/repo/fedora/EekBoek-db-postgresql-1.04.02-1.noarch.rpm
-* http://www.eekboek.nl/repo/fedora/EekBoek-db-sqlite-1.04.02-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-1.04.05-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-db-postgresql-1.04.05-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-db-sqlite-1.04.05-1.noarch.rpm
 
 Kits voor Microsoft Windows
-* http://www.eekboek.nl/repo/windows/EekBoek-1_04_02.ppd
+* http://www.eekboek.nl/repo/windows/EekBoek-1_04_05.ppd
 
 Kits voor Debian komen hopenlijk snel beschikbaar.
 
@@ -35,23 +36,14 @@ Zie voor meer informatie http://www.eekboek.nl/repo/fedora/repoview .
 De aanbevolen manier van installeren is door middel van RPM of DPKG.
 Installeer de gewenste -db- kit en de rest wordt automatisch meegenomen.
 
-Versie 1.04.01 was een 'Windows only' release.
+Versie 1.04.04 was een 'Windows only' release.
 
-Belangrijkste wijzigingen t.o.v. 1.04.01:
+Belangrijkste wijzigingen t.o.v. 1.04.04:
 
-* Fix probleem dat de intern aangemaakte boekingen worden
-  geformatteerd volgens thousandsep, wat ongeldige invoer kan
-  opleveren.
+* Fix jaarafsluiting bug met afboeken van BTW prive/anders.
 
-* Voorbeeld voor een user module: examples/Kasverkoop.pm.
-
-* Fix probleem met regex speciaal teken als CSV scheider.
-
-* Toevoegen enkele ontbrekende class definities in journaal.css.
-
-Belangrijkste wijzigingen 1.04.01 t.o.v. 1.04:
-
-* [security] sectie in config file t.b.v. Windows Vista.
+* (ebshell) Exit met return status indien --errexit is
+  opgegeven en er een foutoptreedt.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
