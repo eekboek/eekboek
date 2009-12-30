@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.11 2009/12/20 21:40:16 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.12 2009/12/30 12:06:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Dec 20 22:29:31 2009
-# Update Count    : 979
+# Last Modified On: Wed Dec 30 13:05:30 2009
+# Update Count    : 986
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -219,8 +219,6 @@ sub run {
 
 sub app_options {
     my ( $opts ) = @_;
-    my $help = 0;		# handled locally
-    my $ident = 0;		# handled locally
 
     # Process options, if any.
     # Make sure defaults are set before returning!
@@ -251,7 +249,7 @@ sub app_options {
 		      'config|f=s',
 		      'title|titel=s',
 		      'echo|e!',
-		      'ident' => $ident,
+		      'ident',
 		      'journaal',
 		      'boekjaar=s',
 		      'verbose',
@@ -261,14 +259,14 @@ sub app_options {
 		      'wizard!',
 		      'errexit',
 		      'trace',
-		      'help|?' => $help,
+		      'help|?',
 		      'debug',
-		    ) or $help )
+		    ) or $opts->{help} )
     {
 	app_usage(2);
     }
     app_usage(2) if @ARGV && !($opts->{command} || $opts->{printconfig});
-    app_ident() if $ident;
+    app_ident() if $opts->{ident};
 }
 
 sub app_ident {
