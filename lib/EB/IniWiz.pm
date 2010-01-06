@@ -22,6 +22,7 @@ use EB::Tools::MiniAdm;
 use File::Basename;
 
 my @adm_dirs;
+my @adm_names;
 my $runeb;
 
 sub getadm {			# STATIC
@@ -49,6 +50,7 @@ sub getadm {			# STATIC
 		close($fd);
 	    }
 	    printf STDERR ("%3d: %s\n", $i+1, $desc);
+	    push( @adm_names, $desc );
 	}
 	print STDERR ("\n");
 	while ( 1 ) {
@@ -58,7 +60,7 @@ sub getadm {			# STATIC
 			  _T(", of N om een nieuwe administratie aan te maken>"),
 			  ": " );
 	    chomp( my $ans = <STDIN> );
-	    return -2 if lc($ans) eq 'n';
+	    return -1 if lc($ans) eq 'n';
 	    next unless $ans =~ /^\d+$/;
 	    next unless $ans && $ans <= @adm_dirs;
 	    $ret = $ans;
@@ -84,7 +86,7 @@ sub run {
 
     my $ret = EB::IniWiz->getadm($opts) if $admdir;
 
-    $ret = EB::IniWiz->runwizard($opts);
+    $ret = EB::IniWiz->runwizard($opts) if $ret < 0;
 
     $opts->{runeb} = $ret >= 0;
 
@@ -174,17 +176,23 @@ sub runwizard {
     $queries    = [
 		   { code => "admname",
 		     text => <<EOD,
-Geen de naam van de nieuwe administratie. Deze wordt gebruikt
+Geef een unieke naam voor de nieuwe administratie. Deze wordt gebruikt
 voor rapporten en dergelijke.
 EOD
 		     type => "string",
 		     prompt => "Naam",
 		     post => sub {
 			 my $c = shift;
+			 foreach ( @adm_names ) {
+			     next unless lc($_) eq lc($c);
+			     warn("Er bestaat al een administratie met deze naam.\n");
+			     return;
+			 }
 			 $c = lc($c);
 			 $c =~ s/\W+/_/g;
 			 $c .= "_" . $answers->{begindate},
 			   $answers->{admcode} = $c;
+			 return 1;
 		     },
 		   },
 		   { code => "begindate",
@@ -199,12 +207,14 @@ EOD
 			 my $c = shift;
 			 return unless $answers->{admcode};
 			 $answers->{admcode} =~ s/_\d\d\d\d$/_$c/;
+			 return 1;
 		     },
 		   },
 		   { code => "admcode",
 		     text => <<EOD,
-Geef een code voor de administratie. Deze wordt gebruikt als
+Geef een unieke code voor de administratie. Deze wordt gebruikt als
 interne naam voor de database en administratiefolders.
+De standaardwaarde is afgeleid van de administratienaam en de begindatum.
 EOD
 		     type => "string",
 		     prompt => "Code",
@@ -215,6 +225,16 @@ EOD
 			 $c =~ s/\W+/_/g;
 			 $c .= "_" . $answers->{begindate},
 			   $answers->{admcode} = $c;
+			 return 1;
+		     },
+		     post => sub {
+			 my $c = shift;
+			 foreach ( @adm_dirs ) {
+			     next unless lc($_) eq lc($c);
+			     warn("Er bestaat al een administratie met code \"$c\".\n");
+			     return;
+			 }
+			 return 1;
 		     },
 		   },
 		   { code => "template",
@@ -228,7 +248,8 @@ EOD
 		     post => sub {
 			 my $c = shift;
 			 $queries->[4]->{skip} = $c != 0;
-			 $queries->[5]->{skip} = $c != 0
+			 $queries->[5]->{skip} = $c != 0;
+			 return 1;
 		     },
 		   },
 		   { code => "admbtw",
@@ -237,6 +258,7 @@ EOD
 		     post => sub {
 			 my $c = shift;
 			 $queries->[5]->{skip} = !$c;
+			 return 1;
 		     },
 		   },
 		   { code => "btwperiod",
@@ -350,8 +372,9 @@ EOD
 		die("Unhandled request type: ", $q->{type}, "\n");
 	    }
 
-	    $q->{post}->($a, $answers->{$code})
-	      if $q->{post};
+	    if ( $q->{post} ) {
+		redo QQ unless $q->{post}->($a, $answers->{$code});
+	    }
 	    $answers->{$code} = $a;
 	    last QQ if defined $answers->{$code};
 	}
@@ -385,18 +408,23 @@ EOD
 
     EB::Tools::MiniAdm->sanitize(\%opts);
 
-warn Dumper \%opts;
+# warn Dumper \%opts;
 
     foreach my $c ( qw(config schema relaties opening mutaties database) ) {
 	if ( $c eq "database" ) {
 	    my @cmd = ( $^X, "-S", "ebshell", "--init" );
 	    my $ret = system(@cmd);
+	    die(_T("Er is een probleem opgetreden. Raadplaag uw systeembeheerder.")."\n")
+	      if $ret;
 	}
 	else {
 	    my $m = "generate_". $c;
 	    EB::Tools::MiniAdm->$m(\%opts);
 	}
     }
+
+    print STDERR ("\n", _T("De administratie is aangemaakt."),
+		  " ", _T("U kunt meteen aan de slag.")."\n\n");
 
     return 0;
 }
