@@ -24,7 +24,7 @@ sub new {
 
 # begin wxGlade: EB::Wx::Shell::EditDialog::new
 
-	$style = wxDEFAULT_DIALOG_STYLE 
+	$style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxTHICK_FRAME 
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -39,6 +39,9 @@ sub new {
 	Wx::Event::EVT_BUTTON($self, $self->{b_apply}->GetId, \&OnApply);
 
 # end wxGlade
+
+	$self->sizepos_restore(lc($title));
+
 	return $self;
 
 }
@@ -49,7 +52,7 @@ sub __set_properties {
 
 # begin wxGlade: EB::Wx::Shell::EditDialog::__set_properties
 
-	$self->SetTitle(_T("Edit"));
+	$self->SetTitle(_T("Edit Input Line"));
 	$self->SetSize(Wx::Size->new(582, 318));
 	$self->{t_input}->SetFocus();
 
@@ -78,6 +81,7 @@ sub OnCancel {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::EditDialog::OnCancel <event_handler>
 
+    $self->sizepos_save;
     $event->Skip;
 
 # end wxGlade
@@ -88,6 +92,7 @@ sub OnApply {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::EditDialog::OnApply <event_handler>
 
+    $self->sizepos_save;
     $self->EndModal( wxID_APPLY );
 
 # end wxGlade
