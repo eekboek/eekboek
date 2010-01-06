@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.14 2010/01/06 19:04:01 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.15 2010/01/06 20:19:23 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  6 19:48:35 2010
-# Update Count    : 368
+# Last Modified On: Wed Jan  6 21:08:41 2010
+# Update Count    : 369
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -182,7 +182,7 @@ sub run {
 
     if ( !$opts->{nowizard}
 	 && !$opts->{config}
-	 && ( ( -e $cfg->std_config_nodot || -e $cfg->std_config_dot )
+	 && ( ( -e $cfg->std_config || -e $cfg->std_config_alt )
 	      ? $cfg->val( qw(general wizard), 0 ) : 0 )
        ) {
 	require EB::Wx::IniWiz;

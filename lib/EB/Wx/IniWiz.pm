@@ -17,7 +17,7 @@ our $cfg;
 
 our @ebz;
 
-our @configs = ( $cfg->std_config_nodot,
+our @configs = ( $cfg->std_config,
 		 qw( schema.dat mutaties.eb relaties.eb opening.eb ) );
 
 package EB::Wx::IniWiz;
@@ -189,7 +189,10 @@ sub runwiz {
 sub getadm {			# STATIC
     my ( $pkg, $opts ) = @_;
     chdir($opts->{admdir});
-    my @files = glob( "*/" . $cfg->std_config );
+    my %h;
+    $h{$_} = 1 foreach glob( "*/" . $cfg->std_config );
+    $h{$_} = 1 foreach glob( "*/" . $cfg->std_config_alt );
+    my @files = keys(%h);
     @adm_names = ();
     foreach ( sort @files ) {
 	push( @adm_dirs, dirname($_) );
@@ -574,7 +577,7 @@ sub OnWizardFinished {
 
     $self->{b_ok}->Enable(1);
 
-    unless ( -e $cfg->std_config_nodot || -e $cfg->std_config_dot ) {
+    unless ( -e $cfg->std_config || -e $cfg->std_config_alt ) {
 	$self->{ch_runeb}->SetValue(0);
     }
     else {

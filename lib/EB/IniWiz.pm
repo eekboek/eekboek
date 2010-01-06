@@ -26,8 +26,8 @@ sub getadm {			# STATIC
     my ( $pkg, $opts ) = @_;
     chdir($opts->{admdir});
     my %h;
-    $h{$_} = 1 foreach glob( "*/" . $cfg->std_config_nodot );
-    $h{$_} = 1 foreach glob( "*/" . $cfg->std_config_dot );
+    $h{$_} = 1 foreach glob( "*/" . $cfg->std_config );
+    $h{$_} = 1 foreach glob( "*/" . $cfg->std_config_alt );
     my @files = keys(%h);
     foreach ( sort @files ) {
 	push( @adm_dirs, dirname($_) );
