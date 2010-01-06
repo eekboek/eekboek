@@ -174,6 +174,8 @@ lib/EB/Wx/Shell/Window.pm
 lib/EB/Wx/icons/eb.jpg
 lib/EB/Wx/icons/ebicon.png
 lib/EB/Wx/icons/ebwiz.jpg
+lib/EB/Wx/icons/edit.png
+lib/EB/Wx/icons/button_ok.png
 lib/EB/css/balans.css
 lib/EB/css/balres.css
 lib/EB/css/btwaangifte.css

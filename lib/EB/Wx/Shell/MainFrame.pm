@@ -120,9 +120,9 @@ sub new {
 
 	$self->{statusbar} = $self->CreateStatusBar(1, wxST_SIZEGRIP);
 	$self->{t_output} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
+	$self->{b_edit} = Wx::BitmapButton->new($self, -1, (Wx::Bitmap->new("edit.png", wxBITMAP_TYPE_ANY)));
 	$self->{t_input} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB);
-	$self->{b_edit} = Wx::Button->new($self, -1, _T("Edit"));
-	$self->{b_send} = Wx::Button->new($self, -1, _T("Send"));
+	$self->{b_send} = Wx::BitmapButton->new($self, -1, (Wx::Bitmap->new("button_ok.png", wxBITMAP_TYPE_ANY)));
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -140,8 +140,8 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_REP_AP, \&OnMenuAP);
 	Wx::Event::EVT_MENU($self, MENU_REP_AR, \&OnMenuAR);
 	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
-	Wx::Event::EVT_TEXT_ENTER($self, $self->{t_input}->GetId, \&OnTextEnter);
 	Wx::Event::EVT_BUTTON($self, $self->{b_edit}->GetId, \&OnEdit);
+	Wx::Event::EVT_TEXT_ENTER($self, $self->{t_input}->GetId, \&OnTextEnter);
 	Wx::Event::EVT_BUTTON($self, $self->{b_send}->GetId, \&OnSend);
 
 # end wxGlade
@@ -187,7 +187,9 @@ sub __set_properties {
 		$self->{statusbar}->SetStatusText($statusbar_fields[$_], $_) 	
 		for 0 .. $#statusbar_fields ;
 	}
+	$self->{b_edit}->SetSize($self->{b_edit}->GetBestSize());
 	$self->{t_input}->SetFocus();
+	$self->{b_send}->SetSize($self->{b_send}->GetBestSize());
 
 # end wxGlade
 
@@ -207,8 +209,8 @@ sub __do_layout {
 	$self->{s_output} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{s_output}->Add($self->{t_output}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{s_layout}->Add($self->{s_output}, 1, wxEXPAND, 0);
+	$self->{s_input}->Add($self->{b_edit}, 0, wxRIGHT|wxADJUST_MINSIZE, 5);
 	$self->{s_input}->Add($self->{t_input}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{s_input}->Add($self->{b_edit}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{s_input}->Add($self->{b_send}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{s_layout}->Add($self->{s_input}, 0, wxEXPAND, 0);
 	$self->{s_main}->Add($self->{s_layout}, 1, wxALL|wxEXPAND, 5);
