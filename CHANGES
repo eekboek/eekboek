@@ -1,6 +1,15 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.10
+1.05.11
+
+	* (ebwxshell, wizard) Verplicht unieke administratie naam en code.
+
+	* (ebshell) Wizard om administraties aan te maken.
+
+	* (ebwxshell) Mogelijkheid om de input regel uitgebreid te
+	  editen, inclusief multi-line support.
+
+1.05.10	2009-12-23 22:32
 
 	* (ebwxshell) Persistent window size/positions.
 
