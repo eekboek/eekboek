@@ -12,9 +12,6 @@ use EB;
 
 our $cfg;
 
-our @configs = qw( .eekboek.conf schema.dat
-		   mutaties.eb relaties.eb opening.eb );
-
 package EB::IniWiz;
 
 use EB;
@@ -28,7 +25,10 @@ my $runeb;
 sub getadm {			# STATIC
     my ( $pkg, $opts ) = @_;
     chdir($opts->{admdir});
-    my @files = glob( "*/" . $cfg->std_config );
+    my %h;
+    $h{$_} = 1 foreach glob( "*/" . $cfg->std_config_nodot );
+    $h{$_} = 1 foreach glob( "*/" . $cfg->std_config_dot );
+    my @files = keys(%h);
     foreach ( sort @files ) {
 	push( @adm_dirs, dirname($_) );
     }

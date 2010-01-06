@@ -17,8 +17,8 @@ our $cfg;
 
 our @ebz;
 
-our @configs = qw( .eekboek.conf schema.dat
-		   mutaties.eb relaties.eb opening.eb );
+our @configs = ( $cfg->std_config_nodot,
+		 qw( schema.dat mutaties.eb relaties.eb opening.eb ) );
 
 package EB::Wx::IniWiz;
 
@@ -276,7 +276,7 @@ sub __set_properties {
 	$self->{cb_cr_opening }->SetValue( ! -f "opening.eb"    );
 	$self->{cb_cr_mutaties}->SetValue( ! -f "mutaties.eb"   );
 	$self->{cb_cr_relaties}->SetValue( ! -f "relaties.eb"   );
-	$self->{cb_cr_config  }->SetValue( ! -f ".eekboek.conf" );
+	$self->{cb_cr_config  }->SetValue( ! -f $configs[0]     );
 
 	$self->{t_db_name}->SetValue(sprintf("adm%04d",
 					     1900+(localtime(time))[5]));
@@ -574,8 +574,13 @@ sub OnWizardFinished {
 
     $self->{b_ok}->Enable(1);
 
-    foreach ( @configs ) {
-	$self->{ch_runeb}->SetValue(0) unless -s $_;
+    unless ( -e $cfg->std_config_nodot || -e $cfg->std_config_dot ) {
+	$self->{ch_runeb}->SetValue(0);
+    }
+    else {
+	foreach ( @configs[1..$#configs] ) {
+	    $self->{ch_runeb}->SetValue(0) unless -s $_;
+	}
     }
 
 # end wxGlade

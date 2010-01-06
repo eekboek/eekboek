@@ -3,12 +3,12 @@
 use utf8;
 
 # MiniAdm.pm -- 
-# RCS Info        : $Id: MiniAdm.pm,v 1.5 2009/10/20 10:14:19 jv Exp $
+# RCS Info        : $Id: MiniAdm.pm,v 1.6 2010/01/06 19:04:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 20 12:14:05 2009
-# Update Count    : 94
+# Last Modified On: Wed Jan  6 19:43:26 2010
+# Update Count    : 96
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -27,7 +27,8 @@ use EB;
 sub donotclobber {
     my ( $self, $opts ) = @_;
 
-    my @files = qw( schema.dat opening.eb mutaties.eb relaties.eb .eekboek.conf );
+    my @files = qw( schema.dat opening.eb mutaties.eb relaties.eb );
+    push( @files, $cfg->std_config_nodot );
     my $tally = 0;
     foreach ( @files ) {
 	$tally++ if -f $_;
@@ -142,7 +143,7 @@ sub generate_config {
     return if exists $opts->{create_config} && !$opts->{create_config};
 
     $self->generate_file
-      ( ".eekboek.conf", undef, $opts,
+      ( $cfg->std_config_nodot, undef, $opts,
 	sub {
 	    my ( $self, $fd ) = @_;
 	    print { $fd }

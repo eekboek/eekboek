@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.28 2009/12/23 21:26:04 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.29 2010/01/06 19:04:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 23 22:23:04 2009
-# Update Count    : 212
+# Last Modified On: Wed Jan  6 19:39:09 2010
+# Update Count    : 222
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -42,12 +42,14 @@ sub init_config {
     # Resolve extraconf to a file name. It must exist.
     if ( $extraconf ) {
 	if ( -d $extraconf ) {
-	    my $f = File::Spec->catfile($extraconf, "$app.conf");
+	    my $f = File::Spec->catfile( $extraconf,
+					 EB::Config::Handler::std_config_nodot($app) );
 	    if ( -e $f ) {
 		$extraconf = $f;
 	    }
 	    else {
-		$extraconf = File::Spec->catfile($extraconf, ".$app.conf");
+		$extraconf = File::Spec->catfile($extraconf,
+						 EB::Config::Handler::std_config_dot($app));
 	    }
 	}
 	die("$extraconf: $!\n") unless -f $extraconf;
@@ -61,13 +63,18 @@ sub init_config {
 		      File::Spec->catpath( $ENV{HOMEDRIVE}, $ENV{HOMEPATH},
 					   "$app", "$app.conf" ),
 		    );
-	    push(@cfgs, ".$app.conf") unless $extraconf;
+	    push(@cfgs, std_config_nodot($app)) unless $extraconf;
 	}
 	else {
-	    @cfgs = ( "/etc/$app/$app.conf",
-		      $ENV{HOME}."/.$app/$app.conf",
+	    @cfgs = ( File::Spec->catpath( "etc", $app,
+					   EB::Config::Handler::std_config_nodot($app) ),
+		      EB::Config::Handler::user_dir
+		      ( $app, EB::Config::Handler::std_config_nodot($app) ),
 		    );
-	    push(@cfgs, ".$app.conf") unless $extraconf;
+	    unless ( $extraconf ) {
+		push(@cfgs, EB::Config::Handler::std_config_nodot($app));
+		$cfgs[-1] = EB::Config::Handler::std_config_dot($app) unless -e $cfgs[-1];
+	    }
 	}
     }
     push(@cfgs, $extraconf) if $extraconf;
@@ -256,18 +263,27 @@ sub printconf {
 }
 
 sub user_dir {
-    my ( $self, $item ) = @_;
+    my ( $app, $item ) = @_;
+    eval { $app = $app->app };
 
     File::Spec->catfile( File::HomeDir->my_data,
-			 "." . lc( $self->app),
+			 "." . lc( $app),
 			 defined($item) ? $item : (),
 		       );
 }
 
 sub std_config {
-    my ( $self ) = @_;
-    "." . lc( $self->app ) . ".conf";
+    &std_config_dot;
 }
 
+sub std_config_dot {
+    "." . &std_config_nodot;
+}
+
+sub std_config_nodot {
+    my ( $app ) = @_;
+    eval { $app = $app->app };
+    lc($app) . ".conf";
+}
 
 1;

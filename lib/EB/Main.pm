@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.12 2009/12/30 12:06:01 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.13 2010/01/06 19:04:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 30 13:05:30 2009
-# Update Count    : 986
+# Last Modified On: Wed Jan  6 19:57:40 2010
+# Update Count    : 990
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -86,7 +86,7 @@ sub run {
       if ( $opts->{wizard}
 	 or
 	 !$opts->{config}
-	 && ( -e ".eekboek.conf" ? $cfg->val( qw(general wizard), 0 ) : 1 )
+	 && ( ( -e $cfg->std_config_nodot || -e $cfg->std_config_dot ) ? $cfg->val( qw(general wizard), 0 ) : 1 )
        ) {
 	require EB::IniWiz;
 	EB::IniWiz->run($opts); # sets $opts->{runeb}
@@ -98,7 +98,7 @@ sub run {
 
     if ( $opts->{createsampleconfig} ) {
 	$opts->{command} = 1;
-	my $cfg = $cfg->std_config;
+	my $cfg = $cfg->std_config_nodot;
 	if ( -f $cfg ) {
 	    die("?".__x("Opdracht geweigerd, {conf} bestaat reeds",
 		    conf => $cfg)."\n");

@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.13 2009/12/15 13:40:54 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.14 2010/01/06 19:04:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 15 14:09:59 2009
-# Update Count    : 367
+# Last Modified On: Wed Jan  6 19:48:35 2010
+# Update Count    : 368
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -182,7 +182,8 @@ sub run {
 
     if ( !$opts->{nowizard}
 	 && !$opts->{config}
-	 && ( -e ".eekboek.conf" ? $cfg->val( qw(general wizard), 0 ) : 0 )
+	 && ( ( -e $cfg->std_config_nodot || -e $cfg->std_config_dot )
+	      ? $cfg->val( qw(general wizard), 0 ) : 0 )
        ) {
 	require EB::Wx::IniWiz;
 	EB::Wx::IniWiz->run($opts); # sets $opts->{runeb}
