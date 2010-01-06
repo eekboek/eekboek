@@ -18,6 +18,7 @@ use Wx::Locale gettext => '_T';
 # end wxGlade
 
 use EB::Wx::Shell::HtmlViewer;
+use EB::Wx::Shell::EditDialog;
 use EB::Wx::Shell::PreferencesDialog;
 use Wx::Perl::ProcessStream qw[:everything];
 
@@ -77,6 +78,7 @@ sub new {
 	# Menu Bar
 
 	$self->{menubar} = Wx::MenuBar->new();
+	use constant MENU_INPUTEDIT => Wx::NewId();
 	use constant MENU_REP_TRIAL => Wx::NewId();
 	use constant MENU_REP_BAL => Wx::NewId();
 	use constant MENU_REP_RES => Wx::NewId();
@@ -93,6 +95,8 @@ sub new {
 	$wxglade_tmp_menu->Append(wxID_EXIT, _T("E&xit\tCtrl-Q"), "");
 	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&File"));
 	$wxglade_tmp_menu = Wx::Menu->new();
+	$wxglade_tmp_menu->Append(MENU_INPUTEDIT, _T("&Edit input line\tCtrl+Enter"), "");
+	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("&Clear output"), "");
 	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&Edit"));
 	$self->{_T("Reports")} = Wx::Menu->new();
@@ -116,7 +120,8 @@ sub new {
 
 	$self->{statusbar} = $self->CreateStatusBar(1, wxST_SIZEGRIP);
 	$self->{t_output} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
-	$self->{t_input} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxHSCROLL);
+	$self->{t_input} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB);
+	$self->{b_edit} = Wx::Button->new($self, -1, _T("Edit"));
 	$self->{b_send} = Wx::Button->new($self, -1, _T("Send"));
 
 	$self->__set_properties();
@@ -125,6 +130,7 @@ sub new {
 	Wx::Event::EVT_MENU($self, wxID_OPEN, \&OnOpen);
 	Wx::Event::EVT_MENU($self, wxID_PREFERENCES, \&OnPrefs);
 	Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnQuit);
+	Wx::Event::EVT_MENU($self, MENU_INPUTEDIT, \&OnEdit);
 	Wx::Event::EVT_MENU($self, wxID_CLEAR, \&OnClear);
 	Wx::Event::EVT_MENU($self, MENU_REP_TRIAL, \&OnTrial);
 	Wx::Event::EVT_MENU($self, MENU_REP_BAL, \&OnMenuBal);
@@ -135,9 +141,12 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_REP_AR, \&OnMenuAR);
 	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
 	Wx::Event::EVT_TEXT_ENTER($self, $self->{t_input}->GetId, \&OnTextEnter);
+	Wx::Event::EVT_BUTTON($self, $self->{b_edit}->GetId, \&OnEdit);
 	Wx::Event::EVT_BUTTON($self, $self->{b_send}->GetId, \&OnSend);
 
 # end wxGlade
+
+	Wx::Event::EVT_CLOSE($self, \&OnQuit);
 
 	Wx::Event::EVT_CHAR($self->{t_input}, sub { $self->OnChar(@_) });
 #	Wx::Event::EVT_IDLE($self, \&OnIdle);
@@ -199,8 +208,8 @@ sub __do_layout {
 	$self->{s_output}->Add($self->{t_output}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{s_layout}->Add($self->{s_output}, 1, wxEXPAND, 0);
 	$self->{s_input}->Add($self->{t_input}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{s_input}->Add(5, 1, 0, wxADJUST_MINSIZE, 0);
-	$self->{s_input}->Add($self->{b_send}, 0, wxADJUST_MINSIZE, 0);
+	$self->{s_input}->Add($self->{b_edit}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
+	$self->{s_input}->Add($self->{b_send}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{s_layout}->Add($self->{s_input}, 0, wxEXPAND, 0);
 	$self->{s_main}->Add($self->{s_layout}, 1, wxALL|wxEXPAND, 5);
 	$self->SetSizer($self->{s_main});
@@ -358,6 +367,7 @@ sub OnTextEnter {
 	  unless $cmd eq $self->{_cmd}->[-1];
 	$self->{_cmdptr} = $#{$self->{_cmd}} + 1;
 	$self->{t_input}->SetValue("");
+	$cmd =~ s/ *\t */ /g;
 	$self->RunCommand($cmd);
 	$self->{t_input}->SetFocus();
 
@@ -367,6 +377,33 @@ sub OnTextEnter {
 sub OnSend {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnSend <event_handler>
+
+	&OnTextEnter;
+
+# end wxGlade
+}
+
+sub OnEdit {
+	my ($self, $event) = @_;
+# wxGlade: EB::Wx::Shell::MainFrame::OnEdit <event_handler>
+
+	my $d = $self->{d_editdialog} ||= EB::Wx::Shell::EditDialog->new;
+
+	my $t = $self->{t_input}->GetValue;
+	$t =~ s/\t/\n/g;
+	$d->{t_input}->SetValue($t);
+	$d->{t_input}->SetInsertionPoint( $self->{t_input}->GetInsertionPoint );
+	$d->{t_input}->SetFocus;
+
+	my $ret = $d->ShowModal;
+
+	$d->Show(0);
+
+	return unless $ret == wxID_APPLY;
+
+	$t = $d->{t_input}->GetValue;
+	$t =~ s/\n/\t/g;
+	$self->{t_input}->SetValue($t);
 
 	&OnTextEnter;
 
@@ -410,6 +447,10 @@ sub OnQuit {
 	    $self->{$_}->OnClose;
 	}
 
+	foreach ( grep( /^d_.*dialog/, keys(%$self) ) ) {
+	    $self->{$_}->Destroy;
+	}
+
 	$self->Destroy;
 
 # end wxGlade
@@ -448,6 +489,9 @@ sub OnChar {
 	$self->PutOnHistory($ctl->GetValue);
 	$ctl->SetValue($self->{_cmd}->[++$self->{_cmdptr}]);
 	$ctl->SetInsertionPointEnd;
+    }
+    elsif ( $k == WXK_RETURN && $event->ControlDown ) {
+	$self->OnEdit($event);
     }
     elsif (
 	 $k == WXK_TAB     ||
