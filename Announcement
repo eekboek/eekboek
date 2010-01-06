@@ -1,7 +1,7 @@
 To: eekboek-users@lists.sourceforge.net, eekboek-devel@lists.sourceforge.net
 Reply-To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.04.05 is beschikbaar
+Subject: EekBoek 1.04.06 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,19 +10,19 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.04.05 is beschikbaar. Dit is een bugfix release van
+EekBoek versie 1.04.06 is beschikbaar. Dit is een bugfix release van
 de 'stabiele' 1.04 versie.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.04.05.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.04.06.tar.gz
 
 Kits voor RPM gebaseerde systemen:
-* http://www.eekboek.nl/repo/fedora/EekBoek-1.04.05-1.noarch.rpm
-* http://www.eekboek.nl/repo/fedora/EekBoek-db-postgresql-1.04.05-1.noarch.rpm
-* http://www.eekboek.nl/repo/fedora/EekBoek-db-sqlite-1.04.05-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-1.04.06-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-db-postgresql-1.04.06-1.noarch.rpm
+* http://www.eekboek.nl/repo/fedora/EekBoek-db-sqlite-1.04.06-1.noarch.rpm
 
 Kits voor Microsoft Windows
-* http://www.eekboek.nl/repo/windows/EekBoek-1_04_05.ppd
+* http://www.eekboek.nl/repo/windows/EekBoek-1_04_06.ppd
 
 Kits voor Debian komen hopenlijk snel beschikbaar.
 
@@ -38,12 +38,10 @@ Installeer de gewenste -db- kit en de rest wordt automatisch meegenomen.
 
 Versie 1.04.04 was een 'Windows only' release.
 
-Belangrijkste wijzigingen t.o.v. 1.04.04:
+Belangrijkste wijzigingen t.o.v. 1.04.05:
 
-* Fix jaarafsluiting bug met afboeken van BTW prive/anders.
-
-* (ebshell) Exit met return status indien --errexit is
-  opgegeven en er een foutoptreedt.
+* Fix probleem met het herkennen van tabelnamen in nieuwere SQLite
+  implementaties.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
