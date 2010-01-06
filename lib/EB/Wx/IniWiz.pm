@@ -29,6 +29,8 @@ use File::Basename;
 
 my @db_drivers;
 my @adm_dirs;
+my @adm_names;
+
 my $runeb;
 
 sub new {
@@ -152,6 +154,7 @@ sub new {
 #	$self->{dc_dbpath}->SetToolTipString(_T("Folder waar databases worden opgeslagen (niet voor alle database typen)"));
 #	$self->{dc_dbpath}->SetPath(_T("-- Huidige directory --"));
 
+	Wx::Event::EVT_WIZARD_PAGE_CHANGING($self, $self->{wiz}->GetId, \&OnPageChanging);
 	Wx::Event::EVT_WIZARD_FINISHED($self, $self->{wiz}->GetId, \&OnWizardFinished );
 	Wx::Event::EVT_WIZARD_CANCEL($self, $self->{wiz}->GetId, \&OnWizardCancel );
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_btw}->GetId, \&OnToggleBTW );
@@ -164,6 +167,7 @@ sub new {
 	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_name}->GetId, \&OnSelectAdmName );
 	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_code}->GetId, \&OnSelectAdmCode );
 	Wx::Event::EVT_SPINCTRL($self->{wiz}, $self->{sp_adm_begin}->GetId, \&OnSelectAdmName );
+
 
 	$self->{wiz}->SetPageSize([600,-1]);
 
@@ -186,7 +190,7 @@ sub getadm {			# STATIC
     my ( $pkg, $opts ) = @_;
     chdir($opts->{admdir});
     my @files = glob( "*/" . $cfg->std_config );
-    my @adm_desc;
+    @adm_names = ();
     foreach ( sort @files ) {
 	push( @adm_dirs, dirname($_) );
 	my $desc = $adm_dirs[-1];
@@ -198,7 +202,7 @@ sub getadm {			# STATIC
 	    }
 	    close($fd);
 	}
-	push( @adm_desc, $desc);
+	push( @adm_names, $desc);
     }
 
     my $ret = wxID_NEW;
@@ -207,7 +211,7 @@ sub getadm {			# STATIC
 	my $d = EB::Wx::IniWiz::OpenDialog->new( undef, -1,
 						 _T("Kies"),
 						 wxDefaultPosition, wxDefaultSize, );
-	$d->init( \@adm_desc );
+	$d->init( \@adm_names );
 	if ( ($ret = $d->ShowModal) == wxID_OK ) {
 	    chdir( $adm_dirs[ $d->GetSelection ] ) || die("chdir");
 	}
@@ -375,6 +379,36 @@ sub __do_layout {
 # end wxGlade
 }
 
+sub OnPageChanging {
+    my ($self,  $event) = @_;
+    return unless $event->GetDirection;
+    my $page = $event->GetPage;
+    return unless $page->GetId == $self->{wiz_p01}->GetId;
+
+    my $nu = sub {
+	my $m = Wx::MessageDialog->new($self->{wiz}, shift,
+				       _T("Niet uniek"),
+				       wxICON_ERROR|wxOK );
+	my $ret = $m->ShowModal;
+	$m->Destroy;
+	return $ret;
+    };
+
+    my $c = $self->{t_adm_name}->GetValue;
+    foreach ( @adm_names ) {
+	next unless lc($_) eq lc($c);
+	$nu->( _T("Er bestaat al een administratie met deze naam.") );
+	$event->Veto;
+	last;
+    }
+    $c = $self->{t_adm_code}->GetValue;
+    foreach ( @adm_dirs ) {
+	next unless lc($_) eq lc($c);
+	$nu->( _T("Er bestaat al een administratie met deze code.") );
+	$event->Veto;
+	last;
+    }
+}
 
 sub OnToggleBTW {
     my ($self, $event) = @_;
