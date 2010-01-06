@@ -82,9 +82,9 @@ sub __do_layout {
 	$self->{sizer_2}->Add($self->{label_1}, 0, wxBOTTOM|wxADJUST_MINSIZE, 5);
 	$self->{sizer_2}->Add($self->{lb_adm}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_2}->Add(5, 5, 0, wxADJUST_MINSIZE, 0);
-	$self->{sizer_3}->Add($self->{b_new}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add(5, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sizer_3}->Add($self->{b_cancel}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sizer_3}->Add($self->{b_new}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sizer_3}->Add($self->{b_cancel}, 0, wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{b_accept}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_2}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
 	$self->{sizer_1}->Add($self->{sizer_2}, 1, wxALL|wxEXPAND, 5);

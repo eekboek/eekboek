@@ -79,6 +79,7 @@ sub new {
 
 	$self->{menubar} = Wx::MenuBar->new();
 	use constant MENU_INPUTEDIT => Wx::NewId();
+	use constant MENU_INPUTEXEC => Wx::NewId();
 	use constant MENU_REP_TRIAL => Wx::NewId();
 	use constant MENU_REP_BAL => Wx::NewId();
 	use constant MENU_REP_RES => Wx::NewId();
@@ -96,6 +97,7 @@ sub new {
 	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&File"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(MENU_INPUTEDIT, _T("&Edit input line\tCtrl+Enter"), "");
+	$wxglade_tmp_menu->Append(MENU_INPUTEXEC, _T("E&xecute input line\tEnter"), "");
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("&Clear output"), "");
 	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&Edit"));
@@ -131,6 +133,7 @@ sub new {
 	Wx::Event::EVT_MENU($self, wxID_PREFERENCES, \&OnPrefs);
 	Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnQuit);
 	Wx::Event::EVT_MENU($self, MENU_INPUTEDIT, \&OnEdit);
+	Wx::Event::EVT_MENU($self, MENU_INPUTEXEC, \&OnSend);
 	Wx::Event::EVT_MENU($self, wxID_CLEAR, \&OnClear);
 	Wx::Event::EVT_MENU($self, MENU_REP_TRIAL, \&OnTrial);
 	Wx::Event::EVT_MENU($self, MENU_REP_BAL, \&OnMenuBal);

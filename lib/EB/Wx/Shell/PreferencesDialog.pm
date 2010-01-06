@@ -78,9 +78,9 @@ sub __do_layout {
 	$self->{sz_prefs}->Add(1, 5, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs_inner}->Add($self->{sz_prefs}, 1, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
 	$self->{sz_prefs_outer}->Add($self->{sz_prefs_inner}, 1, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
+	$self->{sz_prefs_buttons}->Add(5, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs_buttons}->Add($self->{b_prefs_cancel}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sz_prefs_buttons}->Add(5, 1, 1, wxADJUST_MINSIZE, 0);
-	$self->{sz_prefs_buttons}->Add($self->{b_prefs_ok}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sz_prefs_buttons}->Add($self->{b_prefs_ok}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{sz_prefs_outer}->Add($self->{sz_prefs_buttons}, 0, wxALL|wxEXPAND, 5);
 	$self->SetSizer($self->{sz_prefs_outer});
 	$self->{sz_prefs_outer}->Fit($self);
