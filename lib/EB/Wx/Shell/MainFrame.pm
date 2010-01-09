@@ -73,20 +73,41 @@ sub new {
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{s_input_staticbox} = Wx::StaticBox->new($self, -1, _T("Input") );
-	
+	$self->{statusbar} = $self->CreateStatusBar(1, wxST_SIZEGRIP);
+	$self->{t_output} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
+	$self->{b_edit} = Wx::BitmapButton->new($self, -1, (Wx::Bitmap->new("edit.png", wxBITMAP_TYPE_ANY)));
+	$self->{t_input} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB);
+	$self->{b_send} = Wx::BitmapButton->new($self, -1, (Wx::Bitmap->new("button_ok.png", wxBITMAP_TYPE_ANY)));
 
-	# Menu Bar
+	$self->__set_properties();
+	$self->__do_layout();
+
+	Wx::Event::EVT_BUTTON($self, $self->{b_edit}->GetId, \&OnEdit);
+	Wx::Event::EVT_TEXT_ENTER($self, $self->{t_input}->GetId, \&OnTextEnter);
+	Wx::Event::EVT_BUTTON($self, $self->{b_send}->GetId, \&OnSend);
+
+# end wxGlade
+
+	# Unfortunately, due to an error in wxGlade sub-menu
+	# generation we need to do it ourselves. All...
 
 	$self->{menubar} = Wx::MenuBar->new();
 	use constant MENU_INPUTEDIT => Wx::NewId();
 	use constant MENU_INPUTEXEC => Wx::NewId();
 	use constant MENU_REP_TRIAL => Wx::NewId();
-	use constant MENU_REP_BAL => Wx::NewId();
-	use constant MENU_REP_RES => Wx::NewId();
+	use constant MENU_REP_BAL_ACT => Wx::NewId();
+	use constant MENU_REP_BAL_MGP => Wx::NewId();
+	use constant MENU_REP_BAL_GRP => Wx::NewId();
+	use constant MENU_REP_BAL_GAC => Wx::NewId();
+	use constant MENU_REP_RES_ACT => Wx::NewId();
+	use constant MENU_REP_RES_MGP => Wx::NewId();
+	use constant MENU_REP_RES_GRP => Wx::NewId();
+	use constant MENU_REP_RES_GAC => Wx::NewId();
 	use constant MENU_REP_JNL => Wx::NewId();
 	use constant MENU_REP_UN => Wx::NewId();
 	use constant MENU_REP_AP => Wx::NewId();
 	use constant MENU_REP_AR => Wx::NewId();
+	use constant MENU_REP_VAT => Wx::NewId();
 	my $wxglade_tmp_menu;
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_OPEN, _T("&Open\tCtrl-O"), "");
@@ -102,52 +123,68 @@ sub new {
 	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("&Clear output"), "");
 	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&Edit"));
 	$self->{_T("Reports")} = Wx::Menu->new();
-	$self->{_T("Reports")}->Append(MENU_REP_TRIAL, _T("&Trial"), "");
-	$self->{_T("Reports")}->Append(MENU_REP_BAL, _T("&Balance"), "");
-	$self->{_T("Reports")}->Append(MENU_REP_RES, _T("&Results"), "");
+	$self->{_T("Reports")}->Append(MENU_REP_TRIAL, _T("Trial"), "");
+	$self->{_T("Reports_bal")} = Wx::Menu->new();
+	$self->{_T("Reports_bal")}->Append(MENU_REP_BAL_ACT, _T("By account"), "");
+	$self->{_T("Reports_bal")}->AppendSeparator();
+	$self->{_T("Reports_bal")}->Append(MENU_REP_BAL_MGP, _T("By master group"), "");
+	$self->{_T("Reports_bal")}->Append(MENU_REP_BAL_GRP, _T("By group"), "");
+	$self->{_T("Reports_bal")}->Append(MENU_REP_BAL_GAC, _T("Detailed"), "");
+	$self->{_T("Reports")}->Append(Wx::NewId(), _T("Balance"), $self->{_T("Reports_bal")}, "");
+	$self->{_T("Reports_res")} = Wx::Menu->new();
+	$self->{_T("Reports_res")}->Append(MENU_REP_RES_ACT, _T("By account"), "");
+	$self->{_T("Reports_res")}->AppendSeparator();
+	$self->{_T("Reports_res")}->Append(MENU_REP_RES_MGP, _T("By master group"), "");
+	$self->{_T("Reports_res")}->Append(MENU_REP_RES_GRP, _T("By group"), "");
+	$self->{_T("Reports_res")}->Append(MENU_REP_RES_GAC, _T("Detailed"), "");
+	$self->{_T("Reports")}->Append(Wx::NewId(), _T("Results"), $self->{_T("Reports_res")}, "");
 	$self->{_T("Reports")}->AppendSeparator();
-	$self->{_T("Reports")}->Append(MENU_REP_JNL, _T("&Journal"), "");
+	$self->{_T("Reports")}->Append(MENU_REP_JNL, _T("Journal"), "");
 	$self->{_T("Reports")}->AppendSeparator();
-	$self->{_T("Reports")}->Append(MENU_REP_UN, _T("&Unsettled Accounts"), "");
+	$self->{_T("Reports")}->Append(MENU_REP_UN, _T("Unsettled Accounts"), "");
 	$self->{_T("Reports")}->AppendSeparator();
-	$self->{_T("Reports")}->Append(MENU_REP_AP, _T("Accounts &Payable"), "");
-	$self->{_T("Reports")}->Append(MENU_REP_AR, _T("Accounts Re&ceivable"), "");
+	$self->{_T("Reports")}->Append(MENU_REP_AP, _T("Accounts Payable"), "");
+	$self->{_T("Reports")}->Append(MENU_REP_AR, _T("Accounts Receivable"), "");
+	$self->{_T("Reports")}->AppendSeparator();
+	$self->{_T("Reports")}->Append(MENU_REP_VAT, _T("VAT Report"), "");
 	$self->{_T("menubar")}->Append($self->{_T("Reports")}, _T("&Reports"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("&About..."), "");
 	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&Help"));
 	$self->SetMenuBar($self->{menubar});
-	
-# Menu Bar end
-
-	$self->{statusbar} = $self->CreateStatusBar(1, wxST_SIZEGRIP);
-	$self->{t_output} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
-	$self->{b_edit} = Wx::BitmapButton->new($self, -1, (Wx::Bitmap->new("edit.png", wxBITMAP_TYPE_ANY)));
-	$self->{t_input} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB);
-	$self->{b_send} = Wx::BitmapButton->new($self, -1, (Wx::Bitmap->new("button_ok.png", wxBITMAP_TYPE_ANY)));
-
-	$self->__set_properties();
-	$self->__do_layout();
 
 	Wx::Event::EVT_MENU($self, wxID_OPEN, \&OnOpen);
 	Wx::Event::EVT_MENU($self, wxID_PREFERENCES, \&OnPrefs);
 	Wx::Event::EVT_MENU($self, wxID_EXIT, \&OnQuit);
+
+	Wx::Event::EVT_MENU($self, wxID_CLEAR, \&OnClear);
 	Wx::Event::EVT_MENU($self, MENU_INPUTEDIT, \&OnEdit);
 	Wx::Event::EVT_MENU($self, MENU_INPUTEXEC, \&OnSend);
-	Wx::Event::EVT_MENU($self, wxID_CLEAR, \&OnClear);
+
 	Wx::Event::EVT_MENU($self, MENU_REP_TRIAL, \&OnTrial);
-	Wx::Event::EVT_MENU($self, MENU_REP_BAL, \&OnMenuBal);
-	Wx::Event::EVT_MENU($self, MENU_REP_RES, \&OnMenuRes);
+
+	my $i = -1;
+	for ( MENU_REP_BAL_ACT, MENU_REP_BAL_MGP,
+	      MENU_REP_BAL_GRP, MENU_REP_BAL_GAC,) {
+	    my $sub = $i++;
+	    Wx::Event::EVT_MENU($self, $_, sub { push(@_, $sub); &OnMenuBal });
+	}
+	$i = -1;
+	for ( MENU_REP_RES_ACT, MENU_REP_RES_MGP,
+	      MENU_REP_RES_GRP, MENU_REP_RES_GAC,) {
+	    my $sub = $i++;
+	    Wx::Event::EVT_MENU($self, $_, sub { push(@_, $sub); &OnMenuRes });
+	}
+
 	Wx::Event::EVT_MENU($self, MENU_REP_JNL, \&OnJournal);
 	Wx::Event::EVT_MENU($self, MENU_REP_UN, \&OnMenuUns);
 	Wx::Event::EVT_MENU($self, MENU_REP_AP, \&OnMenuAP);
 	Wx::Event::EVT_MENU($self, MENU_REP_AR, \&OnMenuAR);
-	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
-	Wx::Event::EVT_BUTTON($self, $self->{b_edit}->GetId, \&OnEdit);
-	Wx::Event::EVT_TEXT_ENTER($self, $self->{t_input}->GetId, \&OnTextEnter);
-	Wx::Event::EVT_BUTTON($self, $self->{b_send}->GetId, \&OnSend);
+	Wx::Event::EVT_MENU($self, MENU_REP_VAT, \&OnMenuVAT);
 
-# end wxGlade
+	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
+
+	#### End of MenuBar
 
 	Wx::Event::EVT_CLOSE($self, \&OnQuit);
 
@@ -621,11 +658,15 @@ sub SavePreferences {
 }
 
 sub OnMenuBal {
-	my ($self, $event) = @_;
+	my ($self, $event, $sub) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuBal <event_handler>
 
-	$self->{_proc}->WriteProcess("balans --gen-wxhtml\n");
-
+	if ( defined $sub && $sub >= 0 ) {
+	    $self->{_proc}->WriteProcess("balans --verdicht --detail=$sub --gen-wxhtml\n");
+	}
+	else {
+	    $self->{_proc}->WriteProcess("balans --gen-wxhtml\n");
+	}
 # end wxGlade
 }
 
@@ -655,6 +696,15 @@ sub OnMenuAR {
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuAR <event_handler>
 
 	$self->{_proc}->WriteProcess("debiteuren --gen-wxhtml\n");
+
+# end wxGlade
+}
+
+sub OnMenuVAT {
+	my ($self, $event) = @_;
+# wxGlade: EB::Wx::Shell::MainFrame::OnMenuAR <event_handler>
+
+	$self->{_proc}->WriteProcess("btwaangifte --gen-wxhtml\n");
 
 # end wxGlade
 }
