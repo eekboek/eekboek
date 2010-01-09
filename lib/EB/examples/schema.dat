@@ -1,4 +1,4 @@
-# $Id: schema.dat,v 1.14 2009/10/08 21:42:26 jv Exp $ -*- coding: utf-8 -*-
+# $Id: schema.dat,v 1.15 2010/01/09 21:36:28 jv Exp $ -*- coding: utf-8 -*-
 # EekBoek Rekeningschema voor eekboek_sample
 # Content-Type: text/plain; charset = UTF-8
 
@@ -106,8 +106,10 @@ Balansrekeningen
      42  Belastingen & soc. lasten
          4200  C   BTW Verkoop Hoog                           :koppeling=btw_vh
          4210  C   BTW Verkoop Laag                           :koppeling=btw_vl
+         4212  C   BTW Verkoop Privé                          :koppeling=btw_vp
          4220  D   BTW Inkoop Hoog                            :koppeling=btw_ih
          4230  D   BTW Inkoop Laag                            :koppeling=btw_il
+         4232  D   BTW Inkoop Privé                           :koppeling=btw_ip
          4240  C   BTW Autokostenvergoeding
          4290  C   Omzetbelasting betaald                     :koppeling=btw_ok
 
@@ -185,6 +187,7 @@ Resultaatrekeningen
          9230  K   Rente last Postbank Inbedrijf
          9290  K   Rente last overige
      93  Overige baten
+	 9380  O   Bijtelling privégebruik auto		      :btw=privé
          9390  O   Kleine ondernemersregeling
 
 # DAGBOEKEN
@@ -234,5 +237,6 @@ BTW Tarieven
    2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief
    3  BTW 6,0% incl.         :tariefgroep=laag :perc=6,00
    4  BTW 6,0% excl.         :tariefgroep=laag :perc=6,00 :exclusief
+   5  BTW Privé 12% ex.	     :tariefgroep=privé :perc=12,00 :exclusief
 
 # Einde EekBoek schema

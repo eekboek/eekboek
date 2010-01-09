@@ -133,6 +133,12 @@
       <leadCode>4210</leadCode>
     </ledgerAccount>
     <ledgerAccount>
+      <accountID>4212</accountID>
+      <accountDesc>BTW Verkoop Privé</accountDesc>
+      <accountType>B</accountType>
+      <leadCode>4212</leadCode>
+    </ledgerAccount>
+    <ledgerAccount>
       <accountID>4220</accountID>
       <accountDesc>BTW Inkoop Hoog</accountDesc>
       <accountType>B</accountType>
@@ -143,6 +149,12 @@
       <accountDesc>BTW Inkoop Laag</accountDesc>
       <accountType>B</accountType>
       <leadCode>4230</leadCode>
+    </ledgerAccount>
+    <ledgerAccount>
+      <accountID>4232</accountID>
+      <accountDesc>BTW Inkoop Privé</accountDesc>
+      <accountType>B</accountType>
+      <leadCode>4232</leadCode>
     </ledgerAccount>
     <ledgerAccount>
       <accountID>4240</accountID>
@@ -461,6 +473,12 @@
       <accountDesc>Rente last overige</accountDesc>
       <accountType>P</accountType>
       <leadCode>9290</leadCode>
+    </ledgerAccount>
+    <ledgerAccount>
+      <accountID>9380</accountID>
+      <accountDesc>Bijtelling privégebruik auto</accountDesc>
+      <accountType>P</accountType>
+      <leadCode>9380</leadCode>
     </ledgerAccount>
     <ledgerAccount>
       <accountID>9390</accountID>
