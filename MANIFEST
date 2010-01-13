@@ -31,6 +31,13 @@ doc/html/ebshell/clo.html
 doc/html/ebshell/commands.html
 doc/html/ebshell/files.html
 doc/html/ebshell/index.html
+doc/html/ebwxshell/button-edit.png
+doc/html/ebwxshell/button-ok.png
+doc/html/ebwxshell/clo.html
+doc/html/ebwxshell/ebwxshell.png
+doc/html/ebwxshell/edit.png
+doc/html/ebwxshell/files.html
+doc/html/ebwxshell/index.html
 doc/html/images/bg.gif
 doc/html/images/eb.jpg
 doc/html/images/ebname.jpg
@@ -39,7 +46,12 @@ doc/html/images/valid-html401.png
 doc/html/images/validcss.png
 doc/html/index.html
 doc/html/inex.html
+doc/html/install/build.html
+doc/html/install/index.html
+doc/html/install/linux.html
+doc/html/install/windows.html
 doc/html/intro/backups.html
+doc/html/intro/eekboek.conf
 doc/html/intro/index.html
 doc/html/intro/mutaties.eb
 doc/html/intro/opening.eb
