@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Apr  3 12:13:53 2009
-# Update Count    : 116
+# Last Modified On: Wed Jan 13 10:36:03 2010
+# Update Count    : 118
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -34,6 +34,10 @@ sub ACTION_test {
 	warn("WARNING: Skipping database tests\n");
 	$ENV{EB_SKIPDBTESTS} = 1;
     }
+    require Cwd;
+    my $cwd = Cwd::getcwd();
+    require lib;
+    lib->import( "$cwd/lib/EB/CPAN", "$cwd/inc" );
     $self->SUPER::ACTION_test;
 }
 EOF
