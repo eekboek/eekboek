@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Schema.pm,v 1.62 2009/10/17 22:03:20 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.63 2010/01/13 09:10:50 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 17 11:39:41 2009
-# Update Count    : 719
+# Last Modified On: Sat Jan  9 18:26:06 2010
+# Update Count    : 720
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,12 +22,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.62 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.63 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.62 2009/10/17 22:03:20 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.63 2010/01/13 09:10:50 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -303,7 +303,7 @@ sub scan_balres {
 		    if ( $balres && /^(kosten|omzet)$/ ) {
 			$btw_ko = substr($1, 0, 1) eq "k";
 		    }
-		    elsif ( /^(hoog|laag|nul|priv(e|ë)?|anders?)$/ ) {
+		    elsif ( /^(hoog|laag|nul|priv(e|é)?|anders?)$/ ) {
 			$btw_type = substr($1, 0, 1);
 		    }
 		    elsif ( /^\d+$/ ) {
