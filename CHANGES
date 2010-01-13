@@ -1,6 +1,8 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.14
+1.05.15
+
+1.05.14 2010-01-13 11:12
 
 	* (ebwxshell) Icon buttons i.p.v. [Edit] en [Send].
 	  Conform to Gnome Human Interface Guide.
