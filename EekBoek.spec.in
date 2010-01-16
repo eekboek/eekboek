@@ -1,13 +1,9 @@
 # -*- rpm-spec -*-
 
-################ Build Options ################
-%define gui 1
-%{?_with_gui:    %{expand: %%global gui 1}}
-%{?_without_gui: %{expand: %%global gui 0}}
-
+################ Build Options ###################
 %define dbtests 1
-%{?_with_dbtests:    %{expand: %%define dbtests 1}}
-%{?_without_dbtests: %{expand: %%define dbtests 0}}
+%{?_with_dbtests:    %{expand: %%global dbtests 1}}
+%{?_without_dbtests: %{expand: %%global dbtests 0}}
 ################ End Build Options ################
 
 Name: [% PkgName %]
@@ -15,15 +11,19 @@ Summary: Bookkeeping software for small and medium-size businesses
 License: GPL+ or Artistic
 Group: Applications/Productivity
 Version: [% version %]
-Release: 1%{?dist}
+Release: 2%{?dist}
 Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
+Source1: README.postgres
+Source2: README.gui
+Source3: README.contrib
+Source4: README.eekboek
 URL: http://www.eekboek.nl
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
 
 # The package name is CamelCased. However, for convenience some
 # of its data is located in files and directories that are all
 # lowercase. See the %%install section.
-%global lcname [% pkgname %]
+%global lcname eekboek
 
 # It's all plain perl, nothing architecture dependent.
 BuildArch: noarch
@@ -32,101 +32,135 @@ BuildArch: noarch
 # note intended for general use.
 AutoReqProv: 0
 
-Requires: perl >= 5.8
-Requires: perl(Archive::Zip)
-Requires: perl(Term::ReadLine)
-Requires: perl(Term::ReadLine::Gnu)
-Requires: perl(DBI) >= 1.40
-Requires: perl(DBD::SQLite) >= 1.12
-
-%if %{gui}
-Requires: perl(File::HomeDir)
-%endif
-
-BuildRequires: perl >= 5.8.8
-BuildRequires: perl(Module::Build)
-BuildRequires: perl(IPC::Run3)
-BuildRequires: perl(Archive::Zip)
-BuildRequires: perl(Term::ReadLine)
-BuildRequires: perl(Term::ReadLine::Gnu)
-BuildRequires: perl(DBI) >= 1.40
-BuildRequires: perl(DBD::SQLite) >= 1.12
-BuildRequires: perl(Test::More)
-BuildRequires: zip
-
-# For upgrading from the ancient (pre-Fedora) packages.
-Obsoletes: EekBoek-db-sqlite
+# The magic.
+Requires: %{name}-core    = %{version}-%{release}
+Requires: %{name}-gui     = %{version}-%{release}
+Requires: %{name}-contrib = %{version}-%{release}
 
 # For symmetry.
 %global __zip   /usr/bin/zip
+%global __rmdir /bin/rmdir
 %global __find  /usr/bin/find
 
 %description
 EekBoek is a bookkeeping package for small and medium-size businesses.
 Unlike other accounting software, EekBoek has both a command-line
 interface (CLI) and a graphical user-interface (GUI, currently under
-development). Furthermore, it has a complete Perl API to create your
-own custom applications. EekBoek is designed for the Dutch/European
-market and currently available in Dutch only. An English translation
-is in the works (help appreciated).
+development and not included in this package). Furthermore, it has a
+complete Perl API to create your own custom applications. EekBoek is
+designed for the Dutch/European market and currently available in
+Dutch only. An English translation is in the works (help appreciated).
 
 EekBoek can make use of several database systems for its storage.
 Support for the SQLite database is included.
 For production use, you are invited to install the %{name}-db-postgresql
 database package.
 
+%package core
+
+Summary: %{name} core
+Group: Applications/Productivity
+AutoReqProv: 0
+
+Requires: perl >= 5.8
+Requires: perl(Archive::Zip)
+Requires: perl(HTML::Parser)
+Requires: perl(File::HomeDir)
+Requires: perl(Term::ReadLine)
+Requires: perl(Term::ReadLine::Gnu)
+Requires: perl(DBI) >= 1.40
+Requires: perl(DBD::SQLite) >= 1.12
+Requires: perl(Carp::Assert) >= 0.20
+
+BuildRequires: perl >= 5.8.8
+BuildRequires: perl(Module::Build)
+BuildRequires: perl(IPC::Run3)
+BuildRequires: perl(Archive::Zip)
+BuildRequires: perl(HTML::Parser)
+BuildRequires: perl(File::HomeDir)
+BuildRequires: perl(Term::ReadLine)
+BuildRequires: perl(Term::ReadLine::Gnu)
+BuildRequires: perl(DBI) >= 1.40
+BuildRequires: perl(DBD::SQLite) >= 1.12
+BuildRequires: perl(Carp::Assert) >= 0.20
+BuildRequires: perl(Test::More)
+BuildRequires: zip
+
+%description core
+%{name}-core contains all necessary files for the command line version
+of the program. This includes support for the SQLite database.
+
+If you do not want the GUI, install the %{name}-core package instead
+of the %{name} package.
+
+%package gui
+
+Summary: %{name} graphical user interface
+Group: Applications/Productivity
+AutoReqProv: 0
+
+Requires: %{name}-core = %{version}-%{release}
+Requires: perl(Wx) >= 0.89
+Requires: perl(Wx::Perl::ProcessStream) >= 0.11
+#Requires: perl(Wx::Perl::HtmlWizardPage) >= 0.01
+Requires: wxGTK >= 2.8.8
+Requires: gettext
+BuildRequires: desktop-file-utils
+
+%description gui
+This package contains the GUI for %{name}.
+
+If you do not want the GUI, install the %{name}-core package instead
+of the %{name} package.
+
 %package db-postgresql
 
 # This package only contains the necessary module(s) for EekBoek
 # to use the PostgreSQL database.
-# Installing this package will pull in the main package and
+# Installing this package will pull in the core package and
 # the Perl PostgreSQL modules.
 # No %%doc required.
 
 Summary: PostgreSQL database driver for %{name}
 Group: Applications/Productivity
 AutoReqProv: 0
-Requires: %{name} = %{version}-%{release}
+Requires: %{name}-core = %{version}-%{release}
 Requires: perl(DBD::Pg) >= 1.41
 
 %description db-postgresql
 EekBoek can make use of several database systems for its storage.
 This package contains the PostgreSQL database driver for %{name}.
 
-%if %{gui}
-%package gui
-Summary: GUI extension for %{name}.
-Group: Applications/Productivity
-AutoReqProv: 0
-Requires: %{name} = %{version}-%{release}
-Requires: perl-Wx >= 0.74
-
-%description gui
-The wxWidgets-based GUI extension for %{name}.
-%endif
-
 %package contrib
-Summary: User contributed tools and files for %{name}.
+
+Summary: PostgreSQL database driver for %{name}
 Group: Applications/Productivity
 AutoReqProv: 0
-Requires: %{name} = %{version}-%{release}
+Requires: %{name}-core = %{version}-%{release}
 
 %description contrib
-User contributed tools and files for %{name}.
+This package contains several user contributes files and utilities.
 
 %prep
 %setup -q
+
+# Create docs for the subpackages.
+cp -p %SOURCE1 .
+cp -p %SOURCE2 .
+cp -p %SOURCE3 .
+cp -p %SOURCE4 .
+
+chmod 0664 MANIFEST
 
 # Remove some build helper sources since we BuildRequire them.
 %{__rm} -fr inc/IPC inc/Module
 %{__perl} -ni~ -e 'print unless m;^inc/(Module|IPC)/;;' MANIFEST
 
-# DO NOT convert examples/mutaties.eb and html/intro/mutaties.eb!
-# These files NEED to be Latin-1 (ISO 8859.1).
-
-# Remove modules that have been included for convenience. Require the
-# real packages instead.
-%{__rm} -fr lib/CPAN
+# Remove some library modules since we Require them.
+%{__rm} -fr lib/EB/CPAN/Carp
+%{__rm} -fr lib/EB/CPAN/File
+%{__rm} -fr lib/EB/CPAN/Wx
+%{__perl} -ni~ -e 'print unless m;^lib/EB/CPAN/;;' MANIFEST
 
 %build
 %{__perl} Build.PL
@@ -150,36 +184,61 @@ mv blib/lib/EB/examples .
 
 %{__mkdir_p} %{buildroot}%{ebconf}
 %{__mkdir_p} %{buildroot}%{ebshare}/lib
-%{__mkdir_p} %{buildroot}%{ebshare}/contrib
 %{__mkdir_p} %{buildroot}%{_bindir}
-%{__mkdir_p} %{buildroot}%{_mandir}/man1
 
 # Install the default, system-wide config file.
 %{__install} -p -m 0644 examples/%{lcname}.conf %{buildroot}%{ebconf}/%{lcname}.conf
 
+# Install locales.
+for lang in blib/lib/EB/mo/*
+do
+  l=`basename ${lang}`
+  %{__mkdir_p} %{buildroot}%{_datadir}/locale/${l}/LC_MESSAGES
+  %{__mv} blib/lib/EB/mo/${l}/* %{buildroot}%{_datadir}/locale/${l}/LC_MESSAGES
+  %{__rmdir} blib/lib/EB/mo/${l}
+done
+%{__rmdir} blib/lib/EB/mo
+
 # Create lib dirs and copy files.
 %{__find} blib/lib -type d -printf "%{__mkdir} %{buildroot}%{ebshare}/lib/%%P\n" | sh -x
 %{__find} blib/lib ! -type d -printf "%{__install} -p -m 0644 %p %{buildroot}%{ebshare}/lib/%%P\n" | sh -x
-%{__find} contrib -type d -printf "%{__mkdir} %{buildroot}%{ebshare}/contrib/%%P\n" | sh -x
-%{__find} contrib ! -type d -printf "%{__install} -p -m 0644 %p %{buildroot}%{ebshare}/contrib/%%P\n" | sh -x
 
-# Create the main script.
-echo "#!%{__perl}" > %{buildroot}%{_bindir}/ebshell
-%{__sed} -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
-  < script/ebshell >> %{buildroot}%{_bindir}/ebshell
-%{__chmod} 0755 %{buildroot}%{_bindir}/ebshell
+for script in ebshell ebwxshell
+do
 
-# And its manual page.
-pod2man blib/script/ebshell > %{buildroot}%{_mandir}/man1/ebshell.1
+  # Create the main scripts.
+  echo "#!%{__perl}" > %{buildroot}%{_bindir}/${script}
+  %{__sed} -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
+    < script/${script} >> %{buildroot}%{_bindir}/${script}
+  %{__chmod} 0755 %{buildroot}%{_bindir}/${script}
 
-# Same for the GUI.
-%if %{gui}
-echo "#!%{__perl}" > %{buildroot}%{_bindir}/ebgui
-%{__sed} -s "s;# use lib qw(EekBoekLibrary;use lib qw(%{ebshare}/lib;" \
-  < script/ebgui >> %{buildroot}%{_bindir}/ebgui
-%{__chmod} 0755 %{buildroot}%{_bindir}/ebgui
-pod2man blib/script/ebgui > %{buildroot}%{_mandir}/man1/ebgui.1
-%endif
+  # And its manual page.
+  %{__mkdir_p} %{buildroot}%{_mandir}/man1
+  pod2man blib/script/${script} > %{buildroot}%{_mandir}/man1/${script}.1
+
+  # And the localisations.
+  # %find_lang ${script}
+
+done
+
+# Handle localisations separately since we are not complete yet.
+for script in ebwxshell
+do
+  %find_lang ${script}
+done
+
+# Desktop file, icons, ...
+%{__mkdir_p} %{buildroot}%{_datadir}/pixmaps
+%{__install} -p -m 0664 lib/EB/Wx/icons/ebicon.png %{buildroot}%{_datadir}/pixmaps/
+for script in ebwxshell
+do
+  desktop-file-install --delete-original \
+    --dir=%{buildroot}%{_datadir}/applications ${script}.desktop
+  desktop-file-validate %{buildroot}/%{_datadir}/applications/${script}.desktop
+done
+
+# Contrib
+%{__mv} contrib %{buildroot}%{ebshare}
 
 # End of install section.
 
@@ -195,33 +254,32 @@ pod2man blib/script/ebgui > %{buildroot}%{_mandir}/man1/ebgui.1
 
 %files
 %defattr(-,root,root,-)
+%doc README.eekboek
+
+%files core
+%defattr(-,root,root,-)
 %doc CHANGES README examples/ doc/html/ TODO
 %dir %{_sysconfdir}/%{lcname}
 %config(noreplace) %{_sysconfdir}/%{lcname}/%{lcname}.conf
 %{ebshare}/
 %exclude %{ebshare}/lib/EB/DB/Postgres.pm
 %exclude %{ebshare}/lib/EB/Wx
-%exclude %{ebshare}/lib/EB/Report/*/Wx[Hh]tml.pm
-%exclude %{ebshare}/lib/EB/Wx/tips.txt
-%exclude %{ebshare}/contrib
 %{_bindir}/ebshell
-%{_mandir}/man1/ebshell.*
+%{_mandir}/man1/ebshell*
+
+%files -f ebwxshell.lang gui
+%defattr(-,root,root,-)
+%doc README.gui
+%{ebshare}/lib/EB/Wx
+%{_bindir}/ebwxshell
+%{_mandir}/man1/ebwxshell*
+%{_datadir}/applications/ebwxshell.desktop
+%{_datadir}/pixmaps/ebicon.png
 
 %files db-postgresql
 %defattr(-,root,root,-)
 %doc README.postgres
 %{ebshare}/lib/EB/DB/Postgres.pm
-
-%if %{gui}
-%files gui
-%defattr(-,root,root,-)
-%doc README.gui
-%{ebshare}/lib/EB/Wx
-%{ebshare}/lib/EB/Report/*/Wx[Hh]tml.pm
-%{ebshare}/lib/EB/Wx/tips.txt
-%{_bindir}/ebgui
-%{_mandir}/man1/ebgui.*
-%endif
 
 %files contrib
 %defattr(-,root,root,-)
@@ -229,17 +287,24 @@ pod2man blib/script/ebgui > %{buildroot}%{_mandir}/man1/ebgui.1
 %{ebshare}/contrib
 
 %changelog
-* Mon Oct 19 2009 Johan Vromans <jvromans@squirrel.nl> - 1.05.03-1
-- Provide description for rebuilt sampledb.ebz.
+* Fri Jan 15 2010 Johan Vromans <jvromans@squirrel.nl> - 1.05.15-2
+- Add missing file to db-postgres package.
 
-* Mon Oct 19 2009 Johan Vromans <jvromans@squirrel.nl> - 1.05.01-1
-- Remove patches (changes are in upstream).
+* Fri Jan 15 2010 Johan Vromans <jvromans@squirrel.nl> - 1.05.15-1
+- Upgrade to upstream 1.05.15.
 
-* Sat Oct 10 2009 Johan Vromans <jvromans@squirrel.nl> - 1.05.00-2
-- Split off contrib into separate package.
+* Fri Jan 15 2010 Johan Vromans <jvromans@squirrel.nl> - 1.05.14-1
+- Upgrade to upstream 1.05.14.
+- Re-structure the package into several subpackages.
 
-* Sat Oct 10 2009 Johan Vromans <jvromans@squirrel.nl> - 1.05.00-1
-- Integrate GUI, package as separate package.
+* Wed Jan 06 2010 Johan Vromans <jvromans@squirrel.nl> - 1.04.06-1
+- Upgrade to upstream 1.04.06.
+
+* Mon Dec 28 2009 Johan Vromans <jvromans@squirrel.nl> - 1.04.05-2
+- Fix for table detection with newer SQLite.
+
+* Mon Dec 28 2009 Johan Vromans <jvromans@squirrel.nl> - 1.04.05-1
+- Upgrade to upstream 1.04.05.
 
 * Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.04.04-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
