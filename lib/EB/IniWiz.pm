@@ -412,10 +412,22 @@ EOD
 
     foreach my $c ( qw(config schema relaties opening mutaties database) ) {
 	if ( $c eq "database" ) {
-	    my @cmd = ( $^X, "-S", "ebshell", "--init" );
-	    my $ret = system(@cmd);
+	    my $ret;
+	    if ( 0 ) {
+		my @cmd = ( $^X, "-S", "ebshell", "--init" );
+		$ret = system(@cmd);
+	    }
+	    else {
+		undef $cfg;
+		EB::Config->init_config( { app => $EekBoek::PACKAGE, %opts } );
+		require EB::Main;
+		local @ARGV = qw( --init );
+		$ret = EB::Main->run;
+	    }
+
 	    die(_T("Er is een probleem opgetreden. Raadplaag uw systeembeheerder.")."\n")
 	      if $ret;
+
 	}
 	else {
 	    my $m = "generate_". $c;
