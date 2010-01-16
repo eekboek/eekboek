@@ -1,6 +1,13 @@
 BEGIN WORK;
 
+-- ONLY: SQLite
+SELECT * INTO TEMP TAccounts FROM Accounts WHERE acc_id = 0;
+
 ALTER TABLE Accounts
+ADD COLUMN acc_dcfixed      boolean;	-- fixed d/c
+
+-- ONLY: SQLite
+ALTER TABLE TAccounts
 ADD COLUMN acc_dcfixed      boolean;	-- fixed d/c
 
 UPDATE Accounts SET acc_dcfixed = 'f' WHERE acc_balres;
