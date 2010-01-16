@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.14 2010/01/06 20:19:23 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.15 2010/01/16 22:37:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  6 21:09:43 2010
-# Update Count    : 991
+# Last Modified On: Sat Jan 16 22:42:00 2010
+# Update Count    : 996
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -42,10 +42,6 @@ sub run {
       { interactive   => -t,		# runs interactively
 	#command,			# command to process
 	#echo,				# echo input
-	#createdb,			# create database
-	#createsampledb,		# create demo database
-	#createsampleconfig,		# create config
-	#schema,			# initialise w/ schema
 	confirm	      => 0,		# NYI
 	#journal,			# show journal
 	#inexport,			# in/export
@@ -81,8 +77,7 @@ sub run {
     my $userdir = $cfg->user_dir;
     mkdir($userdir) unless -d $userdir;
 
-    unless ( $opts->{createsampleconfig} || $opts->{createsampledb}
-	   || defined($opts->{wizard}) && !$opts->{wizard} ) {
+    unless ( defined($opts->{wizard}) && !$opts->{wizard} ) {
       if ( $opts->{wizard}
 	 or
 	 !$opts->{config}
@@ -96,40 +91,9 @@ sub run {
       }
     }
 
-    if ( $opts->{createsampleconfig} ) {
-	$opts->{command} = 1;
-	my $cfg = $cfg->std_config;
-	if ( -f $cfg ) {
-	    die("?".__x("Opdracht geweigerd, {conf} bestaat reeds",
-		    conf => $cfg)."\n");
-	}
-	my $file = findlib("schema/sample.conf");
-	die("?".__x("Geen voorbeeldgegevens: {conf}",
-		    conf => "schema/sample.conf")."\n") unless $file;
-	open(my $f, '<:encoding(utf-8)', $file)
-	  or die("?".__x("Fout bij openen {file}: {err}",
-			 file => $file, err => "$!")."\n");
-	my @data = map { s/[\n\r]+\Z//; $_ } <$f>;
-	close($f);
-	$f = undef;
-	open($f, '>:encoding(utf-8)', $cfg)
-	  or die("?".__x("Fout bij openen {file}: {err}",
-			 file => $cfg, err => "$!")."\n");
-	print { $f } "$_\n" foreach @data;
-	close($f)
-	  or die("?".__x("Fout bij afsluiten {file}: {err}",
-			 file => $cfg, err => "$!")."\n");
-	exit(0);
-    }
-
     $opts->{echo} = "eb> " if $opts->{echo};
-    my $dataset;
-    if ( $opts->{createsampledb} ) {
-	$dataset = "sample" unless defined $dataset;
-    }
-    else {
-	$dataset ||= $cfg->val(qw(database name), undef);
-    }
+
+    my $dataset = $cfg->val(qw(database name), undef);
 
     unless ( $dataset ) {
 	die("?"._T("Geen EekBoek database opgegeven.".
@@ -168,30 +132,12 @@ sub run {
 	}
     }
 
-    if ( $opts->{createsampledb} ) {
-	$opts->{command} = 1;
-	$createdb = 1;
-	my $file = findlib("schema/sampledb.ebz");
-	die("?".__x("Geen demo gegevens: {ebz}",
-		    ebz => "schema/sampledb.ebz")."\n") unless $file;
-	@ARGV = qw(import --noclean);
-	push(@ARGV, "--file", $file);
-    }
-
     if ( $createdb ) {
 	$dbh->createdb($dataset);
 	warn("%".__x("Lege database {db} is aangemaakt", db => $dataset)."\n");
     }
 
-    #### DEAD
-    if ( $opts->{schema} ) {
-	require EB::Tools::Schema;
-	$dbh->connectdb(1);
-	EB::Tools::Schema->create($opts->{schema});
-	$dbh->setup;
-    }
-
-    exit(0) if $opts->{command} && !@ARGV;
+    return 0 if $opts->{command} && !@ARGV;
 
     require EB::Shell;
     my $shell = EB::Shell->new
@@ -241,8 +187,6 @@ sub app_options {
 			  $opts->{inexport} = 1;
 			  $opts->{dir} = ".";
 		      },
-		      'createsampledb',
-		      'createsampleconfig',
 		      'define|D=s%',
 		      'printconfig|P',
 		      'nostdconf|X',
@@ -295,11 +239,6 @@ Gebruik: {prog} [options] [file ...]
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
-
-Voor beginners:
-
-    --createsampleconfig   maak nieuwe demo config aan
-    --createsampledb	   maak nieuwe demo database aan
 
 Voor experts:
 
