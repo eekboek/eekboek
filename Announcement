@@ -1,7 +1,7 @@
 To: eekboek-devel@lists.sourceforge.net
 Reply-To: eekboek-devel@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.05.11 **SNAPSHOT** is beschikbaar
+Subject: EekBoek 1.05.16 is beschikbaar voor testen
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,66 +10,32 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.05.11 is beschikbaar.
-De 1.05 versies zijn de voorlopers van EekBoek 1.06 of misschien wel 2.00.
+EekBoek versie 1.05.16 is beschikbaar voor testen.
+De 1.05 versies zijn de voorlopers van EekBoek 2.00.
 
-Dit is een SNAPSHOT omdat het nog niet alles compleet is.
-Hoewel, we beginnen aardig in de goede richting te komen. Als de
-testresultaten hiervan goed uitvallen denk ik dat we richting echte
-release gaan.
-
-*** NIET INSTALLEREN *** GEBRUIK OP EIGEN RISICO ***
-
-*** BEGIN HIER NIET AAN ALS JE NIET WEET HOE JE JE DATABASE OPNIEUW
-    KUNT AANMAKEN! JE BENT GEWAARSCHUWD! 
-
-*** DISCUSSIES naar eekboek-devel@lists.sourceforge.net!
-
-Sjonge, dit lijkt wel zo'n Amerikaanse disclaimer toestand :)
-
-Gebruik: Uitpakken in een lege directory, dit is de uitpak_dir.
-
-Je hebt de volgende mogelijkheden.
-
-  $ perl <uitpak_dir>/EekBoek-1.05.11/script/ebwxshell
-
-Nieuwe administraties worden in je $HOME/.eekboek/admin directory
-aangemaakt, en kun je bij het opstarten een van je administraties
-kiezen.
-
-De admin directory kan worden ingesteld met een config setting:
-
-  [general]
-  admdir = $HOME/.eekboek/admdir
-
-Bovenstaand is de default setting.
-
-  $ perl <uitpak_dir>/EekBoek-1.05.11/script/ebwxshell -f <configfile>
-
-Start meteen op met de gewenste config file.
-
-  $ perl <uitpak_dir>/EekBoek-1.05.11/script/ebshell --wizard
-
-Je kunt een van de administraties uit de admin directory kiezen.
-
-  $ perl <uitpak_dir>/EekBoek-1.05.11/script/ebshell
-
-Werkt als vanouds.
+*** GEBRUIK OP EIGEN RISICO ***
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.05.11.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.05.16.tar.gz
 
-Nog geen install kits. Die komen als deze versie wat meer stabiel is
-geworden.
+Install kits voor Fedora zijn te vinden in de eekboek-testing repo.
 
-Belangrijkste wijzigingen t.o.v. 1.05.10 (zie ook de file CHANGES):
+Belangrijkste wijzigingen t.o.v. 1.05.15 en 1.05.14 (zie ook de file CHANGES):
 
-* (ebwxshell, wizard) Verplicht unieke administratie naam en code.
+* (ebshell) Non-zero exit status indien fouten zijn
+  opgetreden. Dit kan consequenties hebben als ebshell wordt
+  toegepast in makefiles.
 
-* (ebshell) Wizard om administraties aan te maken.
+* (ebshell) Verwijderen opties --createsampleconfig en
+  --createsampledb (vervangen door de wizard).
 
-* (ebwxshell) Mogelijkheid om de input regel uitgebreid te editen,
-  inclusief multi-line support.
+* (ebshell, wizard) Gebruik eigen code (recursief) om --init
+  uit te voeren.
+
+* (ebshell, shell) Grote opruiming.
+
+* (migration) Fix: DB automigratie van SQLite zat PostgreSQL
+  in de weg.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl

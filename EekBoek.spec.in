@@ -11,7 +11,7 @@ Summary: Bookkeeping software for small and medium-size businesses
 License: GPL+ or Artistic
 Group: Applications/Productivity
 Version: [% version %]
-Release: 2%{?dist}
+Release: 1%{?dist}
 Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
 Source1: README.postgres
 Source2: README.gui
@@ -287,6 +287,9 @@ done
 %{ebshare}/contrib
 
 %changelog
+* Sat Jan 16 2010 Johan Vromans <jvromans@squirrel.nl> - 1.05.16-1
+- Upgrade to upstream 1.05.16.
+
 * Fri Jan 15 2010 Johan Vromans <jvromans@squirrel.nl> - 1.05.15-2
 - Add missing file to db-postgres package.
 

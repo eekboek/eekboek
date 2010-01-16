@@ -1,6 +1,25 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.15
+1.05.16
+
+	* (ebshell) Non-zero exit status indien fouten zijn
+          opgetreden. Dit kan consequenties hebben als ebshell wordt
+          toegepast in makefiles.
+
+	* (ebshell) Verwijderen opties --createsampleconfig en
+          --createsampledb (vervangen door de wizard).
+
+	* (ebshell, wizard) Gebruik eigen code (recursief) om --init
+	  uit te voeren.
+
+	* (ebshell, shell) Grote opruiming.
+
+	* (migration) Fix: DB automigratie van SQLite zat PostgreSQL
+          in de weg.
+
+1.05.15 2010-01-16 16:32
+
+	* Small changes for the packaging.
 
 1.05.14 2010-01-13 11:12
 
