@@ -1,12 +1,12 @@
 #! perl
 
 # SQLEngine.pm -- Execute SQL commands
-# RCS Info        : $Id: SQLEngine.pm,v 1.9 2008/02/07 12:31:05 jv Exp $
+# RCS Info        : $Id: SQLEngine.pm,v 1.10 2010/01/16 23:02:55 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:31:03 2008
-# Update Count    : 66
+# Last Modified On: Sat Jan 16 23:59:42 2010
+# Update Count    : 70
 # Status          : Unknown, Use with caution!
 
 package EB::Tools::SQLEngine;
@@ -14,7 +14,7 @@ package EB::Tools::SQLEngine;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -48,9 +48,13 @@ sub process {
     # Filter SQL, if needed.
     my $filter = $dbh->feature("filter");
 
+    # Remember type
+    my $type = $dbh->driverdb;
+
     # Use raw handle from here.
     $dbh = $dbh->dbh;
 
+    my $skipthis;
     foreach my $line ( split(/\n/, $cmd) ) {
 
 	# Detect \i provider (include).
@@ -94,6 +98,10 @@ sub process {
 	    next;
 	}
 
+	if ( $line =~ /^-- SKIP:\s*(\S+)/ ) {
+	    $skipthis = lc($1) eq lc($type);
+	}
+
 	# Ordinary lines.
 	# Strip comments.
 	$line =~ s/--.*$//m;
@@ -108,6 +116,12 @@ sub process {
 
 	# Execute if trailing ;
 	if ( $line =~ /.+;$/ ) {
+	    if ( $skipthis ) {
+		warn("++ SKIPPED:: $sql\n") if $self->{trace};
+		$skipthis = 0;
+		$sql = "";
+		next;
+	    }
 
 	    # Check for COPY/
 	    if ( $sql =~ /^copy\s(\S+)\s+(\([^\051]+\))/i ) {
