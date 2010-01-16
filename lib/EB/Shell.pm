@@ -12,7 +12,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.113 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.114 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -179,13 +179,13 @@ sub parseline {
     my ($self, $line) = @_;
     $line =~ s/\\\s*$//;
     $line =~ s/;\s*$//;
-    my ($cmd, $env, @args) = $self->SUPER::parseline($line);
+    my ($cmd, @args) = $self->SUPER::parseline($line);
 
     if ( $cmd =~ /^(.+):(\S+)$/ ) {
 	$cmd = $1;
 	unshift(@args, "--nr=$2");
     }
-    ($cmd, $env, @args);
+    ($cmd, @args);
 }
 
 ################ Subroutines ################
@@ -201,10 +201,12 @@ sub _plug_cmds {
 	my ($dbk_id, $dbk_desc, $dbk_type) = @$rr;
 	no strict 'refs';
 	my $dbk = lc($dbk_desc);
+	undef &{"do_$dbk"};
 	*{"do_$dbk"} = sub {
 	    my $self = shift;
 	    $self->_add($dbk_id, @_);
 	};
+	undef &{"help_$dbk"};
 	*{"help_$dbk"} = sub {
 	    my $self = shift;
 	    $self->_help($dbk, $dbk_id, $dbk_desc, $dbk_type, @_);
@@ -230,10 +232,12 @@ sub _plug_cmds {
 	$cmd =~ s/^set_//;
 	next if $cmd =~ /^btw/ && !$does_btw;
 	no strict 'refs';
+	undef &{"do_adm_$cmd"};
 	*{"do_adm_$cmd"} = sub {
 	    (shift->{o} ||= EB::Tools::Opening->new)->$adm(@_);
 	};
 	my $help = "help_$cmd";
+	undef &{"help_adm_$cmd"};
 	*{"help_adm_$cmd"} = sub {
 	    my $self = shift;
 	    ($self->{o} ||= EB::Tools::Opening->new)->can($help)
@@ -244,7 +248,9 @@ sub _plug_cmds {
     # BTW aangifte.
     if ( $does_btw ) {
 	no strict 'refs';
+	undef &{"do_btwaangifte"};
 	*{"do_btwaangifte"}   = \&_do_btwaangifte;
+	undef &{"help_btwaangifte"};
 	*{"help_btwaangifte"} = \&_help_btwaangifte;
     }
 
