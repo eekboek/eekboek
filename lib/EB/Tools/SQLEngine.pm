@@ -1,12 +1,12 @@
 #! perl
 
 # SQLEngine.pm -- Execute SQL commands
-# RCS Info        : $Id: SQLEngine.pm,v 1.10 2010/01/16 23:02:55 jv Exp $
+# RCS Info        : $Id: SQLEngine.pm,v 1.11 2010/01/16 23:04:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jan 16 23:59:42 2010
-# Update Count    : 70
+# Last Modified On: Sun Jan 17 00:04:32 2010
+# Update Count    : 71
 # Status          : Unknown, Use with caution!
 
 package EB::Tools::SQLEngine;
@@ -14,7 +14,7 @@ package EB::Tools::SQLEngine;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -100,6 +100,9 @@ sub process {
 
 	if ( $line =~ /^-- SKIP:\s*(\S+)/ ) {
 	    $skipthis = lc($1) eq lc($type);
+	}
+	elsif ( $line =~ /^-- ONLY:\s*(\S+)/ ) {
+	    $skipthis = lc($1) ne lc($type);
 	}
 
 	# Ordinary lines.
