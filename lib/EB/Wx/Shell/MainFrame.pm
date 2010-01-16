@@ -286,7 +286,7 @@ sub RunCommand {
     $cmd = "database" unless defined $cmd;
     $self->{t_output}->AppendText("eb> ");
     $self->ShowText($cmd, wxBLUE);
-    if ( $cmd =~ /^(balans|result|proefensaldibalans|journaal|openstaand|(?:deb|cred)iteuren)(?:\s|$)/ ) {
+    if ( $cmd =~ /^(balans|result|proefensaldibalans|journaal|openstaand|(?:deb|cred)iteuren|btwaangifte)(?:\s|$)/ ) {
 	$cmd .= " --gen-wxhtml";
     }
     $self->{_proc}->WriteProcess($cmd."\n");
