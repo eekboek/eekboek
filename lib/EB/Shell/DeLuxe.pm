@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.23 2009/10/17 09:49:26 jv Exp $
+# RCS Id          : $Id: DeLuxe.pm,v 1.24 2010/01/16 22:39:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 17 11:49:14 2009
-# Update Count    : 275
+# Last Modified On: Sat Jan 16 23:00:38 2010
+# Update Count    : 279
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Shell::DeLuxe;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.23 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.24 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;
@@ -38,6 +38,12 @@ sub new {
 	*{"init_rl"}  = sub {};
 	*{"histfile"} = sub {};
 	*{"print"}    = sub { shift; CORE::print @_ };
+    }
+    else {
+	no strict 'refs';
+	*{"init_rl"}  = sub { shift->SUPER::init_rl(@_) };
+	*{"histfile"} = sub { shift->SUPER::histfile(@_) };
+	*{"print"}    = sub { shift->SUPER::print(@_) };
     }
 
     my $self = $class->SUPER::new($opts);
@@ -186,103 +192,3 @@ sub readline {
 }
 
 1;
-
-__END__
-
-=head1 NAME
-
-EB::Shell::DeLuxe - A generic class to build line-oriented command interpreters.
-
-=head1 SYNOPSIS
-
-  package My::Shell;
-
-  use base qw(EB::Shell::DeLuxe);
-
-  sub do_greeting {
-      return "Hello!"
-  }
-
-=head1 DESCRIPTION
-
-EB::Shell::DeLuxe is a base class designed for building command line
-programs.  It inherits from L<EB::Shell::Base>.
-
-=head2 Features
-
-EB::Shell::DeLuxe extends EB::Shell::Base with the following features:
-
-=over 4
-
-=item Reading commands from files
-
-This implements batch processing in the style of "sh < commands.sh".
-
-All commands are read from the standard input, and processing
-terminates after the last command has been read.
-
-Commands read this way can be backslash-continued.
-
-=item Single command execution
-
-This implements command execution in the style of "sh -c 'command'".
-
-One single command is executed.
-
-=back
-
-=head1 METHODS
-
-=over 4
-
-=item new
-
-The constructor is called C<new>.  C<new> should be called with a
-reference to a hash of name => value parameters:
-
-  my $opts = { OPTION_1 => $one,
-	       OPTION_2 => $two };
-
-  my $shell = EB::Shell::DeLuxe->new($opts);
-
-EB::Shell::DeLuxe extends the options of EB::Shell::Base with:
-
-=item interactive
-
-Controls whether this instance is interactive, i.e, uses ReadLine to
-read commands.
-
-Defaults to true unless the standard input is not a terminal.
-
-=item command
-
-Controls whether this instance executes a single command, that is
-contained in @ARGV;
-
-  @ARGV = ( "exec", "this", "command" );
-  my $opts = { command => 1 };
-  my $shell = EB::Shell::DeLuxe->new($opts);
-  $shell->run;
-
-=item prompt
-
-The prompt for commands.
-
-=item echo
-
-If true, commands read from the standard input are echoed with the
-value of this option as a prefix. Valid for non-interactive use only.
-
-=back
-
-=head1 AUTHOR
-
-Johan Vromans E<lt>jvromans@squirrel.nl<gt>
-
-=head1 COPYRIGHT
-
-Copyright (C) 2005,2006 Squirrel Consultancy. All Rights Reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
-
