@@ -554,11 +554,22 @@ sub OnWizardFinished {
 	    if ( $self->{"cb_cr_$c"}->IsChecked ) {
 		if ( $c eq "database" ) {
 
-		    # Using EB::Main->run crashes ...
-		    # Need to run ebshell externally.
+		    my $ret;
+		    if ( 0 ) {
+			# We can inline this, but it currently has no
+			# real advantage. So it's better to avoid the
+			# EB Shell code in this program.
+			undef $cfg;
+			EB::Config->init_config( { app => $EekBoek::PACKAGE, %opts } );
+			require EB::Main;
+			local @ARGV = qw( --init );
+			$ret = EB::Main->run;
+		    }
+		    else {
+			my @cmd = ( $^X, "-S", "ebshell", "--init" );
+			$ret = system(@cmd);
+		    }
 
-		    my @cmd = ( $^X, "-S", "ebshell", "--init" );
-		    my $ret = system(@cmd);
 		    $self->{t_main}->AppendText(_T( $ret ? "Mislukt" : "Gereed")."\n");
 		}
 		else {
