@@ -12,7 +12,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.114 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.115 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -912,6 +912,74 @@ wordt het huidige boekjaar verondersteld.
   april  (01-04 - 30-04 boekjaar)
   m4  (vierde maand)
   jaar (gehele boekjaar)
+EOS
+}
+
+################ Schema ################
+
+sub do_schema {
+    my ( $self, @args ) = @_;
+
+    my $opts = {
+	       };
+
+    goto &help_schema unless @args >= 2;
+
+    my $cmd = shift(@args);
+
+    require EB::Tools::Schema;
+
+    if ( $cmd eq 'gbk' ) {
+	goto &help_schema
+	  unless @args % 4 == 0 || @args % 4 == 1; # weird, but okay
+	my $fail;
+	for ( my $i = 0; $i < @args; $i += 4 ) {
+	    unless ( $args[$i] =~ /^[[:digit:]]+$/i ) {
+		warn("?".__x("Ongeldig of ontbrekend rekeningnummer: {x}",
+			     x => $args[$i])."\n");
+		$fail++;
+	    }
+	    next if $i+1 >= @args;
+	    unless ( $args[$i+1] =~ /^[dc]!?|[kon]$/i ) {
+		warn("?".__x("Ongeldige of ontbrekende type specificatie: {x}",
+			     x => $args[$i+1])."\n");
+		$fail++;
+	    }
+	    unless ( $args[$i+3] =~ /^[[:digit:]]+$/i ) {
+		warn("?".__x("Ongeldige of ontbrekende verdichting: {x}",
+			     x => $args[$i])."\n");
+		$fail++;
+	    }
+	}
+	goto &help_schema if $fail;
+	EB::Tools::Schema->new->add_gbk( @args, $opts );
+    }
+
+    else {
+	goto &help_schema;
+    }
+}
+
+sub help_schema {
+    my $ret = <<EOS;
+Onderhoud van het schema. Deze opdracht kent sub-opdrachten:
+
+  schema <opdracht> [ <opties> ] <argumenten>
+
+Aanmaken grootboekrekening
+
+  schema gbk <rekening> [ <type> <omschrijving> <verdichting> ]
+
+     <rekening>      de gewenste grootboekrekening
+     <type>          D/C voor Debet / Credit
+		     K/O/N voor Kosten / Omzet / Neutraal
+		     Eventueel gevolgd door ! als deze 
+		     balansrekening vast staat aan één kant
+     <omschrijving>  De omschrijving van deze grootboekrekening
+     <verdichting>   De verdichting waaronder deze rekening valt
+
+     Wanneer enkel een nummer wordt opgegeven dan worden de gegevens
+     van de betreffende grootboekrekening getoond.
 EOS
 }
 

@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Schema.pm,v 1.63 2010/01/13 09:10:50 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.64 2010/01/22 11:45:13 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jan  9 18:26:06 2010
-# Update Count    : 720
+# Last Modified On: Fri Jan 22 12:31:48 2010
+# Update Count    : 773
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,12 +22,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.63 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.64 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.63 2010/01/13 09:10:50 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.64 2010/01/22 11:45:13 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -1000,6 +1000,115 @@ sub dump_dbk {
 	$t =~ s/\s+$//;
 	print {$fh} ($t, "\n");
     }
+}
+
+################ API functions ################
+
+sub new {
+    bless \my $x, shift;
+}
+
+sub add_gbk {
+    my ($self, @args) = @_;
+
+    my $opts = pop(@args);	# currently unused
+    my $in_transaction;
+    my $anyfail;
+    my $ret = "";
+
+    while ( @args ) {
+	my ($gbk, $flags, $desc, $vrd) = splice( @args, 0, 4 );
+	if ( defined($flags) and defined($desc) and defined($vrd) ) {
+	    my ( $balres, $debcrd, $kstomz, $fixed );
+	    ( $flags, $fixed ) = ( lc($1), !!$2 ) if $flags =~ /^(.)(!)$/;
+
+	    my $t = $dbh->lookup($gbk, qw(Accounts acc_id acc_desc));
+	    if ( $t ) {
+		warn "?".
+		  __x("Grootboekrekening {gbk} ({desc}) bestaat reeds",
+		      gbk => $gbk, desc => $t)."\n";
+		$anyfail++;
+		next;
+	    }
+	    $balres = $dbh->lookup($vrd, qw(Verdichtingen vdi_id vdi_balres));
+	    unless ( defined $balres ) {
+		warn "?".__x("Onbekende verdichting: {vrd}",
+			     vrd => $vrd)."\n";
+		$anyfail++;
+		next;
+	    }
+	    if ( $balres ) {
+		if ( $flags =~ /^[dc]$/ ) {
+		    $debcrd = $flags eq 'd';
+		}
+		else {
+		    warn "?"._T("Ongeldig type voor balansrekening (alleen D / C toegestaan)")."\n";
+		    $anyfail++;
+		    next;
+		}
+	    }
+	    else {
+		if ( $flags =~ /^[kon]$/ ) {
+		    $kstomz = $flags eq 'k' ? 1 : $flags eq 'o' ? 0 : undef;
+		}
+		else {
+		    warn "?"._T("Ongeldig type voor resultaatrekening (alleen K / O / N toegestaan)")."\n";
+		    $anyfail++;
+		    next;
+		}
+	    }
+	    $dbh->begin_work unless $in_transaction++;
+	    $t = $dbh->sql_insert("Accounts",
+				  [qw(acc_id acc_desc acc_struct acc_balres
+				      acc_debcrd acc_dcfixed acc_kstomz
+				      acc_btw acc_ibalance acc_balance)],
+				  $gbk, $desc, $vrd,
+				  $balres,
+				  $debcrd,
+				  $fixed,
+				  $kstomz,
+				  undef, 0, 0);
+	    unless ( $t ) {
+		warn "?".__x("Fout tijdens het opslaan van grootboekrekening {gbk}",
+			     gbk => $gbk)."\n";
+		$anyfail++;
+		next;
+	    }
+	}
+
+	unless ( $anyfail ) {
+	    my $rr = $dbh->do("SELECT acc_desc, acc_balres, acc_debcrd,".
+			      "       acc_kstomz, acc_dcfixed, vdi_id, vdi_desc, vdi_struct".
+			      " FROM Accounts, Verdichtingen".
+			      " WHERE acc_id = ?".
+			      " AND acc_struct = vdi_id", $gbk);
+	    unless ( $rr ) {
+		warn "!".__x("Onbekende grootboekrekening: {gbk}",
+			     gbk => $gbk)."\n";
+		#$anyfail++;
+		next;
+	    }
+
+	    my $t = $dbh->lookup($rr->[7], qw(Verdichtingen vdi_id vdi_desc));
+	    $ret .=
+	      __x("{balres} {gbk} {debcrd}{fixed}{kstomz} ({desc});".
+		  " Verdichting {vrd} ({vdesc});".
+		  " Hoofdverdichting {hvrd} ({hdesc})",
+		  balres => ($rr->[1] ? "Balansrekening" : "Resultaatrekening"),
+		  gbk => $gbk, desc => $rr->[0],
+		  debcrd => ($rr->[1] ? ($rr->[2] ? "Debet" : "Credit") : ""),
+		  kstomz => ($rr->[1] ? "" : defined($rr->[3]) ? $rr->[3] ? " Kosten" : " Omzet" : " Neutraal"),
+		  fixed => $rr->[4] ? "!" : "",
+		  vrd => $rr->[5], vdesc => $rr->[6],
+		  hvrd => $rr->[7], hdesc => $t,
+		 )."\n";
+	}
+    }
+
+    if ( $in_transaction ) {
+	$anyfail ? $dbh->rollback : $dbh->commit;
+    }
+    return $ret;
 }
 
 1;
