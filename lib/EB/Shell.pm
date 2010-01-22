@@ -12,7 +12,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.115 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.116 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -114,6 +114,8 @@ sub eb_complete {
     my $pre = substr($line, 0, $pos);
     #warn "\n[$pre][", substr($line, $pos), "]\n";
 
+    select(STDERR); $| = 1; select(STDOUT);
+
     if ( $i < 0 || $i > $pos-1 || $pre =~ /^help\s+$/ ) {
 	my @extra;
 	@extra = qw(rapporten periodes) if $pre =~ /^help\s+$/;
@@ -127,7 +129,7 @@ sub eb_complete {
     }
     if ( $word =~ /^\d+$/ )  {
 	my $sth = $dbh->sql_exec("SELECT acc_id,acc_desc from Accounts".
-				 " WHERE acc_id LIKE ?".
+				 " WHERE CAST(acc_id AS text) LIKE ?".
 				 " ORDER BY acc_id", "$word%");
 	my $rr = $sth->fetchrow_arrayref;
 	return () unless $rr;
