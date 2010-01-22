@@ -73,7 +73,7 @@ Requires: perl(DBD::SQLite) >= 1.12
 Requires: perl(Carp::Assert) >= 0.20
 
 BuildRequires: perl >= 5.8.8
-BuildRequires: perl(Module::Build)
+BuildRequires: perl(Module::Build) >= 0.32
 BuildRequires: perl(IPC::Run3)
 BuildRequires: perl(Archive::Zip)
 BuildRequires: perl(HTML::Parser)
