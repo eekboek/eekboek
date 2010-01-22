@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan 13 10:36:03 2010
-# Update Count    : 118
+# Last Modified On: Fri Jan 22 11:22:01 2010
+# Update Count    : 119
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -12,7 +12,7 @@ exit 0 if $ENV{AUTOMATED_TESTING} && $] < 5.008003;
 use 5.008003;
 use strict;
 use lib 'inc';
-use Module::Build 0.27_09;
+use Module::Build 0.32;
 use File::Find;
 
 our $data = {};
