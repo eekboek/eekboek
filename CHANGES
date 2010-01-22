@@ -1,6 +1,34 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.16
+1.05.17
+
+	* Nieuw command: schema. Hiermee kunnen interactief
+          (vooralsnog alleen) grootboekrekeningen worden aangemaakt.
+
+	  Onderhoud van het schema. Deze opdracht kent sub-opdrachten:
+
+	    schema <opdracht> [ <opties> ] <argumenten>
+
+	  Aanmaken grootboekrekening
+
+	    schema gbk <rekening> [ <type> <omschrijving> <verdichting> ]
+
+	       <rekening>      de gewenste grootboekrekening
+	       <type>          D/C voor Debet / Credit
+			       K/O/N voor Kosten / Omzet / Neutraal
+			       Eventueel gevolgd door ! als deze 
+			       balansrekening vast staat aan één kant
+	       <omschrijving>  De omschrijving van deze grootboekrekening
+	       <verdichting>   De verdichting waaronder deze rekening valt
+
+	       Wanneer enkel een nummer wordt opgegeven dan worden de gegevens
+	       van de betreffende grootboekrekening getoond.
+
+	* Fix probleem met completion van rekeningnummers.
+
+	* Upgrade Module::Build to 0.32 to have decent prereq support.
+
+1.05.16 2010-01-17 00:14
 
 	* (ebshell) Non-zero exit status indien fouten zijn
           opgetreden. Dit kan consequenties hebben als ebshell wordt
