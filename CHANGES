@@ -1,6 +1,10 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.04.06
+1.04.06.01
+
+	* Upgrade Module::Build to 0.32 to have decent prereq support.
+
+1.04.06	2010-01-06 11:53
 
 	* Fix probleem met het herkennen van tabelnamen in nieuwere
           SQLite implementaties.
