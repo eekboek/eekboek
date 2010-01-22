@@ -17,6 +17,8 @@ contrib/afschrijvingen/afschr-gewoon.dat
 contrib/afschrijvingen/afschr-group.dat
 contrib/bankafschriften/bank2eekboek.csv.dat
 contrib/bankafschriften/bank2eekboek.py
+contrib/afschriften-postbank/msg
+contrib/afschriften-postbank/script
 doc/html/bookings/bank.html
 doc/html/bookings/btw.html
 doc/html/bookings/cash.html
@@ -85,6 +87,7 @@ import/daviaccount/README
 import/daviaccount/dvimport.pl
 import/daviaccount/eximut.pl
 import/daviaccount/exirel.pl
+inc/build_common.pl
 inc/IPC/Run3.pm
 inc/IPC/Run3/ProfArrayBuffer.pm
 inc/IPC/Run3/ProfLogReader.pm
@@ -92,11 +95,14 @@ inc/IPC/Run3/ProfLogger.pm
 inc/IPC/Run3/ProfPP.pm
 inc/IPC/Run3/ProfReporter.pm
 inc/Module/Build.pm
+inc/Module/Build/API.pod
 inc/Module/Build/Authoring.pod
 inc/Module/Build/Base.pm
 inc/Module/Build/Compat.pm
+inc/Module/Build/Config.pm
 inc/Module/Build/ConfigData.pm
 inc/Module/Build/Cookbook.pm
+inc/Module/Build/Dumper.pm
 inc/Module/Build/ModuleInfo.pm
 inc/Module/Build/Notes.pm
 inc/Module/Build/PPMMaker.pm
@@ -115,8 +121,8 @@ inc/Module/Build/Platform/cygwin.pm
 inc/Module/Build/Platform/darwin.pm
 inc/Module/Build/Platform/os2.pm
 inc/Module/Build/PodParser.pm
+inc/Module/Build/Version.pm
 inc/Module/Build/YAML.pm
-inc/build_common.pl
 lib/EB.pm
 lib/EB/Booking.pm
 lib/EB/Booking/BKM.pm
