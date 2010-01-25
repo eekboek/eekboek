@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Schema.pm,v 1.64 2010/01/22 11:45:13 jv Exp $
+# RCS Id          : $Id: Schema.pm,v 1.65 2010/01/25 17:36:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan 22 12:31:48 2010
-# Update Count    : 773
+# Last Modified On: Mon Jan 25 18:36:12 2010
+# Update Count    : 774
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,12 +22,12 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.64 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.65 $ =~ /(\d+)/g;
 
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
 
-my $RCS_Id = '$Id: Schema.pm,v 1.64 2010/01/22 11:45:13 jv Exp $ ';
+my $RCS_Id = '$Id: Schema.pm,v 1.65 2010/01/25 17:36:59 jv Exp $ ';
 
 # Package name.
 my $my_package = 'EekBoek';
@@ -1020,7 +1020,8 @@ sub add_gbk {
 	my ($gbk, $flags, $desc, $vrd) = splice( @args, 0, 4 );
 	if ( defined($flags) and defined($desc) and defined($vrd) ) {
 	    my ( $balres, $debcrd, $kstomz, $fixed );
-	    ( $flags, $fixed ) = ( lc($1), !!$2 ) if $flags =~ /^(.)(!)$/;
+	    ( $flags, $fixed ) = ( $1, !!$2 ) if $flags =~ /^(.)(!)$/;
+	    $flags = lc($flags);
 
 	    my $t = $dbh->lookup($gbk, qw(Accounts acc_id acc_desc));
 	    if ( $t ) {
