@@ -1,6 +1,16 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.17
+1.05.18
+
+	* (ebwxshell) Fix unicode issues.
+
+	* (ebwxshell) Filter duplicaten uit de history en beperk het
+          aantal teruggeschreven regels tot een instelbaar maximum
+          (default 200).
+
+	* Upgrade Wx::Perl::ProcessStream to 0.24.
+
+1.05.17	2010-01-22 13:10
 
 	* Nieuw command: schema. Hiermee kunnen interactief
           (vooralsnog alleen) grootboekrekeningen worden aangemaakt.
