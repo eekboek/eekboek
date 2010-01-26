@@ -12,6 +12,7 @@ use base qw(Wx::Frame);
 use base qw(EB::Wx::Shell::Window);
 use strict;
 use utf8;
+use Encode;
 
 # begin wxGlade: ::dependencies
 use Wx::Locale gettext => '_T';
@@ -177,9 +178,9 @@ sub new {
 	}
 
 	Wx::Event::EVT_MENU($self, MENU_REP_JNL, \&OnJournal);
-	Wx::Event::EVT_MENU($self, MENU_REP_UN, \&OnMenuUns);
-	Wx::Event::EVT_MENU($self, MENU_REP_AP, \&OnMenuAP);
-	Wx::Event::EVT_MENU($self, MENU_REP_AR, \&OnMenuAR);
+	Wx::Event::EVT_MENU($self, MENU_REP_UN,  \&OnMenuUns);
+	Wx::Event::EVT_MENU($self, MENU_REP_AP,  \&OnMenuAP);
+	Wx::Event::EVT_MENU($self, MENU_REP_AR,  \&OnMenuAR);
 	Wx::Event::EVT_MENU($self, MENU_REP_VAT, \&OnMenuVAT);
 
 	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
@@ -193,7 +194,7 @@ sub new {
 
 	EVT_WXP_PROCESS_STREAM_STDOUT( $self, \&evt_process_stdout);
 	EVT_WXP_PROCESS_STREAM_STDERR( $self, \&evt_process_stderr);
-	EVT_WXP_PROCESS_STREAM_EXIT( $self, \&evt_process_exit);
+	EVT_WXP_PROCESS_STREAM_EXIT(   $self, \&evt_process_exit);
 
 	$prefctl ||=
 	  {
@@ -201,6 +202,7 @@ sub new {
 	   errorpopup  => 1,
 	   warnpopup   => 1,
 	   infopopup   => 0,
+	   histlines   => 200,
 	  };
 
 	$self->sizepos_restore("main");
@@ -289,7 +291,7 @@ sub RunCommand {
     if ( $cmd =~ /^(balans|result|proefensaldibalans|journaal|openstaand|(?:deb|cred)iteuren|btwaangifte)(?:\s|$)/ ) {
 	$cmd .= " --gen-wxhtml";
     }
-    $self->{_proc}->WriteProcess($cmd."\n");
+    $self->{_proc}->WriteProcess(encode("utf-8", $cmd."\n"));
 }
 
 sub ShowText {
@@ -310,7 +312,7 @@ my $capturing;
 sub evt_process_stdout {
     my ($self, $event) = @_;
     #$event->Skip(1);
-    my $out = $event->GetLine;
+    my $out = decode("utf-8", $event->GetLine);
     # warn("app: $out\n");
     if ( $capturing || $out eq "<html>" ) {
 	$capturing .= $out . "\n";
@@ -340,7 +342,8 @@ sub evt_process_stdout {
 sub evt_process_stderr {
     my ($self, $event) = @_;
     #$event->Skip(1);
-    my $out = $event->GetLine;
+    my $out = decode("utf-8", $event->GetLine);
+    # warn("err: $out\n");
     $self->ProcessMessages($out);
 }
 
@@ -605,9 +608,24 @@ sub OnPrefs {
 # wxGlade: EB::Wx::Shell::MainFrame::OnPrefs <event_handler>
     $self->{d_prefs} ||= EB::Wx::Shell::PreferencesDialog->new($self, -1, "Preferences");
     for ( keys( %$prefctl ) ) {
-	$self->{d_prefs}->{"cx_$_"}->SetValue( $self->{"prefs_$_"} );
+	if ( exists $self->{d_prefs}->{"cx_$_"} ) {
+	    $self->{d_prefs}->{"cx_$_"}->SetValue( $self->{"prefs_$_"} );
+	}
+	elsif ( exists $self->{d_prefs}->{"spin_$_"} ) {
+	    $self->{d_prefs}->{"spin_$_"}->SetValue( $self->{"prefs_$_"} );
+	}
     }
-    $self->{d_prefs}->Show(1);
+    my $ret = $self->{d_prefs}->ShowModal;
+    if ( $ret == wxID_OK ) {
+	for ( keys( %$prefctl ) ) {
+	    if ( exists $self->{d_prefs}->{"cx_$_"} ) {
+		$self->{"prefs_$_"} = $self->{d_prefs}->{"cx_$_"}->GetValue;
+	    }
+	    elsif ( exists $self->{d_prefs}->{"spin_$_"} ) {
+		$self->{"prefs_$_"} = $self->{d_prefs}->{"spin_$_"}->GetValue;
+	    }
+	}
+    }
 # end wxGlade
 }
 
@@ -619,10 +637,13 @@ sub FillHistory {
     $self->{_cmdptr} = 0;
     if ( -s $histfile ) {
 	my $fh;
-	return unless open($fh, "<", $histfile);
+	return unless open($fh, "<:encoding(utf-8)", $histfile);
+	my $prev = '';
 	while ( <$fh> ) {
 	    chomp;
+	    next if $_ eq $prev;
 	    $self->PutOnHistory($_);
+	    $prev = $_;
 	}
 	close($fh);
     }
@@ -633,7 +654,7 @@ sub GetPreferences {
     my ( $self ) = @_;
     my $conf = Wx::ConfigBase::Get;
     for ( keys( %$prefctl ) ) {
-	$self->{"prefs_$_"} = $conf->ReadBool( "preferences/$_", $prefctl->{$_} );
+	$self->{"prefs_$_"} = $conf->ReadInt( "preferences/$_", $prefctl->{$_} );
     }
 }
 
@@ -641,7 +662,11 @@ sub SaveHistory {
     my $self = shift;
     my $fh;
     my $histfile = $self->{_histfile};
-    return unless open($fh, ">>", $histfile);
+
+    $self->{_cmdinit} = $self->{_cmdptr} - $self->{prefs_histlines};
+    $self->{_cmdinit} = 0 if $self->{_cmdinit} < 0;
+
+    return unless open($fh, ">:encoding(utf-8)", $histfile);
     while ( $self->{_cmdinit} < $self->{_cmdptr} ) {
 	print { $fh } ($self->{_cmd}->[$self->{_cmdinit}], "\n");
 	$self->{_cmdinit}++;
@@ -653,7 +678,7 @@ sub SavePreferences {
     my ( $self ) = @_;
     my $conf = Wx::ConfigBase::Get;
     for ( keys( %$prefctl ) ) {
-	$conf->WriteBool( "preferences/$_", $self->{"prefs_$_"} );
+	$conf->WriteInt( "preferences/$_", $self->{"prefs_$_"} );
     }
 }
 
