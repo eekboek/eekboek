@@ -81,6 +81,8 @@ sub init_rl {
 	warn("%Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::Gnu installeren.\n");
     }
 
+    binmode( $term->Attribs->{'outstream'}, 'utf8' );
+
     # Setup default tab-completion function.
     $attr = $term->Attribs;
     $attr->{completion_function} = sub { $self->complete(@_) };
