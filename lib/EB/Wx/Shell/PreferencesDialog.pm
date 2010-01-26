@@ -33,6 +33,8 @@ sub new {
 	$self->{cx_errorpopup} = Wx::CheckBox->new($self, -1, _T("Popup window for errors"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cx_warnpopup} = Wx::CheckBox->new($self, -1, _T("Popup window for warnings"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cx_infopopup} = Wx::CheckBox->new($self, -1, _T("Popup window for informational messages"), wxDefaultPosition, wxDefaultSize, );
+	$self->{l_histlines} = Wx::StaticText->new($self, -1, _T("Number of input lines to keep in history:"), wxDefaultPosition, wxDefaultSize, );
+	$self->{spin_histlines} = Wx::SpinCtrl->new($self, -1, "200", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 99999, 200);
 	$self->{b_prefs_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 	$self->{b_prefs_ok} = Wx::Button->new($self, wxID_OK, "");
 
@@ -71,10 +73,15 @@ sub __do_layout {
 	$self->{sz_prefs_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_prefs_inner}= Wx::StaticBoxSizer->new($self->{sz_prefs_inner_staticbox}, wxVERTICAL);
 	$self->{sz_prefs} = Wx::BoxSizer->new(wxVERTICAL);
+	$self->{sz_histlines} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_prefs}->Add($self->{cx_repwin}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs}->Add($self->{cx_errorpopup}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs}->Add($self->{cx_warnpopup}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs}->Add($self->{cx_infopopup}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sz_histlines}->Add($self->{l_histlines}, 0, wxRIGHT|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 5);
+	$self->{sz_histlines}->Add($self->{spin_histlines}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sz_histlines}->Add(0, 0, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sz_prefs}->Add($self->{sz_histlines}, 1, wxEXPAND, 0);
 	$self->{sz_prefs}->Add(1, 5, 0, wxADJUST_MINSIZE, 0);
 	$self->{sz_prefs_inner}->Add($self->{sz_prefs}, 1, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
 	$self->{sz_prefs_outer}->Add($self->{sz_prefs_inner}, 1, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
@@ -101,9 +108,6 @@ sub OnCancel {
 sub OnAccept {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::PreferencesDialog::OnAccept <event_handler>
-	for ( qw(repwin errorpopup warnpopup infopopup) ) {
-	    $self->GetParent->{"prefs_$_"} = $self->{"cx_$_"}->GetValue;
-	}
 	$event->Skip;
 
 # end wxGlade
