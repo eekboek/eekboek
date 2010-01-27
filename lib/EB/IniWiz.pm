@@ -17,6 +17,7 @@ package EB::IniWiz;
 use EB;
 use EB::Tools::MiniAdm;
 use File::Basename;
+use Encode;
 
 my @adm_dirs;
 my @adm_names;
@@ -321,7 +322,7 @@ EOD
 	      if defined $answers->{$code};
 	    print STDERR ( ": " );
 
-	    my $a = <STDIN>;
+	    my $a = decode_utf8( scalar <STDIN> );
 	    $a = "-\n" unless defined $a;
 	    chomp($a);
 	    if ( $a eq '-' ) {
