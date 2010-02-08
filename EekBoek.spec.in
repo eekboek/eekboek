@@ -13,10 +13,6 @@ Group: Applications/Productivity
 Version: [% version %]
 Release: 1%{?dist}
 Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
-Source1: README.postgres
-Source2: README.gui
-Source3: README.contrib
-Source4: README.eekboek
 URL: http://www.eekboek.nl
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
 
@@ -102,7 +98,6 @@ AutoReqProv: 0
 Requires: %{name}-core = %{version}-%{release}
 Requires: perl(Wx) >= 0.89
 Requires: perl(Wx::Perl::ProcessStream) >= 0.11
-#Requires: perl(Wx::Perl::HtmlWizardPage) >= 0.01
 Requires: wxGTK >= 2.8.8
 Requires: gettext
 BuildRequires: desktop-file-utils
@@ -143,12 +138,6 @@ This package contains several user contributes files and utilities.
 
 %prep
 %setup -q
-
-# Create docs for the subpackages.
-cp -p %SOURCE1 .
-cp -p %SOURCE2 .
-cp -p %SOURCE3 .
-cp -p %SOURCE4 .
 
 chmod 0664 MANIFEST
 
@@ -287,6 +276,9 @@ done
 %{ebshare}/contrib
 
 %changelog
+* Mon Feb 08 2010 Johan Vromans <jvromans@squirrel.nl> - 1.05.20-1
+- Upgrade to upstream 1.05.20.
+
 * Sat Jan 16 2010 Johan Vromans <jvromans@squirrel.nl> - 1.05.16-1
 - Upgrade to upstream 1.05.16.
 
