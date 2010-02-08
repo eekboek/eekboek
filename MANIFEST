@@ -235,6 +235,7 @@ lib/EB/schema/sampledb.ebz
 lib/EB/schema/vereniging.ebz
 lib/EB/schema/sample.conf
 lib/EekBoek.pm
+relnotes-2.00.html
 script/ebshell
 script/ebwxshell
 t/10_basic.t
