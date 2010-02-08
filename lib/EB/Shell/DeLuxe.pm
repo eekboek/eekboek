@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.24 2010/01/16 22:39:05 jv Exp $
+# RCS Id          : $Id: DeLuxe.pm,v 1.25 2010/02/08 13:58:39 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jan 16 23:00:38 2010
-# Update Count    : 279
+# Last Modified On: Mon Feb  8 14:58:04 2010
+# Update Count    : 283
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Shell::DeLuxe;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.24 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;
@@ -76,7 +76,10 @@ sub readline_file {
     my $pre = "";
     while ( 1 ) {
 	$line = $rl->();
-	return unless $line;
+	unless ( $line ) {
+	    warn("?"._T("Vervolgregel ontbreekt in de invoer.")."\n") if $pre;
+	    return;
+	}
 
 	if ( $line =~ /^\# \s*
 		       content-type: \s*
@@ -87,7 +90,7 @@ sub readline_file {
 	    if ( $charset =~ /^(?:utf-?8)$/i ) {
 		next;
 	    }
-	    die("Invoer moet Unicode (UTF-8) zijn.\n");
+	    die("?"._T("Invoer moet Unicode (UTF-8) zijn.")."\n");
 	}
 
 =begin thismustbefixed
