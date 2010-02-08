@@ -1,6 +1,14 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.18
+1.05.19
+
+	* (ebshell) Fix unicode probleem in help strings.
+
+	* (ebshell) Fix unicode probleem in wizard waardoor
+          administratie namen/codes geen non-ascii tekens konden
+          bevatten.
+
+1.05.18	2010-01-26 10:56
 
 	* (ebwxshell) Fix unicode issues.
 
