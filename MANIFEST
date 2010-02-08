@@ -8,6 +8,7 @@ META.yml
 Makefile.PL
 README
 README.contrib
+README.eekboek
 README.gui
 README.postgres
 TODO
