@@ -697,11 +697,15 @@ sub OnMenuBal {
 
 
 sub OnMenuRes {
-	my ($self, $event) = @_;
+	my ($self, $event, $sub) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuRes <event_handler>
 
-	$self->{_proc}->WriteProcess("result --gen-wxhtml\n");
-
+	if ( defined $sub && $sub >= 0 ) {
+	    $self->{_proc}->WriteProcess("result --verdicht --detail=$sub --gen-wxhtml\n");
+	}
+	else {
+	    $self->{_proc}->WriteProcess("result --gen-wxhtml\n");
+	}
 # end wxGlade
 }
 
