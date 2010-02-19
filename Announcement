@@ -1,7 +1,7 @@
 To: eekboek-devel@lists.sourceforge.net
 Reply-To: eekboek-devel@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.05.19 is beschikbaar voor testen
+Subject: EekBoek 1.05.20 is beschikbaar voor testen
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,19 +10,27 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.05.19 is beschikbaar voor testen.
+EekBoek versie 1.05.20 is beschikbaar voor testen.
 De 1.05 versies zijn de voorlopers van EekBoek 2.00.
 
-*** GEBRUIK OP EIGEN RISICO ***
+Met deze versie verklaren we 1.05.x als stabiel voor productie.
+Noem het beta, or rc, wat je maar wilt.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.05.19.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-1.05.20.tar.gz
 
-Install kits voor Fedora zijn te vinden in de eekboek-testing repo.
+Install kits voor Fedora en Windows zijn te vinden in de
+eekboek-testing repo.
 
-Belangrijkste wijzigingen t.o.v. 1.05.18 (zie ook de file CHANGES):
+Belangrijkste wijzigingen t.o.v. 1.05.19 (zie ook de file CHANGES):
 
-* (ebshell) Fix diverse unicode issues.
+* Documentatie aanpassingen.
+
+* (iniwiz) Fix probleem met crash na db selectie.
+
+* Fix probleem met \ op laatste regel.
+
+(wbwxshell) Fix probleem met de result rapporten.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
