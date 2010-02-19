@@ -163,7 +163,6 @@ sub new {
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_relaties}->GetId, \&OnToggleCreate );
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_mutaties}->GetId, \&OnToggleCreate );
 	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_template}->GetId, \&OnSelectTemplate );
-	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_db_driver}->GetId, \&OnSelectDatabaseDriver );
 	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_name}->GetId, \&OnSelectAdmName );
 	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_code}->GetId, \&OnSelectAdmCode );
 	Wx::Event::EVT_SPINCTRL($self->{wiz}, $self->{sp_adm_begin}->GetId, \&OnSelectAdmName );
@@ -475,25 +474,6 @@ sub OnSelectAdmCode {
     $x =~ s/\W//g;
     # $x .= "_" . $self->{sp_adm_begin}->GetValue;
     $self->{t_db_name}->SetValue($x);
-
-# end wxGlade
-}
-
-sub OnSelectDatabaseDriver {
-    my ($self, $event) = @_;
-# wxGlade: EB::Wx::IniWiz::OnSelectDatabase <event_handler>
-
-    $self = $self->GetParent;
-
-    my $x = $self->{ch_db_driver}->GetSelection;
-    if ( $db_drivers[$x] eq "sqlite" ) {
-	$self->{l_dbpath}->Enable(1);
-	#$self->{dc_dbpath}->Enable(1);
-    }
-    else {
-	$self->{l_dbpath}->Enable(0);
-	#$self->{dc_dbpath}->Enable(0);
-    }
 
 # end wxGlade
 }
