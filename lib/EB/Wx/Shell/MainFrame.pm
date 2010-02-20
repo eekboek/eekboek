@@ -278,6 +278,7 @@ sub RunCommand {
 	    return;
 	}
 	my @eb = ($^X, qw(-S ebshell --nointeractive));
+	$eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
 	push(@eb, "-f", $self->{_ebcfg}) if $self->{_ebcfg};
 	$self->{_proc} =
 	  Wx::Perl::ProcessStream->OpenProcess(\@eb, 'EekBoek', $self);

@@ -547,6 +547,7 @@ sub OnWizardFinished {
 		    }
 		    else {
 			my @cmd = ( $^X, "-S", "ebshell", "--init" );
+			$cmd[2] = "ebshell.pl" if $^O =~ /mswin/i;
 			$ret = system(@cmd);
 		    }
 
