@@ -73,12 +73,13 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{s_input_staticbox} = Wx::StaticBox->new($self, -1, _T("Input") );
+	$self->{p_dummy} = Wx::Panel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{s_input_staticbox} = Wx::StaticBox->new($self->{p_dummy}, -1, _T("Input") );
 	$self->{statusbar} = $self->CreateStatusBar(1, wxST_SIZEGRIP);
-	$self->{t_output} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
-	$self->{b_edit} = Wx::BitmapButton->new($self, -1, (Wx::Bitmap->new("edit.png", wxBITMAP_TYPE_ANY)));
-	$self->{t_input} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB);
-	$self->{b_send} = Wx::BitmapButton->new($self, -1, (Wx::Bitmap->new("button_ok.png", wxBITMAP_TYPE_ANY)));
+	$self->{t_output} = Wx::TextCtrl->new($self->{p_dummy}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
+	$self->{b_edit} = Wx::BitmapButton->new($self->{p_dummy}, -1, (Wx::Bitmap->new("edit.png", wxBITMAP_TYPE_ANY)));
+	$self->{t_input} = Wx::TextCtrl->new($self->{p_dummy}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB);
+	$self->{b_send} = Wx::BitmapButton->new($self->{p_dummy}, -1, (Wx::Bitmap->new("button_ok.png", wxBITMAP_TYPE_ANY)));
 
 	$self->__set_properties();
 	$self->__do_layout();
@@ -245,6 +246,7 @@ sub __do_layout {
 
 # begin wxGlade: EB::Wx::Shell::MainFrame::__do_layout
 
+	$self->{sz_dummy} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{s_main} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{s_layout} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{s_input}= Wx::StaticBoxSizer->new($self->{s_input_staticbox}, wxHORIZONTAL);
@@ -256,7 +258,9 @@ sub __do_layout {
 	$self->{s_input}->Add($self->{b_send}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{s_layout}->Add($self->{s_input}, 0, wxEXPAND, 0);
 	$self->{s_main}->Add($self->{s_layout}, 1, wxALL|wxEXPAND, 5);
-	$self->SetSizer($self->{s_main});
+	$self->{p_dummy}->SetSizer($self->{s_main});
+	$self->{sz_dummy}->Add($self->{p_dummy}, 1, wxEXPAND, 0);
+	$self->SetSizer($self->{sz_dummy});
 	$self->Layout();
 	$self->SetSize(Wx::Size->new(800, 550));
 
@@ -571,7 +575,10 @@ sub OnAbout {
 	   __x("Written by {author}",
 	       author => "Johan Vromans")."\n".
 	   "<jvromans\@squirrel.nl>\n".
-	   "http://www.squirrel.nl\n\n".
+	   "http://www.squirrel.nl\n".
+	   __x("Support: {url}",
+	       url => "http://www.eekboek.nl/support.html")."\n".
+	   "\n".
 	   __x("GUI design with {wxglade}",
 	       wxglade => "wxGlade, http://wxglade.sourceforge.net")."\n\n".
 	   __x("{pkg} version {ver}",
