@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.30 2010/01/06 20:19:23 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.31 2010/03/16 09:47:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  6 21:15:58 2010
-# Update Count    : 226
+# Last Modified On: Tue Mar 16 10:46:46 2010
+# Update Count    : 235
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -58,7 +58,7 @@ sub init_config {
     # Build the list of config files.
     my @cfgs;
     if ( !$skipconfig ) {
-	@cfgs = ( File::Spec->catpath( "etc", $app,
+	@cfgs = ( File::Spec->catfile( "etc", $app,
 				       EB::Config::Handler::std_config($app) ),
 		  EB::Config::Handler::user_dir
 		    ( $app, EB::Config::Handler::std_config($app) ),
@@ -258,8 +258,10 @@ sub user_dir {
     eval { $app = $app->app };
 
     if ( $^O =~ /^mswin/i ) {
-	return File::Spec->catpath( $ENV{HOMEDRIVE}, $ENV{HOMEPATH},
-				    $app, std_config($app) );
+	my $f = File::Spec->catpath( $ENV{HOMEDRIVE}, $ENV{HOMEPATH},
+				     File::Spec->catfile( $app, $item ));
+
+	return $f;
     }
     File::Spec->catfile( File::HomeDir->my_data,
 			 "." . lc( $app),
