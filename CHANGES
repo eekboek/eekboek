@@ -1,6 +1,27 @@
 # CHANGES		-*- coding: utf-8 -*-
 
-1.05.19
+2.00.RC01
+
+	* Eerste release candidate 2.00.
+
+	* (iniwiz) Fix dubbele foutmelding.
+	
+	* Kleine, maar belangrijke aanpassingen t.b.v. Microsoft
+	  Windows.
+
+	* Onderhoud vertalingen toegevoegd aan de kit.
+
+1.05.20	2010-02-19 23:26
+
+	* Documentatie aanpassingen.
+
+	* (iniwiz) Fix probleem met crash na db selectie.
+
+	* Fix probleem met \ op laatste regel.
+
+	(wbwxshell) Fix probleem met de result rapporten.
+
+1.05.19	2010-01-27 10:25
 
 	* (ebshell) Fix unicode probleem in help strings.
 
