@@ -1,7 +1,7 @@
 To: eekboek-devel@lists.sourceforge.net
 Reply-To: eekboek-devel@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 1.05.20 is beschikbaar voor testen
+Subject: EekBoek 2.00 RELEASE CANDIDATE 1 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,27 +10,25 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 1.05.20 is beschikbaar voor testen.
-De 1.05 versies zijn de voorlopers van EekBoek 2.00.
-
-Met deze versie verklaren we 1.05.x als stabiel voor productie.
-Noem het beta, or rc, wat je maar wilt.
+Release candidate 1 voor EekBoek versie 2.00 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-1.05.20.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-2.00.RC1.tar.gz
 
-Install kits voor Fedora en Windows zijn te vinden in de
-eekboek-testing repo.
+Install kits voor Fedora zijn te vinden in de eekboek-testing repo.
 
-Belangrijkste wijzigingen t.o.v. 1.05.19 (zie ook de file CHANGES):
+Release notes: zie file relnotes-2.00.html .
+
+Belangrijkste wijzigingen t.o.v. 1.05.20 (zie ook de file CHANGES):
 
 * Documentatie aanpassingen.
 
-* (iniwiz) Fix probleem met crash na db selectie.
+* (iniwiz) Fix dubbele foutmelding.
+	
+* Kleine, maar belangrijke aanpassingen t.b.v. Microsoft
+  Windows.
 
-* Fix probleem met \ op laatste regel.
-
-(wbwxshell) Fix probleem met de result rapporten.
+* Onderhoud vertalingen toegevoegd aan de kit.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
