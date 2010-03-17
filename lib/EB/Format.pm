@@ -9,7 +9,7 @@ package EB::Format;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.40 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.41 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -290,7 +290,7 @@ sub numxform {
 
 sub amount($) {
     my $val = shift;
-    my $debug = 1 || $cfg->val(__PACKAGE__, "debugexpr", 0);
+    my $debug = $cfg->val(__PACKAGE__, "debugexpr", 0);
     if ( $val =~ /.[-+*\/\(\)]/ ) {
 	print STDERR ("val \"$val\" -> ") if $debug;
 	$val =~ s/([.,\d]+)/numxform_loose($1)/ge;
