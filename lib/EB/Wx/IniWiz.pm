@@ -17,8 +17,7 @@ our $cfg;
 
 our @ebz;
 
-our @configs = ( $cfg->std_config,
-		 qw( schema.dat mutaties.eb relaties.eb opening.eb ) );
+my @configs = ( qw( schema.dat mutaties.eb relaties.eb opening.eb ) );
 
 package EB::Wx::IniWiz;
 
@@ -48,21 +47,22 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{wiz_p05} = Wx::WizardPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{wiz_p04} = Wx::WizardPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{wiz_p03} = Wx::WizardPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{wiz_p02} = Wx::WizardPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{wiz_p01} = Wx::WizardPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{wiz_p00} = Wx::WizardPanel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{p_dummy} = Wx::Panel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{wiz_p05} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{wiz_p04} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{wiz_p03} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{wiz_p02} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{wiz_p01} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
+	$self->{wiz_p00} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{sizer_5_staticbox} = Wx::StaticBox->new($self->{wiz_p01}, -1, _T("Administratie") );
 	$self->{sizer_8_staticbox} = Wx::StaticBox->new($self->{wiz_p02}, -1, _T("BTW") );
 	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{wiz_p03}, -1, _T("Dagboeken") );
 	$self->{sizer_4_staticbox} = Wx::StaticBox->new($self->{wiz_p04}, -1, _T("Database") );
 	$self->{sizer_2_staticbox} = Wx::StaticBox->new($self->{wiz_p05}, -1, _T("Bevestiging") );
 	$self->{sizer_12_staticbox} = Wx::StaticBox->new($self->{wiz_p00}, -1, _T("Welkom bij EekBoek") );
-	$self->{t_main} = Wx::TextCtrl->new($self, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
-	$self->{ch_runeb} = Wx::CheckBox->new($self, -1, _T("EekBoek opstarten"), wxDefaultPosition, wxDefaultSize, );
-	$self->{b_ok} = Wx::Button->new($self, wxID_OK, "");
+	$self->{t_main} = Wx::TextCtrl->new($self->{p_dummy}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
+	$self->{ch_runeb} = Wx::CheckBox->new($self->{p_dummy}, -1, _T("EekBoek opstarten"), wxDefaultPosition, wxDefaultSize, );
+	$self->{b_ok} = Wx::Button->new($self->{p_dummy}, wxID_OK, "");
 	$self->{label_7} = Wx::StaticText->new($self->{wiz_p00}, -1, _T("Dit programma kan u helpen bij het initiëel opzetten van een eenvoudige administratie."), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_3} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Naam"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_adm_name} = Wx::TextCtrl->new($self->{wiz_p01}, -1, _T("Mijn eerste EekBoek"), wxDefaultPosition, wxDefaultSize, );
@@ -134,6 +134,7 @@ sub new {
 	    $i++;
 	    if ( $ebz =~ /\/sample(db)?\.ebz$/ ) {
 		$self->{ch_template}->SetSelection($i);
+		OnSelectTemplate( $self->{wiz} );
 	    }
 	}
 	unshift (@ebz, undef );	# skeleton
@@ -278,7 +279,9 @@ sub __set_properties {
 	$self->{cb_cr_opening }->SetValue( ! -f "opening.eb"    );
 	$self->{cb_cr_mutaties}->SetValue( ! -f "mutaties.eb"   );
 	$self->{cb_cr_relaties}->SetValue( ! -f "relaties.eb"   );
-	$self->{cb_cr_config  }->SetValue( ! -f $configs[0]     );
+	$self->{cb_cr_config  }->SetValue( ! ( -f $cfg->std_config
+					       ||
+					       -f $cfg->std_config_alt ) );
 
 	$self->{t_db_name}->SetValue(sprintf("adm%04d",
 					     1900+(localtime(time))[5]));
@@ -289,6 +292,7 @@ sub __do_layout {
 
 # begin wxGlade: EB::Wx::IniWiz::__do_layout
 
+	$self->{sz_dummy} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sz_main} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_2}= Wx::StaticBoxSizer->new($self->{sizer_2_staticbox}, wxVERTICAL);
@@ -374,8 +378,10 @@ sub __do_layout {
 	$self->{sizer_1}->Add($self->{sizer_2}, 1, wxEXPAND, 5);
 	$self->{wiz_p05}->SetSizer($self->{sizer_1});
 	$self->{sz_main}->Add($self->{wiz_p05}, 0, wxEXPAND, 0);
-	$self->SetSizer($self->{sz_main});
-	$self->{sz_main}->Fit($self);
+	$self->{p_dummy}->SetSizer($self->{sz_main});
+	$self->{sz_dummy}->Add($self->{p_dummy}, 1, wxEXPAND, 0);
+	$self->SetSizer($self->{sz_dummy});
+	$self->{sz_dummy}->Fit($self);
 	$self->Layout();
 
 # end wxGlade
@@ -401,7 +407,9 @@ sub OnPageChanging {
 	next unless lc($_) eq lc($c);
 	$nu->( _T("Er bestaat al een administratie met deze naam.") );
 	$event->Veto;
-	last;
+	# The code will probable also be duplicate.
+	# Prevent double warning.
+	return;
     }
     $c = $self->{t_adm_code}->GetValue;
     foreach ( @adm_dirs ) {
@@ -573,7 +581,7 @@ sub OnWizardFinished {
 	$self->{ch_runeb}->SetValue(0);
     }
     else {
-	foreach ( @configs[1..$#configs] ) {
+	foreach ( @configs ) {
 	    $self->{ch_runeb}->SetValue(0) unless -s $_;
 	}
     }
@@ -639,6 +647,7 @@ use EB;
 
 sub new {
     my ( $class, $self ) = @_;
+    $self = $self->GetParent;
     $self->{wiz} ||= Wx::Wizard->new( $self, -1, _T("The Wiz"),
 				      Wx::Bitmap->new("ebwiz.jpg",
 						      wxBITMAP_TYPE_ANY
@@ -687,7 +696,7 @@ sub run {
     if ( $ret == wxID_CANCEL ) {
 	$runeb = 0;
     }
-    elsif ( $ret == wxID_NEW || ! -s $configs[0] ) {	# getadm will chdir
+    elsif ( $ret == wxID_NEW || ! ( -s $cfg->std_config || -s $cfg->std_config_alt ) ) {	# getadm will chdir
 	my $top = EB::Wx::IniWiz->new();
 	$app->SetTopWindow($top);
 	$top->Centre;
