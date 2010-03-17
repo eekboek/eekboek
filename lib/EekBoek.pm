@@ -10,9 +10,9 @@ use utf8;
 # Minimal version to prevent many Unicode bugs.
 use 5.008003;
 
-my $RCS_Id = '$Id: EekBoek.pm,v 1.96 2010/02/19 22:43:15 jv Exp $ ';
+my $RCS_Id = '$Id: EekBoek.pm,v 1.97 2010/03/17 10:52:21 jv Exp $ ';
 our $PACKAGE = 'EekBoek';
-our $VERSION = '1.05.21';
+our $VERSION = '2.00.RC2';
 
 =head1 NAME
 
@@ -45,7 +45,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2009 by Squirrel Consultancy. All
+This program is Copyright 2005-2010 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -63,4 +63,4 @@ GNU General Public License or the Artistic License for more details.
 
 1;
 
-# $Id: EekBoek.pm,v 1.96 2010/02/19 22:43:15 jv Exp $ 
+# $Id: EekBoek.pm,v 1.97 2010/03/17 10:52:21 jv Exp $ 
