@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: ebwxshell,v 1.2 2009/12/19 14:10:59 jv Exp $
+# $Id: ebwxshell,v 1.3 2010/03/17 10:49:17 jv Exp $
 
 use strict;
 use utf8;
@@ -30,7 +30,7 @@ if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
 check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/schema/eekboek.sql" );
 
 require EekBoek;
-check_version( "EekBoek", $EekBoek::VERSION, "1.05.00" );
+check_version( "EekBoek", $EekBoek::VERSION, "2.00.00" );
 
 check_install( "De EekBoek WxShell", "EB/Wx/Shell/Main.pm", "EB/Wx/IniWiz.pm" );
 
@@ -68,6 +68,7 @@ END_MSG
 sub check_version {
     my ( $what, $version, $required ) = @_;
     $version =~ s/,/./g;
+    $version =~ s/^(\d+\.\d+\.\d+).*/$1/;
     return if $version ge $required;
     error( <<END_MSG, "Ontoereikende $what versie" );
 De geïnstalleerde versie van $what is niet toereikend.
@@ -142,7 +143,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2009 by Squirrel Consultancy. All
+This program is Copyright 2005-2010 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify
