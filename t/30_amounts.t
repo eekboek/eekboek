@@ -1,5 +1,5 @@
 #! perl
-# $Id: 30_amounts.t,v 1.3 2009/10/28 22:43:05 jv Exp $
+# $Id: 30_amounts.t,v 1.4 2010/03/17 10:51:33 jv Exp $
 
 use strict;
 use warnings;
@@ -31,7 +31,8 @@ BEGIN {
        '1,234.56'	 => '123456',
        # Illegal group/fract.
        '1.234.56'	 => '<undef>',
-       '1,234,56'	 => '<undef>',
+       '1.3'	 => '<undef>',
+       '1,6'	 => '<undef>',
       );
 }
 

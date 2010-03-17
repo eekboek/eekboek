@@ -1,5 +1,5 @@
 #! perl
-# $Id: 31_expr.t,v 1.3 2009/10/28 22:43:05 jv Exp $
+# $Id: 31_expr.t,v 1.4 2010/03/17 10:51:33 jv Exp $
 
 use strict;
 use warnings;
@@ -18,6 +18,12 @@ BEGIN {
        '+123+123'	 => '24600',
        '-123+123'	 => '0',
        '123.45*0.1253'	 => '1547',
+       # 0.005 should not be treated as 0<thsep>005, but as 0<decsep>005.
+       '25.50*1.19+0.005' => '3035',
+       # Mix . and ,
+       '25,50*1.19+0.005+0,05' => '3040',
+       # Disallow anything fancy
+       '7.123,45*0.12'	 => '<undef>'
       );
 }
 
@@ -28,8 +34,8 @@ while ( @tests ) {
     my $amt = shift(@tests);
     my $exp = shift(@tests);
 
-    my $res = amount($amt);
+    my $res = eval { amount($amt) };
     $res = '<undef>' unless defined $res;
-
+    diag($@) if $@;
     is($res, $exp, "amount $amt");
 }

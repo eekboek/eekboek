@@ -9,7 +9,7 @@ package EB::Format;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.39 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.40 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -214,7 +214,7 @@ EOD
 
 sub numxform_strict {
     $_ = shift;
-    my $err; # = "ERR($_)";
+    my $err = __x("Ongeldig bedrag: {num}", num => $_);
 
     my $sign = "";
     $sign = $1 if s/^([-+])// && $1 eq '-';
@@ -226,14 +226,14 @@ sub numxform_strict {
     }
 
     # N,NNN -> NNNN.00
-    if ( /^\d{1,@{[NUMGROUPS]}}(\,\d{@{[NUMGROUPS]}})*$/ ) {
+    if ( /^(\d{1,@{[NUMGROUPS]}})(\,\d{@{[NUMGROUPS]}})*$/ && $1 ) {
 	s/\,//g;
 	s/^0+(\d)$/$1/;
 	return $sign . $_ . "." . ("0" x AMTPRECISION);
     }
 
     # N.NNN -> NNNN.00
-    if ( /^\d{1,@{[NUMGROUPS]}}(\.\d{@{[NUMGROUPS]}})*$/ ) {
+    if ( /^(\d{1,@{[NUMGROUPS]}})(\.\d{@{[NUMGROUPS]}})*$/ && $1 ) {
 	s/\.//g;
 	s/^0+(\d)$/$1/;
 	return $sign . $_ . "." . ("0" x AMTPRECISION);
@@ -262,7 +262,20 @@ sub numxform_strict {
     $mant =~ s/^0+(\d)$/$1/;
     return $sign . $mant . "." . $frac if $mant =~ /^\d+$/;
 
-    return $err;		# not well-formed
+    die("?$err\n");		# not well-formed
+
+}
+
+sub numxform_loose {
+    $_ = shift;
+    my $err = __x("Ongeldig getal: {num}", num => $_);
+
+    # If there's a single comma, make decimal point.
+    s/,/./ if /^.*,.*$/;
+
+    return $_ if /^[-+]*\d+(\.\d+)?$/;
+
+    die("?$err\n");		# not well-formed
 
 }
 
@@ -270,16 +283,17 @@ sub numxform {
     my ($n) = @_;
     my $res = numxform_strict($n);
     return $res if defined $res;
-    return $n if $n =~ /^[-a+]?\d+[.,]\d+$/;
+#    return $n if $n =~ /^[-a+]?\d+[.,]\d+$/;	# a ?
+    return $n if $n =~ /^[-+]?\d+[.,]\d+$/;
     return undef;
 }
 
 sub amount($) {
     my $val = shift;
-    my $debug = $cfg->val(__PACKAGE__, "debugexpr", 0);
+    my $debug = 1 || $cfg->val(__PACKAGE__, "debugexpr", 0);
     if ( $val =~ /.[-+*\/\(\)]/ ) {
 	print STDERR ("val \"$val\" -> ") if $debug;
-	$val =~ s/([.,\d]+)/numxform($1)/ge;
+	$val =~ s/([.,\d]+)/numxform_loose($1)/ge;
 	print STDERR ("\"$val\" -> ") if $debug;
 
 	my $res = eval($val);
