@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.25 2009/12/20 21:38:54 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.26 2010/03/17 12:12:55 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Dec 20 13:14:10 2009
-# Update Count    : 98
+# Last Modified On: Fri Mar 12 22:48:00 2010
+# Update Count    : 101
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -52,7 +52,7 @@ sub checkbin {
     return if $installscript eq $data->{usrbin};
     print STDERR <<EOD;
 
-WARNING: This build process will install a user accessible script.
+WARNING: This build process will install user accessible scripts.
 The default location for user accessible scripts is
 $installscript.
 EOD
