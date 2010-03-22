@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.7 2009/12/23 21:27:56 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.8 2010/03/22 13:07:20 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Dec 23 21:58:49 2009
-# Update Count    : 414
+# Last Modified On: Mon Mar 22 14:00:08 2010
+# Update Count    : 415
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -143,8 +143,12 @@ sub run {
        undef,
        $EekBoek::PACKAGE);
 
-    my $config = $opts->{config} || $cfg->std_config;
-    $frame->{_ebcfg} = $config if $config && -s $config;
+    my $config = $opts->{config};
+    unless ( $config ) {
+	$config = $cfg->std_config;
+	$config = $cfg->std_config_alt unless -f $config;
+    }
+    $frame->{_ebcfg} = $config if -e $config;
     $frame->FillHistory($histfile);
     $frame->GetPreferences;
 
