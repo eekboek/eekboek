@@ -468,7 +468,7 @@ sub OnOpen {
 	  ($self,
 	   _T("Choose"),
 	   "", "",
-	   ".eekboek.conf",
+	   ".eekboek.conf;eekboek.conf",
 	   0|wxFD_FILE_MUST_EXIST,
 	   wxDefaultPosition);
 	my $ret = $fd->ShowModal;
