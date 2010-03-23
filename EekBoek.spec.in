@@ -276,6 +276,9 @@ done
 %{ebshare}/contrib
 
 %changelog
+* Tue Mar 23 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.00-1
+- Upgrade to upstream 2.00.00.
+
 * Mon Feb 08 2010 Johan Vromans <jvromans@squirrel.nl> - 1.05.20-1
 - Upgrade to upstream 1.05.20.
 
