@@ -201,7 +201,11 @@ afleveren. Shell procedures en make files kunnen hiervan gebruik maken.
 
 <ul>
   <li><p>Bedragen mogen worden ingegeven met duizendtalscheidingstekens,
-      bijvoorbeeld <code>1.235,56</code>.</p></li>
+      bijvoorbeeld <code>1.235,56</code>.</p>
+      <p>In expressies zijn duizendtalscheidingstekens niet
+      toegestaan. Dit om problemen te voorkomen met de interpretatie
+      van expressies als <code>24,50*1.250</code>. Is dit 30625 of 30,625?</p>
+</li>
 
   <li><p>De opdracht <code>export</code> kent de optie
       <code>--titel</code>. Hiermee kan een omschrijving worden
@@ -287,8 +291,8 @@ tekensetindicatie</p>
 
 <blockquote class="code"># content-type: text; charset=iso-8859-1</blockquote>
 
-<p>of een van de variaties daarop dan 
-moet deze na conversie worden vervangen door</p>
+<p>of een van de variaties daarop dan moet deze na conversie worden
+verwijderd, of vervangen door</p>
 
 <blockquote class="code"># content-type: text; charset=utf-8</blockquote>
 
