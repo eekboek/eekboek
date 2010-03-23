@@ -1,6 +1,27 @@
-# CHANGES		-*- coding: utf-8 -*-
+# $Id: CHANGES,v 1.31 2010/03/23 19:14:38 jv Exp $
 
-2.00.RC01
+2.00.00	
+
+	* Release 2.00.00
+
+2.00.00.RC03	2010-03-22 14:04
+
+	* Fix probleem dat een overbodige dialoog vraagt om een
+          eekboek.conf.
+
+2.00.00.RC02	2010-03-17 13:40
+
+	* Tweede release candidate 2.00.
+
+	* Diverse fixes voor Windows.
+
+	* Fix probleem met niet eenduidige interpretatie van getallen.
+	  In expressies als "5*0.005" werd 0.005 als 5 gezien i.p.v.
+	  0,005. 
+
+	* Kleine verbeteringen in de wizards. 
+
+2.00.RC01	2010-03-12 23:13
 
 	* Eerste release candidate 2.00.
 
