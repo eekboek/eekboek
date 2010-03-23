@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 17 13:16:21 2010
-# Update Count    : 129
+# Last Modified On: Tue Mar 23 20:24:07 2010
+# Update Count    : 130
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -90,7 +90,6 @@ $build = $class->new
    script_files	       => $data->{script_files},
    pm_files	       => filelist("lib"),
    get_options	       => { skipdbtests => { } },
-   dist_version	       => '2.00.00.RC2',
    add_to_cleanup      =>
      [ 'pod2htm*',
        map { +"t/ivp/*.$_" } qw(sql log txt html csv)
