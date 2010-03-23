@@ -1,7 +1,7 @@
-To: eekboek-devel@lists.sourceforge.net
-Reply-To: eekboek-devel@lists.sourceforge.net
+To: eekboek-devel@lists.sourceforge.net, eekboek-users@lists.sourceforge.net
+Reply-To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 2.00 RELEASE CANDIDATE 2 is beschikbaar
+Subject: EekBoek 2.00.00 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,24 +10,20 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release candidate 2 voor EekBoek versie 2.00 is beschikbaar.
+EekBoek versie 2, release 2.00.00 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-2.00.00.RC2.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-2.00.00.tar.gz
 
-Install kits voor Fedora zijn te vinden in de eekboek-testing repo.
+Install kits voor Fedora zijn te vinden in de eekboek repo.
+* http://www.eekboek.nl/repo/fedora/repoview/
+
+Install kit (PPM) voor MS Windows zijn te vinden in de windows repo.
+* http://www.eekboek.nl/repo/windows/Eekboek.ppd
 
 Release notes: zie file relnotes-2.00.html .
 
-Belangrijkste wijzigingen t.o.v. RC1 (zie ook de file CHANGES):
-
-* Diverse fixes voor Windows.
-
-* Fix probleem met niet eenduidige interpretatie van getallen.
-  In expressies als "5*0.005" werd 0.005 als 5 gezien i.p.v.
-  0,005. 
-
-* Kleine verbeteringen in de wizards. 
+Iedereen bedankt voor het meedenken en testen.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
