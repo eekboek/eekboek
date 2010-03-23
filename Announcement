@@ -1,7 +1,7 @@
 To: eekboek-devel@lists.sourceforge.net
 Reply-To: eekboek-devel@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 2.00 RELEASE CANDIDATE 1 is beschikbaar
+Subject: EekBoek 2.00 RELEASE CANDIDATE 2 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,25 +10,24 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-Release candidate 1 voor EekBoek versie 2.00 is beschikbaar.
+Release candidate 2 voor EekBoek versie 2.00 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-2.00.RC1.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-2.00.00.RC2.tar.gz
 
 Install kits voor Fedora zijn te vinden in de eekboek-testing repo.
 
 Release notes: zie file relnotes-2.00.html .
 
-Belangrijkste wijzigingen t.o.v. 1.05.20 (zie ook de file CHANGES):
+Belangrijkste wijzigingen t.o.v. RC1 (zie ook de file CHANGES):
 
-* Documentatie aanpassingen.
+* Diverse fixes voor Windows.
 
-* (iniwiz) Fix dubbele foutmelding.
-	
-* Kleine, maar belangrijke aanpassingen t.b.v. Microsoft
-  Windows.
+* Fix probleem met niet eenduidige interpretatie van getallen.
+  In expressies als "5*0.005" werd 0.005 als 5 gezien i.p.v.
+  0,005. 
 
-* Onderhoud vertalingen toegevoegd aan de kit.
+* Kleine verbeteringen in de wizards. 
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
