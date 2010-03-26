@@ -79,6 +79,13 @@ sub init_rl {
 
     if ( -t STDIN && $term->ReadLine ne 'Term::ReadLine::Gnu' ) {
 	warn("%Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::Gnu installeren.\n");
+
+	# Some systems do not have Term::ReadLine::Gnu but provide
+	# Term::ReadLine::Perl instead. However, the latter is far too
+	# incapable.
+	if ( $term->ReadLine eq 'Term::ReadLine::Perl' ) {
+	    $self->term($term = Term::ReadLine::Stub->new(ref $self));
+	}
     }
 
     binmode( $term->Attribs->{'outstream'}, 'utf8' );
