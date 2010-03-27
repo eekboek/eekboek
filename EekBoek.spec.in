@@ -11,7 +11,7 @@ Summary: Bookkeeping software for small and medium-size businesses
 License: GPL+ or Artistic
 Group: Applications/Productivity
 Version: [% version %]
-Release: 1%{?dist}
+Release: 2%{?dist}
 Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
 URL: http://www.eekboek.nl
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
@@ -27,11 +27,6 @@ BuildArch: noarch
 # This package would provide many (perl) modules, but these are
 # note intended for general use.
 AutoReqProv: 0
-
-# The magic.
-Requires: %{name}-core    = %{version}-%{release}
-Requires: %{name}-gui     = %{version}-%{release}
-Requires: %{name}-contrib = %{version}-%{release}
 
 # For symmetry.
 %global __zip   /usr/bin/zip
@@ -51,12 +46,6 @@ EekBoek can make use of several database systems for its storage.
 Support for the SQLite database is included.
 For production use, you are invited to install the %{name}-db-postgresql
 database package.
-
-%package core
-
-Summary: %{name} core
-Group: Applications/Productivity
-AutoReqProv: 0
 
 Requires: perl >= 5.8
 Requires: perl(Archive::Zip)
@@ -82,12 +71,16 @@ BuildRequires: perl(Carp::Assert) >= 0.20
 BuildRequires: perl(Test::More)
 BuildRequires: zip
 
-%description core
-%{name}-core contains all necessary files for the command line version
-of the program. This includes support for the SQLite database.
+Obsoletes: %{name}-core = 2.00.00
 
-If you do not want the GUI, install the %{name}-core package instead
-of the %{name} package.
+%description
+%{name} contains all necessary files for the EekBoek API and the
+command line version of the program. This includes support for the
+SQLite database.
+
+For GUI support, install %{name}-gui.
+
+For PostgreSQL support, also install %{name}-db-postgresql.
 
 %package gui
 
@@ -95,7 +88,7 @@ Summary: %{name} graphical user interface
 Group: Applications/Productivity
 AutoReqProv: 0
 
-Requires: %{name}-core = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 Requires: perl(Wx) >= 0.89
 Requires: perl(Wx::Perl::ProcessStream) >= 0.11
 Requires: wxGTK >= 2.8.8
@@ -103,10 +96,7 @@ Requires: gettext
 BuildRequires: desktop-file-utils
 
 %description gui
-This package contains the GUI for %{name}.
-
-If you do not want the GUI, install the %{name}-core package instead
-of the %{name} package.
+This package contains the wxWidgets (GUI) extension for %{name}.
 
 %package db-postgresql
 
@@ -119,22 +109,12 @@ of the %{name} package.
 Summary: PostgreSQL database driver for %{name}
 Group: Applications/Productivity
 AutoReqProv: 0
-Requires: %{name}-core = %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 Requires: perl(DBD::Pg) >= 1.41
 
 %description db-postgresql
 EekBoek can make use of several database systems for its storage.
 This package contains the PostgreSQL database driver for %{name}.
-
-%package contrib
-
-Summary: PostgreSQL database driver for %{name}
-Group: Applications/Productivity
-AutoReqProv: 0
-Requires: %{name}-core = %{version}-%{release}
-
-%description contrib
-This package contains several user contributes files and utilities.
 
 %prep
 %setup -q
@@ -226,9 +206,6 @@ do
   desktop-file-validate %{buildroot}/%{_datadir}/applications/${script}.desktop
 done
 
-# Contrib
-%{__mv} contrib %{buildroot}%{ebshare}
-
 # End of install section.
 
 %check
@@ -242,10 +219,6 @@ done
 %{__rm} -rf %{buildroot}
 
 %files
-%defattr(-,root,root,-)
-%doc README.eekboek
-
-%files core
 %defattr(-,root,root,-)
 %doc CHANGES README examples/ doc/html/ TODO
 %dir %{_sysconfdir}/%{lcname}
@@ -270,12 +243,10 @@ done
 %doc README.postgres
 %{ebshare}/lib/EB/DB/Postgres.pm
 
-%files contrib
-%defattr(-,root,root,-)
-%doc README.contrib
-%{ebshare}/contrib
-
 %changelog
+* Sat Mar 27 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.00-2
+- Repackage according to user concensus.
+
 * Tue Mar 23 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.00-1
 - Upgrade to upstream 2.00.00.
 
