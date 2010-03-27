@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.15 2010/01/06 20:19:23 jv Exp $
+# RCS Id          : $Id: Main.pm,v 1.16 2010/03/27 15:35:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  6 21:08:41 2010
-# Update Count    : 369
+# Last Modified On: Sat Mar 27 16:35:45 2010
+# Update Count    : 370
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -43,7 +43,6 @@ use POSIX qw(locale_h);
 use Wx::Locale;			# WHY?
 use File::Basename ();
 use File::Spec ();
-use File::HomeDir ();
 
 my $app_dir;
 my $app_state;

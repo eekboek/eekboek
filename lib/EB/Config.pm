@@ -3,12 +3,12 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.31 2010/03/16 09:47:12 jv Exp $
+# RCS Info        : $Id: Config.pm,v 1.32 2010/03/27 15:35:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar 16 10:46:46 2010
-# Update Count    : 235
+# Last Modified On: Sat Mar 27 16:35:12 2010
+# Update Count    : 236
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -263,7 +263,7 @@ sub user_dir {
 
 	return $f;
     }
-    File::Spec->catfile( File::HomeDir->my_data,
+    File::Spec->catfile( glob("~"),
 			 "." . lc( $app),
 			 defined($item) ? $item : (),
 		       );
