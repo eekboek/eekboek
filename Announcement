@@ -1,7 +1,7 @@
-To: eekboek-devel@lists.sourceforge.net, eekboek-users@lists.sourceforge.net
+To: eekboek-users@lists.sourceforge.net
 Reply-To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 2.00.00 is beschikbaar
+Subject: EekBoek 2.00.01 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
@@ -10,10 +10,10 @@ Organisation: Squirrel Consultancy, Exloo, The Netherlands
 --text follows this line--
 Beste EekBoek users,
 
-EekBoek versie 2, release 2.00.00 is beschikbaar.
+EekBoek versie 2.00.01 is beschikbaar.
 
 Sources:
-* http://www.eekboek.nl/dl/EekBoek-2.00.00.tar.gz
+* http://www.eekboek.nl/dl/EekBoek-2.00.01.tar.gz
 
 Install kits voor Fedora zijn te vinden in de eekboek repo.
 * http://www.eekboek.nl/repo/fedora/repoview/
@@ -21,9 +21,18 @@ Install kits voor Fedora zijn te vinden in de eekboek repo.
 Install kit (PPM) voor MS Windows zijn te vinden in de windows repo.
 * http://www.eekboek.nl/repo/windows/Eekboek.ppd
 
-Release notes: zie file relnotes-2.00.html .
+Wijzigingen ten opzichte van 2.00.00:
 
-Iedereen bedankt voor het meedenken en testen.
+* Fix probleem met Term::ReadLine::Perl. Gebruik in plaats
+  daarvan Term::ReadLine::Gnu.
+  Meest relevant voor Windows en MacOSX.
+
+* Elimineer File::HomeDir.
+  Relevant voor MacOSX, omdat de benodigde Mac::Files daar
+  problematisch is en enkel in 32bit beschikbaar.
+
+* Nieuwe packaging. Default is cli, gui is optioneel, contrib
+  verhuist naar de wiki.
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl

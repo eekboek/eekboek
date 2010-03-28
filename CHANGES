@@ -1,6 +1,19 @@
-# $Id: CHANGES,v 1.32 2010/03/23 19:15:29 jv Exp $
+# $Id: CHANGES,v 1.33 2010/03/28 18:42:24 jv Exp $
 
-2.00.00		
+2.00.01
+
+	* Fix probleem met Term::ReadLine::Perl. Gebruik in plaats
+          daarvan Term::ReadLine::Gnu.
+	  Meest relevant voor Windows en MacOSX.
+
+	* Elimineer File::HomeDir.
+	  Relevant voor MacOSX, omdat de benodigde Mac::Files daar
+	  problematisch is en enkel in 32bit beschikbaar.
+
+	* Nieuwe packaging. Default is cli, gui is optioneel, contrib
+          verhuist naar de wiki.
+
+2.00.00	2010-03-23 20:59
 
 	* Release 2.00.00
 
