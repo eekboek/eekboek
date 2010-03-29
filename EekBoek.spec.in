@@ -11,7 +11,7 @@ Summary: Bookkeeping software for small and medium-size businesses
 License: GPL+ or Artistic
 Group: Applications/Productivity
 Version: [% version %]
-Release: 1%{?dist}
+Release: 2%{?dist}
 Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
 URL: http://www.eekboek.nl
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
@@ -27,25 +27,6 @@ BuildArch: noarch
 # This package would provide many (perl) modules, but these are
 # note intended for general use.
 AutoReqProv: 0
-
-# For symmetry.
-%global __zip   /usr/bin/zip
-%global __rmdir /bin/rmdir
-%global __find  /usr/bin/find
-
-%description
-EekBoek is a bookkeeping package for small and medium-size businesses.
-Unlike other accounting software, EekBoek has both a command-line
-interface (CLI) and a graphical user-interface (GUI, currently under
-development and not included in this package). Furthermore, it has a
-complete Perl API to create your own custom applications. EekBoek is
-designed for the Dutch/European market and currently available in
-Dutch only. An English translation is in the works (help appreciated).
-
-EekBoek can make use of several database systems for its storage.
-Support for the SQLite database is included.
-For production use, you are invited to install the %{name}-db-postgresql
-database package.
 
 Requires: perl >= 5.8
 Requires: perl(Archive::Zip)
@@ -69,18 +50,33 @@ BuildRequires: perl(DBI) >= 1.40
 BuildRequires: perl(DBD::SQLite) >= 1.12
 BuildRequires: perl(Carp::Assert) >= 0.20
 BuildRequires: perl(Test::More)
+BuildRequires: desktop-file-utils
 BuildRequires: zip
 
-Obsoletes: %{name}-core = 2.00.00
+Obsoletes: %{name}-core < 2.00.01
+Conflicts: %{name}-core < 2.00.01
+
+# For symmetry.
+%global __zip   /usr/bin/zip
+%global __rmdir /bin/rmdir
+%global __find  /usr/bin/find
 
 %description
-%{name} contains all necessary files for the EekBoek API and the
-command line version of the program. This includes support for the
-SQLite database.
+EekBoek is a bookkeeping package for small and medium-size businesses.
+Unlike other accounting software, EekBoek has both a command-line
+interface (CLI) and a graphical user-interface (GUI, currently under
+development and not included in this package). Furthermore, it has a
+complete Perl API to create your own custom applications. EekBoek is
+designed for the Dutch/European market and currently available in
+Dutch only. An English translation is in the works (help appreciated).
+
+EekBoek can make use of several database systems for its storage.
+Support for the SQLite database is included.
 
 For GUI support, install %{name}-gui.
 
-For PostgreSQL support, also install %{name}-db-postgresql.
+For production use, you are invited to install the %{name}-db-postgresql
+database package.
 
 %package gui
 
@@ -93,7 +89,6 @@ Requires: perl(Wx) >= 0.89
 Requires: perl(Wx::Perl::ProcessStream) >= 0.11
 Requires: wxGTK >= 2.8.8
 Requires: gettext
-BuildRequires: desktop-file-utils
 
 %description gui
 This package contains the wxWidgets (GUI) extension for %{name}.
@@ -244,6 +239,10 @@ done
 %{ebshare}/lib/EB/DB/Postgres.pm
 
 %changelog
+* Mon Mar 29 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.01-2
+- Fix duplicate %%description.
+- Fix BuildRequires and Obsoletes.
+
 * Sun Mar 28 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.01-1
 - Upgrade to upstream 2.00.01.
 
