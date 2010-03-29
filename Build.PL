@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar 23 20:24:07 2010
-# Update Count    : 130
+# Last Modified On: Mon Mar 29 17:26:53 2010
+# Update Count    : 133
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -54,6 +54,7 @@ my $build = $class->new
    recommends	       => $data->{recomm_pm},
    script_files	       => $data->{script_files},
    pm_files	       => filelist("lib"),
+   PL_files	       => $data->{PL_files},
    get_options	       => { skipdbtests => { } },
    add_to_cleanup      =>
      [ 'pod2htm*',
@@ -89,6 +90,7 @@ $build = $class->new
    recommends	       => $data->{recomm_pm},
    script_files	       => $data->{script_files},
    pm_files	       => filelist("lib"),
+   PL_files	       => $data->{PL_files},
    get_options	       => { skipdbtests => { } },
    add_to_cleanup      =>
      [ 'pod2htm*',

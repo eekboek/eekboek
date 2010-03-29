@@ -1,10 +1,10 @@
 # build_common.inc -- Build file common info -*- perl -*-
-# RCS Info        : $Id: build_common.pl,v 1.26 2010/03/17 12:12:55 jv Exp $
+# RCS Info        : $Id: build_common.pl,v 1.27 2010/03/29 15:37:55 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 12 22:48:00 2010
-# Update Count    : 101
+# Last Modified On: Mon Mar 29 17:29:04 2010
+# Update Count    : 106
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -17,7 +17,7 @@ $data =
   { %$data,
     author          => 'Johan Vromans (jvromans@squirrel.nl)',
     abstract        => 'Elementary Bookkeeping (for the Dutch/European market)',
-    pl_files        => {},
+    PL_files        => {},
     installtype     => 'site',
     modname         => 'EekBoek',
     distname        => 'EekBoek',
