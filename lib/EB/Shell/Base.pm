@@ -241,6 +241,9 @@ sub run {
 		    # Throw error if errors detected.
 		    die(bless {}, 'FatalError') if $fail && $self->{errexit};
 		};
+		if ( !$@ && $self->{errexit} && $output =~ /^\?/m ) {
+		    eval { die($output) };
+		}
 		if ($@) {
 		    $anyfail++;
 		    unless ( UNIVERSAL::isa($@, 'FatalError') ) {
