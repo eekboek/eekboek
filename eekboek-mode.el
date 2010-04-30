@@ -48,6 +48,8 @@
 
 (defun eekboek-detab ()
   "Untabify the whole buffer."
-  (untabify (point-min) (point-max)))
+  (untabify (point-min) (point-max))
+  ;; Write hooks must return nil for the writing to continue.
+  nil)
 
 ;;; eekboek-mode.el ends here
