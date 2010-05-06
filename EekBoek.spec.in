@@ -11,7 +11,7 @@ Summary: Bookkeeping software for small and medium-size businesses
 License: GPL+ or Artistic
 Group: Applications/Productivity
 Version: [% version %]
-Release: 2%{?dist}
+Release: 1%{?dist}
 Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
 URL: http://www.eekboek.nl
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
@@ -54,6 +54,7 @@ BuildRequires: desktop-file-utils
 BuildRequires: zip
 
 Obsoletes: %{name}-core < 2.00.01
+Obsoletes: %{name}-contrib < 2.00.01
 Conflicts: %{name}-core < 2.00.01
 
 # For symmetry.
@@ -239,6 +240,12 @@ done
 %{ebshare}/lib/EB/DB/Postgres.pm
 
 %changelog
+* Thu May 06 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.02-1
+- Upgrade to upstream 2.00.02.
+
+* Mon Mar 29 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.01-3
+- More Obsoletes.
+
 * Mon Mar 29 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.01-2
 - Fix duplicate %%description.
 - Fix BuildRequires and Obsoletes.
