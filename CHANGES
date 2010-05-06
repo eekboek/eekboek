@@ -1,6 +1,28 @@
-# $Id: CHANGES,v 1.33 2010/03/28 18:42:24 jv Exp $
+2.00.02
 
-2.00.01
+	* (ebwxshell, linux) Workaround voor het HTML rendering
+          probleem met wxPerl versies 0.95 en 0.95.
+	  Dit probleem treft met name Ubuntu 10.4 LTS.
+
+	* (ebshell) Meer flexibele invoer.
+	  Accepteer newlines en returns als regeleinde.
+	  Negeer trailing whitespace. Dit elimineert het probleem van
+	  spaties achter de laatste backslash.
+
+	* (eekboek-mode.el) Kleine, niet strict noodzakelijke
+	  verbetering. 
+
+	* (ebshell, errexit) Invoerverwerking afbreken indien er een
+	  foutboodschap is gegeven.
+
+	* INSTALL: Refereer naar de wiki.
+
+2.00.01.01
+
+	* Packaging for Windows: (build_common.pl) use PL_files to
+          avoid .pl files to be processed.
+
+2.00.01	2010-03-28 20:42
 
 	* Fix probleem met Term::ReadLine::Perl. Gebruik in plaats
           daarvan Term::ReadLine::Gnu.
