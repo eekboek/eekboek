@@ -1,6 +1,6 @@
 #! perl
 
-# $Id: ebwxshell,v 1.3 2010/03/17 10:49:17 jv Exp $
+# $Id: ebwxshell,v 1.4 2010/05/06 10:01:46 jv Exp $
 
 use strict;
 use utf8;
@@ -36,6 +36,23 @@ check_install( "De EekBoek WxShell", "EB/Wx/Shell/Main.pm", "EB/Wx/IniWiz.pm" );
 
 # Some more version checking. Wx 0.74 is somewhat arbitrary.
 check_version( "Wx", $Wx::VERSION, "0.74" );
+
+# Versions 0.95 and 0.96 have issues with wxHTML rendering.
+# Workaround courtesy of Mark Dootson.
+if ( ( $Wx::VERSION =~ /^0[.,]9[56]$/ )
+     &&
+     ( not exists($ENV{PAR_0}) )
+     &&
+     !$PerlApp::VERSION
+   ) {
+    no warnings;
+    *Wx::load_dll = sub {
+	use warnings;
+	return if $^O =~ /^darwin/i;
+	Wx::_load_dll( @_ );
+    };
+}
+
 check_version( "wxWidgets", $Wx::wxVERSION, "2.008" );
 
 require EB::Wx::Shell::Main;
