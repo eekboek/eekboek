@@ -2,12 +2,12 @@
 
 use utf8;
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.25 2010/02/08 13:58:39 jv Exp $
+# RCS Id          : $Id: DeLuxe.pm,v 1.26 2010/05/06 09:26:28 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb  8 14:58:04 2010
-# Update Count    : 283
+# Last Modified On: Thu May  6 11:25:42 2010
+# Update Count    : 287
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,7 +20,7 @@ package EB::Shell::DeLuxe;
 
 use strict;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;
@@ -137,8 +137,11 @@ sub readline_file {
 	    next;
 	}
 	next if $line =~ /^\s*#/;
-	chomp($line);
+	$line =~ s/\s*[\r\n]+$//; # be forgiving
 	$line =~ s/\s+#.+$//;
+	warn("!".__x("Invoerregel {lno} bevat onzichtbare tekens na de backslash",
+		     lno => $.)."\n") # can't happen?
+	  if $line =~ /\\\s+$/;
 	if ( $line =~ /(^.*)\\$/ ) {
 	    $line = $1;
 	    $line =~ s/\s+$/ /;
