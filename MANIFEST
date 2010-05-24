@@ -9,6 +9,7 @@ Makefile.PL
 README
 README.gui
 README.postgres
+README.emacs
 TODO
 doc/html/bookings/bank.html
 doc/html/bookings/btw.html
