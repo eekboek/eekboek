@@ -31,7 +31,6 @@ AutoReqProv: 0
 Requires: perl >= 5.8
 Requires: perl(Archive::Zip)
 Requires: perl(HTML::Parser)
-Requires: perl(File::HomeDir)
 Requires: perl(Term::ReadLine)
 Requires: perl(Term::ReadLine::Gnu)
 Requires: perl(DBI) >= 1.40
@@ -43,7 +42,6 @@ BuildRequires: perl(Module::Build) >= 0.32
 BuildRequires: perl(IPC::Run3)
 BuildRequires: perl(Archive::Zip)
 BuildRequires: perl(HTML::Parser)
-BuildRequires: perl(File::HomeDir)
 BuildRequires: perl(Term::ReadLine)
 BuildRequires: perl(Term::ReadLine::Gnu)
 BuildRequires: perl(DBI) >= 1.40
@@ -98,8 +96,8 @@ This package contains the wxWidgets (GUI) extension for %{name}.
 
 # This package only contains the necessary module(s) for EekBoek
 # to use the PostgreSQL database.
-# Installing this package will pull in the core package and
-# the Perl PostgreSQL modules.
+# Installing this package will pull in the main package and
+# the Perl PostgreSQL modules, if necessary.
 # No %%doc required.
 
 Summary: PostgreSQL database driver for %{name}
@@ -123,7 +121,6 @@ chmod 0664 MANIFEST
 
 # Remove some library modules since we Require them.
 %{__rm} -fr lib/EB/CPAN/Carp
-%{__rm} -fr lib/EB/CPAN/File
 %{__rm} -fr lib/EB/CPAN/Wx
 %{__perl} -ni~ -e 'print unless m;^lib/EB/CPAN/;;' MANIFEST
 
