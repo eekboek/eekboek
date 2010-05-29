@@ -78,14 +78,12 @@ sub run {
     my $admdir = $opts->{admdir} || $cfg->val(qw(general admdir), $cfg->user_dir("admdir"));
     $runeb = 1;
     $admdir =~ s/\$([A-Z_]+)/$ENV{$1}/ge;
-    if ( $admdir ) {
-	mkdir($admdir) unless -d $admdir;
-	die("No admdir $admdir: $!") unless -d $admdir;
-    }
+    mkdir($admdir) unless -d $admdir;
+    die("No admdir $admdir: $!") unless -d $admdir;
     $opts->{admdir} = $admdir;
     $runeb = 0;
 
-    my $ret = EB::IniWiz->getadm($opts) if $admdir;
+    my $ret = EB::IniWiz->getadm($opts);
 
     $ret = EB::IniWiz->runwizard($opts) if $ret < 0;
 
