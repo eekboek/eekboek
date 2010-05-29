@@ -7,12 +7,12 @@ our $config;
 
 package EB::Booking::Decode;
 
-# RCS Id          : $Id: Decode.pm,v 1.25 2008/02/07 12:12:39 jv Exp $
+# RCS Id          : $Id: Decode.pm,v 1.26 2010/05/29 15:11:09 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 13:12:37 2008
-# Update Count    : 172
+# Last Modified On: Sat May 29 17:10:45 2010
+# Update Count    : 173
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,14 +20,14 @@ package EB::Booking::Decode;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;
 use EB::Booking;		# for norm_btw()
 
 sub new {
-    return bless {};
+    return bless {}, shift;
 }
 
 my @bsr_types =
