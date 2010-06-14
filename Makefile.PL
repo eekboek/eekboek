@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 14 19:40:39 2010
-# Update Count    : 103
+# Last Modified On: Mon Jun 14 21:50:15 2010
+# Update Count    : 104
 # Status          : Unknown, Use with caution!
 
 # Ease the life of the CPAN testers.
@@ -29,10 +29,9 @@ EOD
 # Write Makefile.
 my $x =
 WriteMakefile(
-	      NAME       => $data->{distname},
-	      ($] >= 5.005) ?
-	      ( AUTHOR	  => $data->{author},
-		ABSTRACT  => $data->{abstract} ) : (),
+	      NAME        => $data->{distname},
+	      AUTHOR	  => $data->{author},
+	      ABSTRACT    => $data->{abstract} ) : (),
 	      PL_FILES    => $data->{pl_files},
 	      INSTALLDIRS => $data->{installtype},
 	      DISTNAME    => $data->{distname},
