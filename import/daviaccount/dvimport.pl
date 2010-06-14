@@ -1,11 +1,10 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: dvimport.pl,v 1.21 2006/11/01 14:03:56 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : June 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov  1 15:03:39 2006
-# Update Count    : 321
+# Last Modified On: Mon Jun 14 21:54:46 2010
+# Update Count    : 323
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -15,9 +14,7 @@ use strict;
 # Package name.
 my $my_package = 'EekBoek';
 # Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
-# Tack '*' if it is not checked in into RCS.
-$my_version .= '*' if length('$Locker:  $ ') > 12;
+my ($my_name, $my_version) = qw(dvimport 1.22);
 
 ################ Command line parameters ################
 

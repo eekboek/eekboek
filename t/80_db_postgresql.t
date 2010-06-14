@@ -1,4 +1,9 @@
-# $Id: 80_db_postgresql.t,v 1.7 2008/02/27 09:54:47 jv Exp $  -*-perl-*-
+# 80_db_postgresql.t -- Basic test PosgreSQL access
+# Author          : Johan Vromans
+# Created On      : Mon Jan 16 11:07:02 2006
+# Last Modified By: Johan Vromans
+# Last Modified On: Mon Jun 14 22:15:34 2010
+# Update Count    : 1
 
 use strict;
 use warnings;

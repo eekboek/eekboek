@@ -1,11 +1,10 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: eximut.pl,v 1.15 2007/07/18 15:08:19 jv Exp $ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May  4 15:36:52 2006
-# Update Count    : 252
+# Last Modified On: Mon Jun 14 21:55:45 2010
+# Update Count    : 253
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,9 +19,7 @@ use strict;
 # Package name.
 my $my_package = 'EekBoek';
 # Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
-# Tack '*' if it is not checked in into RCS.
-$my_version .= '*' if length('$Locker:  $ ') > 12;
+my ($my_name, $my_version) = qw(emimut 1.16);
 
 ################ Command line parameters ################
 

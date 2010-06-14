@@ -1,4 +1,9 @@
-# $Id: 81_db_sqlite.t,v 1.3 2008/03/07 10:15:57 jv Exp $  -*-perl-*-
+# 81_db_sqlite.t -- Basic SQLite access
+# Author          : Johan Vromans
+# Created On      : Tue Oct 10 18:46:26 2006
+# Last Modified By: Johan Vromans
+# Last Modified On: Mon Jun 14 22:16:28 2010
+# Update Count    : 12
 
 use strict;
 use warnings;
