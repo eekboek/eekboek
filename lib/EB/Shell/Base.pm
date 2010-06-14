@@ -78,7 +78,7 @@ sub init_rl {
     $self->term($term = Term::ReadLine->new(ref $self));
 
     if ( -t STDIN && $term->ReadLine ne 'Term::ReadLine::Gnu' ) {
-	warn("%Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::Gnu installeren.\n");
+	warn("%"._T("Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::Gnu installeren.")."\n");
 
 	# Some systems do not have Term::ReadLine::Gnu but provide
 	# Term::ReadLine::Perl instead. However, the latter is far too
@@ -441,9 +441,10 @@ sub help {
     else {
         my @helps = $self->helps;
         if (@helps) {
-	    my $t = _T("Hulp is beschikbaar voor de volgende onderwerpen");
-            push @ret, $t;
-	    $t = "=" x length($t);
+	    push( @ret,
+		  _T("Hulp is beschikbaar voor de volgende onderwerpen."),
+		  _T("Typ 'help [onderwerp]' voor meer gedetailleerde informatie.") );
+	    my $t = "=" x max( length($ret[-1]), length($ret[-2]) );
 	    push(@ret, $t, map({ "  * $_" } sort @helps), $t);
         }
         else {
