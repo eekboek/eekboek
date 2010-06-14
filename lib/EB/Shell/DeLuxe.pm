@@ -11,6 +11,10 @@ use utf8;
 
 ################ Common stuff ################
 
+################ WARNING: This file crashes xgettext.
+# Translateable strings should be maintained in DeLuxe_Fake.pm as well.
+################
+
 package main;
 
 our $cfg;
