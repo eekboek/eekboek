@@ -1,0 +1,14 @@
+                            Verlies/Winst
+Periode: 2007-05-01 t/m 2007-05-31
+EekBoek Demo Administratie                         EekBoek, 2007-12-31
+
+RekNr   Grootboekrekening                             Debet     Credit
+----------------------------------------------------------------------
+6900    Telefoon- en faxkosten                        85,90
+6905    Internetkosten                                19,16
+6980    Bankkosten                                     2,70
+8100    Omzet advisering                                        600,00
+8400    Omzet cursussen                                4,20
+        << Winst >>                                  488,04
+----------------------------------------------------------------------
+        TOTAAL Resultaten                            600,00     600,00

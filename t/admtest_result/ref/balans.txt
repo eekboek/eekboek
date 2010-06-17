@@ -1,0 +1,11 @@
+                                     Balans
+Periode: t/m 2009-12-31
+testadministratie 2009                                       EekBoek, 31-12-2009
+
+RekNr   Grootboekrekening                                  Debet          Credit
+--------------------------------------------------------------------------------
+1200    Debiteuren                                        119,00
+1500    BTW Verkoop Hoog                                                   19,00
+        << Winst >>                                                       100,00
+--------------------------------------------------------------------------------
+        TOTAAL Balans                                     119,00          119,00
