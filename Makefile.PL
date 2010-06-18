@@ -1,10 +1,9 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.17 2008/09/09 19:16:33 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep  9 15:23:47 2008
-# Update Count    : 102
+# Last Modified On: Mon Jun 14 21:50:15 2010
+# Update Count    : 104
 # Status          : Unknown, Use with caution!
 
 # Ease the life of the CPAN testers.
@@ -30,10 +29,9 @@ EOD
 # Write Makefile.
 my $x =
 WriteMakefile(
-	      NAME       => $data->{distname},
-	      ($] >= 5.005) ?
-	      ( AUTHOR	  => $data->{author},
-		ABSTRACT  => $data->{abstract} ) : (),
+	      NAME        => $data->{distname},
+	      AUTHOR	  => $data->{author},
+	      ABSTRACT    => $data->{abstract} ) : (),
 	      PL_FILES    => $data->{pl_files},
 	      INSTALLDIRS => $data->{installtype},
 	      DISTNAME    => $data->{distname},

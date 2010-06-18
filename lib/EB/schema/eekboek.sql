@@ -1,5 +1,9 @@
--- EekBoek Database Schema			-*- coding: utf-8 -*-
--- $Id: eekboek.sql,v 1.37 2009/10/14 21:14:01 jv Exp $
+-- eekboek.sql -- EekBoek Database Schema
+-- Author          : Johan Vromans
+-- Created On      : Thu Jul 14 12:54:08 2005
+-- Last Modified By: Johan Vromans
+-- Last Modified On: Mon Jun 14 22:14:19 2010
+-- Update Count    : 101
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
