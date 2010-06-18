@@ -576,7 +576,7 @@ sub reopen {
 
 sub shellhelp {
     my ($self, $cmd) = @_;
-    <<EOS;
+    _T( <<EOS );
 Het openen van een administratie kan slechts éénmaal gebeuren, vóór
 het invoeren van de eerste mutatie. Het openen van een nieuw boekjaar
 kan te allen tijde worden uitgevoerd, uiteraard maar één keer per
@@ -591,7 +591,7 @@ Mogelijke opdrachten voor openen van een boekjaar:
 
   adm_btwperiode [ jaar | kwartaal | maand ]
   adm_boekjaarcode <code>
-                Een code van max 4 letters en/of cijfers waarmee het
+		Een code van max 4 letters en/of cijfers waarmee het
 		boekjaar kan worden geïdentificeerd.
 		Standaard wordt het jaartal van het boekjaar genomen.
   adm_open
@@ -606,7 +606,7 @@ Opdrachten voor het openen van een administratie:
 		Een administratie loopt altijd van 1 januari tot en
 		met 31 december van een kalenderjaar.
   adm_boekjaarcode <code>
-                Een code van max 4 letters en/of cijfers waarmee het
+		Een code van max 4 letters en/of cijfers waarmee het
 		boekjaar kan worden geïdentificeerd.
 		Standaard wordt het jaartal van het boekjaar genomen.
 		De boekjaarcode is alleen relevant indien er meerdere
@@ -614,7 +614,7 @@ Opdrachten voor het openen van een administratie:
   adm_balanstotaal <bedrag>
 		Als een balanstotaal is opgegeven, moeten er ook
 		openingsbalansboekingen worden uitgevoerd met een of
-                meer adm_balans opdrachten.
+		meer adm_balans opdrachten.
   adm_balans <balansrekening> <bedrag>
 		De debet en credit boekingen moeten uiteindelijk
 		allebei gelijk zijn aan het opgegeven balanstotaal.
@@ -625,7 +625,7 @@ Opdrachten voor het openen van een administratie:
   adm_relatie <boekstuk> <datum> <code> <omschrijving> <bedrag>
 		Invoeren van een openstaande post uit het voorgaande
 		boekjaar. Het <boekstuk> moet volledig zijn, dus
-                <dagboek>:<boekjaar>:<nummer>.
+		<dagboek>:<boekjaar>:<nummer>.
   adm_open
 		Alle informatie die met de bovenstaande opdrachten is
 		ingevoerd, wordt verwerkt.
@@ -633,7 +633,7 @@ EOS
 }
 
 sub help_btwperiode {
-    <<EOS;
+    _T( <<EOS );
 Specifeer de BTW aangifteperiode voor het nieuw te openen jaar.
 
   adm_btwperiode [ jaar | kwartaal | maand ]
@@ -644,7 +644,7 @@ EOS
 }
 
 sub help_boekjaarcode {
-    <<EOS;
+    _T( <<EOS );
 Specificeert de boekjaarcode voor het nieuw te openen jaar.
 
   adm_boekjaarcode <code>
@@ -660,7 +660,7 @@ EOS
 }
 
 sub help_naam {
-    <<EOS;
+    _T( <<EOS );
 Specificeert de naam van de administatie, te gebruiken voor rapportages.
 
   adm_naam "Naam van de administratie"
@@ -671,7 +671,7 @@ EOS
 }
 
 sub help_begindatum {
-    <<EOS;
+    _T( <<EOS );
 Specificeert de begindatum van de administratie.
 Een administratie loopt altijd van 1 januari tot en met 31 december
 van een kalenderjaar. Daarom moet als begindatum een jaartal worden
@@ -685,7 +685,7 @@ EOS
 }
 
 sub help_balanstotaal {
-    <<EOS;
+    _T( <<EOS );
 Specificeert het balanstotaal voor de in te voeren openingbalans.
 
   adm_balanstotaal <bedrag>
@@ -701,7 +701,7 @@ EOS
 }
 
 sub help_balans {
-    <<EOS;
+    _T( <<EOS );
 Specificeert een balanspost voor de openingsbalans.
 
   adm_balans <balansrekening> <bedrag>
@@ -720,7 +720,7 @@ EOS
 }
 
 sub help_relatie {
-    <<EOS;
+    _T( <<EOS );
 Specificeert een openstaande post uit een voorgaand boekjaar.
 
   adm_relatie <boekstuk> <datum> <code> <omschrijving> <bedrag>

@@ -226,13 +226,13 @@ sub app_usage {
     print STDERR __x(<<EndOfUsage, prog => $0);
 Gebruik: {prog} [options] [file ...]
 
-    --command  -c       voer de rest van de opdrachtregel uit als command
-    --echo  -e          toon ingelezen opdrachten
+    --command  -c	voer de rest van de opdrachtregel uit als command
+    --echo  -e		toon ingelezen opdrachten
     --boekjaar=XXX	specificeer boekjaar
-    --import            importeer een nieuwe administratie
-    --export            exporteer een administratie
-    --dir=XXX           directory voor im/export
-    --file=XXX          bestand voor im/export
+    --import		importeer een nieuwe administratie
+    --export		exporteer een administratie
+    --dir=XXX		directory voor im/export
+    --file=XXX		bestand voor im/export
     --titel=XXX		omschrijving voor export
     --init		(re)creëer administratie
     --help		deze hulpboodschap
@@ -241,12 +241,12 @@ Gebruik: {prog} [options] [file ...]
 
 Voor experts:
 
-    --config=XXX -f     specificeer configuratiebestand
-    --nostdconf -X      gebruik uitsluitend dit configuratiebestand
-    --define=XXX -D     definieer configuratiesetting
+    --config=XXX -f	specificeer configuratiebestand
+    --nostdconf -X	gebruik uitsluitend dit configuratiebestand
+    --define=XXX -D	definieer configuratiesetting
     --printconfig -P	print config waarden
-    --[no]interactive   forceer [non]interactieve modus
-    --errexit           stop direct na een fout in de invoer
+    --[no]interactive	forceer [non]interactieve modus
+    --errexit		stop direct na een fout in de invoer
 EndOfUsage
     CORE::exit $exit if defined $exit && $exit != 0;
 }
