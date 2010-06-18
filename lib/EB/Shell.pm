@@ -12,7 +12,7 @@ package EB::Shell;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.116 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%03d", q$Revision: 1.117 $ =~ /(\d+)/g;
 
 use EB;
 
@@ -250,9 +250,10 @@ sub _plug_cmds {
     # BTW aangifte.
     if ( $does_btw ) {
 	no strict 'refs';
-	undef &{"do_btwaangifte"};
+	# Do not undef... it will undef the real routine :(
+	# undef &{"do_btwaangifte"};
 	*{"do_btwaangifte"}   = \&_do_btwaangifte;
-	undef &{"help_btwaangifte"};
+	# undef &{"help_btwaangifte"};
 	*{"help_btwaangifte"} = \&_help_btwaangifte;
     }
 
@@ -263,13 +264,13 @@ sub _plug_cmds {
 
 sub _help {
     my ($self, $dbk, $dbk_id, $dbk_desc, $dbk_type) = @_;
-    my $cmd = "$dbk"."[:nr]";
+    my $cmd = $dbk;
     my $text = "Toevoegen boekstuk in dagboek $dbk_desc (type " .
       DBKTYPES->[$dbk_type] . ").\n\n";
 
     if ( $dbk_type == DBKTYPE_INKOOP ) {
-	$text .= <<EOS;
-  $cmd [ <datum> ] <boekstukomschrijving> <crediteur>
+	$text .= __x( <<EOS, cmd => $cmd );
+  {cmd}[:nr] [ <datum> ] <boekstukomschrijving> <crediteur>
 
 gevolgd door een of meer:
 
@@ -280,8 +281,8 @@ De laatste <rekening> mag worden weggelaten.
 EOS
     }
     elsif ( $dbk_type == DBKTYPE_VERKOOP ) {
-	$text .= <<EOS;
-  $cmd [ <datum> ] <boekstukomschrijving> <debiteur>
+	$text .= __x( <<EOS, cmd => $cmd );
+  {cmd}[:nr] [ <datum> ] <boekstukomschrijving> <debiteur>
 
 gevolgd door een of meer
 
@@ -294,14 +295,14 @@ EOS
     elsif ( $dbk_type == DBKTYPE_BANK || $dbk_type == DBKTYPE_KAS 
 	    || $dbk_type == DBKTYPE_MEMORIAAL
 	  ) {
-	$text .= <<EOS;
-  $cmd [ <datum> ] <boekstukomschrijving>
+	$text .= __x( <<EOS, cmd => $cmd );
+  {cmd}[:nr] [ <datum> ] <boekstukomschrijving>
 
 gevolgd door een of meer:
 
-  crd [ <datum> ] <code> <bedrag>                       (betaling van crediteur)
-  deb [ <datum> ] <code> <bedrag>                       (betaling van debiteur)
-  std [ <datum> ] <omschrijving> <bedrag> <rekening>    (vrije boeking)
+  crd [ <datum> ] <code> <bedrag>			(betaling van crediteur)
+  deb [ <datum> ] <code> <bedrag>			(betaling van debiteur)
+  std [ <datum> ] <omschrijving> <bedrag> <rekening>	(vrije boeking)
 
 Controle van het eindsaldo kan met de optie --saldo=<bedrag>.
 Controle van het totale boekstukbedrag kan met de optie --totaal=<bedrag>.
@@ -477,20 +478,20 @@ sub do_journaal {
 }
 
 sub help_journaal {
-    <<EOS;
+    _T( <<EOS );
 Overzicht journaalposten.
 
-  journaal all                Alle posten
-  journaal <id>               Alleen boekstuknummer met dit id
-  journaal <dagboek>          Alle journaalposten van dit dagboek
-  journaal <dagboek>:<n>      Boekstuk <n> van dit dagboek
-  journaal                    Journaalposten van de laatste boeking
+  journaal all		Alle posten
+  journaal <id>		Alleen boekstuknummer met dit id
+  journaal <dagboek>	Alle journaalposten van dit dagboek
+  journaal <dagboek>:<n>  Boekstuk <n> van dit dagboek
+  journaal		Journaalposten van de laatste boeking
 
 Opties
 
-  --[no]detail                Mate van detail, standaard is met details
-  --totaal                    Alleen het totaal (detail = 0)
-  --periode=XXX               Alleen over deze periode
+  --[no]detail		Mate van detail, standaard is met details
+  --totaal		Alleen het totaal (detail = 0)
+  --periode=XXX		Alleen over deze periode
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -526,16 +527,16 @@ sub do_balans {
 }
 
 sub help_balans {
-    <<EOS;
+    _T( <<EOS );
 Toont de balansrekening.
 
 Opties:
-  <geen>                      Balans op grootboekrekening
-  --verdicht                  Verdicht, gedetailleerd
-  --detail=<n>                Verdicht, mate van detail <n> = 0, 1 of 2
-  --per=<datum>               Selecteer einddatum
-  --boekjaar=<code>           Selecteer boekjaar
-  --opening                   Toon openingsbalans
+  <geen>		Balans op grootboekrekening
+  --verdicht		Verdicht, gedetailleerd
+  --detail=<n>		Verdicht, mate van detail <n> = 0, 1 of 2
+  --per=<datum>		Selecteer einddatum
+  --boekjaar=<code>	Selecteer boekjaar
+  --opening		Toon openingsbalans
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -565,15 +566,15 @@ sub do_result {
 }
 
 sub help_result {
-    <<EOS;
+    _T( <<EOS );
 Toont de resultatenrekening.
 
 Opties:
-  <geen>                      Overzicth op grootboekrekening
-  --verdicht                  Verdicht, gedetailleerd
-  --detail=<n>                Verdicht, mate van detail <n> = 0,1,2
-  --periode=<periode>         Selecteer periode
-  --boekjaar=<code>           Selecteer boekjaar
+  <geen>		Overzicth op grootboekrekening
+  --verdicht		Verdicht, gedetailleerd
+  --detail=<n>		Verdicht, mate van detail <n> = 0,1,2
+  --periode=<periode>	Selecteer periode
+  --boekjaar=<code>	Selecteer boekjaar
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -603,15 +604,15 @@ sub do_proefensaldibalans {
 }
 
 sub help_proefensaldibalans {
-    <<EOS;
+    _T( <<EOS );
 Toont de Proef- en Saldibalans.
 
 Opties:
-  <geen>                      Proef- en Saldibalans op grootboekrekening
-  --verdicht                  Verdicht, gedetailleerd (zelfde als --detail=2)
-  --detail=<n>                Verdicht, mate van detail <n> = 0,1,2
-  --per=<datum>               Selecteer einddatum
-  --boekjaar=<code>           Selecteer boekjaar
+  <geen>		Proef- en Saldibalans op grootboekrekening
+  --verdicht		Verdicht, gedetailleerd (zelfde als --detail=2)
+  --detail=<n>		Verdicht, mate van detail <n> = 0,1,2
+  --per=<datum>		Selecteer einddatum
+  --boekjaar=<code>	Selecteer boekjaar
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -657,15 +658,15 @@ sub do_grootboek {
 }
 
 sub help_grootboek {
-    <<EOS;
+    _T( <<EOS );
 Toont het Grootboek, of een selectie daaruit.
 
   grootboek [ <rek> ... ]
 
 Opties:
 
-  --detail=<n>                Mate van detail, <n>=0,1,2 (standaard is 2)
-  --periode=<periode>         Alleen over deze periode
+  --detail=<n>		Mate van detail, <n>=0,1,2 (standaard is 2)
+  --periode=<periode>	Alleen over deze periode
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -689,7 +690,7 @@ sub do_dagboeken {
 }
 
 sub help_dagboeken {
-    <<EOS;
+    _T( <<EOS );
 Toont een lijstje van beschikbare dagboeken.
 
   dagboeken
@@ -729,34 +730,34 @@ sub _do_btwaangifte {
 }
 
 sub _help_btwaangifte {
-    <<EOS;
+    _T( <<EOS );
 Toont de BTW aangifte.
 
   btwaangifte [ <opties> ] [ <aangifteperiode> ]
 
 Aangifteperiode kan zijn:
 
-  j jaar                      Het gehele jaar
-  k1 k2 k3 k4                 1e/2e/3e/4e kwartaal (ook: q1, ...)
-  1 2 3 ...                   Maand (op nummer)
-  jan feb ...                 Maand (korte naam)
-  januari ...                 Maand (lange naam)
+  j jaar		Het gehele jaar
+  k1 k2 k3 k4		1e/2e/3e/4e kwartaal (ook: q1, ...)
+  1 2 3 ...		Maand (op nummer)
+  jan feb ...		Maand (korte naam)
+  januari ...		Maand (lange naam)
 
 Standaard is de eerstvolgende periode waarover nog geen aangifte is
 gedaan.
 
 Opties:
 
-  --definitief                De BTW periode wordt afgesloten. Er zijn geen
-                              boekingen in deze periode meer mogelijk.
-  --periode=<periode>         Selecteer aangifteperiode. Dit kan niet samen
-                              met --boekjaar, en evenmin met de bovenvermelde
-                              methode van periode-specificatie.
-  --boekjaar=<code>           Selecteer boekjaar
-  --noreport                  Geen rapportage. Dit is enkel zinvol samen
-                              met --definitief om de afgesloten BTW periode
-                              aan te passen.
-  --noround		      Alle bedragen zonder af te ronden.
+  --definitief		De BTW periode wordt afgesloten. Er zijn geen
+			boekingen in deze periode meer mogelijk.
+  --periode=<periode>	Selecteer aangifteperiode. Dit kan niet samen
+			met --boekjaar, en evenmin met de bovenvermelde
+			methode van periode-specificatie.
+  --boekjaar=<code>	Selecteer boekjaar
+  --noreport		Geen rapportage. Dit is enkel zinvol samen
+			met --definitief om de afgesloten BTW periode
+			aan te passen.
+  --noround		Alle bedragen zonder af te ronden.
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -783,16 +784,16 @@ sub do_debiteuren {
 }
 
 sub help_debiteuren {
-    <<EOS;
+    _T( <<EOS );
 Toont een overzicht van boekingen op debiteuren.
 
   debiteuren [ <opties> ] [ <relatiecodes> ... ]
 
 Opties:
 
-  --periode <periode>         Periode
-  --boekjaar=<code>           Selecteer boekjaar
-  --openstaand                Alleen met openstaande posten
+  --periode <periode>	Periode
+  --boekjaar=<code>	Selecteer boekjaar
+  --openstaand		Alleen met openstaande posten
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -819,16 +820,16 @@ sub do_crediteuren {
 }
 
 sub help_crediteuren {
-    <<EOS;
+    _T( <<EOS );
 Toont een overzicht van boekingen op crediteuren.
 
   crediteuren [ <opties> ] [ <relatiecode> ... ]
 
 Opties:
 
-  --periode=<periode>         Periode
-  --boekjaar=<code>           Selecteer boekjaar
-  --openstaand                Alleen met openstaande posten
+  --periode=<periode>	Periode
+  --boekjaar=<code>	Selecteer boekjaar
+  --openstaand		Alleen met openstaande posten
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -857,17 +858,17 @@ sub do_openstaand {
 }
 
 sub help_openstaand {
-    <<EOS;
+    _T( <<EOS );
 Toont een overzicht van openstaande posten.
 
   openstaand [ <opties> ] [ <relatie> ]
 
 Opties:
 
-  --per=<datum>               Einddatum
-  --boekjaar=<code>           Selecteer boekjaar
-  --deb --debiteuren          Alleen debiteuren
-  --crd --crediteuren         Alleen crediteuren
+  --per=<datum>		Einddatum
+  --boekjaar=<code>	Selecteer boekjaar
+  --deb --debiteuren	Alleen debiteuren
+  --crd --crediteuren	Alleen crediteuren
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -875,30 +876,30 @@ EOS
 }
 
 sub help_rapporten {
-    <<EOS;
+    _T( <<EOS );
 Alle rapport-producerende opdrachten kennen de volgende opties:
 
-  --per=<datum>               De einddatum voor de rapportage.
-                              (Niet voor elke opdracht relevant.)
-                              Zie "help periodes" voor details.
-  --periode=<periode>         De periode waarover de rapportage moet
-                              plaatsvinden. (Niet voor elke opdracht relevant.)
-                              Zie "help periodes" voor details.
-  --output=<bestand>          Produceer het rapport in dit bestand
-                              Uitvoertype is afhankelijk van bestandsextensie,
-                              bv. xx.html levert HTML, xx.txt een tekstbestand,
-                              xx.csv een CSV, etc.
-  --gen-<type>                Forceer uitvoertype (html, csv, text, ...)
-                              Afhankelijk van de beschikbare uitvoertypes zijn
-                              ook de kortere opties --html, --csv en --text
-                              mogelijk.
-		              (Let op: --gen-XXX, niet --gen=XXX)
-  --page=<size>               Paginagrootte voor tekstrapporten.
+  --per=<datum>		De einddatum voor de rapportage.
+			(Niet voor elke opdracht relevant.)
+			Zie "help periodes" voor details.
+  --periode=<periode>	De periode waarover de rapportage moet
+			plaatsvinden. (Niet voor elke opdracht relevant.)
+			Zie "help periodes" voor details.
+  --output=<bestand>	Produceer het rapport in dit bestand
+			Uitvoertype is afhankelijk van bestandsextensie,
+			bv. xx.html levert HTML, xx.txt een tekstbestand,
+			xx.csv een CSV, etc.
+  --gen-<type>		Forceer uitvoertype (html, csv, text, ...)
+			Afhankelijk van de beschikbare uitvoertypes zijn
+			ook de kortere opties --html, --csv en --text
+			mogelijk.
+			(Let op: --gen-XXX, niet --gen=XXX)
+  --page=<size>		Paginagrootte voor tekstrapporten.
 EOS
 }
 
 sub help_periodes {
-    <<EOS;
+    _T( <<EOS );
 De volgende periode-aanduidingen zijn mogelijk. Indien het jaartal ontbreekt,
 wordt het huidige boekjaar verondersteld.
 
@@ -963,7 +964,7 @@ sub do_schema {
 }
 
 sub help_schema {
-    my $ret = <<EOS;
+    _T( <<EOS );
 Onderhoud van het schema. Deze opdracht kent sub-opdrachten:
 
   schema <opdracht> [ <opties> ] <argumenten>
@@ -972,13 +973,13 @@ Aanmaken grootboekrekening
 
   schema gbk <rekening> [ <type> <omschrijving> <verdichting> ]
 
-     <rekening>      de gewenste grootboekrekening
-     <type>          D/C voor Debet / Credit
-		     K/O/N voor Kosten / Omzet / Neutraal
-		     Eventueel gevolgd door ! als deze 
-		     balansrekening vast staat aan één kant
-     <omschrijving>  De omschrijving van deze grootboekrekening
-     <verdichting>   De verdichting waaronder deze rekening valt
+     <rekening>		de gewenste grootboekrekening
+     <type>		D/C voor Debet / Credit
+			K/O/N voor Kosten / Omzet / Neutraal
+			Eventueel gevolgd door ! als deze 
+			balansrekening vast staat aan één kant
+     <omschrijving>	De omschrijving van deze grootboekrekening
+     <verdichting>	De verdichting waaronder deze rekening valt
 
      Wanneer enkel een nummer wordt opgegeven dan worden de gegevens
      van de betreffende grootboekrekening getoond.
@@ -1012,18 +1013,18 @@ sub do_relatie {
 }
 
 sub help_relatie {
-    my $ret = <<EOS;
+    my $ret = _T( <<EOS );
 Aanmaken een of meer nieuwe relaties.
 
   relatie [ <opties> ] { <code> <omschrijving> <rekening> } ...
 
 Opties:
 
-  --dagboek=<dagboek>         Selecteer dagboek voor deze relatie
+  --dagboek=<dagboek>	Selecteer dagboek voor deze relatie
 EOS
 
-    $ret .= <<EOS if $dbh->does_btw;
-  --btw=<type>                BTW type: normaal, verlegd, intra, extra
+    $ret .= _T( <<EOS ) if $dbh->does_btw;
+  --btw=<type>		BTW type: normaal, verlegd, intra, extra
 
 *** BTW type 'verlegd' wordt nog niet ondersteund ***
 *** BTW type 'intra' wordt nog niet geheel ondersteund ***
@@ -1095,17 +1096,17 @@ sub do_export {
 }
 
 sub help_export {
-    <<EOS;
+    _T( <<EOS );
 Exporteert de complete administratie.
 
   export [ <opties> ]
 
 Opties:
 
-  --file=<bestand>          Selecteer uitvoerbestand
-  --dir=<directory>         Selecteer uitvoerdirectory
-  --xaf=<bestand>           Export XML Auditfile Financieel
-  --boekjaar=<code>         Selecteer boekjaar (alleen met --xaf)
+  --file=<bestand>	Selecteer uitvoerbestand
+  --dir=<directory>	Selecteer uitvoerdirectory
+  --xaf=<bestand>	Export XML Auditfile Financieel
+  --boekjaar=<code>	Selecteer boekjaar (alleen met --xaf)
 
 Er moet een --file, --dir of een --xaf optie worden opgegeven.
 De XAF export exporteert altijd één enkel boekjaar. Voor de andere
@@ -1150,15 +1151,15 @@ sub do_import {
 }
 
 sub help_import {
-    <<EOS;
+    _T( <<EOS );
 Importeert een complete, geëxporteerde administratie.
 
   import [ <opties> ]
 
 Opties:
 
-  --input=<bestand>           Selecteer exportbestand
-  --dir=<directory>           Selecteer exportdirectory
+  --input=<bestand>	Selecteer exportbestand
+  --dir=<directory>	Selecteer exportdirectory
 
 Er moet of een --input of een --dir optie worden opgegeven.
 
@@ -1189,15 +1190,15 @@ sub do_include {
 }
 
 sub help_include {
-    <<EOS;
+    _T( <<EOS );
 Leest opdrachten uit een bestand.
 
   include [ <opties> ] <bestand>
 
 Opties:
 
-  --optioneel                 Het bestand mag ontbreken. De opdracht
-                              wordt dan verder genegeerd.
+  --optioneel		Het bestand mag ontbreken. De opdracht
+			wordt dan verder genegeerd.
 EOS
 }
 
@@ -1214,7 +1215,7 @@ sub do_boekjaar {
 }
 
 sub help_boekjaar {
-    <<EOS;
+    _T( <<EOS );
 Gebruik voor navolgende opdrachten het opgegeven boekjaar.
 
   boekjaar <code>
@@ -1224,7 +1225,7 @@ EOS
 sub do_dump_schema {
     my ($self, @args) = @_;
 
-    <<EOS;
+    _T( <<EOS );
 Deze opdracht is vervallen. Gebruik in plaats daarvan "export".
 EOS
 }
@@ -1263,14 +1264,14 @@ sub do_verwijder {
 }
 
 sub help_verwijder {
-    <<EOS;
+    _T( <<EOS );
 Verwijdert een boekstuk. Het boekstuk mag niet in gebruik zijn.
 
   verwijder [ <opties> ] <boekstuk>
 
 Opties:
 
-  --boekjaar=<code>           Selekteer boekjaar
+  --boekjaar=<code>	Selekteer boekjaar
 
 Het verwijderde boekstuk wordt in de commando-historie geplaatst.
 Met een pijltje-omhoog kan dit worden teruggehaald en na eventuele
@@ -1318,17 +1319,17 @@ sub do_toon {
 }
 
 sub help_toon {
-    <<EOS;
+    _T( <<EOS );
 Toont een boekstuk in tekst- of commando-vorm.
 
   toon [ <opties> ] <boekstuk>
 
 Opties:
 
-  --boekjaar=<code>           Selekteer boekjaar
-  --verbose                   Toon in uitgebreide (tekst) vorm
-  --btw                       Vermeld altijd BTW codes
-  --bsknr                     Vermeld altijd het boekstuknummer (default)
+  --boekjaar=<code>	Selekteer boekjaar
+  --verbose		Toon in uitgebreide (tekst) vorm
+  --btw			Vermeld altijd BTW codes
+  --bsknr		Vermeld altijd het boekstuknummer (default)
 
 Het getoonde boekstuk wordt in de commando-historie geplaatst.
 Met een pijltje-omhoog kan dit worden teruggehaald en na eventuele
@@ -1357,7 +1358,7 @@ sub do_jaareinde {
 }
 
 sub help_jaareinde {
-    <<EOS;
+    _T( <<EOS );
 Sluit het boekjaar af. De BTW rekeningen worden afgeboekt, en de
 winst of het verlies wordt verrekend met de daartoe aangewezen
 balansrekening.
@@ -1371,11 +1372,11 @@ het volgende boekjaar.
 
 Opties:
 
-  --boekjaar=<code>           Sluit het opgegeven boekjaar af.
-  --definitief                Sluit het boekjaar definitief af. Er zijn
-                              dan geen boekingen meer mogelijk.
-  --verwijder                 Verwijder een niet-definitieve jaarafsluiting.
-  --eb=<bestand>              Schrijf openingsopdrachten in dit bestand.
+  --boekjaar=<code>	Sluit het opgegeven boekjaar af.
+  --definitief		Sluit het boekjaar definitief af. Er zijn
+			dan geen boekingen meer mogelijk.
+  --verwijder		Verwijder een niet-definitieve jaarafsluiting.
+  --eb=<bestand>	Schrijf openingsopdrachten in dit bestand.
 EOS
 }
 
@@ -1386,12 +1387,12 @@ sub do_sql {
 }
 
 sub help_sql {
-    <<EOD;
+    _T( <<EOS );
 Voer een SQL opdracht uit via de database driver. Met het gebruik
 hiervan vervalt alle garantie op correcte resultaten.
 
   sql [ <opdracht> ]
-EOD
+EOS
 }
 
 ################ Argument parsing ################
