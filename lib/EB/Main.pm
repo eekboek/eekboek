@@ -2,12 +2,11 @@
 
 use utf8;
 
-# RCS Id          : $Id: Main.pm,v 1.15 2010/01/16 22:37:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jan 16 22:42:00 2010
-# Update Count    : 996
+# Last Modified On: Sat Jun 19 00:50:58 2010
+# Update Count    : 997
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################

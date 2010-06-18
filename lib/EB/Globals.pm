@@ -1,4 +1,12 @@
-#! perl --			-*- coding: utf-8 -*-
+#! perl
+
+# Globals.pm -- 
+# Author          : Johan Vromans
+# Created On      : Thu Jul 14 12:54:08 200
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 00:30:47 2010
+# Update Count    : 101
+# Status          : Unknown, Use with caution!
 
 use utf8;
 
@@ -6,8 +14,6 @@ package EB::Globals;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.34 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 

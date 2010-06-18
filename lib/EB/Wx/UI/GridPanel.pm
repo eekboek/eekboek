@@ -1,11 +1,10 @@
 #! perl
 # GridPanel.pm -- 
-# RCS Info        : $Id: GridPanel.pm,v 1.9 2008/03/25 22:24:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Aug 24 17:40:46 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb 21 11:22:09 2008
-# Update Count    : 336
+# Last Modified On: Sat Jun 19 00:51:39 2010
+# Update Count    : 337
 # Status          : Unknown, Use with caution!
 
 # GridPanel implements a widget that is row/column oriented, and

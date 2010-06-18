@@ -2,12 +2,11 @@
 
 use utf8;
 
-# RCS Id          : $Id: BTWAangifte.pm,v 1.50 2009/10/24 21:25:38 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 24 14:43:49 2009
-# Update Count    : 642
+# Last Modified On: Sat Jun 19 00:33:38 2010
+# Update Count    : 643
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -21,8 +20,6 @@ package EB::Report::BTWAangifte;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.50 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

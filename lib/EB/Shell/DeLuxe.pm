@@ -2,12 +2,11 @@
 
 use utf8;
 
-# RCS Id          : $Id: DeLuxe.pm,v 1.26 2010/05/06 09:26:28 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May  6 11:25:42 2010
-# Update Count    : 287
+# Last Modified On: Sat Jun 19 00:40:41 2010
+# Update Count    : 288
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,8 +18,6 @@ our $cfg;
 package EB::Shell::DeLuxe;
 
 use strict;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)/g;
 
 use base qw(EB::Shell::Base);
 use EB;

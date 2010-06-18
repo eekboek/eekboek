@@ -3,12 +3,11 @@
 use utf8;
 
 # Export.pm -- Export EekBoek administratie
-# RCS Info        : $Id: Export.pm,v 1.31 2009/10/15 10:05:03 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 15 11:35:50 2009
-# Update Count    : 233
+# Last Modified On: Sat Jun 19 00:28:03 2010
+# Update Count    : 234
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -20,8 +19,6 @@ package EB::Export;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.31 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

@@ -3,12 +3,11 @@
 use utf8;
 
 # EB.pm -- EekBoek Base module.
-# RCS Info        : $Id: EB.pm,v 1.94 2009/10/28 22:08:26 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 28 21:02:59 2009
-# Update Count    : 253
+# Last Modified On: Sat Jun 19 00:20:05 2010
+# Update Count    : 254
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -16,8 +15,6 @@ package main;
 our $app;
 
 package EB;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.94 $ =~ /(\d+)/g;
 
 use strict;
 use base qw(Exporter);

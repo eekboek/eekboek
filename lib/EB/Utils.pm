@@ -1,10 +1,16 @@
 #! perl
 
+# Utils.pm -- 
+# Author          : Johan Vromans
+# Created On      : Wed Sep 21 13:09:01 2005
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 00:22:19 2010
+# Update Count    : 101
+# Status          : Unknown, Use with caution!
+
 package EB::Utils;
 
 use strict;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 

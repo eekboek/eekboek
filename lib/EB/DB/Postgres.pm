@@ -1,12 +1,11 @@
 #! perl
 
 # Postgres.pm -- EekBoek driver for PostgreSQL database
-# RCS Info        : $Id: Postgres.pm,v 1.27 2009/10/20 10:28:07 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 19 22:47:05 2009
-# Update Count    : 173
+# Last Modified On: Sat Jun 19 00:27:09 2010
+# Update Count    : 174
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -17,8 +16,6 @@ package EB::DB::Postgres;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.27 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;

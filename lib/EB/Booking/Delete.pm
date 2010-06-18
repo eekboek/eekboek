@@ -8,20 +8,17 @@ our $config;
 
 package EB::Booking::Delete;
 
-# RCS Id	  : $Id: Delete.pm,v 1.14 2010/05/29 15:11:09 jv Exp $ 
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat May 29 17:06:49 2010
-# Update Count    : 86
+# Last Modified On: Sat Jun 19 00:26:13 2010
+# Update Count    : 87
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)/g;
 
 use EB;
 use base qw(EB::Booking);

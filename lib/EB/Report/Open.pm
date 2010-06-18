@@ -10,16 +10,14 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 12 16:11:36 2008
-# Update Count    : 204
+# Last Modified On: Sat Jun 19 00:38:34 2010
+# Update Count    : 205
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.21 $ =~ /(\d+)/g;
 
 ################ The Process ################
 

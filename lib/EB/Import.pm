@@ -3,12 +3,11 @@
 use utf8;
 
 # Import.pm -- Import EekBoek administratie
-# RCS Info        : $Id: Import.pm,v 1.11 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:06:21 2009
-# Update Count    : 89
+# Last Modified On: Sat Jun 19 00:31:03 2010
+# Update Count    : 90
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -20,8 +19,6 @@ package EB::Import;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;			# needs to be setup before we can use Schema

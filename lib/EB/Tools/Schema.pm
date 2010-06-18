@@ -2,12 +2,11 @@
 
 use utf8;
 
-# RCS Id          : $Id: Schema.pm,v 1.65 2010/01/25 17:36:59 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 25 18:36:12 2010
-# Update Count    : 774
+# Last Modified On: Sat Jun 19 00:46:03 2010
+# Update Count    : 776
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,19 +21,8 @@ package EB::Tools::Schema;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.65 $ =~ /(\d+)/g;
-
 our $sql = 0;			# load schema into SQL files
 my $trace = $cfg->val(__PACKAGE__, "trace", 0);
-
-my $RCS_Id = '$Id: Schema.pm,v 1.65 2010/01/25 17:36:59 jv Exp $ ';
-
-# Package name.
-my $my_package = 'EekBoek';
-# Program name and version.
-my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pm,v ([\d.]+)/;
-# Tack '*' if it is not checked in into RCS.
-$my_version .= '*' if length('$Locker:  $ ') > 12;
 
 ################ The Process ################
 
@@ -700,8 +688,8 @@ sub dump_schema {
     $dbh = EB::DB->new(trace => $trace);
     $dbh->connectdb;		# can't wait...
 
-    print {$fh} ("# $my_package Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
-	  "# Aangemaakt door ", __PACKAGE__, " $my_version");
+    print {$fh} ("# $EekBoek::PACKAGE Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
+	  "# Aangemaakt door $EekBoek::PACKAGE $EekBoek::VERSION");
     my @t = localtime(time);
     printf {$fh} (" op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
     print {$fh} ("# Content-Type: text/plain; charset = UTF-8\n");

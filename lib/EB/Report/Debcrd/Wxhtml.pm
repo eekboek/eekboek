@@ -1,12 +1,19 @@
 #! perl
 
+# Wxhtml.pm -- 
+# Author          : Johan Vromans
+# Created On      : Thu Feb 7 13:21:53 2008
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 00:35:31 2010
+# Update Count    : 23
+# Status          : Unknown, Use with caution!
+#! perl
+
 package EB::Report::Debcrd::Wxhtml;
 
 use strict;
 use warnings;
 use base qw(EB::Report::Reporter::WxHtml);
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
 
 sub style {
     my ($self, $row, $cell) = @_;

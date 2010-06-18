@@ -1,12 +1,11 @@
 #! perl
 
 # State.pm -- State persistency
-# RCS Info        : $Id: State.pm,v 1.2 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Feb 15 22:48:51 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 13 21:35:37 2009
-# Update Count    : 8
+# Last Modified On: Sat Jun 19 00:48:11 2010
+# Update Count    : 9
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -14,8 +13,6 @@ package main;
 our $state;
 
 package EB::Wx::State;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)/g;
 
 use strict;
 use warnings;

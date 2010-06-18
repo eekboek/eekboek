@@ -1,12 +1,11 @@
 #! perl
 
 # Text.pm -- Reporter backend for text reports.
-# RCS Info        : $Id: Text.pm,v 1.8 2008/03/05 21:38:35 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:21:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  5 22:27:34 2008
-# Update Count    : 118
+# Last Modified On: Sat Jun 19 00:39:44 2010
+# Update Count    : 119
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,8 +17,6 @@ package EB::Report::Reporter::Text;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)/g;
 
 use EB;
 

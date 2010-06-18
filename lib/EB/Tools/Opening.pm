@@ -2,12 +2,11 @@
 
 use utf8;
 
-# RCS Id          : $Id: Opening.pm,v 1.42 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:10:37 2009
-# Update Count    : 296
+# Last Modified On: Sat Jun 19 00:42:53 2010
+# Update Count    : 297
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,8 +18,6 @@ package EB::Tools::Opening;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.42 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

@@ -7,20 +7,17 @@ our $config;
 
 package EB::Booking::Decode;
 
-# RCS Id          : $Id: Decode.pm,v 1.26 2010/05/29 15:11:09 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat May 29 17:10:45 2010
-# Update Count    : 173
+# Last Modified On: Sat Jun 19 00:25:59 2010
+# Update Count    : 174
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

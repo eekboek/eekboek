@@ -1,5 +1,13 @@
 #! perl
 
+# Relation.pm -- 
+# Author          : Johan Vromans
+# Created On      : Thu Jul 14 12:54:08 2005
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 00:32:40 2010
+# Update Count    : 102
+# Status          : Unknown, Use with caution!
+
 package main;
 
 our $dbh;
@@ -8,8 +16,6 @@ package EB::Relation;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
 
 use EB;
 

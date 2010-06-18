@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sun Apr 13 17:25:07 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 13 21:29:10 2009
-# Update Count    : 238
+# Last Modified On: Sat Jun 19 00:27:42 2010
+# Update Count    : 239
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,8 +19,6 @@ package EB::Export::XAF;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

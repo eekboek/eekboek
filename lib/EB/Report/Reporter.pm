@@ -1,12 +1,11 @@
 #! perl
 
 # Reporter.pm -- 
-# RCS Info        : $Id: Reporter.pm,v 1.16 2008/08/02 13:06:12 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 13:18:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug  2 15:05:06 2008
-# Update Count    : 151
+# Last Modified On: Sat Jun 19 00:40:09 2010
+# Update Count    : 152
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,8 +17,6 @@ package EB::Report::Reporter;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

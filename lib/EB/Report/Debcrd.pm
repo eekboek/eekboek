@@ -7,20 +7,17 @@ our $dbh;
 
 package EB::Report::Debcrd;
 
-# RCS Id          : $Id: Debcrd.pm,v 1.17 2008/08/24 15:33:44 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Aug 24 17:33:29 2008
-# Update Count    : 186
+# Last Modified On: Sat Jun 19 00:34:29 2010
+# Update Count    : 187
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)/g;
 
 ################ The Process ################
 

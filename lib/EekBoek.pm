@@ -10,7 +10,6 @@ use utf8;
 # Minimal version to prevent many Unicode bugs.
 use 5.008003;
 
-my $RCS_Id = '$Id: EekBoek.pm,v 1.101 2010/05/06 10:03:08 jv Exp $ ';
 our $PACKAGE = 'EekBoek';
 our $VERSION = '2.00.02';
 

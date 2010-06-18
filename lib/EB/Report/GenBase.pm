@@ -2,12 +2,11 @@
 
 use utf8;
 
-# RCS Info        : $Id: GenBase.pm,v 1.29 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:09:31 2009
-# Update Count    : 160
+# Last Modified On: Sat Jun 19 00:35:57 2010
+# Update Count    : 161
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,8 +18,6 @@ package EB::Report::GenBase;
 
 use strict;
 use EB;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.29 $ =~ /(\d+)/g;
 
 use IO::File;
 use EB::Format;

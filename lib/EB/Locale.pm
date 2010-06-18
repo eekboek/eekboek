@@ -3,19 +3,16 @@
 use utf8;
 
 # Locale.pm -- EB Locale setup (core version)
-# RCS Info        : $Id: Locale.pm,v 1.15 2009/10/24 20:01:01 jv Exp $ 
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 24 22:00:58 2009
-# Update Count    : 117
+# Last Modified On: Sat Jun 19 00:22:52 2010
+# Update Count    : 118
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
 
 use strict;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)/g;
 
 use base qw(Exporter);
 

@@ -1,10 +1,9 @@
 # Locale.pm -- EB Locale setup (GUI version)
-# RCS Info        : $Id: Locale.pm,v 1.2 2009/10/24 20:00:27 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Oct 24 21:59:01 2009
-# Update Count    : 109
+# Last Modified On: Sat Jun 19 00:51:11 2010
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
