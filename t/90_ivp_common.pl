@@ -4,14 +4,14 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 14 22:17:16 2010
-# Update Count    : 101
+# Last Modified On: Sat Jun 19 17:38:18 2010
+# Update Count    : 103
 
 use strict;
 use warnings;
 
 # The actual number of database tests, as executed by report_tests.
-use constant NUMTESTS => 36;
+use constant NUMTESTS => 34;
 # There are 9 initial tests.
 # report_tests requires 1 more for the setup, and 1 for the export
 # (all but the last).
@@ -152,8 +152,6 @@ sub report_tests {
     vfy([@ebcmd, qw(-c result --detail=1)], "result1.txt");
     vfy([@ebcmd, qw(-c result --detail=2)], "result2.txt");
     vfy([@ebcmd, qw(-c result --verdicht)], "result2.txt");
-    vfy([@ebcmd, qw(-c result --periode apr)], "result-apr.txt");
-    vfy([@ebcmd, qw(-c result --periode mei)], "result-mei.txt");
 
     # Verify: Journaal.
     vfy([@ebcmd, qw(-c journaal)            ], "journaal.txt");
