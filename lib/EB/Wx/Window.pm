@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: Window.pm,v 1.5 2009/10/24 21:26:53 jv Exp $
-
 package main;
 
 our $cfg;

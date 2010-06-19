@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: Preferences.pm,v 1.6 2008/03/25 22:28:18 jv Exp $
-
 package EB::Wx::Report::BTWAangifte::Preferences;
 
 use Wx qw[:everything];

@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: PropertiesDialog.pm,v 1.5 2008/02/11 15:21:48 jv Exp $
-
 package main;
 
 our $cfg;

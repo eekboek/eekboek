@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: NumericCtrl.pm,v 1.5 2008/03/25 22:26:01 jv Exp $
-
 package EB::Wx::UI::NumericCtrl;
 
 use base qw(Wx::TextCtrl);

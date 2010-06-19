@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: BalResProof.pm,v 1.7 2008/03/25 22:31:06 jv Exp $
-
 package main;
 
 our $state;

@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: PreferencesDialog.pm,v 1.3 2008/02/11 15:21:19 jv Exp $
-
 package main;
 
 our $state;

@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-# $Id: TreeCtrl.pm,v 1.8 2008/03/25 22:57:42 jv Exp $
-
 package main;
 
 our $state;

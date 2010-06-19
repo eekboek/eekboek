@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: Relaties.pm,v 1.13 2008/03/25 22:59:01 jv Exp $
-
 package main;
 
 our $state;

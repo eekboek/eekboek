@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: AmtInput.pm,v 1.4 2008/02/11 15:24:16 jv Exp $
-
 package EB::Wx::UI::GridPanel::AmtInput;
 
 use Wx qw(wxDefaultPosition wxDefaultSize);

@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: IVPanel.pm,v 1.8 2009/10/19 10:28:23 jv Exp $
-
 package main;
 
 our $state;

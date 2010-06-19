@@ -1,8 +1,6 @@
-#! perl --			-*- coding: utf-8 -*-
+#! perl
 
 use utf8;
-
-# $Id: Accounts.pm,v 1.14 2009/12/15 13:40:17 jv Exp $
 
 package main;
 

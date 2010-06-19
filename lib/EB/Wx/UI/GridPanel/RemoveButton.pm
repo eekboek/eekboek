@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: RemoveButton.pm,v 1.4 2008/03/25 22:27:36 jv Exp $
-
 package EB::Wx::UI::GridPanel::RemoveButton;
 
 use Wx qw(:everything wxDefaultPosition wxDefaultSize wxBITMAP_TYPE_PNG);

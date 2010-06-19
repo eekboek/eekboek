@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: StdAccounts.pm,v 1.8 2008/03/25 22:58:38 jv Exp $
-
 package main;
 
 our $dbh;

@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: HvdInput.pm,v 1.1 2008/03/25 23:04:10 jv Exp $
-
 package main;
 
 our $dbh;

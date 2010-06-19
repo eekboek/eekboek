@@ -1,4 +1,4 @@
-#! perl --			-*- coding: utf-8 -*-
+#! perl
 
 package EekBoek;
 
@@ -61,5 +61,3 @@ GNU General Public License or the Artistic License for more details.
 =cut
 
 1;
-
-# $Id: EekBoek.pm,v 1.101 2010/05/06 10:03:08 jv Exp $ 

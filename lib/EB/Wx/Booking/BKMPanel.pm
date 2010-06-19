@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: BKMPanel.pm,v 1.9 2008/03/25 23:03:51 jv Exp $
-
 package main;
 
 our $state;

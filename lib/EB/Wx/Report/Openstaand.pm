@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: Openstaand.pm,v 1.3 2008/03/25 22:33:06 jv Exp $
-
 package main;
 
 our $state;

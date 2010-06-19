@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: Dagboeken.pm,v 1.6 2008/03/25 22:59:43 jv Exp $
-
 package main;
 
 our $state;

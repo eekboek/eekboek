@@ -1,11 +1,10 @@
 #! perl
 
 # DCButton.pm -- 
-          : Johan Vromans
 # Created On      : Fri Sep 16 20:31:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 14 22:01:34 2010
-# Update Count    : 101
+# Last Modified On: Sat Jun 19 22:31:39 2010
+# Update Count    : 102
 # Status          : Unknown, Use with caution!
 
 package EB::Wx::UI::GridPanel::DCButton;

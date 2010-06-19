@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: AmountCtrl.pm,v 1.5 2008/03/25 22:24:31 jv Exp $
-
 package EB::Wx::UI::AmountCtrl;
 
 use Wx qw[:everything];

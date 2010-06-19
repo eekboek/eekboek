@@ -1,6 +1,12 @@
 #! perl
 
-# $Id: ebwxshell,v 1.4 2010/05/06 10:01:46 jv Exp $
+# ebwxshell -- Main script for EekBoek GUI shell
+# Author          : Johan Vromans
+# Created On      : Fri Dec 18 21:54:24 2009
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 22:37:03 2010
+# Update Count    : 101
+# Status          : Unknown, Use with caution!
 
 use strict;
 use utf8;

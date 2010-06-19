@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: BTWAangifte.pm,v 1.12 2009/10/24 21:27:05 jv Exp $
-
 package main;
 
 our $state;

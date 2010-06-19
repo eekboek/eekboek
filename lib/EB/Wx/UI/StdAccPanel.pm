@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: StdAccPanel.pm,v 1.8 2008/03/11 11:05:34 jv Exp $
-
 package main;
 
 our $app;

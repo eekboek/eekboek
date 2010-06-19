@@ -1,6 +1,12 @@
 #! perl
 
-# $Id: Data.pm,v 1.2 2009/12/22 12:57:06 jv Exp $
+# Data.pm -- Multi-purpose definition of config data
+# Author          : Johan Vromans
+# Created On      : Sat Oct 24 21:30:54 2009
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 22:23:11 2010
+# Update Count    : 12
+# Status          : Unknown, Use with caution!
 
 use strict;
 use warnings;

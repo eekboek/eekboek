@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: PeriodPanel.pm,v 1.6 2008/03/25 22:26:27 jv Exp $
-
 package main;
 
 our $state;

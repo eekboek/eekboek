@@ -1,8 +1,6 @@
-#! perl --			-*- coding: utf-8 -*-
+#! perl
 
 use utf8;
-
-# $Id: XAF.pm,v 1.2 2009/10/14 21:14:02 jv Exp $
 
 package main;
 

@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: GenBase.pm,v 1.6 2009/10/09 15:43:07 jv Exp $
-
 package main;
 
 our $state;

@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: Journaal.pm,v 1.8 2008/03/25 22:32:46 jv Exp $
-
 package main;
 
 our $state;

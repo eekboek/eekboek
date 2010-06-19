@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: AccInput.pm,v 1.5 2008/03/25 22:26:40 jv Exp $
-
 package EB::Wx::UI::GridPanel::AccInput;
 
 use Wx qw(wxDefaultPosition wxDefaultSize);

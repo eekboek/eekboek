@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: BTWTarieven.pm,v 1.14 2008/03/25 22:59:44 jv Exp $
-
 package main;
 
 our $state;

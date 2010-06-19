@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: ebgui,v 1.11 2009/11/25 09:41:53 jv Exp $
-
 use strict;
 use utf8;
 # use lib qw(EekBoekLibrary);

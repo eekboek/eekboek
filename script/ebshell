@@ -1,6 +1,12 @@
 #! perl
 
-# $Id: ebshell,v 1.22 2010/03/17 10:47:49 jv Exp $
+# ebshell -- Main script for EekBoek CLI shell
+# Author          : Johan Vromans
+# Created On      : Thu Jul 14 12:54:08 2005
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 22:35:56 2010
+# Update Count    : 102
+# Status          : Unknown, Use with caution!
 
 package main;
 

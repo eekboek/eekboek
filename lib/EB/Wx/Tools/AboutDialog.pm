@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: AboutDialog.pm,v 1.3 2009/10/28 22:11:31 jv Exp $
-
 package EB::Wx::Tools::AboutDialog;
 
 use Wx qw[:everything];

@@ -1,7 +1,5 @@
 #! perl
 
-# $Id: ListInput.pm,v 1.5 2008/03/25 22:25:36 jv Exp $
-
 package main;
 
 our $dbh;

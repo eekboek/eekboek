@@ -1,8 +1,6 @@
-#! perl --			-*- coding: utf-8 -*-
+#! perl
 
 use utf8;
-
-# $Id: EekBoek.pm,v 1.8 2009/10/15 10:05:03 jv Exp $
 
 package main;
 
