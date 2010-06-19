@@ -3,12 +3,11 @@
 use utf8;
 
 # MiniAdm.pm -- 
-# RCS Info        : $Id: MiniAdm.pm,v 1.7 2010/01/06 20:56:01 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jan  6 21:07:54 2010
-# Update Count    : 97
+# Last Modified On: Sat Jun 19 00:53:19 2010
+# Update Count    : 99
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -237,7 +236,7 @@ EOD
 #   btw_il	idem, laag tarief
 #   btw_vh	idem, verkopen, hoog tarief
 #   btw_vl	idem, laag tarief
-#   btw_ph	idem, privé, hoog tarief
+#   btw_ph	idem, privÃ©, hoog tarief
 #   btw_pl	idem, laag tarief
 #   btw_ah	idem, anders, hoog tarief
 #   btw_al	idem, laag tarief

@@ -1,4 +1,11 @@
-#! perl
+!# perl
+
+# Author          : Johan Vromans
+# Created On      : Thu Mar 6 14:36:36 2008
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 00:38:21 2010
+# Update Count    : 11
+# Status          : Unknown, Use with caution!
 
 package EB::Report::Open::Wxhtml;
 

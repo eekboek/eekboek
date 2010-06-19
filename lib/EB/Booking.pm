@@ -3,12 +3,11 @@
 use utf8;
 
 # Booking.pm -- Base class for Bookings.
-# RCS Info        : $Id: Booking.pm,v 1.22 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:04:44 2009
-# Update Count    : 141
+# Last Modified On: Sat Jun 19 00:20:48 2010
+# Update Count    : 142
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -20,8 +19,6 @@ package EB::Booking;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

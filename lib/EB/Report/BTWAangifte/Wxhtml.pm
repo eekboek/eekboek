@@ -1,12 +1,11 @@
 #! perl
 
 # Wxhtml.pm -- WxHtml backend for BTW Aangifte
-# RCS Info        : $Id: Wxhtml.pm,v 1.3 2008/04/09 21:02:22 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Mar  6 14:20:53 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 28 17:50:41 2008
-# Update Count    : 11
+# Last Modified On: Sat Jun 19 00:33:22 2010
+# Update Count    : 12
 # Status          : Unknown, Use with caution!
 
 package EB::Report::BTWAangifte::Wxhtml;
@@ -14,8 +13,6 @@ package EB::Report::BTWAangifte::Wxhtml;
 use strict;
 use warnings;
 use base qw(EB::Report::Reporter::WxHtml);
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
 
 sub style {
     my ($self, $row, $cell) = @_;

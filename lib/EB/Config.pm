@@ -3,12 +3,11 @@
 use utf8;
 
 # Config.pm -- Configuration files.
-# RCS Info        : $Id: Config.pm,v 1.33 2010/03/27 15:36:58 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar 27 16:36:56 2010
-# Update Count    : 237
+# Last Modified On: Sat Jun 19 00:50:43 2010
+# Update Count    : 238
 # Status          : Unknown, Use with caution!
 
 package main;

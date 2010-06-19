@@ -7,20 +7,17 @@ our $dbh;
 
 package EB::Report::Proof;
 
-# RCS Id          : $Id: Proof.pm,v 1.19 2008/02/07 13:16:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Feb  7 14:16:46 2008
-# Update Count    : 305
+# Last Modified On: Sat Jun 19 00:39:09 2010
+# Update Count    : 306
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)/g;
 
 ################ The Process ################
 

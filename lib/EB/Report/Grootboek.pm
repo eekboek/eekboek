@@ -7,20 +7,17 @@ our $dbh;
 
 package EB::Report::Grootboek;
 
-# RCS Id          : $Id: Grootboek.pm,v 1.33 2008/03/02 15:04:25 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Mar  2 16:01:44 2008
-# Update Count    : 285
+# Last Modified On: Sat Jun 19 00:37:10 2010
+# Update Count    : 286
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.33 $ =~ /(\d+)/g;
 
 ################ The Process ################
 

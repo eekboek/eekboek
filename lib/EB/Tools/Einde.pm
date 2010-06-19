@@ -3,12 +3,11 @@
 use utf8;
 
 # Einde.pm -- Eindejaarsverwerking
-# RCS Info        : $Id: Einde.pm,v 1.22 2009/11/04 22:24:03 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sun Oct 16 21:27:40 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Nov  4 23:21:55 2009
-# Update Count    : 246
+# Last Modified On: Sat Jun 19 00:42:33 2010
+# Update Count    : 247
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -20,8 +19,6 @@ package EB::Tools::Einde;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

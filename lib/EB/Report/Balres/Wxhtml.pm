@@ -1,12 +1,11 @@
 #! perl
 
 # Wxhtml.pm -- WxHtml backend for Balans/Result reports
-# RCS Info        : $Id: Wxhtml.pm,v 1.3 2008/03/12 14:38:29 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Feb  7 14:20:53 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 12 14:05:46 2008
-# Update Count    : 6
+# Last Modified On: Sat Jun 19 00:34:10 2010
+# Update Count    : 7
 # Status          : Unknown, Use with caution!
 
 package EB::Report::Balres::Wxhtml;
@@ -14,8 +13,6 @@ package EB::Report::Balres::Wxhtml;
 use strict;
 use warnings;
 use base qw(EB::Report::Reporter::WxHtml);
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)/g;
 
 sub style {
     my ($self, $row, $cell) = @_;

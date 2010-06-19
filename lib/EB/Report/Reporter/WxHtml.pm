@@ -1,12 +1,11 @@
 #! perl
 
 # WxHtml.pm -- Reporter backend for WxHtml
-# RCS Info        : $Id: WxHtml.pm,v 1.8 2008/03/16 21:41:53 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Fri Mar  2 21:01:17 2007
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar 13 22:46:52 2008
-# Update Count    : 69
+# Last Modified On: Sat Jun 19 00:39:59 2010
+# Update Count    : 70
 # Status          : Unknown, Use with caution!
 
 # WxHtmlWindow supports HTML, but to a limited extent. In particular,
@@ -23,8 +22,6 @@ package EB::Report::Reporter::WxHtml;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)/g;
 
 use EB;
 

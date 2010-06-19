@@ -1,11 +1,10 @@
 #! perl
 
-# RCS Info        : $Id: Kasverkoop.pm,v 1.1 2009/05/06 18:11:04 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Tue Dec 30 11:56:22 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 30 15:57:06 2008
-# Update Count    : 23
+# Last Modified On: Sat Jun 19 00:48:45 2010
+# Update Count    : 24
 # Status          : Unknown, Use with caution!
 
 # Om deze module te gebruiken dient deze te worden geplaatst in de
@@ -22,8 +21,6 @@ package EB::Shell::Kasverkoop;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.1 $ =~ /(\d+)/g;
 
 use EB;
 

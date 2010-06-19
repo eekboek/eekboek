@@ -1,20 +1,17 @@
 #! perl
 
 # SQLEngine.pm -- Execute SQL commands
-# RCS Info        : $Id: SQLEngine.pm,v 1.11 2010/01/16 23:04:52 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Wed Sep 28 20:45:55 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 17 00:04:32 2010
-# Update Count    : 71
+# Last Modified On: Sat Jun 19 00:47:09 2010
+# Update Count    : 72
 # Status          : Unknown, Use with caution!
 
 package EB::Tools::SQLEngine;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)/g;
 
 use EB;
 

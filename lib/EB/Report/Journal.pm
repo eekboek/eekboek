@@ -1,11 +1,10 @@
 #! perl
 
-# RCS Id          : $Id: Journal.pm,v 1.39 2010/05/29 15:11:09 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat May 29 17:07:38 2010
-# Update Count    : 311
+# Last Modified On: Sat Jun 19 00:37:40 2010
+# Update Count    : 312
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -19,8 +18,6 @@ package EB::Report::Journal;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.39 $ =~ /(\d+)/g;
 
 use EB;
 use EB::Format;

@@ -2,12 +2,11 @@
 
 use utf8;
 
-# RCS Id          : $Id: DB.pm,v 1.63 2009/12/22 21:20:49 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Dec 22 22:20:26 2009
-# Update Count    : 441
+# Last Modified On: Sat Jun 19 00:26:51 2010
+# Update Count    : 442
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -20,8 +19,6 @@ package EB::DB;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.63 $ =~ /(\d+)/g;
 
 use EB;
 use DBI;

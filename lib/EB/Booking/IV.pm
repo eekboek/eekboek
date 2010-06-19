@@ -9,20 +9,17 @@ our $dbh;
 
 package EB::Booking::IV;
 
-# RCS Id          : $Id: IV.pm,v 1.55 2009/10/14 21:14:02 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 14 23:08:11 2009
-# Update Count    : 307
+# Last Modified On: Sat Jun 19 00:26:28 2010
+# Update Count    : 308
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.55 $ =~ /(\d+)/g;
 
 # Dagboek type 1: Inkoop
 # Dagboek type 2: Verkoop

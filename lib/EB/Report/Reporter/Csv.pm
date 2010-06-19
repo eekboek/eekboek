@@ -1,12 +1,11 @@
 #! perl
 
 # Csv.pm -- Reporter backend for CSV reports.
-# RCS Info        : $Id: Csv.pm,v 1.7 2009/01/22 21:30:05 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jan  5 18:47:37 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 22 22:28:51 2009
-# Update Count    : 15
+# Last Modified On: Sat Jun 19 00:39:24 2010
+# Update Count    : 16
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -18,8 +17,6 @@ package EB::Report::Reporter::Csv;
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)/g;
 
 use EB;
 

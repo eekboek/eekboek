@@ -1,4 +1,12 @@
 #!/usr/bin/perl -w
+
+# Expression.pm -- 
+# Author          : Johan Vromans
+# Created On      : Tue Jul 26 13:19:31 2005
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 00:29:48 2010
+# Update Count    : 102
+# Status          : Unknown, Use with caution!
 #
 # NOTICE ---- This is a stripped version of Math::Expression ---- NOTICE
 #
@@ -57,7 +65,7 @@ use vars qw/
 	$Version
 );
 
-our $VERSION = "1.14";
+# our $VERSION = "1.14";
 
 =end stripped
 

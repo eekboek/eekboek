@@ -1,5 +1,12 @@
 #! perl
 
+# Author          : Johan Vromans
+# Created On      : Thu Mar 6 14:36:36 2008
+# Last Modified By: Johan Vromans
+# Last Modified On: Sat Jun 19 00:36:54 2010
+# Update Count    : 12
+# Status          : Unknown, Use with caution!
+
 package EB::Report::Grootboek::Wxhtml;
 
 use strict;

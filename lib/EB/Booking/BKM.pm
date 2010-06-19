@@ -7,20 +7,17 @@ our $dbh;
 
 package EB::Booking::BKM;
 
-# RCS Id	  : $Id: BKM.pm,v 1.72 2009/04/03 10:10:11 jv Exp $
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Apr  3 12:09:00 2009
-# Update Count    : 527
+# Last Modified On: Sat Jun 19 00:25:39 2010
+# Update Count    : 528
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
 
 use strict;
 use warnings;
-
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.72 $ =~ /(\d+)/g;
 
 # Dagboek type 3: Bank
 # Dagboek type 4: Kas
