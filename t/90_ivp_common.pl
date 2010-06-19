@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 14 22:17:16 2010
-# Update Count    : 101
+# Last Modified On: Sat Jun 19 16:46:14 2010
+# Update Count    : 102
 
 use strict;
 use warnings;
@@ -152,8 +152,6 @@ sub report_tests {
     vfy([@ebcmd, qw(-c result --detail=1)], "result1.txt");
     vfy([@ebcmd, qw(-c result --detail=2)], "result2.txt");
     vfy([@ebcmd, qw(-c result --verdicht)], "result2.txt");
-    vfy([@ebcmd, qw(-c result --periode apr)], "result-apr.txt");
-    vfy([@ebcmd, qw(-c result --periode mei)], "result-mei.txt");
 
     # Verify: Journaal.
     vfy([@ebcmd, qw(-c journaal)            ], "journaal.txt");
