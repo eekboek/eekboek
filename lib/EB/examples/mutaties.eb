@@ -1,10 +1,4 @@
-# mutaties.eb -- voorbeeld EekBoek mutatiebestand
-# Author          : Johan Vromans
-# Created On      : Sun Jul 24 15:33:09 2005
-# Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 14 22:13:15 2010
-# Update Count    : 101
-#
+# $Id: mutaties.eb,v 1.14 2009/10/19 09:44:01 jv Exp $
 # Content-Type: text/plain; charset = UTF-8
 
 # Inkopen (Dagboek: Inkoop)
@@ -97,7 +91,7 @@ verkoop 18-03 "Perl Cursus" ACME "Perl Cursus 2e bet."      3,570 8400
 
 verkoop 18-04 "Perl Cursus" ACME "Perl Cursus rest"          600 8400
 
-verkoop 12-05 "Perl Cursus" ACME "Perl Cursus rest"          -5 8400
+verkoop 12-05 "Perl Cursus" ACME "Perl Cursus rest"           -5 8400
 
 verkoop 14-05 "Ondersteuning" ACME "Consultancy"             714
 
