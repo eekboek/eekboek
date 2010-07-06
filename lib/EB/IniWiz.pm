@@ -60,7 +60,10 @@ sub getadm {			# STATIC
 			  @adm_dirs > 1 ? "..".scalar(@adm_dirs) : "",
 			  _T(", of N om een nieuwe administratie aan te maken>"),
 			  ": " );
-	    chomp( my $ans = <STDIN> );
+	    my $ans = <STDIN>;
+	    $ans = '', print STDERR "\n" unless defined $ans;
+	    return unless $ans;
+	    chomp($ans);
 	    return -1 if lc($ans) eq 'n';
 	    next unless $ans =~ /^\d+$/;
 	    next unless $ans && $ans <= @adm_dirs;
@@ -85,10 +88,10 @@ sub run {
 
     my $ret = EB::IniWiz->getadm($opts);
 
-    $ret = EB::IniWiz->runwizard($opts) if $ret < 0;
-
-    $opts->{runeb} = $ret >= 0;
-
+    if ( defined $ret ) {
+	$ret = EB::IniWiz->runwizard($opts) if $ret < 0;
+	$opts->{runeb} = $ret >= 0;
+    }
 }
 
 sub find_db_drivers {
