@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 14 21:50:15 2010
-# Update Count    : 104
+# Last Modified On: Tue Jul  6 23:24:13 2010
+# Update Count    : 105
 # Status          : Unknown, Use with caution!
 
 # Ease the life of the CPAN testers.
@@ -31,7 +31,7 @@ my $x =
 WriteMakefile(
 	      NAME        => $data->{distname},
 	      AUTHOR	  => $data->{author},
-	      ABSTRACT    => $data->{abstract} ) : (),
+	      ABSTRACT    => $data->{abstract},
 	      PL_FILES    => $data->{pl_files},
 	      INSTALLDIRS => $data->{installtype},
 	      DISTNAME    => $data->{distname},
