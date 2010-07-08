@@ -5,7 +5,7 @@
 /OLD/
 /_build/
 /blib/
-/pm_to_blib/
+/pm_to_blib
 /ebcfgwiz/
 /libgui/
 /libgui-old/
@@ -13,6 +13,7 @@
 *.tar.gz
 *.tgz
 *.rpm
+/po/
 /oooicons/
 /wxeb/
 /xml-auditfile/
