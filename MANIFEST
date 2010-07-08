@@ -227,7 +227,11 @@ lib/EB/schema/sample.conf
 lib/EekBoek.pm
 locale/ebwxshell.pot
 locale/ebwxshell-nl.po
-locale/make_locales
+locale/ebshell.pot
+locale/ebshell-en.po
+locale/ebshell-en.pox
+locale/make_locales_en
+locale/make_locales_nl
 relnotes-2.00.html
 script/ebshell
 script/ebwxshell

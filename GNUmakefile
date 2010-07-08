@@ -15,12 +15,24 @@ bootstrap : locales schemas dummies
 # these should be integrated.
 
 LOCALES := nl en
-locales :
+xxlocales :
 	for locale in $(LOCALES); \
 	do \
 	  test -d lib/EB/mo/$$locale || mkdir -p lib/EB/mo/$$locale; \
-	  ( cd locale; sh make_locales_$$locale ); \
+	  ( cd locale; \
+	    sh make_locales_$$locale; \
+	  ); \
 	done
+
+MODIR := lib/EB/mo
+PODIR := locale
+locales :
+	for locale in $(LOCALES); \
+	do \
+	  test -d $(MODIR)/$$locale || mkdir -p $(MODIR)/$$locale; \
+	done
+	msgfmt -c -v -o $(MODIR)/en/ebshell.mo   $(PODIR)/ebshell-en.po
+	msgfmt -c -v -o $(MODIR)/nl/ebwxshell.mo $(PODIR)/ebwxshell-nl.po
 
 # Generate lib/EB/schema/foo.ebz out of lib/EB/examples/foo.dat.
 # Generate lib/EB/schema/sampledb.ebz.
@@ -62,9 +74,10 @@ schemas :
 	rm -fr tmp && mkdir tmp && cd tmp; \
 
 # Dummies are files that are (re)created by running perl Build.PL.
-# However, they are required bythe MANIFEST so there should be
+# However, they are required by the MANIFEST so there should be
 # something there already.
 
 dummies :
 	echo '---' >META.yml
-	echo '#' > EekBoek.spec
+	echo '' > EekBoek.spec
+	echo '' > t/ivp/ref/export.xaf
