@@ -1,5 +1,5 @@
 Name: EekBoek-yum
-Version: 1.0
+Version: 1.01
 Release: 1
 Source: http://www.eekboek.nl/eekboek/dl/%{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -35,15 +35,24 @@ This package contains additional files for EekBoek YUM and RPM.
 
 %{__mkdir_p} ${RPM_BUILD_ROOT}/etc/yum.repos.d
 %{__install} -m 0644 eekboek.repo ${RPM_BUILD_ROOT}/etc/yum.repos.d
+%{__mkdir_p} ${RPM_BUILD_ROOT}/etc/pki/rpm-gpg
+%{__install} -m 0644 RPM-GPG-KEY-EekBoek ${RPM_BUILD_ROOT}/etc/pki/rpm-gpg/
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc README RPM-PGP-KEY-EekBoek
+%doc README 
 /etc/yum.repos.d/eekboek.repo
+/etc/pki/rpm-gpg/RPM-GPG-KEY-EekBoek
 
 %changelog
+* Thu Jul 08 2010 Johan Vromans <jvromans@squirrel.nl> 1.01-1
+- Install PGP key in /etc/pki/rpm-gpg.
+
+* Fri Aug 04 2006 Johan Vromans <jvromans@squirrel.nl> 1.0-1
+- Production.
+
 * Wed Aug 02 2006 Johan Vromans <jvromans@squirrel.nl> 0.92
 - New URL. Add Vendor.
