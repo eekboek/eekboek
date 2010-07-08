@@ -219,7 +219,7 @@ lib/EB/migrate/001000013001000014.sql
 lib/EB/mo/nl/ebwxshell.mo
 lib/EB/schema/eekboek.sql
 lib/EB/schema/eenmanszaak.ebz
-lib/EB/schema/nvbv.ebz
+lib/EB/schema/bvnv.ebz
 lib/EB/schema/ondernemer.ebz
 lib/EB/schema/sampledb.ebz
 lib/EB/schema/vereniging.ebz
