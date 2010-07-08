@@ -4,7 +4,7 @@ APP=ebwxshell
 PODIR=.
 SRCROOT=../
 MODIR=${SRCROOT}lib/EB/mo
-GTF="-j -k -k__x -k_T -kN__ --from-code=iso-8859-1"
+GTF="-LPerl -j -k -k__x -k_T -kN__ --from-code=iso-8859-1"
 
 test -d ${PODIR} || {
      echo "Wrong dir! Cannot find ${PODIR}";
@@ -16,7 +16,7 @@ test -d ${MODIR} || {
 }
 
 cp /dev/null ${PODIR}/${APP}.pot
-xgettext ${GTF} -o ${PODIR}/${APP}.pot ${SRCROOT}script/ebwxshell.pl
+xgettext ${GTF} -o ${PODIR}/${APP}.pot ${SRCROOT}script/ebwxshell
 find ${SRCROOT}lib/EB/Wx/Shell \( -name CVS -prune \) -o \( -name '*.pm' -a -print -exec xgettext ${GTF} -o ${PODIR}/${APP}.pot {} \; \)
 
 for locale in nl
