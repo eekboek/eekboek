@@ -1,0 +1,19 @@
+<SOFTPKG NAME="EekBoek" VERSION="1,2,0,0">
+    <TITLE>EekBoek</TITLE>
+    <ABSTRACT>Elementary Bookkeeping (for the Dutch/European market)</ABSTRACT>
+    <AUTHOR>Johan Vromans (jvromans@squirrel.nl)</AUTHOR>
+    <IMPLEMENTATION>
+        <DEPENDENCY NAME="DBD-SQLite" VERSION="1,13,0,0" />
+        <DEPENDENCY NAME="DBI" VERSION="1,4,0,0" />
+	<OS NAME="MSWin32" />
+	<ARCHITECTURE NAME="MSWin32-x86-multi-thread-5.8" />
+        <CODEBASE HREF="http://www.eekboek.nl/dl/ppms/PPM-EekBoek-0.00.tgz" />
+    </IMPLEMENTATION>
+    <IMPLEMENTATION>
+        <DEPENDENCY NAME="DBD-SQLite" VERSION="1,13,0,0" />
+        <DEPENDENCY NAME="DBI" VERSION="1,4,0,0" />
+	<OS NAME="MSWin32" />
+	<ARCHITECTURE NAME="MSWin32-x86-multi-thread-5.10" />
+        <CODEBASE HREF="http://www.eekboek.nl/dl/ppms/PPM-EekBoek-0.00.tgz" />
+    </IMPLEMENTATION>
+</SOFTPKG>
