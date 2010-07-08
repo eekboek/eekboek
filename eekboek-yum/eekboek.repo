@@ -1,0 +1,7 @@
+[eekboek]
+name=EekBoek Software
+baseurl=http://www.eekboek.nl/fedora/
+enabled=1
+gpgcheck=1
+gpgkey=http://www.eekboek.nl/fedora/RPM-GPG-KEY-EekBoek
+
