@@ -19,7 +19,6 @@
 /xml-auditfile/
 .*
 *~
-/t/ivp/out/
 *.orig
 *.rej
 /EekBoek.spec
@@ -33,3 +32,8 @@
 /META.yml
 /regtest/
 /t/admtest_*
+/t/ivp/*.log
+/t/ivp/*.eb
+/t/ivp/schema.dat
+/t/ivp/out/
+/t/ivp/ebsqlite_sample*
