@@ -11,7 +11,7 @@ Summary: Bookkeeping software for small and medium-size businesses
 License: GPL+ or Artistic
 Group: Applications/Productivity
 Version: [% version %]
-Release: 1%{?dist}
+Release: 2%{?dist}
 Source: http://www.eekboek.nl/dl/%{name}-%{version}.tar.gz
 URL: http://www.eekboek.nl
 BuildRoot: %{_tmppath}/rpm-buildroot-%{name}-%{version}-%{release}
@@ -131,7 +131,7 @@ chmod 0664 MANIFEST
 # Move some files into better places.
 mv blib/lib/EB/examples .
 ( cd examples;
-  %{__mv} ../eekboek-mode.el .;
+  %{__mv} ../emacs/eekboek-mode.el .;
   %{__rm} -f ../blib/lib/EB/schema/sampledb.ebz;
   ( echo "Dataset sampledb.ebz aangemaakt door rpmbuild EekBoek %{version}"
     echo "Omschrijving: EekBoek voorbeeldadministratie" ) |
@@ -237,6 +237,9 @@ done
 %{ebshare}/lib/EB/DB/Postgres.pm
 
 %changelog
+* Fri Jul 09 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.02-2
+- Adjust emacs support files.
+
 * Thu May 06 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.02-1
 - Upgrade to upstream 2.00.02.
 

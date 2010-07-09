@@ -77,8 +77,8 @@ doc/html/setup/schema.html
 doc/html/stdacc.html
 doc/html/yearend.html
 ebwxshell.desktop
-eekboek-mode.el
-eekboek-site-start.el
+emacs/eekboek-mode.el
+emacs/eekboek-site-start.el
 import/daviaccount/README
 import/daviaccount/dvimport.pl
 import/daviaccount/eximut.pl
