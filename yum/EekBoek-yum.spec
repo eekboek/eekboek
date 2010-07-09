@@ -1,5 +1,5 @@
 Name: EekBoek-yum
-Version: 1.01
+Version: 1.05
 Release: 1
 Source: http://www.eekboek.nl/eekboek/dl/%{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -22,10 +22,10 @@ EekBoek is designed for the Dutch/European market and currently
 available in Dutch only. An English translation is in the works (help
 appreciated).
 
-This package contains additional files for EekBoek YUM and RPM.
+This package contains settings data for EekBoek installs via yum.
 
 %prep
-%setup -q -n eekboek-yum
+%setup -q -n %{name}-%{version}
 
 %build
 
@@ -48,8 +48,11 @@ This package contains additional files for EekBoek YUM and RPM.
 /etc/pki/rpm-gpg/RPM-GPG-KEY-EekBoek
 
 %changelog
-* Thu Jul 08 2010 Johan Vromans <jvromans@squirrel.nl> 1.01-1
+* Thu Jul 08 2010 Johan Vromans <jvromans@squirrel.nl> 1.05-1
 - Install PGP key in /etc/pki/rpm-gpg.
+
+* Sat Jul 19 2008 Johan Vromans <jvromans@squirrel.nl> 1.04
+- Add eekboek-testing repo.
 
 * Fri Aug 04 2006 Johan Vromans <jvromans@squirrel.nl> 1.0-1
 - Production.

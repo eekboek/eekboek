@@ -1,0 +1,14 @@
+[eekboek]
+name=EekBoek Software Releases
+baseurl=http://www.eekboek.nl/repo/fedora/
+enabled=1
+gpgcheck=1
+gpgkey=http://www.eekboek.nl/repo/fedora/RPM-GPG-KEY-EekBoek
+
+[eekboek-testing]
+name=EekBoek Software Development Releases
+baseurl=http://www.eekboek.nl/repo/fedora-testing/
+enabled=0
+gpgcheck=1
+gpgkey=http://www.eekboek.nl/repo/fedora/RPM-GPG-KEY-EekBoek
+
