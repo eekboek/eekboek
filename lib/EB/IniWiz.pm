@@ -162,7 +162,7 @@ sub runwizard {
 	push( @db_drivers, $_ );
     }
 
-    my @btw = qw( qw(Maand Kwartaal Jaar) );
+    my @btw = qw( Maand Kwartaal Jaar );
 
     my $answers = {
 		   admname    => "Mijn eerste EekBoek",
