@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Dec  4 17:45:01 2010
-# Update Count    : 781
+# Last Modified On: Sat Dec  4 20:16:44 2010
+# Update Count    : 784
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -782,9 +782,10 @@ $max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct 
 # nummer voor hoofdverdichtingen resp. verdichtingen.
 EOD
 
-    if ( $max_hvd > 9 || $max_vrd > 99 ) {
-	printf {$fh} ("\nVerdichting %d %d\n", $max_hvd, $max_vrd);
-    }
+    printf {$fh} ( "\nVerdichting %d %d\n\n",
+		   ( $max_hvd > 9 || $max_vrd > 99 )
+		  ? ( $max_hvd, $max_vrd )
+		  : ( 9, 99 ) );
 
     print {$fh}  <<EOD;
 # De nummers van de grootboekrekeningen worden geacht groter te zijn

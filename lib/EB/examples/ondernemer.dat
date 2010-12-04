@@ -29,7 +29,7 @@
 # REKENINGSCHEMA
 #
 # Het rekeningschema is hiërarchisch opgezet volgende de beproefde
-# methode Bakker. De hoofdverdichtingen lopen van 1Omzetbelasting t/m 9, de
+# methode Bakker. De hoofdverdichtingen lopen van 1 t/m 9, de
 # verdichtingen t/m 99. De grootboekrekeningen zijn verdeeld in
 # balansrekeningen en resultaatrekeningen.
 #
@@ -42,8 +42,10 @@
 # is:
 #
 #   :btw=nul
-#   
-#   
+#   :btw=hoog
+#   :btw=laag
+#   :btw=privé
+#   :btw=anders
 #
 # Ook is het mogelijk aan te geven dat een rekening een koppeling
 # (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
@@ -55,6 +57,10 @@
 #   btw_il	idem, laag tarief
 #   btw_vh	idem, verkopen, hoog tarief
 #   btw_vl	idem, laag tarief
+#   btw_ph	idem, privé, hoog tarief
+#   btw_pl	idem, laag tarief
+#   btw_ah	idem, anders, hoog tarief
+#   btw_al	idem, laag tarief
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
 #
@@ -458,16 +464,18 @@ Dagboeken
 
 # BTW TARIEVEN
 #
-# Er zijn drie tariefgroepen: "hoog", "laag" en "nul". De tariefgroep
-# bepaalt het rekeningnummer waarop de betreffende boeking plaatsvindt.
+# Er zijn vijf tariefgroepen: "hoog", "laag", "nul", "privé" en
+# "anders". De tariefgroep bepaalt het rekeningnummer waarop de
+# betreffende boeking plaatsvindt.
 # Binnen elke tariefgroep zijn meerdere tarieven mogelijk, hoewel dit
 # in de praktijk niet snel zal voorkomen.
 # In de eerste kolom wordt de (numerieke) code voor dit tarief
 # opgegeven. Deze kan o.m. worden gebruikt om expliciet een BTW tarief
-# op te geven bij het boeken. Voor elk tarief (behalve die van groep
-# "nul") moet het percentage worden opgegeven. Met de aanduiding
-# :exclusief kan worden opgegeven dat boekingen op rekeningen met deze
-# tariefgroep standaard het bedrag exclusief BTW aangeven.
+# op te geven bij het boeken. Voor elk gebruikt tarief (behalve die
+# van groep "nul") moet het percentage worden opgegeven. Met de
+# aanduiding :exclusief kan worden opgegeven dat boekingen op
+# rekeningen met deze tariefgroep standaard het bedrag exclusief BTW
+# aangeven.
 #
 # BELANGRIJK: Mutaties die middels de command line shell of de API
 # worden uitgevoerd maken gebruik van het geassocieerde BTW tarief van
