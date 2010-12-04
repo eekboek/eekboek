@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:46:03 2010
-# Update Count    : 776
+# Last Modified On: Sat Dec  4 17:45:01 2010
+# Update Count    : 781
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -419,13 +419,18 @@ sub load_schema {
 	if ( $scanner ) {
 	    chomp;
 	    $scanner->() or
-	      error(__x("Ongeldige invoer: {line} (regel {lno})",
+	      error(__x("Ongeldige invoer in schema bestand, regel {lno}:\n{line}",
 			line => $_, lno => $.)."\n");
 	    next;
 	}
 
-	error("?"._T("Men beginne met \"Balansrekeningen\", \"Resultaatrekeningen\",".
-		     " \"Dagboeken\" of \"BTW Tarieven\"")."\n");
+	error(__x("Ongeldige invoer in schema bestand, regel {lno}:\n{line}",
+		  line => $_, lno => $.)."\n");
+
+	# This is here for historical reasons.
+	# If you weren't at the THE in 1977 this will mean nothing to you...
+	# error("?"._T("Men beginne met \"Balansrekeningen\", \"Resultaatrekeningen\",".#
+	#	     " \"Dagboeken\" of \"BTW Tarieven\"")."\n");
     }
 
     # Bekijk alle dagboeken om te zien of er inkoop/verkoop dagboeken
@@ -484,7 +489,7 @@ sub load_schema {
 	error(__x("Geen koppeling gevonden voor \"{std}\"", std => $k)."\n");
     }
 
-    die("?"._T("FOUTEN GEVONDEN, VERWERKING AFGEBROKEN")."\n") if $fail;
+    die("?"._T("FOUTEN GEVONDEN IN SCHEMA BESTAND, VERWERKING AFGEBROKEN")."\n") if $fail;
 
     if ( $sql ) {
 	gen_schema();
