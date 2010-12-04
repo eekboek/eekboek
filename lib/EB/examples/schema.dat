@@ -64,6 +64,9 @@
 # van 10 t/m 99. Indien daarvan wordt afgeweken kan dit worden opgegeven
 # met de opdracht "Verdichting". De twee getallen geven het hoogste
 # nummer voor hoofdverdichtingen resp. verdichtingen.
+
+Verdichting 9 99
+
 # De nummers van de grootboekrekeningen worden geacht groter te zijn
 # dan de maximale verdichting. Daarvan kan worden afgeweken door
 # middels voorloopnullen de _lengte_ van het nummer groter te maken
@@ -200,6 +203,9 @@ Resultaatrekeningen
 # type het is. Voor dagboeken van het type Kas en Bank moet een
 # tegenrekening worden opgegeven, voor de overige dagboeken mag een
 # tegenrekening worden opgegeven.
+# De optie :dc kan worden gebruikt om aan te geven dat het journaal
+# voor dit dagboek de boekstuktotalen in gescheiden debet en credit
+# moet tonen.
 
 Dagboeken
 

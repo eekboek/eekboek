@@ -30,6 +30,8 @@
 #   :btw=nul
 #   :btw=hoog
 #   :btw=laag
+#   :btw=privé
+#   :btw=anders
 #
 # Ook is het mogelijk aan te geven dat een rekening een koppeling
 # (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
@@ -41,6 +43,10 @@
 #   btw_il	idem, laag tarief
 #   btw_vh	idem, verkopen, hoog tarief
 #   btw_vl	idem, laag tarief
+#   btw_ph	idem, privé, hoog tarief
+#   btw_pl	idem, laag tarief
+#   btw_ah	idem, anders, hoog tarief
+#   btw_al	idem, laag tarief
 #   btw_ok	rekening voor de betaalde BTW
 #   winst	rekening waarop de winst wordt geboekt
 #
@@ -57,6 +63,9 @@
 # van 10 t/m 99. Indien daarvan wordt afgeweken kan dit worden opgegeven
 # met de opdracht "Verdichting". De twee getallen geven het hoogste
 # nummer voor hoofdverdichtingen resp. verdichtingen.
+
+Verdichting 9 99
+
 # De nummers van de grootboekrekeningen worden geacht groter te zijn
 # dan de maximale verdichting. Daarvan kan worden afgeweken door
 # middels voorloopnullen de _lengte_ van het nummer groter te maken
