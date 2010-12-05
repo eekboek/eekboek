@@ -289,7 +289,11 @@ EOD
 		     post => sub {
 			 my $c = shift;
 			 $queries->[$_]->{skip} = $c == $db_default
+<<<<<<< HEAD
 			   for ( 7 .. 10 );
+=======
+			   for ( 7 .. 9 );
+>>>>>>> 54935585c62d9b7d912d1acf47a88ccf64e86030
 			 return 1;
 		     }
 		   },
@@ -298,11 +302,14 @@ EOD
 		     type => "string",
 		     skip => 1,
 		   },
+<<<<<<< HEAD
 		   { code => "dbport",
 		     prompt => "Database server netwerk poort, indien niet standaard",
 		     type => "int",
 		     skip => 1,
 		   },
+=======
+>>>>>>> 54935585c62d9b7d912d1acf47a88ccf64e86030
 		   { code => "dbuser",
 		     prompt => "Usernaam voor de database",
 		     type => "string",
@@ -429,7 +436,10 @@ EOD
     $opts{db_driver} = $db_drivers[$answers->{dbdriver}];
     unless ( $answers->{dbdriver} == $db_default ) {
 	$opts{db_host} = $answers->{dbhost};
+<<<<<<< HEAD
 	$opts{db_port} = $answers->{dbport};
+=======
+>>>>>>> 54935585c62d9b7d912d1acf47a88ccf64e86030
 	$opts{db_user} = $answers->{dbuser};
 	$opts{db_password} = $answers->{dbpassword};
     }
