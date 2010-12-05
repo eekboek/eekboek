@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Dec  5 21:48:40 2010
-# Update Count    : 105
+# Last Modified On: Sun Dec  5 21:50:10 2010
+# Update Count    : 106
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -141,18 +141,18 @@ sub generate_config {
 
     return if exists $opts->{create_config} && !$opts->{create_config};
 
+    my $fmt = "%-10.10s = %s\n";
+
     $self->generate_file
       ( $cfg->std_config, undef, $opts,
 	sub {
 	    my ( $self, $fd ) = @_;
-	    print { $fd }
-	      ( "[database]\n",
-		"name   = ", $opts->{db_naam},   "\n",
-		"driver = ", $opts->{db_driver}, "\n",
-	      );
-	    print { $fd }
-	      ( "path   = ", $opts->{db_path}, "\n",
-	      ) if $opts->{db_path};
+	    print { $fd } ("[database]\n");
+	    printf { $fd } ( $fmt, "name", $opts->{db_naam} );
+	    foreach ( qw( driver host user password path ) ) {
+		next unless defined $opts->{"db_$_"};
+		printf { $fd } ( $fmt, $_, $opts->{"db_$_"} )
+	    }
 	  }
       );
 }

@@ -174,6 +174,13 @@ sub runwizard {
 		   dbcreate   => 1,
 		  };
 
+    $answers->{dbhost}     = $ENV{EB_DB_HOST}
+      if defined($ENV{EB_DB_HOST});
+    $answers->{dbuser}     = $ENV{EB_DB_USER}
+      if defined($ENV{EB_DB_USER});
+    $answers->{dbpassword} = $ENV{EB_DB_PASSWORD}
+      if defined($ENV{EB_DB_PASSWORD});
+
     my $queries;
     $queries    = [
 		   { code => "admname",
@@ -391,6 +398,9 @@ EOD
 
     $opts{db_naam} = $answers->{admcode};
     $opts{db_driver} = $db_drivers[$answers->{dbdriver}];
+    $opts{db_host} = $answers->{dbhost};
+    $opts{db_user} = $answers->{dbuser};
+    $opts{db_password} = $answers->{dbpassword};
     $opts{"has_$_"} = 1
 	foreach qw(debiteuren crediteuren kas bank);
     $opts{has_btw} = $answers->{admbtw};
