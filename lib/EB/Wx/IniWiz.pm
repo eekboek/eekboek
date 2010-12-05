@@ -82,8 +82,14 @@ sub new {
 	$self->{cb_bank} = Wx::CheckBox->new($self->{wiz_p03}, -1, _T("Bank"), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_1} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database naam"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_db_name} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{label_2} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database type"), wxDefaultPosition, wxDefaultSize, );
+	$self->{label_db_type} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database type"), wxDefaultPosition, wxDefaultSize, );
 	$self->{ch_db_driver} = Wx::Choice->new($self->{wiz_p04}, -1, wxDefaultPosition, wxDefaultSize, [_T("PostgreSQL"), _T("SQLite")], );
+	$self->{label_db_host} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Server host"), wxDefaultPosition, wxDefaultSize, );
+	$self->{t_db_host} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{label_db_user} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Database user"), wxDefaultPosition, wxDefaultSize, );
+	$self->{t_db_user} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, );
+	$self->{label_db_password} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Password"), wxDefaultPosition, wxDefaultSize, );
+	$self->{t_db_password} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
 	$self->{label_5} = Wx::StaticText->new($self->{wiz_p05}, -1, _T("Druk op 'Voltooien' om de volgende bestanden aan te maken:"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_config} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Configuratiebestand"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_schema} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Rekeningschema"), wxDefaultPosition, wxDefaultSize, );
@@ -167,6 +173,7 @@ sub new {
 	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_name}->GetId, \&OnSelectAdmName );
 	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_code}->GetId, \&OnSelectAdmCode );
 	Wx::Event::EVT_SPINCTRL($self->{wiz}, $self->{sp_adm_begin}->GetId, \&OnSelectAdmName );
+	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_db_driver}->GetId, \&OnSelectDbDriver );
 
 
 	$self->{wiz}->SetPageSize([600,-1]);
@@ -259,6 +266,15 @@ sub __set_properties {
 	$self->{t_db_name}->SetToolTipString(_T("De naam van de aan te maken database, b.v. \"admin2009\"."));
 	$self->{ch_db_driver}->SetToolTipString(_T("Het databasesysteem waar de database wordt opgeslagen"));
 	$self->{ch_db_driver}->SetSelection(1);
+	$self->{label_db_host}->Enable(0);
+	$self->{t_db_host}->SetToolTipString(_T("Het systeem waarop de database server draait, indien niet lokaal."));
+	$self->{t_db_host}->Enable(0);
+	$self->{label_db_user}->Enable(0);
+	$self->{t_db_user}->SetToolTipString(_T("De user naam voor de database server."));
+	$self->{t_db_user}->Enable(0);
+	$self->{label_db_password}->Enable(0);
+	$self->{t_db_password}->SetToolTipString(_T("Het password van deze user."));
+	$self->{t_db_password}->Enable(0);
 	$self->{wiz_p04}->Show(0);
 	$self->{cb_cr_config}->SetValue(1);
 	$self->{cb_cr_schema}->SetToolTipString(_T("Rekeningschema, dagboeken, BTW instellingen"));
@@ -285,6 +301,10 @@ sub __set_properties {
 
 	$self->{t_db_name}->SetValue(sprintf("adm%04d",
 					     1900+(localtime(time))[5]));
+
+	$self->{t_db_host}->SetValue( $ENV{EB_DB_HOST} || "" );
+	$self->{t_db_user}->SetValue( $ENV{EB_DB_USER} || "" );
+	$self->{t_db_password}->SetValue( $ENV{EB_DB_PASSWORD} || "" );
 }
 
 sub __do_layout {
@@ -299,7 +319,7 @@ sub __do_layout {
 	$self->{grid_sizer_5} = Wx::FlexGridSizer->new(6, 1, 5, 5);
 	$self->{sizer_16} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_4}= Wx::StaticBoxSizer->new($self->{sizer_4_staticbox}, wxVERTICAL);
-	$self->{grid_db} = Wx::FlexGridSizer->new(3, 2, 5, 5);
+	$self->{grid_db} = Wx::FlexGridSizer->new(5, 2, 5, 5);
 	$self->{sizer_15} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_6}= Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
 	$self->{grid_sizer_3} = Wx::FlexGridSizer->new(4, 1, 5, 5);
@@ -359,8 +379,14 @@ sub __do_layout {
 	$self->{sz_main}->Add($self->{wiz_p03}, 0, wxEXPAND, 0);
 	$self->{grid_db}->Add($self->{label_1}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->Add($self->{t_db_name}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{grid_db}->Add($self->{label_2}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{label_db_type}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->Add($self->{ch_db_driver}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{label_db_host}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{t_db_host}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{label_db_user}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{t_db_user}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{label_db_password}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{t_db_password}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->AddGrowableCol(1);
 	$self->{sizer_4}->Add($self->{grid_db}, 1, wxALL|wxEXPAND, 5);
 	$self->{sizer_16}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
@@ -513,6 +539,12 @@ sub OnWizardFinished {
 
     $opts{db_naam} = $self->{t_db_name}->GetValue;
     $opts{db_driver} = $db_drivers[$self->{ch_db_driver}->GetSelection];
+    $opts{db_host} = $self->{t_db_host}->GetValue
+      if $self->{t_db_host}->IsEnabled;
+    $opts{db_user} = $self->{t_db_user}->GetValue
+      if $self->{t_db_user}->IsEnabled;
+    $opts{db_password} = $self->{t_db_password}->GetValue
+      if $self->{t_db_password}->IsEnabled;
     #$opts{db_path} = $self->{dc_dbpath}->GetPath
     #  if $self->{dc_dbpath}->IsEnabled
     #	&& $self->{dc_dbpath}->GetPath !~ /^--/;
@@ -633,6 +665,25 @@ sub find_db_drivers {
 	}
     }
     \%drivers;
+}
+
+
+sub OnSelectDbDriver {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OnSelectDbDriver <event_handler>
+
+    $self = $self->GetParent;
+    my $sel = $self->{ch_db_driver}->GetSelection;
+    my $is_default = $db_drivers[$sel] eq 'sqlite';
+warn("sel db $sel $db_drivers[$sel]");
+    for ( qw( label_db_host t_db_host
+	      label_db_user t_db_user
+	      label_db_password t_db_password ) ) {
+	$self->{$_}->Enable( !$is_default );
+	$_[0]->Layout;
+	$self->Layout;
+    }
+# end wxGlade
 }
 
 # end of class EB::Wx::IniWiz

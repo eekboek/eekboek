@@ -161,6 +161,7 @@ sub runwizard {
     foreach ( sort keys %$drivers ) {
 	push( @db_drivers, $_ );
     }
+    my $db_default = findchoice( "sqlite", \@db_drivers );
 
     my @btw = qw( Maand Kwartaal Jaar );
 
@@ -170,7 +171,7 @@ sub runwizard {
 		   admbtw     => 1,
 		   btwperiod  => findchoice( "kwartaal", \@btw ),
 		   template   => findchoice( "eekboek voorbeeldadministratie", \@ebz_desc ),
-		   dbdriver   => findchoice( "sqlite", \@db_drivers ),
+		   dbdriver   => $db_default,
 		   dbcreate   => 1,
 		  };
 
@@ -283,6 +284,27 @@ EOD
 		     type => "choice",
 		     prompt => "Database",
 		     choices => \@db_drivers,
+		     post => sub {
+			 my $c = shift;
+			 $queries->[$_]->{skip} = $c == $db_default
+			   for ( 7 .. 9 );
+			 return 1;
+		     }
+		   },
+		   { code => "dbhost",
+		     prompt => "Database server host, indien niet lokaal",
+		     type => "string",
+		     skip => 1,
+		   },
+		   { code => "dbuser",
+		     prompt => "Usernaam voor de database",
+		     type => "string",
+		     skip => 1,
+		   },
+		   { code => "dbpassword",
+		     prompt => "Password voor de database user",
+		     type => "string",
+		     skip => 1,
 		   },
 		   { code => "dbcreate",
 		     text => <<EOD,
@@ -398,9 +420,11 @@ EOD
 
     $opts{db_naam} = $answers->{admcode};
     $opts{db_driver} = $db_drivers[$answers->{dbdriver}];
-    $opts{db_host} = $answers->{dbhost};
-    $opts{db_user} = $answers->{dbuser};
-    $opts{db_password} = $answers->{dbpassword};
+    unless ( $answers->{dbdriver} == $db_default ) {
+	$opts{db_host} = $answers->{dbhost};
+	$opts{db_user} = $answers->{dbuser};
+	$opts{db_password} = $answers->{dbpassword};
+    }
     $opts{"has_$_"} = 1
 	foreach qw(debiteuren crediteuren kas bank);
     $opts{has_btw} = $answers->{admbtw};
