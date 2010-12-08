@@ -32,6 +32,8 @@ my @adm_names;
 
 my $runeb;
 
+my $default = _T("--standaard--");
+
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
 	$parent = undef              unless defined $parent;
@@ -307,9 +309,9 @@ sub __set_properties {
 	$self->{t_db_name}->SetValue(sprintf("adm%04d",
 					     1900+(localtime(time))[5]));
 
-	$self->{t_db_host}->SetValue( $ENV{EB_DB_HOST} || "" );
-	$self->{t_db_port}->SetValue( $ENV{EB_DB_PORT} || "" );
-	$self->{t_db_user}->SetValue( $ENV{EB_DB_USER} || "" );
+	$self->{t_db_host}->SetValue( $ENV{EB_DB_HOST} || $default );
+	$self->{t_db_port}->SetValue( $ENV{EB_DB_PORT} || $default );
+	$self->{t_db_user}->SetValue( $ENV{EB_DB_USER} || $default );
 	$self->{t_db_password}->SetValue( $ENV{EB_DB_PASSWORD} || "" );
 }
 
@@ -548,13 +550,21 @@ sub OnWizardFinished {
     $opts{db_naam} = $self->{t_db_name}->GetValue;
     $opts{db_driver} = $db_drivers[$self->{ch_db_driver}->GetSelection];
     $opts{db_host} = $self->{t_db_host}->GetValue
-      if $self->{t_db_host}->IsEnabled;
+      if $self->{t_db_host}->IsEnabled
+	&& $self->{t_db_host}->GetValue
+	  && $self->{t_db_host}->GetValue ne $default;
     $opts{db_port} = $self->{t_db_port}->GetValue
-      if $self->{t_db_port}->IsEnabled;
+      if $self->{t_db_port}->IsEnabled
+	&& $self->{t_db_port}->GetValue
+	  && $self->{t_db_port}->GetValue ne $default;
     $opts{db_user} = $self->{t_db_user}->GetValue
-      if $self->{t_db_user}->IsEnabled;
+      if $self->{t_db_user}->IsEnabled
+	&& $self->{t_db_user}->GetValue
+	  && $self->{t_db_user}->GetValue ne $default;
     $opts{db_password} = $self->{t_db_password}->GetValue
-      if $self->{t_db_password}->IsEnabled;
+      if $self->{t_db_password}->IsEnabled
+	&& $self->{t_db_password}->GetValue
+	  && $self->{t_db_password}->GetValue ne "";
     #$opts{db_path} = $self->{dc_dbpath}->GetPath
     #  if $self->{dc_dbpath}->IsEnabled
     #	&& $self->{dc_dbpath}->GetPath !~ /^--/;

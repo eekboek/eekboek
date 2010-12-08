@@ -22,6 +22,7 @@ use Encode;
 my @adm_dirs;
 my @adm_names;
 my $runeb;
+my $default = _T("--standaard--");
 
 sub getadm {			# STATIC
     my ( $pkg, $opts ) = @_;
@@ -175,14 +176,10 @@ sub runwizard {
 		   dbcreate   => 1,
 		  };
 
-    $answers->{dbhost}     = $ENV{EB_DB_HOST}
-      if defined($ENV{EB_DB_HOST});
-    $answers->{dbport}     = $ENV{EB_DB_PORT}
-      if defined($ENV{EB_DB_PORT});
-    $answers->{dbuser}     = $ENV{EB_DB_USER}
-      if defined($ENV{EB_DB_USER});
-    $answers->{dbpassword} = $ENV{EB_DB_PASSWORD}
-      if defined($ENV{EB_DB_PASSWORD});
+    $answers->{dbhost}     = $ENV{EB_DB_HOST} || $default;
+    $answers->{dbport}     = $ENV{EB_DB_PORT} || $default;
+    $answers->{dbuser}     = $ENV{EB_DB_USER} || $default;
+    $answers->{dbpassword} = $ENV{EB_DB_PASSWORD} || "";
 
     my $queries;
     $queries    = [
@@ -289,11 +286,7 @@ EOD
 		     post => sub {
 			 my $c = shift;
 			 $queries->[$_]->{skip} = $c == $db_default
-<<<<<<< HEAD
 			   for ( 7 .. 10 );
-=======
-			   for ( 7 .. 9 );
->>>>>>> 54935585c62d9b7d912d1acf47a88ccf64e86030
 			 return 1;
 		     }
 		   },
@@ -302,14 +295,11 @@ EOD
 		     type => "string",
 		     skip => 1,
 		   },
-<<<<<<< HEAD
 		   { code => "dbport",
 		     prompt => "Database server netwerk poort, indien niet standaard",
 		     type => "int",
 		     skip => 1,
 		   },
-=======
->>>>>>> 54935585c62d9b7d912d1acf47a88ccf64e86030
 		   { code => "dbuser",
 		     prompt => "Usernaam voor de database",
 		     type => "string",
@@ -435,13 +425,14 @@ EOD
     $opts{db_naam} = $answers->{admcode};
     $opts{db_driver} = $db_drivers[$answers->{dbdriver}];
     unless ( $answers->{dbdriver} == $db_default ) {
-	$opts{db_host} = $answers->{dbhost};
-<<<<<<< HEAD
-	$opts{db_port} = $answers->{dbport};
-=======
->>>>>>> 54935585c62d9b7d912d1acf47a88ccf64e86030
-	$opts{db_user} = $answers->{dbuser};
-	$opts{db_password} = $answers->{dbpassword};
+	$opts{db_host} = $answers->{dbhost}
+	  if $answers->{dbhost} && $answers->{dbhost} ne $default;
+	$opts{db_port} = $answers->{dbport}
+	  if $answers->{dbport} && $answers->{dbport} ne $default;
+	$opts{db_user} = $answers->{dbuser}
+	  if $answers->{dbuser} && $answers->{dbuser} ne $default;
+	$opts{db_password} = $answers->{dbpassword}
+	  if $answers->{dbpassword} && $answers->{dbpassword} ne "";
     }
     $opts{"has_$_"} = 1
 	foreach qw(debiteuren crediteuren kas bank);
