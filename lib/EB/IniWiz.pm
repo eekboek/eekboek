@@ -21,7 +21,6 @@ use Encode;
 
 my @adm_dirs;
 my @adm_names;
-my $runeb;
 my $default = _T("--standaard--");
 
 sub getadm {			# STATIC
@@ -80,12 +79,10 @@ sub getadm {			# STATIC
 sub run {
     my ( $self, $opts ) = @_;
     my $admdir = $opts->{admdir} || $cfg->val(qw(general admdir), $cfg->user_dir("admdir"));
-    $runeb = 1;
     $admdir =~ s/\$([A-Z_]+)/$ENV{$1}/ge;
     mkdir($admdir) unless -d $admdir;
     die("No admdir $admdir: $!") unless -d $admdir;
     $opts->{admdir} = $admdir;
-    $runeb = 0;
 
     my $ret = EB::IniWiz->getadm($opts);
 
@@ -103,7 +100,7 @@ sub find_db_drivers {
 	foreach my $drv ( glob("$lib/EB/DB/*.pm") ) {
 	    open( my $fd, "<", $drv ) or next;
 	    while ( <$fd> ) {
-		if ( /sub\s+type\s*{\s*"([^"]+)"\s*;?\s*}/ ) {
+		if ( /sub\s+type\s*{\s*\"([^\"]+)\"\s*;?\s*}/ ) {
 		    my $s = $1;
 		    my $t = substr($drv,length("$lib/EB/DB/"));
 		    $t =~ s/\.pm$//;
@@ -180,6 +177,10 @@ sub runwizard {
     $answers->{dbport}     = $ENV{EB_DB_PORT} || $default;
     $answers->{dbuser}     = $ENV{EB_DB_USER} || $default;
     $answers->{dbpassword} = $ENV{EB_DB_PASSWORD} || "";
+
+    $answers->{dbcr_config}   = 1;
+    $answers->{dbcr_admin}    = 1;
+    $answers->{dbcr_database} = 1;
 
     my $queries;
     $queries    = [
@@ -310,10 +311,20 @@ EOD
 		     type => "string",
 		     skip => 1,
 		   },
+		   { code => "dbcr_config",
+		     prompt => "Moet het configuratiebestand worden aangemaakt",
+		     type => "bool",
+		   },
+		   { code => "dbcr_admin",
+		     prompt => "Moeten de administratiebestanden worden aangemaakt",
+		     type => "bool",
+		   },
+		   { code => "dbcr_database",
+		     prompt => "Moet de database worden aangemaakt",
+		     type => "bool",
+		   },
 		   { code => "dbcreate",
-		     text => <<EOD,
-Gereed om de administratieve bestanden en de database aan te maken.
-EOD
+		     text => "Gereed om de bestanden aan te maken.",
 		     prompt => "Doorgaan",
 		     type => "bool",
 		   },
@@ -438,8 +449,10 @@ EOD
 	foreach qw(debiteuren crediteuren kas bank);
     $opts{has_btw} = $answers->{admbtw};
 
-    $opts{"create_$_"} = 1
-	foreach qw(config schema relaties opening mutaties database);
+    $opts{"create_$_"} = $answers->{dbcr_admin}
+	foreach qw(schema relaties opening mutaties);
+    $opts{"create_$_"} = $answers->{"dbcr_$_"}
+	foreach qw(config database);
 
     $opts{adm_btwperiode} = @btw[ $answers->{btwperiod} ]
 	if $opts{has_btw};
@@ -455,8 +468,13 @@ EOD
 
 # warn Dumper \%opts;
 
-    foreach my $c ( qw(config schema relaties opening mutaties database) ) {
+    my @req = qw(config schema relaties opening mutaties database);
+    my $req = @req;
+
+    foreach my $c ( @req ) {
 	if ( $c eq "database" ) {
+	    next unless $opts{create_database};
+	    $req--;
 	    my $ret;
 	    if ( 0 ) {
 		my @cmd = ( $^X, "-S", "ebshell", "--init" );
@@ -475,12 +493,19 @@ EOD
 
 	}
 	else {
+	    $req--;
 	    my $m = "generate_". $c;
 	    EB::Tools::MiniAdm->$m(\%opts);
 	}
     }
 
-    print STDERR ("\n", _T("De administratie is aangemaakt."),
+    if ( $req ) {
+	print STDERR ("\n", _T("De gewenste bestanden zijn aangemaakt."),
+		      "\n\n");
+	return -1;
+    }
+
+    print STDERR ("\n", _T("De gewenste bestanden zijn aangemaakt."),
 		  " ", _T("U kunt meteen aan de slag.")."\n\n");
 
     return 0;
