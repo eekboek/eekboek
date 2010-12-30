@@ -25,6 +25,7 @@ use Wx qw[:everything];
 use base qw(Wx::Frame);
 use EB;
 use File::Basename;
+use File::Glob qw(:glob);	# glob that allows space (for Windows);
 
 my @db_drivers;
 my @adm_dirs;
