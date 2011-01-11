@@ -48,7 +48,8 @@ schemas :
 	name=bvnv; \
 	cp ../lib/EB/examples/$$name.dat schema.dat; \
 	( echo "Dataset $$name.ebz aangemaakt door bootstrap"; \
-	  echo "Omschrijving: BV / NV" ) | \
+	  echo "Omschrijving: BV / NV"; \
+	  echo "Flags: -btw" ) | \
 	zip -qz ../lib/EB/schema/$$name.ebz *
 	rm -fr tmp && mkdir tmp && cd tmp; \
 	name=eenmanszaak; \

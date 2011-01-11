@@ -131,15 +131,18 @@ sub runwizard {
 
     my $year = 1900 + (localtime(time))[5];
 
-    my @ebz = glob( libfile("schema/*.ebz") );
+    my @ebz = map { [ $_, "" ] } glob( libfile("schema/*.ebz") );
     my @ebz_desc = ( "Lege administratie" );
 
     my $i = 0;
     foreach my $ebz ( @ebz ) {
 	require Archive::Zip;
 	my $zip = Archive::Zip->new();
-	next unless $zip->read($ebz) == 0;
+	next unless $zip->read($ebz->[0]) == 0;
 	my $desc = $zip->zipfileComment;
+	if ( $desc =~ /flags:\s*(.*)/i ) {
+	    $ebz->[1] = $1;
+	}
 	if ( $desc =~ /omschrijving:\s+(.*)/i ) {
 	    $desc = $1;
 	}
@@ -147,7 +150,7 @@ sub runwizard {
 	    $desc = $1;
 	}
 	else {
-	    $desc = $1 if $ebz =~ m/([^\\\/]+)\.ebz$/i;
+	    $desc = $1 if $ebz->[0] =~ m/([^\\\/]+)\.ebz$/i;
 	}
 	push( @ebz_desc, $desc);
 	$i++;
@@ -258,8 +261,20 @@ EOD
 		     choices => \@ebz_desc,
 		     post => sub {
 			 my $c = shift;
-			 $queries->[4]->{skip} = $c != 0;
-			 $queries->[5]->{skip} = $c != 0;
+			 if ( $c == 0 ) {
+			     $queries->[4]->{skip} = 0;
+			     $queries->[5]->{skip} = 0;
+			 }
+			 elsif ( $ebz[$c]->[1] =~ /\B-btw\b/i ) {
+			     $answers->{admbtw} = 0;
+			     $queries->[4]->{skip} = 1;
+			     $queries->[5]->{skip} = 1;
+			 }
+			 else {
+			     $answers->{admbtw} = 1;
+			     $queries->[4]->{skip} = 1;
+			     $queries->[5]->{skip} = 0;
+			 }
 			 return 1;
 		     },
 		   },
@@ -458,7 +473,7 @@ EOD
     $opts{adm_btwperiode} = @btw[ $answers->{btwperiod} ]
 	if $opts{has_btw};
 
-    $opts{template} = @ebz[ $answers->{template} ];
+    $opts{template} = $ebz[ $answers->{template} ]->[0];
 
     if ( $opts{adm_code} ) {
 	mkdir($opts{adm_code}) unless -d $opts{adm_code};

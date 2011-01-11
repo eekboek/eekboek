@@ -15,7 +15,7 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 our $app;
 our $cfg;
 
-our @ebz;
+our @ebz;			# ( [ "filename.ebz", "flags" ], [...], ... )
 
 my @configs = ( qw( schema.dat mutaties.eb relaties.eb opening.eb ) );
 
@@ -124,14 +124,17 @@ sub new {
 	    $prev = $page;
 	}
 
-	@ebz = glob( libfile("schema/*.ebz") );
+	@ebz = map { [$_, "" ] } glob( libfile("schema/*.ebz") );
 
 	my $i = 0;
 	foreach my $ebz ( @ebz ) {
 	    require Archive::Zip;
 	    my $zip = Archive::Zip->new();
-	    next unless $zip->read($ebz) == ::AZ_OK;
+	    next unless $zip->read($ebz->[0]) == ::AZ_OK;
 	    my $desc = $zip->zipfileComment;
+	    if ( $desc =~ /flags:\s*(.*)/i ) {
+		$ebz->[1] = $1;
+	    }
 	    if ( $desc =~ /omschrijving:\s+(.*)/i ) {
 		$desc = $1;
 	    }
@@ -139,11 +142,11 @@ sub new {
 		$desc = $1;
 	    }
 	    else {
-		$desc = $1 if $ebz =~ m/([^\\\/]+)\.ebz$/i;
+		$desc = $1 if $ebz->[0] =~ m/([^\\\/]+)\.ebz$/i;
 	    }
 	    $self->{ch_template}->Append($desc);
 	    $i++;
-	    if ( $ebz =~ /\/sample(db)?\.ebz$/ ) {
+	    if ( $ebz->[0] =~ /\/sample(db)?\.ebz$/ ) {
 		$self->{ch_template}->SetSelection($i);
 		OnSelectTemplate( $self->{wiz} );
 	    }
@@ -478,14 +481,25 @@ sub OnSelectTemplate {
 
     my $x = $self->{ch_template}->GetSelection;
     if ( $x ) {
-	$self->{cb_btw}->SetValue(1);
-	$self->{cb_btw}->Enable(0);
-	$self->{ch_btw_period}->Enable(1);
-	$self->{l_btw_period}->Enable(1);
-	Wx::WizardPageSimple::Chain( $self->{wiz_p02}, $self->{wiz_p04} );
+	if ( $ebz[$x]->[1] =~ /\B-btw\b/i ) {
+	    $self->{cb_btw}->SetValue(0);
+	    $self->{cb_btw}->Enable(0);
+	    $self->{ch_btw_period}->Enable(0);
+	    $self->{l_btw_period}->Enable(0);
+	    Wx::WizardPageSimple::Chain( $self->{wiz_p01}, $self->{wiz_p04} );
+	}
+	else {
+	    $self->{cb_btw}->SetValue(1);
+	    $self->{cb_btw}->Enable(0);
+	    $self->{ch_btw_period}->Enable(1);
+	    $self->{l_btw_period}->Enable(1);
+	    Wx::WizardPageSimple::Chain( $self->{wiz_p01}, $self->{wiz_p02} );
+	    Wx::WizardPageSimple::Chain( $self->{wiz_p02}, $self->{wiz_p04} );
+	}
     }
     else {
 	$self->{cb_btw}->Enable(1);
+	Wx::WizardPageSimple::Chain( $self->{wiz_p01}, $self->{wiz_p02} );
 	Wx::WizardPageSimple::Chain( $self->{wiz_p02}, $self->{wiz_p03} );
     }
 
@@ -578,7 +592,7 @@ sub OnWizardFinished {
     $opts{adm_btwperiode} = qw(maand kwartaal jaar)[$self->{ch_btw_period}->GetSelection]
 	if $opts{has_btw};
 
-    $opts{template} = @ebz[ $self->{ch_template}->GetSelection ];
+    $opts{template} = $ebz[ $self->{ch_template}->GetSelection ]->[0];
 
     if ( $opts{adm_code} ) {
 	mkdir($opts{adm_code}) unless -d $opts{adm_code};
