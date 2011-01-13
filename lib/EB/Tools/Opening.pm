@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:42:53 2010
-# Update Count    : 297
+# Last Modified On: Thu Jan 13 14:41:43 2011
+# Update Count    : 298
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -313,13 +313,13 @@ sub open {
 			 rcrd => numfmt(-$rcredit)).
 		     ($rdebet == -$rcredit
 		      ? __x(" (balanstotaal {total})", total => numfmt($o->{balanstotaal} - $rdebet))
-		      : ())."\n");
+		      : '')."\n");
 		warn(__x("Boekhoudkundig residu debet = {rdeb}, credit = {rcrd}",
 			 rdeb => numfmt($bdebet),
 			 rcrd => numfmt(-$bcredit)).
 		     ($bdebet == -$bcredit
 		      ? __x(" (balanstotaal {total})", total => numfmt($o->{balanstotaal} - $bdebet))
-		      : ())."\n");
+		      : '')."\n");
 	    }
 
 	    # Helpful hints...
