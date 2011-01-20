@@ -28,7 +28,8 @@ sub new {
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{label_1} = Wx::StaticText->new($self, -1, _T("Beschikbare administraties"), wxDefaultPosition, wxDefaultSize, );
 	$self->{lb_adm} = Wx::ListBox->new($self, -1, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
-	$self->{b_new} = Wx::Button->new($self, -1, _T("New / Other..."));
+	$self->{b_new} = Wx::Button->new($self, wxID_NEW, "");
+	$self->{b_server} = Wx::Button->new($self, -1, _T("Server"));
 	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 	$self->{b_accept} = Wx::Button->new($self, wxID_OK, "");
 
@@ -36,7 +37,8 @@ sub new {
 	$self->__do_layout();
 
 	Wx::Event::EVT_LISTBOX_DCLICK($self, $self->{lb_adm}->GetId, \&OnSelectAndGo);
-	Wx::Event::EVT_BUTTON($self, $self->{b_new}->GetId, \&OnCreate);
+	Wx::Event::EVT_BUTTON($self, $self->{b_new}->GetId, \&OnNew);
+	Wx::Event::EVT_BUTTON($self, $self->{b_server}->GetId, \&OnServer);
 	Wx::Event::EVT_BUTTON($self, $self->{b_cancel}->GetId, \&OnCancel);
 	Wx::Event::EVT_BUTTON($self, $self->{b_accept}->GetId, \&OnOpen);
 
@@ -51,7 +53,9 @@ sub init {
 
     $self->{lb_adm}->Append($dirs);
     $self->{lb_adm}->SetSelection(0);
+    $self->{lb_adm}->SetFocus;
     $self->{b_accept}->SetFocus if @$dirs == 1;
+    $self->{b_new}->SetFocus if @$dirs == 0;
 }
 
 sub GetSelection {
@@ -60,12 +64,12 @@ sub GetSelection {
 }
 
 sub __set_properties {
-	my $self = shift;
+    my $self = shift;
 
 # begin wxGlade: EB::Wx::IniWiz::OpenDialog::__set_properties
 
 	$self->SetTitle(_T("Administratiekeuze"));
-	$self->SetSize(Wx::Size->new(440, 240));
+	$self->SetSize(Wx::Size->new(500, 240));
 	$self->{lb_adm}->SetSelection(0);
 
 # end wxGlade
@@ -84,6 +88,7 @@ sub __do_layout {
 	$self->{sizer_2}->Add(5, 5, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add(5, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add($self->{b_new}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sizer_3}->Add($self->{b_server}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{b_cancel}, 0, wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{b_accept}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_2}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
@@ -94,38 +99,48 @@ sub __do_layout {
 # end wxGlade
 }
 
-sub OnCreate {
-	my ($self, $event) = @_;
-# wxGlade: EB::Wx::IniWiz::OpenDialog::OnCreate <event_handler>
+sub OnNew {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OpenDialog::OnNew <event_handler>
 
-	$self->EndModal( wxID_NEW );
+    $self->EndModal( wxID_NEW );
 
 # end wxGlade
 }
 
 sub OnCancel {
-	my ($self, $event) = @_;
+    my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OpenDialog::OnCancel <event_handler>
 
-	$self->EndModal( wxID_CANCEL );
+    $self->EndModal( wxID_CANCEL );
 
 # end wxGlade
 }
 
 sub OnOpen {
-	my ($self, $event) = @_;
+    my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OpenDialog::OnOpen <event_handler>
 
-	$self->EndModal( wxID_OK );
+    $self->EndModal( wxID_OK );
 
 # end wxGlade
 }
 
 sub OnSelectAndGo {
-	my ($self, $event) = @_;
+    my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OpenDialog::OnSelectAndGo <event_handler>
 
-	$self->EndModal( wxID_OK );
+    $self->EndModal( wxID_OK );
+
+# end wxGlade
+}
+
+
+sub OnServer {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OpenDialog::OnServer <event_handler>
+
+    $self->EndModal( wxID_OPEN );
 
 # end wxGlade
 }

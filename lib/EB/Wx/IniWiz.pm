@@ -439,6 +439,12 @@ sub __do_layout {
 # end wxGlade
 }
 
+sub preselect {
+    my ( $self, $sel ) = @_;
+    $self->{rb_select}->SetSelection($sel);
+    OnSelectFunction( $self->{wiz} );
+}
+
 sub OnSelectFunction {
     my ( $self, $event ) = @_;
     $self = $self->GetParent;
@@ -894,10 +900,13 @@ sub run {
     if ( $ret == wxID_CANCEL ) {
 	$runeb = 0;
     }
-    elsif ( $ret == wxID_NEW || ! ( -s $cfg->std_config || -s $cfg->std_config_alt ) ) {	# getadm will chdir
+    elsif ( $ret == wxID_NEW
+	    || $ret == wxID_OPEN
+	    || ! ( -s $cfg->std_config || -s $cfg->std_config_alt ) ) {	# getadm will chdir
 	my $top = EB::Wx::IniWiz->new();
+	$top->preselect( $ret == wxID_OPEN );
 	$app->SetTopWindow($top);
-	$top->Centre;
+	$top->Center;
 	$top->runwiz;
 	$app->MainLoop;
     }
