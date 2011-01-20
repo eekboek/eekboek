@@ -35,6 +35,12 @@ my $runeb;
 
 my $default = _T("--standaard--");
 
+# The wizard panels.
+my $wp;
+for ( qw( select admname btw batch db confirm ) ) {
+    $wp->{$_} = sprintf("wiz_p%02d", 0+keys(%$wp));
+}
+
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
 	$parent = undef              unless defined $parent;
@@ -56,17 +62,17 @@ sub new {
 	$self->{wiz_p03} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{wiz_p02} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{wiz_p01} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
-	$self->{wiz_p00} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{sizer_5_staticbox} = Wx::StaticBox->new($self->{wiz_p01}, -1, _T("Administratie") );
 	$self->{sizer_8_staticbox} = Wx::StaticBox->new($self->{wiz_p02}, -1, _T("BTW") );
 	$self->{sizer_6_staticbox} = Wx::StaticBox->new($self->{wiz_p03}, -1, _T("Dagboeken") );
 	$self->{sizer_4_staticbox} = Wx::StaticBox->new($self->{wiz_p04}, -1, _T("Database") );
 	$self->{sizer_2_staticbox} = Wx::StaticBox->new($self->{wiz_p05}, -1, _T("Bevestiging") );
-	$self->{sizer_12_staticbox} = Wx::StaticBox->new($self->{wiz_p00}, -1, _T("Welkom bij EekBoek") );
+	$self->{wiz_p00} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{t_main} = Wx::TextCtrl->new($self->{p_dummy}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
 	$self->{ch_runeb} = Wx::CheckBox->new($self->{p_dummy}, -1, _T("EekBoek opstarten"), wxDefaultPosition, wxDefaultSize, );
 	$self->{b_ok} = Wx::Button->new($self->{p_dummy}, wxID_OK, "");
-	$self->{label_7} = Wx::StaticText->new($self->{wiz_p00}, -1, _T("Dit programma kan u helpen bij het initiëel opzetten van een eenvoudige administratie."), wxDefaultPosition, wxDefaultSize, );
+	$self->{label_2} = Wx::StaticText->new($self->{wiz_p00}, -1, _T("Welkom bij de EekBoek administratie-wizard."), wxDefaultPosition, wxDefaultSize, );
+	$self->{rb_select} = Wx::RadioBox->new($self->{wiz_p00}, -1, _T("Maak uw keuze"), wxDefaultPosition, wxDefaultSize, [_T("Een nieuwe administratie aanmaken"), _T("Verbinden met een bestaande administratie")], 0, wxRA_SPECIFY_ROWS);
 	$self->{label_3} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Naam"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_adm_name} = Wx::TextCtrl->new($self->{wiz_p01}, -1, _T("Mijn eerste EekBoek"), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_10} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Code"), wxDefaultPosition, wxDefaultSize, );
@@ -95,6 +101,7 @@ sub new {
 	$self->{t_db_user} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, );
 	$self->{label_db_password} = Wx::StaticText->new($self->{wiz_p04}, -1, _T("Password"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_db_password} = Wx::TextCtrl->new($self->{wiz_p04}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+	$self->{b_db_test} = Wx::Button->new($self->{wiz_p04}, -1, _T("Test database"));
 	$self->{label_5} = Wx::StaticText->new($self->{wiz_p05}, -1, _T("Druk op 'Voltooien' om de volgende bestanden aan te maken:"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_config} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Configuratiebestand"), wxDefaultPosition, wxDefaultSize, );
 	$self->{cb_cr_schema} = Wx::CheckBox->new($self->{wiz_p05}, -1, _T("Rekeningschema"), wxDefaultPosition, wxDefaultSize, );
@@ -172,6 +179,7 @@ sub new {
 	Wx::Event::EVT_WIZARD_PAGE_CHANGING($self, $self->{wiz}->GetId, \&OnPageChanging);
 	Wx::Event::EVT_WIZARD_FINISHED($self, $self->{wiz}->GetId, \&OnWizardFinished );
 	Wx::Event::EVT_WIZARD_CANCEL($self, $self->{wiz}->GetId, \&OnWizardCancel );
+	Wx::Event::EVT_RADIOBOX($self->{wiz}, $self->{rb_select}->GetId, \&OnSelectFunction );
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_btw}->GetId, \&OnToggleBTW );
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_schema}->GetId, \&OnToggleCreate );
 	Wx::Event::EVT_CHECKBOX($self->{wiz}, $self->{cb_cr_opening}->GetId, \&OnToggleCreate );
@@ -182,7 +190,7 @@ sub new {
 	Wx::Event::EVT_TEXT($self->{wiz}, $self->{t_adm_code}->GetId, \&OnSelectAdmCode );
 	Wx::Event::EVT_SPINCTRL($self->{wiz}, $self->{sp_adm_begin}->GetId, \&OnSelectAdmName );
 	Wx::Event::EVT_CHOICE($self->{wiz}, $self->{ch_db_driver}->GetId, \&OnSelectDbDriver );
-
+	Wx::Event::EVT_BUTTON($self->{wiz}, $self->{b_db_test}->GetId, \&OnDbTest);
 
 	$self->{wiz}->SetPageSize([600,-1]);
 
@@ -197,7 +205,7 @@ sub new {
 
 sub runwiz {
     my ( $self, $opts ) = @_;
-    $self->{wiz}->RunWizard( $self->{wiz_p00} );
+    $self->{wiz}->RunWizard( $self->{$wp->{select}} );
     $self->{wiz}->Destroy;
 }
 
@@ -251,6 +259,7 @@ sub __set_properties {
 	$self->SetTitle(_T("EekBoek MiniAdm Setup"));
 	$self->{ch_runeb}->SetValue(1);
 	$self->{b_ok}->Enable(0);
+	$self->{rb_select}->SetSelection(0);
 	$self->{wiz_p00}->Show(0);
 	$self->{t_adm_name}->SetToolTipString(_T("Een omschrijving van deze administratie, bijvoorbeeld \"Boekhouding 2009\"."));
 	$self->{t_adm_code}->SetToolTipString(_T("Een korte, unieke aanduiding van deze administratie, bijvoorbeeld \"admin2009\"."));
@@ -331,7 +340,7 @@ sub __do_layout {
 	$self->{grid_sizer_5} = Wx::FlexGridSizer->new(6, 1, 5, 5);
 	$self->{sizer_16} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_4}= Wx::StaticBoxSizer->new($self->{sizer_4_staticbox}, wxVERTICAL);
-	$self->{grid_db} = Wx::FlexGridSizer->new(6, 2, 5, 5);
+	$self->{grid_db} = Wx::FlexGridSizer->new(7, 2, 5, 5);
 	$self->{sizer_15} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_6}= Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxHORIZONTAL);
 	$self->{grid_sizer_3} = Wx::FlexGridSizer->new(4, 1, 5, 5);
@@ -344,7 +353,7 @@ sub __do_layout {
 	$self->{grid_sizer_2} = Wx::FlexGridSizer->new(4, 2, 5, 5);
 	$self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_11} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sizer_12}= Wx::StaticBoxSizer->new($self->{sizer_12_staticbox}, wxHORIZONTAL);
+	$self->{sizer_17} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sizer_9} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sizer_10} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_9}->Add($self->{t_main}, 1, wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 10);
@@ -353,8 +362,9 @@ sub __do_layout {
 	$self->{sizer_10}->Add($self->{b_ok}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_9}->Add($self->{sizer_10}, 0, wxEXPAND, 0);
 	$self->{sz_main}->Add($self->{sizer_9}, 1, wxALL|wxEXPAND, 10);
-	$self->{sizer_12}->Add($self->{label_7}, 1, wxALL|wxEXPAND|wxADJUST_MINSIZE, 10);
-	$self->{sizer_11}->Add($self->{sizer_12}, 1, wxEXPAND, 0);
+	$self->{sizer_17}->Add($self->{label_2}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sizer_17}->Add($self->{rb_select}, 1, wxEXPAND|wxADJUST_MINSIZE, 10);
+	$self->{sizer_11}->Add($self->{sizer_17}, 1, wxEXPAND, 0);
 	$self->{wiz_p00}->SetSizer($self->{sizer_11});
 	$self->{sz_main}->Add($self->{wiz_p00}, 0, wxEXPAND, 0);
 	$self->{grid_sizer_2}->Add($self->{label_3}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
@@ -401,6 +411,8 @@ sub __do_layout {
 	$self->{grid_db}->Add($self->{t_db_user}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->Add($self->{label_db_password}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->Add($self->{t_db_password}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add(0, 0, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{grid_db}->Add($self->{b_db_test}, 0, wxADJUST_MINSIZE, 0);
 	$self->{grid_db}->AddGrowableCol(1);
 	$self->{sizer_4}->Add($self->{grid_db}, 1, wxALL|wxEXPAND, 5);
 	$self->{sizer_16}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
@@ -427,36 +439,79 @@ sub __do_layout {
 # end wxGlade
 }
 
+sub OnSelectFunction {
+    my ( $self, $event ) = @_;
+    $self = $self->GetParent;
+
+    if ( $self->{rb_select}->GetSelection == 0 ) {
+	Wx::WizardPageSimple::Chain( $self->{$wp->{select}}, $self->{$wp->{admname}} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{admname}}, $self->{$wp->{btw}} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{btw}}, $self->{$wp->{batch}} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{batch}}, $self->{$wp->{db}} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{db}}, $self->{$wp->{confirm}} );
+	foreach ( qw( config schema relaties opening mutaties database ) ) {
+	    $self->{"cb_cr_$_"}->SetValue(1);
+	    $self->{"cb_cr_$_"}->Enable(1);
+	}
+    }
+    else {
+	Wx::WizardPageSimple::Chain( $self->{$wp->{select}}, $self->{$wp->{db}} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{db}}, $self->{$wp->{confirm}} );
+	foreach ( qw( config ) ) {
+	    $self->{"cb_cr_$_"}->SetValue(1);
+	}
+	foreach ( qw( schema relaties opening mutaties database ) ) {
+	    $self->{"cb_cr_$_"}->SetValue(0);
+	    $self->{"cb_cr_$_"}->Enable(0);
+	}
+    }
+}
+
 sub OnPageChanging {
     my ($self,  $event) = @_;
     return unless $event->GetDirection;
     my $page = $event->GetPage;
-    return unless $page->GetId == $self->{wiz_p01}->GetId;
 
-    my $nu = sub {
-	my $m = Wx::MessageDialog->new($self->{wiz}, shift,
-				       _T("Niet uniek"),
-				       wxICON_ERROR|wxOK );
-	my $ret = $m->ShowModal;
-	$m->Destroy;
-	return $ret;
-    };
+    if ( $page->GetId == $self->{$wp->{admname}}->GetId ) {
+	my $nu = sub {
+	    my $m = Wx::MessageDialog->new($self->{wiz}, shift,
+					   _T("Niet uniek"),
+					   wxICON_ERROR|wxOK );
+	    my $ret = $m->ShowModal;
+	    $m->Destroy;
+	    return $ret;
+	};
 
-    my $c = $self->{t_adm_name}->GetValue;
-    foreach ( @adm_names ) {
-	next unless lc($_) eq lc($c);
-	$nu->( _T("Er bestaat al een administratie met deze naam.") );
-	$event->Veto;
-	# The code will probable also be duplicate.
-	# Prevent double warning.
-	return;
+	my $c = $self->{t_adm_name}->GetValue;
+	foreach ( @adm_names ) {
+	    next unless lc($_) eq lc($c);
+	    $nu->( _T("Er bestaat al een administratie met deze naam.") );
+	    $event->Veto;
+	    # The code will probable also be duplicate.
+	    # Prevent double warning.
+	    return;
+	}
+	$c = $self->{t_adm_code}->GetValue;
+	foreach ( @adm_dirs ) {
+	    next unless lc($_) eq lc($c);
+	    $nu->( _T("Er bestaat al een administratie met deze code.") );
+	    $event->Veto;
+	    last;
+	}
     }
-    $c = $self->{t_adm_code}->GetValue;
-    foreach ( @adm_dirs ) {
-	next unless lc($_) eq lc($c);
-	$nu->( _T("Er bestaat al een administratie met deze code.") );
-	$event->Veto;
-	last;
+
+    if ( $page->GetId == $self->{$wp->{db}}->GetId ) {
+	return unless $self->{rb_select}->GetSelection;
+	my $res = $self->_dbtest;
+	if ( $res ) {
+	    my $m = Wx::MessageDialog->new($self->{wiz},
+					   $res,
+					   _T("Database Test Resultaat"),
+					   wxICON_INFORMATION | wxOK );
+	    $m->ShowModal;
+	    $m->Destroy;
+	    $event->Veto;
+	}
     }
 }
 
@@ -486,21 +541,21 @@ sub OnSelectTemplate {
 	    $self->{cb_btw}->Enable(0);
 	    $self->{ch_btw_period}->Enable(0);
 	    $self->{l_btw_period}->Enable(0);
-	    Wx::WizardPageSimple::Chain( $self->{wiz_p01}, $self->{wiz_p04} );
+	    Wx::WizardPageSimple::Chain( $self->{$wp->{admname}}, $self->{$wp->{db}} );
 	}
 	else {
 	    $self->{cb_btw}->SetValue(1);
 	    $self->{cb_btw}->Enable(0);
 	    $self->{ch_btw_period}->Enable(1);
 	    $self->{l_btw_period}->Enable(1);
-	    Wx::WizardPageSimple::Chain( $self->{wiz_p01}, $self->{wiz_p02} );
-	    Wx::WizardPageSimple::Chain( $self->{wiz_p02}, $self->{wiz_p04} );
+	    Wx::WizardPageSimple::Chain( $self->{$wp->{admname}}, $self->{$wp->{btw}} );
+	    Wx::WizardPageSimple::Chain( $self->{$wp->{btw}}, $self->{$wp->{db}} );
 	}
     }
     else {
 	$self->{cb_btw}->Enable(1);
-	Wx::WizardPageSimple::Chain( $self->{wiz_p01}, $self->{wiz_p02} );
-	Wx::WizardPageSimple::Chain( $self->{wiz_p02}, $self->{wiz_p03} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{admname}}, $self->{$wp->{btw}} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{btw}}, $self->{$wp->{batch}} );
     }
 
 # end wxGlade
@@ -718,6 +773,63 @@ sub OnSelectDbDriver {
 	$_[0]->Layout;
 	$self->Layout;
     }
+# end wxGlade
+}
+
+sub _dbtest {
+    my $self = shift;
+    my $drv = $db_drivers[$self->{ch_db_driver}->GetSelection];
+    $drv = "EB::DB::" . ucfirst($drv);
+    my $res;
+    my $opts;
+    $opts->{host} = $self->{t_db_host}->GetValue
+      if $self->{t_db_host}->IsEnabled
+	&& $self->{t_db_host}->GetValue
+	  && $self->{t_db_host}->GetValue ne $default;
+    $opts->{port} = $self->{t_db_port}->GetValue
+      if $self->{t_db_port}->IsEnabled
+	&& $self->{t_db_port}->GetValue
+	  && $self->{t_db_port}->GetValue ne $default;
+    $opts->{user} = $self->{t_db_user}->GetValue
+      if $self->{t_db_user}->IsEnabled
+	&& $self->{t_db_user}->GetValue
+	  && $self->{t_db_user}->GetValue ne $default;
+    $opts->{password} = $self->{t_db_password}->GetValue
+      if $self->{t_db_password}->IsEnabled
+	&& $self->{t_db_password}->GetValue
+	  && $self->{t_db_password}->GetValue ne "";
+
+    my $db;
+    if ( $self->{rb_select}->GetSelection == 1 ) {
+	$db = $self->{t_db_name}->GetValue;
+    }
+
+    eval {
+	$INC{"EB.pm"} = 1;	# fake environment for DB testing
+	eval "use $drv";
+	die($@) if $@;
+	$res = $drv->feature("test") ? $drv->test( $db, $opts ) : '';
+    };
+    $res = $@ if $@;
+    delete( $INC{"EB.pm"} );	# remove fake environment
+    return $res;
+}
+
+sub OnDbTest {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OnDbTest <event_handler>
+
+    $self = $self->GetParent;
+    my $res = $self->_dbtest;
+    my $icon = ( $res ? wxICON_ERROR : wxICON_INFORMATION );
+    $icon |= wxOK;
+    my $m = Wx::MessageDialog->new($self->{wiz},
+				   $res || _T("Succes!"),
+				   _T("Database Test Resultaat"),
+				   $icon );
+    $m->ShowModal;
+    $m->Destroy;
+
 # end wxGlade
 }
 

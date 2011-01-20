@@ -28,7 +28,7 @@ sub new {
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{label_1} = Wx::StaticText->new($self, -1, _T("Beschikbare administraties"), wxDefaultPosition, wxDefaultSize, );
 	$self->{lb_adm} = Wx::ListBox->new($self, -1, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
-	$self->{b_new} = Wx::Button->new($self, wxID_NEW, "");
+	$self->{b_new} = Wx::Button->new($self, -1, _T("New / Other..."));
 	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 	$self->{b_accept} = Wx::Button->new($self, wxID_OK, "");
 
