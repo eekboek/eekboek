@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:27:09 2010
-# Update Count    : 174
+# Last Modified On: Thu Jan 20 11:46:59 2011
+# Update Count    : 188
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -24,7 +24,7 @@ use DBD::Pg;
 my $dbh;			# singleton
 my $dataset;
 
-my $trace = $cfg->val(__PACKAGE__, "trace", 0);
+my $trace = $cfg->val(__PACKAGE__, "trace", 0) if $cfg;
 
 # API: type  type of driver
 sub type { "PostgreSQL" }
@@ -160,6 +160,31 @@ sub clear {
 
 }
 
+# API: Test db connection.
+sub test {
+    my $self = shift;
+    my $db = shift;
+    $db = $db ? "eekboek_$db" : "template1";
+    my $opts = shift || {};
+    my $d;
+    my $dsn = "dbi:Pg:dbname=$db";
+    my $t;
+    $dsn .= ";host=" . $t if $t = $opts->{host};
+    $dsn .= ";port=" . $t if $t = $opts->{port};
+    eval {
+	$d = DBI->connect( $dsn,
+			   $opts->{user} || undef,
+			   $opts->{password} || undef,
+			 );
+    };
+    return $@ if $@;
+    return DBI->errstr unless $d;
+    eval {
+	$d->disconnect;
+    };
+    return;
+}
+
 # API: List available data sources.
 sub list {
     my @ds;
@@ -174,7 +199,12 @@ sub list {
     };
     # If the list cannot be established, @ds will be (undef).
     return [] unless defined($ds[0]);
-    [ map { $_ =~ s/^.*?dbname=eekboek_// and $_ } @ds ];
+    my $d = [];
+    foreach ( @ds ) {
+	next unless s/^.*?dbname=eekboek_(.+)//;
+	push( @$d, $1 );
+    }
+    return $d;
 }
 
 # API: Get a array ref with table names (lowcased).
@@ -268,6 +298,8 @@ sub feature {
     return 1 if $feat eq "prepcache";
 
     return 1 if $feat eq "import";
+
+    return 1 if $feat eq "test";
 
     # Return false for all others.
     return;
