@@ -54,6 +54,7 @@ warn("Construct EekBoek.ppd ...\n");
 
 undef $fh;
 my $file = "../Released/ppms/EekBoek-$vv.ppd";
+
 my $repo = "repo/windows";
 $repo .= "-testing" if $b % 2;
 
@@ -68,6 +69,7 @@ print { $fh } << "END_PPD";
         <DEPENDENCY NAME="DBI" VERSION="1,4,0,0" />
         <DEPENDENCY NAME="Wx" VERSION="0,74,0,0" />
 	<OS NAME="MSWin32" />
+	<OS NAME="MacOSX" />
         <CODEBASE HREF="http://www.eekboek.nl/$repo/PPM-EekBoek-$vv.tgz" />
     </IMPLEMENTATION>
 </SOFTPKG>

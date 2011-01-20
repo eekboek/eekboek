@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-08 13:25+0200\n"
+"POT-Creation-Date: 2011-01-20 14:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -141,7 +142,7 @@ msgstr ""
 msgid "Ongeldige BTW-specificatie: {spec}"
 msgstr ""
 
-#: ../lib/EB/Booking/BKM.pm:219 ../lib/EB/Booking/IV.pm:269
+#: ../lib/EB/Booking/BKM.pm:219
 msgid "BTW toepassen is niet mogelijk op een neutrale rekening"
 msgstr ""
 
@@ -208,7 +209,7 @@ msgstr ""
 msgid "Saldo {new} klopt niet met de vereiste waarde {act}"
 msgstr ""
 
-#: ../lib/EB/Booking/BKM.pm:552 ../lib/EB/Booking/IV.pm:315
+#: ../lib/EB/Booking/BKM.pm:552
 #, perl-brace-format
 msgid " Boekstuk totaal is {act} in plaats van {exp}"
 msgstr ""
@@ -223,11 +224,11 @@ msgstr ""
 msgid "Boekstuk is niet in balans (verschil is {diff})"
 msgstr ""
 
-#: ../lib/EB/Booking/BKM.pm:573 ../lib/EB/Booking/IV.pm:303
+#: ../lib/EB/Booking/BKM.pm:573
 msgid "Dit overicht is ter referentie, de boeking is niet uitgevoerd!"
 msgstr ""
 
-#: ../lib/EB/Booking/BKM.pm:581 ../lib/EB/Booking/IV.pm:312
+#: ../lib/EB/Booking/BKM.pm:581
 msgid "Boeking "
 msgstr ""
 
@@ -366,28 +367,32 @@ msgstr ""
 msgid "DE IMPORT IS NIET UITGEVOERD"
 msgstr ""
 
-#: ../lib/EB/IniWiz.pm:41
+#: ../lib/EB/IniWiz.pm:25 ../lib/EB/Wx/IniWiz.pm:36
+msgid "--standaard--"
+msgstr ""
+
+#: ../lib/EB/IniWiz.pm:42
 #, perl-brace-format
 msgid "Beschikbare administraties in {dir}:"
 msgstr ""
 
-#: ../lib/EB/IniWiz.pm:58
+#: ../lib/EB/IniWiz.pm:59
 msgid "Uw keuze"
 msgstr ""
 
-#: ../lib/EB/IniWiz.pm:61
+#: ../lib/EB/IniWiz.pm:62
 msgid ", of N om een nieuwe administratie aan te maken>"
 msgstr ""
 
-#: ../lib/EB/IniWiz.pm:430
+#: ../lib/EB/IniWiz.pm:507
 msgid "Er is een probleem opgetreden. Raadplaag uw systeembeheerder."
 msgstr ""
 
-#: ../lib/EB/IniWiz.pm:440
-msgid "De administratie is aangemaakt."
+#: ../lib/EB/IniWiz.pm:519 ../lib/EB/IniWiz.pm:524
+msgid "De gewenste bestanden zijn aangemaakt."
 msgstr ""
 
-#: ../lib/EB/IniWiz.pm:441
+#: ../lib/EB/IniWiz.pm:525
 msgid "U kunt meteen aan de slag."
 msgstr ""
 
@@ -782,152 +787,147 @@ msgid ""
 "specificatie"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:422
+#: ../lib/EB/Tools/Schema.pm:422 ../lib/EB/Tools/Schema.pm:427
 #, perl-brace-format
-msgid "Ongeldige invoer: {line} (regel {lno})"
-msgstr ""
-
-#: ../lib/EB/Tools/Schema.pm:427
 msgid ""
-"Men beginne met \"Balansrekeningen\", \"Resultaatrekeningen\", \"Dagboeken\" "
-"of \"BTW Tarieven\""
+"Ongeldige invoer in schema bestand, regel {lno}:\n"
+"{line}"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:450
+#: ../lib/EB/Tools/Schema.pm:455
 #, perl-brace-format
 msgid "Dagboek {id} heeft geen tegenrekening"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:471
+#: ../lib/EB/Tools/Schema.pm:476
 #, perl-brace-format
 msgid "Geen BTW tarief gevonden met tariefgroep {gr}, inclusief"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:484
+#: ../lib/EB/Tools/Schema.pm:489
 #, perl-brace-format
 msgid "Geen koppeling gevonden voor \"{std}\""
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:487
-msgid "FOUTEN GEVONDEN, VERWERKING AFGEBROKEN"
+#: ../lib/EB/Tools/Schema.pm:492
+msgid "FOUTEN GEVONDEN IN SCHEMA BESTAND, VERWERKING AFGEBROKEN"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:523
+#: ../lib/EB/Tools/Schema.pm:528
 msgid "Installatiefout -- geen database schema"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:580
+#: ../lib/EB/Tools/Schema.pm:585
 #, perl-brace-format
 msgid "Geen BTW tariefgroep voor code {code}"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:652
+#: ../lib/EB/Tools/Schema.pm:657
 #, perl-brace-format
 msgid "Aanmaken {sql}..."
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:860
+#: ../lib/EB/Tools/Schema.pm:866
 #, perl-brace-format
 msgid "HOOFDVERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:870
+#: ../lib/EB/Tools/Schema.pm:876
 #, perl-brace-format
 msgid "VERDICHTING MOET TUSSEN {min} EN {max} (INCL.) LIGGEN"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:943
+#: ../lib/EB/Tools/Schema.pm:949
 #, perl-brace-format
 msgid "{id} ZOU EEN BALANSREKENING MOETEN ZIJN"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:945
+#: ../lib/EB/Tools/Schema.pm:951
 #, perl-brace-format
 msgid "{id} ZOU EEN RESULTAATREKENING MOETEN ZIJN"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:1017
+#: ../lib/EB/Tools/Schema.pm:1023
 #, perl-brace-format
 msgid "Grootboekrekening {gbk} ({desc}) bestaat reeds"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:1024
+#: ../lib/EB/Tools/Schema.pm:1030
 #, perl-brace-format
 msgid "Onbekende verdichting: {vrd}"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:1034
+#: ../lib/EB/Tools/Schema.pm:1040
 msgid "Ongeldig type voor balansrekening (alleen D / C toegestaan)"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:1044
+#: ../lib/EB/Tools/Schema.pm:1050
 msgid "Ongeldig type voor resultaatrekening (alleen K / O / N toegestaan)"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:1061
+#: ../lib/EB/Tools/Schema.pm:1067
 #, perl-brace-format
 msgid "Fout tijdens het opslaan van grootboekrekening {gbk}"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:1075
+#: ../lib/EB/Tools/Schema.pm:1081
 #, perl-brace-format
 msgid "Onbekende grootboekrekening: {gbk}"
 msgstr ""
 
-#: ../lib/EB/Tools/Schema.pm:1083
+#: ../lib/EB/Tools/Schema.pm:1089
 #, perl-brace-format
 msgid ""
 "{balres} {gbk} {debcrd}{fixed}{kstomz} ({desc}); Verdichting {vrd} "
 "({vdesc}); Hoofdverdichting {hvrd} ({hdesc})"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:38 ../lib/EB/Tools/MiniAdm.pm:37
+#: ../lib/EB/Tools/MiniAdm.pm:37
 msgid "GESTOPT: Er is al een administratie aangemaakt"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:42 ../lib/EB/Tools/MiniAdm.pm:41
+#: ../lib/EB/Tools/MiniAdm.pm:41
 msgid "GESTOPT: Er is al een administratie gedeeltelijk aangemaakt"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:67 ../lib/EB/Tools/MiniAdm.pm:66
+#: ../lib/EB/Tools/MiniAdm.pm:66
 msgid "Demo administratie"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:90 ../lib/EB/Tools/MiniAdm.pm:89
+#: ../lib/EB/Tools/MiniAdm.pm:89
 #, perl-brace-format
 msgid "Probleem met het benaderen van {file}: {err}"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:103 ../lib/EB/Tools/MiniAdm.pm:102
+#: ../lib/EB/Tools/MiniAdm.pm:102
 #, perl-brace-format
 msgid "Probleem met het aanmaken van {file}: Zip error"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:124 ../lib/EB/Tools/MiniAdm.pm:123
+#: ../lib/EB/Tools/MiniAdm.pm:123
 #, perl-brace-format
 msgid "Probleem met het aanmaken van {file}: {err}"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:136 ../lib/EB/Tools/MiniAdm.pm:135
+#: ../lib/EB/Tools/MiniAdm.pm:135
 #, perl-brace-format
 msgid "Probleem met het afsluiten van {file}: {err}"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:173 ../lib/EB/Tools/MiniAdm.pm:172
-#: ../lib/EB/Wx/IniWiz.pm:89
+#: ../lib/EB/Tools/MiniAdm.pm:172 ../lib/EB/Wx/IniWiz.pm:107
 msgid "Rekeningschema"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:479 ../lib/EB/Tools/MiniAdm.pm:478
-#: ../lib/EB/Export.pm:142 ../lib/EB/Export.pm:161
+#: ../lib/EB/Tools/MiniAdm.pm:493 ../lib/EB/Export.pm:142
+#: ../lib/EB/Export.pm:161
 msgid "Relaties"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:488 ../lib/EB/Tools/MiniAdm.pm:487
+#: ../lib/EB/Tools/MiniAdm.pm:502
 msgid "Opening"
 msgstr ""
 
-#: ../lib/EB/Tools/XXCVS/Base/MiniAdm.pm:511 ../lib/EB/Tools/MiniAdm.pm:510
+#: ../lib/EB/Tools/MiniAdm.pm:525
 msgid "Mutaties"
 msgstr ""
 
@@ -966,15 +966,15 @@ msgstr ""
 
 #: ../lib/EB/Tools/Einde.pm:93 ../lib/EB/Tools/Einde.pm:285
 #: ../lib/EB/Export.pm:214 ../lib/EB/Report/Grootboek.pm:47
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:77 ../lib/EB/Report/Journal.pm:43
-#: ../lib/EB/Report/Balres.pm:74 ../lib/EB/Report/Proof.pm:59
+#: ../lib/EB/Report/Journal.pm:43 ../lib/EB/Report/Balres.pm:74
+#: ../lib/EB/Report/Proof.pm:59
 msgid "Debet"
 msgstr ""
 
 #: ../lib/EB/Tools/Einde.pm:94 ../lib/EB/Tools/Einde.pm:285
 #: ../lib/EB/Export.pm:214 ../lib/EB/Report/Grootboek.pm:48
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:78 ../lib/EB/Report/Journal.pm:44
-#: ../lib/EB/Report/Balres.pm:75 ../lib/EB/Report/Proof.pm:60
+#: ../lib/EB/Report/Journal.pm:44 ../lib/EB/Report/Balres.pm:75
+#: ../lib/EB/Report/Proof.pm:60
 msgid "Credit"
 msgstr ""
 
@@ -1580,7 +1580,7 @@ msgstr ""
 msgid "Nr"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:688 ../lib/EB/Wx/IniWiz.pm:67
+#: ../lib/EB/Shell.pm:688 ../lib/EB/Wx/IniWiz.pm:76
 msgid "Naam"
 msgstr ""
 
@@ -2078,12 +2078,11 @@ msgstr ""
 msgid "Einde {what}"
 msgstr ""
 
-#: ../lib/EB/Export.pm:172 ../lib/EB/Export.pm:256 ../lib/EB/Wx/IniWiz.pm:91
+#: ../lib/EB/Export.pm:172 ../lib/EB/Export.pm:256 ../lib/EB/Wx/IniWiz.pm:109
 msgid "Openingsgegevens"
 msgstr ""
 
-#: ../lib/EB/Export.pm:191 ../lib/EB/Report/XXCVS/Base/Balres.pm:97
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:102 ../lib/EB/Report/Balres.pm:94
+#: ../lib/EB/Export.pm:191 ../lib/EB/Report/Balres.pm:94
 #: ../lib/EB/Report/Balres.pm:99
 msgid "Openingsbalans"
 msgstr ""
@@ -2142,7 +2141,6 @@ msgid "Ontbrekend \"name\" of \"style\""
 msgstr ""
 
 #: ../lib/EB/Report/Reporter.pm:75 ../lib/EB/Report/Reporter.pm:89
-#: ../lib/EB/Report/XXCVS/Base/Text.pm:80
 #, perl-brace-format
 msgid "Onbekend veld: {fld}"
 msgstr ""
@@ -2166,7 +2164,7 @@ msgstr ""
 msgid "Periode: {from} t/m {to}"
 msgstr ""
 
-#: ../lib/EB/Report/Reporter.pm:178 ../lib/EB/Report/XXCVS/Base/Text.pm:134
+#: ../lib/EB/Report/Reporter.pm:178
 #, perl-brace-format
 msgid "Ongeldig veld: {fld}"
 msgstr ""
@@ -2304,67 +2302,6 @@ msgid ""
 "gebruikt."
 msgstr ""
 
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:72 ../lib/EB/Report/Balres.pm:69
-#: ../lib/EB/Report/Proof.pm:54
-msgid "RekNr"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:74 ../lib/EB/Report/Balres.pm:71
-#: ../lib/EB/Report/Proof.pm:56
-msgid "Verdichting/Grootboekrekening"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:75 ../lib/EB/Report/Balres.pm:72
-#: ../lib/EB/Report/Proof.pm:57
-msgid "Grootboekrekening"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:98
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:103 ../lib/EB/Report/Balres.pm:95
-#: ../lib/EB/Report/Balres.pm:100
-#, perl-brace-format
-msgid "Datum: {date}"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:117
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:270 ../lib/EB/Report/Balres.pm:114
-#: ../lib/EB/Report/Balres.pm:267
-msgid "Balans"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:117 ../lib/EB/Report/Balres.pm:114
-msgid "Verlies/Winst"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:197
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:208 ../lib/EB/Report/Balres.pm:194
-#: ../lib/EB/Report/Balres.pm:205 ../lib/EB/Report/Proof.pm:190
-#: ../lib/EB/Report/Proof.pm:222
-#, perl-brace-format
-msgid "Totaal {vrd}"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:251 ../lib/EB/Report/Balres.pm:248
-msgid "Winst"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:251 ../lib/EB/Report/Balres.pm:248
-msgid "Verlies"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:270 ../lib/EB/Report/Balres.pm:267
-#, perl-brace-format
-msgid "TOTAAL {rep}"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Balres.pm:270 ../lib/EB/Report/Balres.pm:267
-msgid "Resultaten"
-msgstr ""
-
-#: ../lib/EB/Report/XXCVS/Base/Text.pm:59
-msgid "Naamloos veld moet een style of width hebben"
-msgstr ""
-
 #: ../lib/EB/Report/Journal.pm:89 ../lib/EB/Report/Journal.pm:120
 #, perl-brace-format
 msgid "Boekstuk {nr}"
@@ -2373,6 +2310,54 @@ msgstr ""
 #: ../lib/EB/Report/Journal.pm:109
 #, perl-brace-format
 msgid "Dagboek {nr}"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:69 ../lib/EB/Report/Proof.pm:54
+msgid "RekNr"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:71 ../lib/EB/Report/Proof.pm:56
+msgid "Verdichting/Grootboekrekening"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:72 ../lib/EB/Report/Proof.pm:57
+msgid "Grootboekrekening"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:95 ../lib/EB/Report/Balres.pm:100
+#, perl-brace-format
+msgid "Datum: {date}"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:114 ../lib/EB/Report/Balres.pm:267
+msgid "Balans"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:114
+msgid "Verlies/Winst"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:194 ../lib/EB/Report/Balres.pm:205
+#: ../lib/EB/Report/Proof.pm:190 ../lib/EB/Report/Proof.pm:222
+#, perl-brace-format
+msgid "Totaal {vrd}"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:248
+msgid "Winst"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:248
+msgid "Verlies"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:267
+#, perl-brace-format
+msgid "TOTAAL {rep}"
+msgstr ""
+
+#: ../lib/EB/Report/Balres.pm:267
+msgid "Resultaten"
 msgstr ""
 
 #: ../lib/EB/Report/Proof.pm:61
@@ -2533,241 +2518,291 @@ msgstr ""
 msgid "Geen ondersteuning voor database type {db}"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:57
+#: ../lib/EB/Wx/IniWiz.pm:65
 msgid "Administratie"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:58
+#: ../lib/EB/Wx/IniWiz.pm:66
 msgid "BTW"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:59
+#: ../lib/EB/Wx/IniWiz.pm:67
 msgid "Dagboeken"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:60 ../lib/EB/Wx/IniWiz.pm:93
+#: ../lib/EB/Wx/IniWiz.pm:68 ../lib/EB/Wx/IniWiz.pm:111
 msgid "Database"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:61
+#: ../lib/EB/Wx/IniWiz.pm:69
 msgid "Bevestiging"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:62
-msgid "Welkom bij EekBoek"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:64
+#: ../lib/EB/Wx/IniWiz.pm:72
 msgid "EekBoek opstarten"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:66
-msgid ""
-"Dit programma kan u helpen bij het initiëel opzetten van een eenvoudige "
-"administratie."
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:68
-msgid "Mijn eerste EekBoek"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:69
-msgid "Code"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:71
-msgid "Begindatum"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:72
-msgid "01-01-"
-msgstr ""
-
 #: ../lib/EB/Wx/IniWiz.pm:74
-msgid "Sjabloon"
+msgid "Welkom bij de EekBoek administratie-wizard."
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:75
-msgid "Lege administratie"
+msgid "Maak uw keuze"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:76
-msgid "BTW toepassen op deze administratie"
+#: ../lib/EB/Wx/IniWiz.pm:75
+msgid "Een nieuwe administratie aanmaken"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:75
+msgid "Verbinden met een bestaande administratie"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:77
-msgid "Aangifteperiode"
+msgid "Mijn eerste EekBoek"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:78
-msgid "Maand"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:78
-msgid "Kwartaal"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:78
-msgid "Jaar"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:79
-msgid "Verkoop"
+msgid "Code"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:80
-msgid "Inkoop"
+msgid "Begindatum"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:81
-msgid "Kas"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:82
-msgid "Bank"
+msgid "01-01-"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:83
-msgid "Database naam"
+msgid "Sjabloon"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:84
+msgid "Lege administratie"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:85
-msgid "Database type"
+msgid "BTW toepassen op deze administratie"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:86
-msgid "PostgreSQL"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:86
-msgid "SQLite"
+msgid "Aangifteperiode"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:87
-msgid "Druk op 'Voltooien' om de volgende bestanden aan te maken:"
+msgid "Maand"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:87
+msgid "Kwartaal"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:87
+msgid "Jaar"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:88
-msgid "Configuratiebestand"
+msgid "Verkoop"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:89
+msgid "Inkoop"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:90
-msgid "Relaties (debiteuren en crediteuren)"
+msgid "Kas"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:92 ../lib/EB/Wx/IniWiz.pm:270
-msgid "Mutaties (boekingen)"
+#: ../lib/EB/Wx/IniWiz.pm:91
+msgid "Bank"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:92
+msgid "Database naam"
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:94
+msgid "Database type"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:95
+msgid "PostgreSQL"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:95
+msgid "SQLite"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:96
+msgid "Server host"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:98
+msgid "Server port"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:100
+msgid "Database user"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:102
+msgid "Password"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:104
+msgid "Test database"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:105
+msgid "Druk op 'Voltooien' om de volgende bestanden aan te maken:"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:106
+msgid "Configuratiebestand"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:108
+msgid "Relaties (debiteuren en crediteuren)"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:110 ../lib/EB/Wx/IniWiz.pm:306
+msgid "Mutaties (boekingen)"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:112
 msgid "Let op! Eventuele bestaande bestanden worden overschreven!"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:215
+#: ../lib/EB/Wx/IniWiz.pm:238
 msgid "Kies"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:236
+#: ../lib/EB/Wx/IniWiz.pm:259
 msgid "EekBoek MiniAdm Setup"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:240
+#: ../lib/EB/Wx/IniWiz.pm:264
 msgid ""
 "Een omschrijving van deze administratie, bijvoorbeeld \"Boekhouding 2009\"."
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:241
+#: ../lib/EB/Wx/IniWiz.pm:265
 msgid ""
-"Een korte, unieke aanduiding van deze administratie, bijvoorbeeld \"admin2009"
-"\"."
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:242
-msgid "De begindatum. Het boekjaar begint op 1 januari van dit jaar."
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:245
-msgid "BTW toepassen"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:247
-msgid "De aangifteperiode voor de omzetbelasting"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:250
-msgid "Verkoop- en Debiteurenadministratie"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:252
-msgid "Inkoop- en Crediteurenadministratie"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:254
-msgid "Kas (contant geld)"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:256
-msgid "Er wordt gebruik gemaakt van een bankrekening"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:259
-msgid "De naam van de aan te maken database, b.v. \"admin2009\"."
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:260
-msgid "Het databasesysteem waar de database wordt opgeslagen"
-msgstr ""
-
-#: ../lib/EB/Wx/IniWiz.pm:264
-msgid "Rekeningschema, dagboeken, BTW instellingen"
+"Een korte, unieke aanduiding van deze administratie, bijvoorbeeld "
+"\"admin2009\"."
 msgstr ""
 
 #: ../lib/EB/Wx/IniWiz.pm:266
+msgid "De begindatum. Het boekjaar begint op 1 januari van dit jaar."
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:269
+msgid "BTW toepassen"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:271
+msgid "De aangifteperiode voor de omzetbelasting"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:274
+msgid "Verkoop- en Debiteurenadministratie"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:276
+msgid "Inkoop- en Crediteurenadministratie"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:278
+msgid "Kas (contant geld)"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:280
+msgid "Er wordt gebruik gemaakt van een bankrekening"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:283
+msgid "De naam van de aan te maken database, b.v. \"admin2009\"."
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:284
+msgid "Het databasesysteem waar de database wordt opgeslagen"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:287
+msgid "Het systeem waarop de database server draait, indien niet lokaal."
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:290
+msgid "De netwerkpoort waarop de database server luistert, indien niet lokaal."
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:293
+msgid "De user naam voor de database server."
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:296
+msgid "Het password van deze user."
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:300
+msgid "Rekeningschema, dagboeken, BTW instellingen"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:302
 msgid "Debiteuren en Crediteuren"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:268
+#: ../lib/EB/Wx/IniWiz.pm:304
 msgid "Administratieve gegevens"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:272
+#: ../lib/EB/Wx/IniWiz.pm:308
 msgid "De database wordt aangemaakt en gevuld"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:398
+#: ../lib/EB/Wx/IniWiz.pm:484
 msgid "Niet uniek"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:408
+#: ../lib/EB/Wx/IniWiz.pm:494
 msgid "Er bestaat al een administratie met deze naam."
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:417
+#: ../lib/EB/Wx/IniWiz.pm:503
 msgid "Er bestaat al een administratie met deze code."
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:540
+#: ../lib/EB/Wx/IniWiz.pm:515 ../lib/EB/Wx/IniWiz.pm:834
+msgid "Database Test Resultaat"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:668
 #, perl-brace-format
 msgid "Aanmaken {cfg}: "
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:562
+#: ../lib/EB/Wx/IniWiz.pm:690
 msgid "Mislukt"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:567
+#: ../lib/EB/Wx/IniWiz.pm:695
 msgid "Gereed"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:571
+#: ../lib/EB/Wx/IniWiz.pm:699
 msgid "Overgeslagen"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:598
+#: ../lib/EB/Wx/IniWiz.pm:726
 msgid "Afgebroken!"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:651
+#: ../lib/EB/Wx/IniWiz.pm:833
+msgid "Succes!"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz.pm:855
 msgid "The Wiz"
 msgstr ""
 
@@ -2775,6 +2810,10 @@ msgstr ""
 msgid "Beschikbare administraties"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz/OpenDialog.pm:67
+#: ../lib/EB/Wx/IniWiz/OpenDialog.pm:32
+msgid "Server"
+msgstr ""
+
+#: ../lib/EB/Wx/IniWiz/OpenDialog.pm:71
 msgid "Administratiekeuze"
 msgstr ""
