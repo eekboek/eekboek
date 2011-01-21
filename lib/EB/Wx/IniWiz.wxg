@@ -181,7 +181,7 @@
                                                         <flag>wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE</flag>
                                                         <border>0</border>
                                                         <option>0</option>
-                                                        <object class="wxStaticText" name="label_4" base="EditStaticText">
+                                                        <object class="wxStaticText" name="l_begin_date_1" base="EditStaticText">
                                                             <attribute>1</attribute>
                                                             <label>Begindatum</label>
                                                         </object>
@@ -196,7 +196,7 @@
                                                                 <flag>wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE</flag>
                                                                 <border>0</border>
                                                                 <option>0</option>
-                                                                <object class="wxStaticText" name="label_6" base="EditStaticText">
+                                                                <object class="wxStaticText" name="l_begin_date_2" base="EditStaticText">
                                                                     <attribute>1</attribute>
                                                                     <label>01-01-</label>
                                                                 </object>
@@ -216,7 +216,7 @@
                                                         <flag>wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE</flag>
                                                         <border>0</border>
                                                         <option>0</option>
-                                                        <object class="wxStaticText" name="label_9" base="EditStaticText">
+                                                        <object class="wxStaticText" name="l_template" base="EditStaticText">
                                                             <attribute>1</attribute>
                                                             <label>Sjabloon</label>
                                                         </object>

@@ -29,7 +29,6 @@ sub new {
 	$self->{label_1} = Wx::StaticText->new($self, -1, _T("Beschikbare administraties"), wxDefaultPosition, wxDefaultSize, );
 	$self->{lb_adm} = Wx::ListBox->new($self, -1, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
 	$self->{b_new} = Wx::Button->new($self, wxID_NEW, "");
-	$self->{b_server} = Wx::Button->new($self, -1, _T("Server"));
 	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 	$self->{b_accept} = Wx::Button->new($self, wxID_OK, "");
 
@@ -38,7 +37,6 @@ sub new {
 
 	Wx::Event::EVT_LISTBOX_DCLICK($self, $self->{lb_adm}->GetId, \&OnSelectAndGo);
 	Wx::Event::EVT_BUTTON($self, $self->{b_new}->GetId, \&OnNew);
-	Wx::Event::EVT_BUTTON($self, $self->{b_server}->GetId, \&OnServer);
 	Wx::Event::EVT_BUTTON($self, $self->{b_cancel}->GetId, \&OnCancel);
 	Wx::Event::EVT_BUTTON($self, $self->{b_accept}->GetId, \&OnOpen);
 
@@ -88,7 +86,6 @@ sub __do_layout {
 	$self->{sizer_2}->Add(5, 5, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add(5, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add($self->{b_new}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sizer_3}->Add($self->{b_server}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{b_cancel}, 0, wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
 	$self->{sizer_3}->Add($self->{b_accept}, 0, wxADJUST_MINSIZE, 0);
 	$self->{sizer_2}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
@@ -131,16 +128,6 @@ sub OnSelectAndGo {
 # wxGlade: EB::Wx::IniWiz::OpenDialog::OnSelectAndGo <event_handler>
 
     $self->EndModal( wxID_OK );
-
-# end wxGlade
-}
-
-
-sub OnServer {
-    my ($self, $event) = @_;
-# wxGlade: EB::Wx::IniWiz::OpenDialog::OnServer <event_handler>
-
-    $self->EndModal( wxID_OPEN );
 
 # end wxGlade
 }

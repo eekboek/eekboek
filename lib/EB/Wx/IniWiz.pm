@@ -77,10 +77,10 @@ sub new {
 	$self->{t_adm_name} = Wx::TextCtrl->new($self->{wiz_p01}, -1, _T("Mijn eerste EekBoek"), wxDefaultPosition, wxDefaultSize, );
 	$self->{label_10} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Code"), wxDefaultPosition, wxDefaultSize, );
 	$self->{t_adm_code} = Wx::TextCtrl->new($self->{wiz_p01}, -1, "", wxDefaultPosition, wxDefaultSize, );
-	$self->{label_4} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Begindatum"), wxDefaultPosition, wxDefaultSize, );
-	$self->{label_6} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("01-01-"), wxDefaultPosition, wxDefaultSize, );
+	$self->{l_begin_date_1} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Begindatum"), wxDefaultPosition, wxDefaultSize, );
+	$self->{l_begin_date_2} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("01-01-"), wxDefaultPosition, wxDefaultSize, );
 	$self->{sp_adm_begin} = Wx::SpinCtrl->new($self->{wiz_p01}, -1, "", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_AUTO_URL, 0, 100, );
-	$self->{label_9} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Sjabloon"), wxDefaultPosition, wxDefaultSize, );
+	$self->{l_template} = Wx::StaticText->new($self->{wiz_p01}, -1, _T("Sjabloon"), wxDefaultPosition, wxDefaultSize, );
 	$self->{ch_template} = Wx::Choice->new($self->{wiz_p01}, -1, wxDefaultPosition, wxDefaultSize, [_T("Lege administratie")], );
 	$self->{cb_btw} = Wx::CheckBox->new($self->{wiz_p02}, -1, _T("BTW toepassen op deze administratie"), wxDefaultPosition, wxDefaultSize, );
 	$self->{l_btw_period} = Wx::StaticText->new($self->{wiz_p02}, -1, _T("Aangifteperiode"), wxDefaultPosition, wxDefaultSize, );
@@ -371,11 +371,11 @@ sub __do_layout {
 	$self->{grid_sizer_2}->Add($self->{t_adm_name}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->Add($self->{label_10}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->Add($self->{t_adm_code}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{grid_sizer_2}->Add($self->{label_4}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-	$self->{sizer_3}->Add($self->{label_6}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_sizer_2}->Add($self->{l_begin_date_1}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{sizer_3}->Add($self->{l_begin_date_2}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{sizer_3}->Add($self->{sp_adm_begin}, 0, wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->Add($self->{sizer_3}, 1, wxEXPAND, 0);
-	$self->{grid_sizer_2}->Add($self->{label_9}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+	$self->{grid_sizer_2}->Add($self->{l_template}, 0, wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->Add($self->{ch_template}, 0, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{grid_sizer_2}->AddGrowableCol(1);
 	$self->{sizer_5}->Add($self->{grid_sizer_2}, 1, wxALL|wxEXPAND, 5);
@@ -439,15 +439,13 @@ sub __do_layout {
 # end wxGlade
 }
 
-sub preselect {
-    my ( $self, $sel ) = @_;
-    $self->{rb_select}->SetSelection($sel);
-    OnSelectFunction( $self->{wiz} );
-}
-
 sub OnSelectFunction {
     my ( $self, $event ) = @_;
     $self = $self->GetParent;
+
+    my @hideshow = qw( l_begin_date_1 l_begin_date_2 sp_adm_begin l_template ch_template );
+    my @hideshow0 = qw( schema relaties mutaties database );
+    my @hideshow1 = qw( config opening );
 
     if ( $self->{rb_select}->GetSelection == 0 ) {
 	Wx::WizardPageSimple::Chain( $self->{$wp->{select}}, $self->{$wp->{admname}} );
@@ -455,21 +453,33 @@ sub OnSelectFunction {
 	Wx::WizardPageSimple::Chain( $self->{$wp->{btw}}, $self->{$wp->{batch}} );
 	Wx::WizardPageSimple::Chain( $self->{$wp->{batch}}, $self->{$wp->{db}} );
 	Wx::WizardPageSimple::Chain( $self->{$wp->{db}}, $self->{$wp->{confirm}} );
-	foreach ( qw( config schema relaties opening mutaties database ) ) {
+	foreach ( @hideshow0, @hideshow1 ) {
 	    $self->{"cb_cr_$_"}->SetValue(1);
 	    $self->{"cb_cr_$_"}->Enable(1);
+	    $self->{"cb_cr_$_"}->Show(1);
 	}
+	foreach ( @hideshow ) {
+	    $self->{$_}->Show(1);
+	}
+	$self->Layout;
+	OnSelectTemplate( $self->{wiz} );
     }
     else {
-	Wx::WizardPageSimple::Chain( $self->{$wp->{select}}, $self->{$wp->{db}} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{select}}, $self->{$wp->{admname}} );
+	Wx::WizardPageSimple::Chain( $self->{$wp->{admname}}, $self->{$wp->{db}} );
 	Wx::WizardPageSimple::Chain( $self->{$wp->{db}}, $self->{$wp->{confirm}} );
-	foreach ( qw( config ) ) {
+	foreach ( @hideshow1 ) {
 	    $self->{"cb_cr_$_"}->SetValue(1);
-	}
-	foreach ( qw( schema relaties opening mutaties database ) ) {
-	    $self->{"cb_cr_$_"}->SetValue(0);
 	    $self->{"cb_cr_$_"}->Enable(0);
 	}
+	foreach ( @hideshow0 ) {
+	    $self->{"cb_cr_$_"}->SetValue(0);
+	    $self->{"cb_cr_$_"}->Show(0);
+	}
+	foreach ( @hideshow ) {
+	    $self->{$_}->Show(0);
+	}
+	$self->Layout;
     }
 }
 
@@ -811,7 +821,6 @@ sub _dbtest {
     }
 
     eval {
-	$INC{"EB.pm"} = 1;	# fake environment for DB testing
 	eval "use $drv";
 	die($@) if $@;
 	$res = $drv->feature("test") ? $drv->test( $db, $opts ) : '';
@@ -904,7 +913,6 @@ sub run {
 	    || $ret == wxID_OPEN
 	    || ! ( -s $cfg->std_config || -s $cfg->std_config_alt ) ) {	# getadm will chdir
 	my $top = EB::Wx::IniWiz->new();
-	$top->preselect( $ret == wxID_OPEN );
 	$app->SetTopWindow($top);
 	$top->Center;
 	$top->runwiz;
