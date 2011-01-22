@@ -468,6 +468,14 @@ sub OnSelectFunction {
 	Wx::WizardPageSimple::Chain( $self->{$wp->{select}}, $self->{$wp->{admname}} );
 	Wx::WizardPageSimple::Chain( $self->{$wp->{admname}}, $self->{$wp->{db}} );
 	Wx::WizardPageSimple::Chain( $self->{$wp->{db}}, $self->{$wp->{confirm}} );
+
+	for ( my $i = 0; $i < @db_drivers; $i++ ) {
+	    next unless $db_drivers[$i] eq "postgres";
+	    $self->{ch_db_driver}->SetSelection($i);
+	    OnSelectDbDriver( $self->{wiz} );
+	    last;
+	}
+
 	foreach ( @hideshow1 ) {
 	    $self->{"cb_cr_$_"}->SetValue(1);
 	    $self->{"cb_cr_$_"}->Enable(0);
