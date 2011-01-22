@@ -718,6 +718,11 @@ sub OnWizardFinished {
     unless ( -e $cfg->std_config || -e $cfg->std_config_alt ) {
 	$self->{ch_runeb}->SetValue(0);
     }
+    elsif ( $self->{rb_select}->GetSelection != 0 ) {
+	foreach ( qw( opening.eb ) ) {
+	    $self->{ch_runeb}->SetValue(0) unless -s $_;
+	}
+    }
     else {
 	foreach ( @configs ) {
 	    $self->{ch_runeb}->SetValue(0) unless -s $_;
