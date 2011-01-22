@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 20 11:46:59 2011
-# Update Count    : 188
+# Last Modified On: Sat Jan 22 21:44:27 2011
+# Update Count    : 193
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -176,9 +176,20 @@ sub test {
 			   $opts->{user} || undef,
 			   $opts->{password} || undef,
 			 );
+	$d->{RaiseError} = 1;
     };
     return $@ if $@;
     return DBI->errstr unless $d;
+
+    unless ( $db eq "template1" ) {
+	# Check if we really can access the db.
+	eval {
+	    $d->do("SELECT * FROM Metadata");
+	};
+	return $@ if $@;
+	return DBI->errstr unless $d;
+    }
+
     eval {
 	$d->disconnect;
     };
