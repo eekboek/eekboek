@@ -217,7 +217,8 @@ lib/EB/migrate/001000010001000011.sql
 lib/EB/migrate/001000011001000012.sql
 lib/EB/migrate/001000012001000013.sql
 lib/EB/migrate/001000013001000014.sql
-lib/EB/mo/nl/ebwxshell.mo
+lib/EB/locale/en/LC_MESSAGES/ebcore.mo
+lib/EB/locale/nl/LC_MESSAGES/ebwxshell.mo
 lib/EB/schema/eekboek.sql
 lib/EB/schema/eenmanszaak.ebz
 lib/EB/schema/bvnv.ebz
@@ -228,9 +229,9 @@ lib/EB/schema/sample.conf
 lib/EekBoek.pm
 locale/ebwxshell.pot
 locale/ebwxshell-nl.po
-locale/ebshell.pot
-locale/ebshell-en.po
-locale/ebshell-en.pox
+locale/ebcore.pot
+locale/ebcore-en.po
+locale/ebcore-en.pox
 locale/make_locales_en
 locale/make_locales_nl
 relnotes-2.00.html

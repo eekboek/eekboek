@@ -1,9 +1,9 @@
 #!/bin/sh
 
-APP=ebshell
+APP=ebcore
 PODIR=.
 SRCROOT=../
-MODIR=${SRCROOT}lib/EB/mo
+MODIR=${SRCROOT}lib/EB/locale
 GTF="-LPerl -j -k -k__x -k_T -kN__ --from-code=utf-8"
 
 test -d ${PODIR} || {
@@ -17,17 +17,18 @@ test -d ${MODIR} || {
 
 cp /dev/null ${PODIR}/${APP}.pot
 xgettext ${GTF} -o ${PODIR}/${APP}.pot ${SRCROOT}script/ebshell
-find ${SRCROOT}lib/EekBoek.pm ${SRCROOT}lib/EB ${SRCROOT}lib/EB/Wx/IniWiz.pm ${SRCROOT}lib/EB/Wx/IniWiz \( -name CVS -prune \) -o \( -name Wx -prune \) -o \( -name DeLuxe.pm -prune \) -o \( -name '*.pm' -a -print -exec xgettext ${GTF} -o ${PODIR}/${APP}.pot {} \; \)
+find ${SRCROOT}lib/EekBoek.pm ${SRCROOT}lib/EB.pm ${SRCROOT}lib/EB ${SRCROOT}lib/EB/Wx/IniWiz.pm ${SRCROOT}lib/EB/Wx/IniWiz \( -name CVS -prune \) -o \( -name Wx -prune \) -o \( -name DeLuxe.pm -prune \) -o \( -name '*.pm' -a -print -exec xgettext ${GTF} -o ${PODIR}/${APP}.pot {} \; \)
 
 for locale in en
 do
   if [ -f ${PODIR}/${APP}-${locale}.po ]
   then
+      mkdir -p ${MODIR}/${locale}/LC_MESSAGES/
       # Update current .po:
       msgmerge -U ${PODIR}/${APP}-${locale}.po ${PODIR}/${APP}.pot
       # Compile it:
       #msgfmt -c -v -o ${LIB}/EB/locale/${locale}/LC_MESSAGES/${APP}.mo $DIR/${APP}-${locale}.po
-      msgfmt -c -v -o ${MODIR}/${locale}/${APP}.mo ${PODIR}/${APP}-${locale}.po
+      msgfmt -c -v -o ${MODIR}/${locale}/LC_MESSAGES/${APP}.mo ${PODIR}/${APP}-${locale}.po
   else
       # Create a .po for translation:
       if [ $locale = "en" ]

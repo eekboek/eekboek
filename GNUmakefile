@@ -24,15 +24,15 @@ xxlocales :
 	  ); \
 	done
 
-MODIR := lib/EB/mo
+MODIR := lib/EB/locale
 PODIR := locale
 locales :
 	for locale in $(LOCALES); \
 	do \
-	  test -d $(MODIR)/$$locale || mkdir -p $(MODIR)/$$locale; \
+	  test -d $(MODIR)/$$locale/LC_MESSAGES || mkdir -p $(MODIR)/$$locale/LC_MESSAGES; \
 	done
-	msgfmt -c -v -o $(MODIR)/en/ebshell.mo   $(PODIR)/ebshell-en.po
-	msgfmt -c -v -o $(MODIR)/nl/ebwxshell.mo $(PODIR)/ebwxshell-nl.po
+	msgfmt -c -v -o $(MODIR)/en/LC_MESSAGES/ebcore.mo    $(PODIR)/ebcore-en.po
+	msgfmt -c -v -o $(MODIR)/nl/LC_MESSAGES/ebwxshell.mo $(PODIR)/ebwxshell-nl.po
 
 # Generate lib/EB/schema/foo.ebz out of lib/EB/examples/foo.dat.
 # Generate lib/EB/schema/sampledb.ebz.

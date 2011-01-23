@@ -3,7 +3,7 @@
 APP=ebwxshell
 PODIR=.
 SRCROOT=../
-MODIR=${SRCROOT}lib/EB/mo
+MODIR=${SRCROOT}lib/EB/locale
 GTF="-LPerl -j -k -k__x -k_T -kN__ --from-code=iso-8859-1"
 
 test -d ${PODIR} || {
@@ -23,11 +23,12 @@ for locale in nl
 do
   if [ -f ${PODIR}/${APP}-${locale}.po ]
   then
+      mkdir -p ${MODIR}/${locale}/LC_MESSAGES/
       # Update current .po:
       msgmerge -U ${PODIR}/${APP}-${locale}.po ${PODIR}/${APP}.pot
       # Compile it:
       #msgfmt -c -v -o ${LIB}/EB/locale/${locale}/LC_MESSAGES/${APP}.mo $DIR/${APP}-${locale}.po
-      msgfmt -c -v -o ${MODIR}/${locale}/${APP}.mo ${PODIR}/${APP}-${locale}.po
+      msgfmt -c -v -o ${MODIR}/${locale}/LC_MESSAGES/${APP}.mo ${PODIR}/${APP}-${locale}.po
   else
       # Create a .po for translation:
       if [ $locale = "en" ]
