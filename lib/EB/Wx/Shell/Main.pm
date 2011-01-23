@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:52:08 2010
-# Update Count    : 416
+# Last Modified On: Sun Jan 23 20:12:25 2011
+# Update Count    : 417
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -129,7 +129,7 @@ sub run {
     }
 
 
-    if ( my $prefix = findlib("mo") ) {
+    if ( my $prefix = findlib("locale") ) {
 	$locale->AddCatalogLookupPathPrefix($prefix);
     }
     $locale->AddCatalog("ebwxshell");
