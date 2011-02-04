@@ -2,8 +2,8 @@
 -- Author          : Johan Vromans
 -- Created On      : Thu Jul 14 12:54:08 2005
 -- Last Modified By: Johan Vromans
--- Last Modified On: Mon Jun 14 22:14:19 2010
--- Update Count    : 101
+-- Last Modified On: Fri Feb  4 13:34:10 2011
+-- Update Count    : 103
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (
@@ -216,8 +216,11 @@ CREATE TABLE Metadata (
     adm_btwbegin	date	-- begin huidige BTW periode
 );
 
--- Harde waarden, moeten overeenkomen met de code.
-INSERT INTO metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision)
+-- Database (Schema) versie.
+-- Deze moet overeenkomen met de hardgecodeerde waarde in EB::DB.
+-- Bij wijziging van het schema in de code kan aan de hand van deze
+-- versie de automigratie een bestaande database bijwerken.
+INSERT INTO Metadata (adm_scm_majversion, adm_scm_minversion, adm_scm_revision)
   VALUES (1, 0, 14);
 
 UPDATE Metadata SET adm_bky = '<<<<'; -- Voorgaand boekjaar
