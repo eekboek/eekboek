@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:56:21 2010
-# Update Count    : 103
+# Last Modified On: Sat Feb 12 14:07:05 2011
+# Update Count    : 107
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -201,7 +201,6 @@ use EB;
 
 # Plug in some commands dynamically.
 sub _plug_cmds {
-    my $does_btw = $dbh->does_btw;
     my $sth = $dbh->sql_exec("SELECT dbk_id,dbk_desc,dbk_type FROM Dagboeken");
     my $rr;
     while ( $rr = $sth->fetchrow_arrayref ) {
@@ -237,7 +236,6 @@ sub _plug_cmds {
     foreach my $adm ( @{EB::Tools::Opening->commands} ) {
 	my $cmd = $adm;
 	$cmd =~ s/^set_//;
-	next if $cmd =~ /^btw/ && !$does_btw;
 	no strict 'refs';
 	undef &{"do_adm_$cmd"};
 	*{"do_adm_$cmd"} = sub {
@@ -250,16 +248,6 @@ sub _plug_cmds {
 	    ($self->{o} ||= EB::Tools::Opening->new)->can($help)
 	      ? $self->{o}->$help() : $self->{o}->shellhelp($cmd);
 	};
-    }
-
-    # BTW aangifte.
-    if ( $does_btw ) {
-	no strict 'refs';
-	# Do not undef... it will undef the real routine :(
-	# undef &{"do_btwaangifte"};
-	*{"do_btwaangifte"}   = \&_do_btwaangifte;
-	# undef &{"help_btwaangifte"};
-	*{"help_btwaangifte"} = \&_help_btwaangifte;
     }
 
     foreach ($dbk_pat, $dbk_i_pat, $dbk_v_pat, $dbk_bkm_pat) {
@@ -703,7 +691,7 @@ EOS
 }
 
 # do_btwaangifte and help_btwaangifte are dynamically plugged in (or not).
-sub _do_btwaangifte {
+sub do_btwaangifte {
     my ($self, @args) = @_;
     my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
 		 close	      => 0,
@@ -730,11 +718,13 @@ sub _do_btwaangifte {
     warn("?"._T("Te veel argumenten voor deze opdracht")."\n"), return
       if @args > ($opts->{periode} ? 0 : 1);
     $opts->{compat_periode} = $args[0] if @args;
+    warn("?"._T("Deze administratie voert geen BTW")."\n"), return
+      unless $dbh->does_btw;
     EB::Report::BTWAangifte->new($opts)->perform($opts);
     undef;
 }
 
-sub _help_btwaangifte {
+sub help_btwaangifte {
     _T( <<EOS );
 Toont de BTW aangifte.
 
