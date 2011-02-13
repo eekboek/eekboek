@@ -14,17 +14,17 @@ bootstrap : locales schemas dummies
 # dutch, and parts in dutch that get translated into english. Someday
 # these should be integrated.
 
+MODIR := lib/EB/locale
 LOCALES := nl en
 xxlocales :
 	for locale in $(LOCALES); \
 	do \
-	  test -d lib/EB/mo/$$locale || mkdir -p lib/EB/mo/$$locale; \
+	  test -d $(MODIR)/$$locale || mkdir -p $(MODIR)/$$locale; \
 	  ( cd locale; \
 	    sh make_locales_$$locale; \
 	  ); \
 	done
 
-MODIR := lib/EB/locale
 PODIR := locale
 locales :
 	for locale in $(LOCALES); \
