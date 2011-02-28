@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Feb 12 14:07:05 2011
-# Update Count    : 107
+# Last Modified On: Mon Feb 28 11:00:55 2011
+# Update Count    : 108
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -1067,15 +1067,10 @@ sub do_export {
     check_open(1);
 
     if ( $opts->{xaf} ) {
-	if ( findlib "Export/XAF.pm" ) {
-	    require EB::Export::XAF;
-	    # XAF bevat altijd maar één boekjaar.
-	    $opts->{boekjaar} ||= $bky;
-	    EB::Export::XAF->export($opts);
-	}
-	else {
-	    warn("?"._T("Export naar XML Auditfile Financieel is niet beschikbaar")."\n");
-	}
+	require EB::Export::XAF;
+	# XAF bevat altijd maar één boekjaar.
+	$opts->{boekjaar} ||= $bky;
+	EB::Export::XAF->export($opts);
     }
     else {
 	if ( $opts->{boekjaar} ) {
