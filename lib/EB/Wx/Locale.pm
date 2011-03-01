@@ -2,15 +2,15 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:51:11 2010
-# Update Count    : 110
+# Last Modified On: Mon Feb 28 13:08:08 2011
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
 
 use strict;
 
-use constant GUIPACKAGE  => "ebgui";
+use constant GUIPACKAGE  => "ebwxshell";
 use constant COREPACKAGE => "ebcore";
 
 use base qw(Exporter);

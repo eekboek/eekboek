@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 22:35:56 2010
-# Update Count    : 102
+# Last Modified On: Tue Mar  1 19:36:02 2011
+# Update Count    : 107
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -33,10 +33,10 @@ if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
     $ENV{PATH} = File::Spec->rel2abs($dir) . $sep . $ENV{PATH};
 }
 
-check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/schema/eekboek.sql" );
+check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/res/schema/eekboek.sql" );
 
 require EekBoek;
-check_version( "EekBoek", $EekBoek::VERSION, "2.00.00" );
+check_version( "EekBoek", $EekBoek::VERSION, "2.01.00" );
 
 require EB::Main;
 EB::Main->run;
@@ -45,6 +45,8 @@ EB::Main->run;
 
 sub findfile {
     my ( $file ) = @_;
+    return if $Cava::Packager::PACKAGED;
+
     foreach ( @INC ) {
 	my $f = File::Spec->catfile( $_, $file );
 	return $f if -s $f;
@@ -53,6 +55,9 @@ sub findfile {
 }
 
 sub check_install {
+    # Trust packager.
+    return 1 if $Cava::Packager::PACKAGED;
+
     my ( $what, @checks ) = @_;
     foreach ( @checks ) {
 	next if findfile( $_ );

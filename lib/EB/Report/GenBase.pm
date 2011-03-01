@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:35:57 2010
-# Update Count    : 161
+# Last Modified On: Tue Mar  1 16:41:29 2011
+# Update Count    : 164
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -21,6 +21,7 @@ use EB;
 
 use IO::File;
 use EB::Format;
+use File::Glob qw(:glob);	# glob that allows space (for Windows);
 
 sub new {
     my ($class, $opts) = @_;
@@ -196,17 +197,32 @@ sub backend_options {
     }
     my @opts = qw(output=s page=i);
 
-    # Find files.
-    foreach my $lib ( @INC ) {
-	my @files = glob("$lib/$pkg/*.pm");
-	next unless @files;
-	# warn("=> be_opt: found ", scalar(@files), " files in $lib/$pkg\n");
-	foreach ( @files ) {
-	    next unless m;/([^/]+)\.pm$;;
-	    # Actually, we should check whether the class implements the
-	    # GenBase API, but we can't do that without preloading all
-	    # backends.
-	    $be{lc($1)}++;
+    if ( $Cava::Packager::PACKAGED ) {
+	$be{wxhtml}++;
+	unless ( $be{wxhtml} ) {
+	    # Ignored, but forces the packager to include these modules.
+	    require EB::Report::BTWAangifte::Wxhtml;
+	    require EB::Report::Balres::Wxhtml;
+	    require EB::Report::Debcrd::Wxhtml;
+	    require EB::Report::Grootboek::Wxhtml;
+	    require EB::Report::Journal::Wxhtml;
+	    require EB::Report::Open::Wxhtml;
+	    require EB::Report::Proof::Wxhtml;
+	}
+    }
+    else {
+	# Find files.
+	foreach my $lib ( @INC ) {
+	    my @files = glob("$lib/$pkg/*.pm");
+	    next unless @files;
+	    # warn("=> be_opt: found ", scalar(@files), " files in $lib/$pkg\n");
+	    foreach ( @files ) {
+		next unless m;/([^/]+)\.pm$;;
+		# Actually, we should check whether the class implements the
+		# GenBase API, but we can't do that without preloading all
+		# backends.
+		$be{lc($1)}++;
+	    }
 	}
     }
 

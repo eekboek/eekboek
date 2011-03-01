@@ -11,7 +11,7 @@ use utf8;
 use 5.008003;
 
 our $PACKAGE = 'EekBoek';
-our $VERSION = '2.00.02';
+our $VERSION = '2.01.00';
 
 =head1 NAME
 
@@ -44,7 +44,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2010 by Squirrel Consultancy. All
+This program is Copyright 2005-2011 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify

@@ -96,6 +96,19 @@ sub run {
 sub find_db_drivers {
     my %drivers;
 
+    if ( $Cava::Packager::PACKAGED ) {
+	# Trust packager.
+	unless ( $Cava::Packager::PACKAGED ) {
+	    # Ignored, but force packaging.
+	    require EB::DB::Postgres;
+	    require EB::DB::Sqlite;
+	}
+	return
+	  { sqlite   => "SQLite",
+	    postgres => "PostgreSQL",
+	  };
+    }
+
     foreach my $lib ( @INC ) {
 	next unless -d "$lib/EB/DB";
 	foreach my $drv ( glob("$lib/EB/DB/*.pm") ) {
@@ -131,7 +144,7 @@ sub runwizard {
 
     my $year = 1900 + (localtime(time))[5];
 
-    my @ebz = map { [ $_, "" ] } glob( libfile("schema/*.ebz") );
+    my @ebz = map { [ $_, "" ] } glob( libfile("templates/*.ebz") );
     my @ebz_desc = ( "Lege administratie" );
 
     my $i = 0;
@@ -152,6 +165,7 @@ sub runwizard {
 	else {
 	    $desc = $1 if $ebz->[0] =~ m/([^\\\/]+)\.ebz$/i;
 	}
+	$desc =~ s/[\n\r]+$//; # can't happen? think again...
 	push( @ebz_desc, $desc);
 	$i++;
     }

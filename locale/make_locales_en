@@ -3,7 +3,7 @@
 APP=ebcore
 PODIR=.
 SRCROOT=../
-MODIR=${SRCROOT}lib/EB/locale
+MODIR=${SRCROOT}lib/EB/res/locale
 GTF="-LPerl -j -k -k__x -k_T -kN__ --from-code=utf-8"
 
 test -d ${PODIR} || {

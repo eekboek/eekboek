@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:20:05 2010
-# Update Count    : 254
+# Last Modified On: Mon Feb 28 13:00:35 2011
+# Update Count    : 260
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -24,20 +24,35 @@ use EekBoek;
 our @EXPORT;
 our @EXPORT_OK;
 
-# Establish location of our data, relative to this module.
+# Establish location of our run-time resources.
 my $lib;
 sub libfile {
     my ($f) = @_;
+
     unless ( $lib ) {
-	$lib = $INC{"EB.pm"};
-	$lib =~ s/EB\.pm$//;
+	# Cava.
+	if ( $Cava::Packager::PACKAGED ) {
+	    return Cava::Packager::GetResourcePath()."/$f";
+	}
+	else {
+	    $lib = $INC{"EB.pm"};
+	    $lib =~ s/EB\.pm$//;
+	}
     }
-    $lib."EB/$f";
+    $lib."EB/res/$f";
 }
 
 sub findlib {
     my ($file) = @_;
+
+    # Cava.
+    if ( $Cava::Packager::PACKAGED ) {
+	my $found = Cava::Packager::GetResource($file);
+	return $found if -f $found;
+    }
+
     foreach ( @INC ) {
+	return "$_/EB/res/$file" if -e "$_/EB/res/$file";
 	return "$_/EB/$file" if -e "$_/EB/$file";
     }
     undef;

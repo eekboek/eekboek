@@ -131,7 +131,7 @@ sub new {
 	    $prev = $page;
 	}
 
-	@ebz = map { [$_, "" ] } glob( libfile("schema/*.ebz") );
+	@ebz = map { [$_, "" ] } glob( libfile("templates/*.ebz") );
 
 	my $i = 0;
 	foreach my $ebz ( @ebz ) {
@@ -151,6 +151,8 @@ sub new {
 	    else {
 		$desc = $1 if $ebz->[0] =~ m/([^\\\/]+)\.ebz$/i;
 	    }
+	    $desc =~ s/[\n\r]+$//; # can't happen? think again...
+
 	    $self->{ch_template}->Append($desc);
 	    $i++;
 	    if ( $ebz->[0] =~ /\/sample(db)?\.ebz$/ ) {
@@ -700,9 +702,16 @@ sub OnWizardFinished {
 			$ret = EB::Main->run;
 		    }
 		    else {
-			my @cmd = ( $^X, "-S", "ebshell", "--init" );
-			$cmd[2] = "ebshell.pl" if $^O =~ /mswin/i;
-			$ret = system(@cmd);
+			my @eb;
+			if ( $Cava::Packager::PACKAGED ) {
+			    @eb = ( Cava::Packager::GetBinPath() . "/ebshell",
+				    "--init" );
+			}
+			else {
+			    @eb = ( $^X, "-S", "ebshell", "--init" );
+			    $eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
+			}
+			$ret = system(@eb);
 		    }
 
 		    $self->{t_main}->AppendText(_T( $ret ? "Mislukt" : "Gereed")."\n");
@@ -766,6 +775,19 @@ sub OnOk {
 
 sub find_db_drivers {
     my %drivers;
+
+    if ( $Cava::Packager::PACKAGED ) {
+	# Trust packager.
+	unless ( $Cava::Packager::PACKAGED ) {
+	    # Ignored, but force packaging.
+	    require EB::DB::Postgres;
+	    require EB::DB::Sqlite;
+	}
+	return
+	  { sqlite   => "SQLite",
+	    postgres => "PostgreSQL",
+	  };
+    }
 
     foreach my $lib ( @INC ) {
 	next unless -d "$lib/EB/DB";

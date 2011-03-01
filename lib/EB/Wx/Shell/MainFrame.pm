@@ -281,8 +281,14 @@ sub RunCommand {
 	    $self->OnOpen;
 	    return;
 	}
-	my @eb = ($^X, qw(-S ebshell --nointeractive));
-	$eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
+	my @eb;
+	if ( $Cava::Packager::PACKAGED ) {
+            @eb = ( Cava::Packager::GetBinPath() . "/ebshell" );
+	}
+	else {
+	    @eb = ( $^X, "-S", "ebshell" );
+	    $eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
+	}
 	push(@eb, "-f", $self->{_ebcfg}) if $self->{_ebcfg};
 	$self->{_proc} =
 	  Wx::Perl::ProcessStream->OpenProcess(\@eb, 'EekBoek', $self);
@@ -589,7 +595,12 @@ sub OnAbout {
 	       ver => $Wx::VERSION)."\n".
 	   __x("{pkg} version {ver}",
 	       pkg => "wxWidgets",
-	       ver => Wx::wxVERSION)."\n",
+	       ver => Wx::wxVERSION)."\n".
+	   ( $Cava::Packager::PACKAGED
+	     ? __x("{pkg} version {ver}",
+		   pkg => "CAVA Packager",
+		   ver => $Cava::Packager::VERSION)."\n"
+	     : () ),
 	   __x("About {pkg} {app}",
 	       pkg => $EekBoek::PACKAGE,
 	       app => "WxShell"),
