@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:26:51 2010
-# Update Count    : 442
+# Last Modified On: Tue Mar  1 14:57:40 2011
+# Update Count    : 443
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,6 +22,7 @@ use warnings;
 
 use EB;
 use DBI;
+use File::Glob qw(:glob);	# glob that allows space (for Windows);
 
 my $dbh;			# singleton for DB
 
