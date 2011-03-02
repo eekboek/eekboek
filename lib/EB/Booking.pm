@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:20:48 2010
-# Update Count    : 142
+# Last Modified On: Wed Mar  2 23:00:27 2011
+# Update Count    : 143
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -230,7 +230,7 @@ sub journalise {
 	$jnl_amount, $jnl_desc, $jnl_rel);
 
     my $rr = $::dbh->do("SELECT bsk_nr, bsk_desc, bsk_dbk_id, bsk_date, bsk_ref".
-		      " FROM boekstukken".
+		      " FROM Boekstukken".
 		      " WHERE bsk_id = ?", $bsk_id);
     my ($bsk_nr, $bsk_desc, $bsk_dbk_id, $bsk_date, $bsk_ref) = @$rr;
 

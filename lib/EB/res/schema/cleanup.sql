@@ -1,18 +1,18 @@
 -- Script to clean an EekBoek database.
 
-DROP TABLE boekstukregels ;
-DROP TABLE journal ;
-DROP TABLE boekjaarbalans ;
-DROP TABLE metadata ;
-DROP TABLE standaardrekeningen ;
-DROP TABLE relaties ;
-DROP TABLE boekstukken ;
-DROP TABLE dagboeken ;
-DROP TABLE boekjaren ;
-DROP TABLE constants ;
-DROP TABLE accounts ;
-DROP TABLE btwtabel ;
-DROP TABLE verdichtingen ;
+DROP TABLE Boekstukregels ;
+DROP TABLE Journal ;
+DROP TABLE Boekjaarbalans ;
+DROP TABLE Metadata ;
+DROP TABLE Standaardrekeningen ;
+DROP TABLE Relaties ;
+DROP TABLE Boekstukken ;
+DROP TABLE Dagboeken ;
+DROP TABLE Boekjaren ;
+DROP TABLE Constants ;
+DROP TABLE Accounts ;
+DROP TABLE Btwtabel ;
+DROP TABLE Verdichtingen ;
 
 CREATE OR REPLACE FUNCTION plpgsql_call_handler() RETURNS language_handler
     AS '$libdir/plpgsql', 'plpgsql_call_handler'

@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  1 16:41:29 2011
-# Update Count    : 164
+# Last Modified On: Wed Mar  2 23:01:14 2011
+# Update Count    : 165
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -152,7 +152,7 @@ sub backend {
     }
 
     # Sanity.
-    my $opendate = $dbh->do("SELECT min(bky_begin) FROM boekjaren WHERE NOT bky_code = ?",
+    my $opendate = $dbh->do("SELECT min(bky_begin) FROM Boekjaren WHERE NOT bky_code = ?",
 			    BKY_PREVIOUS)->[0];
 
     if ( $be->{per_begin} gt $be->{now} ) {
