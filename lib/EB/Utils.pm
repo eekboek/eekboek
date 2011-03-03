@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Wed Sep 21 13:09:01 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:22:19 2010
-# Update Count    : 101
+# Last Modified On: Thu Mar  3 13:36:00 2011
+# Update Count    : 102
 # Status          : Unknown, Use with caution!
 
 package EB::Utils;
@@ -209,6 +209,38 @@ sub min { $_[0] < $_[1] ? $_[0] : $_[1] }
 sub max { $_[0] > $_[1] ? $_[0] : $_[1] }
 
 push( @EXPORT, qw(min max) );
+
+# Locale / Gettext.
+# Variable expansion. See GNU gettext for details.
+sub __expand($%) {
+    my ($t, %args) = @_;
+    my $re = join('|', map { quotemeta($_) } keys(%args));
+    $t =~ s/\{($re)\}/defined($args{$1}) ? $args{$1} : "{$1}"/ge;
+    $t;
+}
+
+# Translation w/ variables.
+sub __x($@) {
+    my ($t, %vars) = @_;
+    __expand(_T($t), %vars);
+}
+
+# Translation w/ singular/plural handling.
+sub __n($$$) {
+    my ($sing, $plur, $n) = @_;
+    _T($n == 1 ? $sing : $plur);
+}
+
+# Translation w/ singular/plural handling and variables.
+sub __nx($$$@) {
+    my ($sing, $plur, $n, %vars) = @_;
+    __expand(__n($sing, $plur, $n), %vars);
+}
+
+# Make __xn a synonym for __nx.
+*__xn = \&__nx;
+
+push( @EXPORT, qw(__x __n __nx __xn)  );
 
 # ... more to come ...
 

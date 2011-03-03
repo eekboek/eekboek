@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek/WxShell 0.01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-20 11:56+0100\n"
+"POT-Creation-Date: 2011-03-03 11:30+0100\n"
 "PO-Revision-Date: 2010-02-23 12:13+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -37,7 +37,7 @@ msgstr "HTML bestanden (*.html)|*.html"
 msgid "Edit Input Line"
 msgstr "Wijzigen invoerregel"
 
-#: ../lib/EB/Wx/Shell/Main.pm:215
+#: ../lib/EB/Wx/Shell/Main.pm:202
 #, perl-brace-format
 msgid "This is {pkg} [{name} {version}]"
 msgstr "Dit is {pkg} [{name} {version}]"
@@ -204,60 +204,58 @@ msgstr "Selecteer eerst een geldige .eekboek.conf"
 msgid "Missing config"
 msgstr "Geen configuratie"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:368
+#: ../lib/EB/Wx/Shell/MainFrame.pm:374
 msgid "EekBoek program has finished"
 msgstr "EekBoek programma is geëindigd"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:369
+#: ../lib/EB/Wx/Shell/MainFrame.pm:375
 msgid "Finished"
 msgstr "Beëindigd"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:391
+#: ../lib/EB/Wx/Shell/MainFrame.pm:397
 msgid "Error"
 msgstr "Fout"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:396
+#: ../lib/EB/Wx/Shell/MainFrame.pm:402
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:401
+#: ../lib/EB/Wx/Shell/MainFrame.pm:407
 msgid "Information"
 msgstr "Mededeling"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:469
+#: ../lib/EB/Wx/Shell/MainFrame.pm:475
 msgid "Choose"
 msgstr "Kies"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:570
+#: ../lib/EB/Wx/Shell/MainFrame.pm:576
 #, perl-brace-format
 msgid "{pkg} {app} version {ver}"
 msgstr "{pkg} {app} versie {ver}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:575
+#: ../lib/EB/Wx/Shell/MainFrame.pm:581
 #, perl-brace-format
 msgid "Written by {author}"
 msgstr "Geschreven door {author}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:579
+#: ../lib/EB/Wx/Shell/MainFrame.pm:585
 #, perl-brace-format
 msgid "Support: {url}"
 msgstr "Voor ondersteuning: {url}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:582
+#: ../lib/EB/Wx/Shell/MainFrame.pm:588
 #, perl-brace-format
 msgid "GUI design with {wxglade}"
 msgstr "GUI ontwerp met {wxglade}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:584 ../lib/EB/Wx/Shell/MainFrame.pm:587
-#: ../lib/EB/Wx/Shell/MainFrame.pm:590
+#: ../lib/EB/Wx/Shell/MainFrame.pm:590 ../lib/EB/Wx/Shell/MainFrame.pm:593
+#: ../lib/EB/Wx/Shell/MainFrame.pm:596 ../lib/EB/Wx/Shell/MainFrame.pm:600
 #, perl-brace-format
 msgid "{pkg} version {ver}"
 msgstr "{pkg} versie {ver}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:593
+#: ../lib/EB/Wx/Shell/MainFrame.pm:604
 #, perl-brace-format
 msgid "About {pkg} {app}"
 msgstr "Over {pkg} {app}"
 
-#~ msgid "Bugs: {bugs}"
-#~ msgstr "Fouten rapporteren: {bugs}"

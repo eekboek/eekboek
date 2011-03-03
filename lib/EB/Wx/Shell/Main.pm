@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 10:50:40 2011
-# Update Count    : 418
+# Last Modified On: Thu Mar  3 11:19:57 2011
+# Update Count    : 423
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -30,8 +30,6 @@ use Getopt::Long 2.13;
 ################ The Process ################
 
 use Wx 0.74 qw[:everything];
-use Wx::Locale;
-#use File::Basename ();
 
 my $app_dir;
 
@@ -39,8 +37,6 @@ use base qw(Wx::App);
 
 sub OnInit {
     my( $self ) = shift;
-
-
     return 1;
 }
 
@@ -110,14 +106,10 @@ sub run {
     $app->SetAppName($EekBoek::PACKAGE);
     $app->SetVendorName("Squirrel Consultancy");
 
-    my $locale;
-
     if ( $^O =~ /^mswin/i ) {
-	$locale = Wx::Locale->new( wxLANGUAGE_DUTCH );
 	Wx::ConfigBase::Get->SetPath("/ebwxshell");
     }
     else {
-	$locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
 	Wx::ConfigBase::Set
 	    (Wx::FileConfig->new
 	     ( $app->GetAppName() ,
@@ -128,11 +120,6 @@ sub run {
 	     ));
     }
 
-
-    if ( my $prefix = findlib("locale") ) {
-	$locale->AddCatalogLookupPathPrefix($prefix);
-    }
-    $locale->AddCatalog("ebwxshell");
     my $histfile = $cfg->user_dir("history");
 
     require EB::Wx::Shell::MainFrame;

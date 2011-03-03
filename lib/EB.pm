@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 10:25:46 2011
-# Update Count    : 270
+# Last Modified On: Thu Mar  3 13:41:08 2011
+# Update Count    : 271
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -106,7 +106,7 @@ unless ( $ident ) {		# already done (can this happen?)
 		 name    => $EekBoek::PACKAGE,
 		 version => $EekBoek::VERSION);
     my @locextra;
-    push(@locextra, _T("Nederlands")) if LOCALISER;
+    push(@locextra, _T("Nederlands")) if EB::Locale::LOCALISER();
     $imsg = __x("{ident}{extra}{locale} -- Copyright {year} Squirrel Consultancy",
 		ident   => $ident,
 		extra   => ($app ? " Wx" : ""),

@@ -1,12 +1,21 @@
+#! perl
+
 # Locale.pm -- EB Locale setup (GUI version)
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 28 13:08:08 2011
-# Update Count    : 111
+# Last Modified On: Thu Mar  3 13:39:35 2011
+# Update Count    : 120
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
+
+# IMPORTANT:
+#
+# This module is used (require-d) by module EB only.
+# No other modules should try to play localisation tricks.
+#
+# Note: Only _T must be defined. The rest is defined in EB::Utils.
 
 use strict;
 
@@ -15,10 +24,8 @@ use constant COREPACKAGE => "ebcore";
 
 use base qw(Exporter);
 
-our @EXPORT_OK = qw(LOCALISER _T __x __n __nx __xn);
+our @EXPORT_OK = qw(_T);
 our @EXPORT = @EXPORT_OK;
-
-=begin alternative
 
 use Wx qw(wxLANGUAGE_DEFAULT wxLOCALE_LOAD_DEFAULT);
 use Wx::Locale gettext => '_T';
@@ -35,43 +42,5 @@ unless ( $gui_localiser ) {
 }
 
 sub LOCALISER() { "Wx::Locale" }
-
-=cut
-
-sub _T($) { $_[0] }
-
-sub LOCALISER() { "" };
-
-# Variable expansion. See GNU gettext for details.
-sub __expand($%) {
-    my ($t, %args) = @_;
-    my $re = join('|', map { quotemeta($_) } keys(%args));
-    $t =~ s/\{($re)\}/defined($args{$1}) ? $args{$1} : "{$1}"/ge;
-    $t;
-}
-
-# Translation w/ variables.
-sub __x($@) {
-    my ($t, %vars) = @_;
-    __expand(_T($t), %vars);
-}
-
-# Translation w/ singular/plural handling.
-sub __n($$$) {
-    my ($sing, $plur, $n) = @_;
-    _T($n == 1 ? $sing : $plur);
-}
-
-# Translation w/ singular/plural handling and variables.
-sub __nx($$$@) {
-    my ($sing, $plur, $n, %vars) = @_;
-    __expand(__n($sing, $plur, $n), %vars);
-}
-
-# Make __xn a synonym for __nx.
-*__xn = \&__nx;
-
-# Perl magic.
-#*_=\&_T;
 
 1;
