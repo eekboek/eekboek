@@ -14,7 +14,7 @@ bootstrap : locales schemas dummies
 # dutch, and parts in dutch that get translated into english. Someday
 # these should be integrated.
 
-MODIR := lib/EB/locale
+MODIR := lib/EB/res/locale
 LOCALES := nl en
 xxlocales :
 	for locale in $(LOCALES); \
@@ -34,8 +34,8 @@ locales :
 	msgfmt -c -v -o $(MODIR)/en/LC_MESSAGES/ebcore.mo    $(PODIR)/ebcore-en.po
 	msgfmt -c -v -o $(MODIR)/nl/LC_MESSAGES/ebwxshell.mo $(PODIR)/ebwxshell-nl.po
 
-# Generate lib/EB/schema/foo.ebz out of lib/EB/examples/foo.dat.
-# Generate lib/EB/schema/sampledb.ebz.
+# Generate lib/EB/res/templates/foo.ebz out of lib/EB/examples/foo.dat.
+# Generate lib/EB/res/templates/sampledb.ebz.
 
 schemas :
 	rm -fr tmp && mkdir tmp && cd tmp; \
@@ -43,26 +43,26 @@ schemas :
 	cp ../lib/EB/examples/$$name.dat schema.dat; \
 	( echo "Dataset $$name.ebz aangemaakt door bootstrap"; \
 	  echo "Omschrijving: Vereniging / Stichting" ) | \
-	zip -qz ../lib/EB/schema/$$name.ebz *
+	zip -qz ../lib/EB/res/templates/$$name.ebz *
 	rm -fr tmp && mkdir tmp && cd tmp; \
 	name=bvnv; \
 	cp ../lib/EB/examples/$$name.dat schema.dat; \
 	( echo "Dataset $$name.ebz aangemaakt door bootstrap"; \
 	  echo "Omschrijving: BV / NV"; \
 	  echo "Flags: -btw" ) | \
-	zip -qz ../lib/EB/schema/$$name.ebz *
+	zip -qz ../lib/EB/res/templates/$$name.ebz *
 	rm -fr tmp && mkdir tmp && cd tmp; \
 	name=eenmanszaak; \
 	cp ../lib/EB/examples/$$name.dat schema.dat; \
 	( echo "Dataset $$name.ebz aangemaakt door bootstrap"; \
 	  echo "Omschrijving: Eenmanszaak" ) | \
-	zip -qz ../lib/EB/schema/$$name.ebz *
+	zip -qz ../lib/EB/res/templates/$$name.ebz *
 	rm -fr tmp && mkdir tmp && cd tmp; \
 	name=ondernemer; \
 	cp ../lib/EB/examples/$$name.dat schema.dat; \
 	( echo "Dataset $$name.ebz aangemaakt door bootstrap"; \
 	  echo "Omschrijving: Ondernemer" ) | \
-	zip -qz ../lib/EB/schema/$$name.ebz *
+	zip -qz ../lib/EB/res/templates/$$name.ebz *
 	rm -fr tmp && mkdir tmp && cd tmp; \
 	name=sampledb; \
 	cp ../lib/EB/examples/schema.dat .; \
@@ -71,7 +71,7 @@ schemas :
 	cp ../lib/EB/examples/opening.eb .; \
 	( echo "Dataset $$name.ebz aangemaakt door bootstrap"; \
 	  echo "Omschrijving: EekBoek voorbeeldadministratie" ) | \
-	zip -qz ../lib/EB/schema/$$name.ebz *
+	zip -qz ../lib/EB/res/templates/$$name.ebz *
 	rm -fr tmp && mkdir tmp && cd tmp; \
 
 # Dummies are files that are (re)created by running perl Build.PL.
