@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 16:47:20 2011
-# Update Count    : 272
+# Last Modified On: Thu Mar  3 21:02:26 2011
+# Update Count    : 273
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -54,7 +54,7 @@ sub findlib {
     }
 
     foreach ( @INC ) {
-	return "$_/EB/usr/$file" if -e "$_/EB/usr/$file";
+	return "$_/EB/user/$file" if -e "$_/EB/user/$file";
 	return "$_/EB/res/$file" if -e "$_/EB/res/$file";
 	return "$_/EB/$file" if -e "$_/EB/$file";
     }
