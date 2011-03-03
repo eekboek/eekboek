@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:50:43 2010
-# Update Count    : 238
+# Last Modified On: Thu Mar  3 10:46:54 2011
+# Update Count    : 239
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -128,9 +128,11 @@ sub init_config {
 
 sub import {
     my ($self, $app) = @_;
-    my $opts = ref($app) ? { %$app } : { app => $app };
-    return if $cfg && $opts->{app} && $cfg->app eq lc($opts->{app});
-    $cfg = $self->init_config($opts);
+    return unless defined $app;
+    die("PROGRAM ERROR: EB::Config cannot import anything");
+    # my $opts = ref($app) ? { %$app } : { app => $app };
+    # return if $cfg && $opts->{app} && $cfg->app eq lc($opts->{app});
+    # $cfg = $self->init_config($opts);
 }
 
 package EB::Config::Handler;

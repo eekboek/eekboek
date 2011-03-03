@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:50:58 2010
-# Update Count    : 997
+# Last Modified On: Thu Mar  3 10:50:02 2011
+# Update Count    : 998
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -23,7 +23,7 @@ use warnings;
 
 use EekBoek;
 use EB;
-use EB::Config ();
+use EB::Config;
 use EB::DB;
 use Getopt::Long 2.13;
 
