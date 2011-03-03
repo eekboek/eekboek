@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 13:44:06 2011
-# Update Count    : 127
+# Last Modified On: Thu Mar  3 20:24:34 2011
+# Update Count    : 137
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -51,6 +51,11 @@ unless ( $core_localiser ) {
     $core_localiser = "<dummy>";
     eval 'sub _T($) { $_[0] };';
     eval 'sub LOCALISER() { "" };';
+}
+
+sub set_language {
+    # Set/change language.
+    setlocale( LC_MESSAGES, $_[1] );
 }
 
 1;

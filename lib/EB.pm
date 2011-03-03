@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 13:41:08 2011
-# Update Count    : 271
+# Last Modified On: Thu Mar  3 16:47:20 2011
+# Update Count    : 272
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -71,7 +71,7 @@ use Carp::Assert;
 
 BEGIN {
     # The CLI and GUI use different EB::Locale modules.
-    if ( $app ) {
+    if ( $app || $Cava::Packager::PACKAGED ) {
 	require EB::Wx::Locale;	# provides EB::Locale, really
     }
     else {

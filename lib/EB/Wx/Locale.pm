@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 13:39:35 2011
-# Update Count    : 120
+# Last Modified On: Thu Mar  3 20:24:42 2011
+# Update Count    : 123
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -42,5 +42,12 @@ unless ( $gui_localiser ) {
 }
 
 sub LOCALISER() { "Wx::Locale" }
+
+sub set_language {
+    # Set/change language.
+    $gui_localiser->Init( $_[1], wxLOCALE_LOAD_DEFAULT );
+    $gui_localiser->AddCatalog(GUIPACKAGE);
+    $gui_localiser->AddCatalog(COREPACKAGE);
+}
 
 1;
