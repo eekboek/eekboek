@@ -176,6 +176,7 @@ lib/EB/Wx/IniWiz.pm
 lib/EB/Wx/IniWiz/OpenDialog.pm
 lib/EB/Wx/Locale.pm
 lib/EB/Wx/Shell/EditDialog.pm
+lib/EB/Wx/Shell/Help.pm
 lib/EB/Wx/Shell/HtmlViewer.pm
 lib/EB/Wx/Shell/Main.pm
 lib/EB/Wx/Shell/MainFrame.pm
@@ -199,6 +200,7 @@ lib/EB/res/Wx/icons/eb.jpg
 lib/EB/res/Wx/icons/ebicon.png
 lib/EB/res/Wx/icons/ebwiz.jpg
 lib/EB/res/Wx/icons/edit.png
+lib/EB/res/help/nl/docs.htb
 lib/EB/res/locale/en/LC_MESSAGES/ebcore.mo
 lib/EB/res/locale/nl/LC_MESSAGES/ebwxshell.mo
 lib/EB/res/migrate/001000008001000009.pl
