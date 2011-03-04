@@ -151,6 +151,7 @@ sub new {
 	$self->{_T("Reports")}->Append(MENU_REP_VAT, _T("VAT Report"), "");
 	$self->{_T("menubar")}->Append($self->{_T("Reports")}, _T("&Reports"));
 	$wxglade_tmp_menu = Wx::Menu->new();
+	$wxglade_tmp_menu->Append(wxID_HELP, _T("&Help..."), "");
 	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("&About..."), "");
 	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&Help"));
 	$self->SetMenuBar($self->{menubar});
@@ -184,6 +185,7 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_REP_AR,  \&OnMenuAR);
 	Wx::Event::EVT_MENU($self, MENU_REP_VAT, \&OnMenuVAT);
 
+	Wx::Event::EVT_MENU($self, wxID_HELP,  \&OnHelp);
 	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
 
 	#### End of MenuBar
@@ -564,6 +566,17 @@ sub OnChar {
     }
 }
 
+
+sub OnHelp {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::Shell::MainFrame::OnHelp <event_handler>
+
+    require EB::Wx::Help;
+    my $h = EB::Wx::Help->new;
+    $h->show_html_help;
+
+# end wxGlade
+}
 
 sub OnAbout {
 	my ($self, $event) = @_;
