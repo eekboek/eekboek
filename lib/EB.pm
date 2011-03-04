@@ -6,13 +6,14 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 21:02:26 2011
-# Update Count    : 273
+# Last Modified On: Fri Mar  4 23:31:57 2011
+# Update Count    : 280
 # Status          : Unknown, Use with caution!
 
 package main;
 
 our $app;
+our $cfg;
 
 package EB;
 
@@ -43,7 +44,30 @@ sub libfile {
 }
 
 sub findlib {
-    my ($file) = @_;
+    my ($file, $section) = @_;
+
+    # The two-argument form supports locale-dependent paths.
+    if ( $section && $cfg ) {
+	my $lang = $cfg->val( qw( locale lang ), "" );
+	if ( $lang =~ /\./ ) {
+	    my $found = findlib( "$section/$lang/$file" );
+	    return $found if $found;
+	    $lang =~ s/\..*//;	# strip .utf8
+	}
+	if ( $lang =~ /_/  ) {
+	    my $found = findlib( "$section/$lang/$file" );
+	    return $found if $found;
+	    $lang =~ s/_.*//;	# strip _US
+	}
+	if ( $lang ) {
+	    my $found = findlib( "$section/$lang/$file" );
+	    return $found if $found;
+	}
+	return undef;
+    }
+    else {
+	$file = "$section/$file";
+    }
 
     # Cava.
     if ( $Cava::Packager::PACKAGED ) {
