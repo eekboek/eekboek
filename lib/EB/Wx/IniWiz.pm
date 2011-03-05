@@ -14,6 +14,7 @@ use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 
 our $app;
 our $cfg;
+our $bin;
 
 our @ebz;			# ( [ "filename.ebz", "flags" ], [...], ... )
 
@@ -24,6 +25,7 @@ package EB::Wx::IniWiz;
 use Wx qw[:everything];
 use base qw(Wx::Frame);
 use EB;
+use File::Spec;
 use File::Basename;
 use File::Glob qw(:glob);	# glob that allows space (for Windows);
 
@@ -708,7 +710,7 @@ sub OnWizardFinished {
 				    "--init" );
 			}
 			else {
-			    @eb = ( $^X, "-S", "ebshell", "--init" );
+			    @eb = ( $^X, File::Spec->catfile( $bin, "ebshell"), "--init" );
 			    $eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
 			}
 			$ret = system(@eb);

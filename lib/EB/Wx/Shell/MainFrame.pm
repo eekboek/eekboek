@@ -13,6 +13,7 @@ use base qw(EB::Wx::Shell::Window);
 use strict;
 use utf8;
 use Encode;
+use File::Spec;
 
 # begin wxGlade: ::dependencies
 use Wx::Locale gettext => '_T';
@@ -288,7 +289,7 @@ sub RunCommand {
             @eb = ( Cava::Packager::GetBinPath() . "/ebshell" );
 	}
 	else {
-	    @eb = ( $^X, "-S", "ebshell" );
+	    @eb = ( $^X, File::Spec->catfile( $::bin, "ebshell" ) );
 	    $eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
 	}
 	push(@eb, "-f", $self->{_ebcfg}) if $self->{_ebcfg};

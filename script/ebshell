@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  1 19:36:02 2011
-# Update Count    : 107
+# Last Modified On: Sat Mar  5 20:48:30 2011
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -22,15 +22,16 @@ use File::Basename;
 use Encode;
 binmode( STDERR, ':encoding(utf-8)' );
 
+use FindBin;
+our $bin = $FindBin::Bin;
+
 # Common case when run from unpacked dist.
-my $script = $0;
-my $dir = dirname($script);
-my $lib = File::Spec->catfile( dirname($dir), "lib" );
+my $lib = File::Spec->catfile( dirname($bin), "lib" );
 if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
     # Need abs paths since we're going to chdir later.
     unshift( @INC, File::Spec->rel2abs($lib) );
     my $sep = $ENV{PATH} =~ m?;??q:;::q;:;;;; # just for fun
-    $ENV{PATH} = File::Spec->rel2abs($dir) . $sep . $ENV{PATH};
+    $ENV{PATH} = File::Spec->rel2abs($lib) . $sep . $ENV{PATH};
 }
 
 check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/res/schema/eekboek.sql" );

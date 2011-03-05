@@ -506,18 +506,11 @@ EOD
 	    next unless $opts{create_database};
 	    $req--;
 	    my $ret;
-	    if ( 0 ) {
-		my @cmd = ( $^X, "-S", "ebshell", "--init" );
-		$ret = system(@cmd);
-	    }
-	    else {
-		undef $cfg;
-		EB::Config->init_config( { app => $EekBoek::PACKAGE, %opts } );
-		require EB::Main;
-		local @ARGV = qw( --init );
-		$ret = EB::Main->run;
-	    }
-
+	    undef $cfg;
+	    EB::Config->init_config( { app => $EekBoek::PACKAGE, %opts } );
+	    require EB::Main;
+	    local @ARGV = qw( --init );
+	    $ret = EB::Main->run;
 	    die(_T("Er is een probleem opgetreden. Raadplaag uw systeembeheerder.")."\n")
 	      if $ret;
 
