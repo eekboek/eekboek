@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  1 14:57:40 2011
-# Update Count    : 443
+# Last Modified On: Mon Mar  7 23:09:21 2011
+# Update Count    : 444
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -159,6 +159,11 @@ sub setup {
     setupdb();
 
     # Create temp table for account mangling.
+    # This table has the purpose of copying the data from Accounts, so that
+    # data from already completed financial years can be corrected when
+    # creating overviews, such as Balance statements and Result accounts.
+    # This way no backdated calculations need to be made when transitions
+    # to previous financial years are involved.
     my $sql = "SELECT * INTO TEMP TAccounts FROM Accounts WHERE acc_id = 0";
     $sql = $self->feature("filter")->($sql) if $self->feature("filter");
     $dbh->do($sql) if $sql;

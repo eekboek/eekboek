@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 20 11:46:54 2011
-# Update Count    : 162
+# Last Modified On: Mon Mar  7 23:09:44 2011
+# Update Count    : 163
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -154,6 +154,11 @@ sub setup {
     }
 
     # Clone Accounts table into TAccounts.
+    # This table has the purpose of copying the data from Accounts, so that
+    # data from already completed financial years can be corrected when
+    # creating overviews, such as Balance statements and Result accounts.
+    # This way no backdated calculations need to be made when transitions
+    # to previous financial years are involved.
     unless ( $dbh->selectrow_arrayref("SELECT name".
 				      " FROM sqlite_master".
 				      " WHERE name like 'taccounts'".
