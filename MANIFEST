@@ -172,11 +172,11 @@ lib/EB/Tools/SQLEngine.pm
 lib/EB/Tools/Schema.pm
 lib/EB/Utils.pm
 lib/EB/Wx/FakeApp.pm
+lib/EB/Wx/Help.pm
 lib/EB/Wx/IniWiz.pm
 lib/EB/Wx/IniWiz/OpenDialog.pm
 lib/EB/Wx/Locale.pm
 lib/EB/Wx/Shell/EditDialog.pm
-lib/EB/Wx/Shell/Help.pm
 lib/EB/Wx/Shell/HtmlViewer.pm
 lib/EB/Wx/Shell/Main.pm
 lib/EB/Wx/Shell/MainFrame.pm
