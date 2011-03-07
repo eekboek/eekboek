@@ -4,7 +4,8 @@
 use strict;
 use warnings;
 
-use EB::Config ( { app => "Test", nostdconf => 1 } );
+use EB::Config;
+BEGIN { EB::Config->init_config( { app => "Test", nostdconf => 1 } ) }
 use EB;
 use EB::Format;
 

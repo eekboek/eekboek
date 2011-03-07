@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar  4 23:31:57 2011
-# Update Count    : 280
+# Last Modified On: Mon Mar  7 23:00:07 2011
+# Update Count    : 281
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -65,7 +65,7 @@ sub findlib {
 	}
 	return undef;
     }
-    else {
+    elsif ( $section ) {
 	$file = "$section/$file";
     }
 
