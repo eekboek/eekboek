@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 10:15:09 2011
-# Update Count    : 285
+# Last Modified On: Tue Mar  8 21:00:10 2011
+# Update Count    : 304
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -92,27 +92,12 @@ use EB::Globals;
 use Carp;
 use Data::Dumper;
 use Carp::Assert;
-
-BEGIN {
-    # The CLI and GUI use different EB::Locale modules.
-    if ( $app || $Cava::Packager::PACKAGED && !Cava::Packager::IsLinux() ) {
-	# We do not have a good gettext for Windows, so use Wx.
-	# It's packaged anyway.
-	require EB::Wx::Locale;	# provides EB::Locale, really
-    }
-    else {
-	require EB::Locale;
-    }
-    EB::Locale::->import;
-}
-
-# Some standard modules (locale-dependent).
 use EB::Utils;
 
 # Export our and the imported globals.
 @EXPORT = ( @EB::Globals::EXPORT,
 	    @EB::Utils::EXPORT,
-	    @EB::Locale::EXPORT,
+	    "_T",			# @EB::Locale::EXPORT,
 	    qw(carp croak),		# Carp
 	    qw(Dumper),			# Data::Dumper
 	    qw(findlib libfile),	# <self>
@@ -124,6 +109,23 @@ our $imsg;
 our $url = "http://www.eekboek.nl";
 
 unless ( $ident ) {		# already done (can this happen?)
+
+#    __init__();
+
+}
+
+sub __init__ {
+    # The CLI and GUI use different EB::Locale modules.
+    if ( $app || $Cava::Packager::PACKAGED && !Cava::Packager::IsLinux() ) {
+	# We do not have a good gettext for Windows, so use Wx.
+	# It's packaged anyway.
+	require EB::Wx::Locale;	# provides EB::Locale, really
+    }
+    else {
+	require EB::Locale;
+    }
+    EB::Locale::->import;
+    EB::Locale->set_language($ENV{LANG});
 
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
@@ -149,6 +151,24 @@ unless ( $ident ) {		# already done (can this happen?)
 	warn(_T("Met uw keuze voor het Microsoft Windows besturingssysteem geeft u echter alle vrijheden weer uit handen. Dat is erg triest.")."\n");
     } unless $ENV{AUTOMATED_TESTING};
 
+}
+
+sub app_init {
+    shift;			# 'EB'
+
+    # Load a config file.
+    require EB::Config;
+    undef $::cfg;
+    EB::Config->init_config( @_ );
+
+    # Main initialisation.
+    __init__();
+
+    # Initialise locale-dependent formats.
+    require EB::Format;
+    EB::Format->init_formats();
+
+    return $::cfg;		# until we've got something better
 }
 
 1;
@@ -186,7 +206,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2008 by Squirrel Consultancy. All
+This program is Copyright 2005-2011 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify

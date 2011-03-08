@@ -701,8 +701,7 @@ sub OnWizardFinished {
 			# We can inline this, but it currently has no
 			# real advantage. So it's better to avoid the
 			# EB Shell code in this program.
-			undef $cfg;
-			EB::Config->init_config( { app => $EekBoek::PACKAGE, %opts } );
+			EB->app_init( { app => $EekBoek::PACKAGE, %opts } );
 			require EB::Main;
 			local @ARGV = qw( --init );
 			$ret = EB::Main->run;

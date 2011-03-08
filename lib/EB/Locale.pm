@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 13:10:40 2011
-# Update Count    : 143
+# Last Modified On: Tue Mar  8 20:15:28 2011
+# Update Count    : 144
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -43,14 +43,14 @@ eval {
 	# Since EB is use-ing Locale, we cannot use the EB exported libfile yet.
 	$core_localiser->dir(EB::libfile("locale"));
 
-	eval 'sub _T($) { $core_localiser->get($_[0]) }';
+	eval 'sub _T { $core_localiser->get($_[0]) }';
 	$LOCALISER = "Locale::gettext";
     }
 };
 
 unless ( $core_localiser ) {
     $core_localiser = "<dummy>";
-    eval 'sub _T($) { $_[0] };';
+    eval 'sub _T { $_[0] };';
     $LOCALISER = "";
 }
 

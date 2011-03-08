@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 14:02:54 2011
-# Update Count    : 109
+# Last Modified On: Tue Mar  8 20:57:21 2011
+# Update Count    : 112
 
 use strict;
 use warnings;
@@ -19,15 +19,16 @@ use constant NUMTESTS => 34;
 my $remaining;
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
-  : (tests => ( $remaining = 3*(NUMTESTS+2)-1+9 ));
+  : (tests => ( $remaining = 3*(NUMTESTS+2)-1+10 ));
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }
 BEGIN { use_ok('EB::Config') }
-BEGIN { EB::Config->init_config( { app => "ivp" } ) }
 BEGIN { use_ok('EB') }
 BEGIN { use_ok('File::Copy') }
-$remaining -= 4;
+EB->app_init( { app => "ivp" } );
+ok( $::cfg, "Got config");
+$remaining -= 5;
 
 our $dbdriver;
 my $dbddrv;

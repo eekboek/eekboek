@@ -6,11 +6,9 @@ use Test::More tests => 11;
 # Some basic tests.
 
 BEGIN {
-    use_ok("EB::Config");
-    EB::Config->init_config( { app => "Test", nostdconf => 1 } );
-}
-BEGIN {
     use_ok("EB");
+    EB->app_init( { app => "Test", nostdconf => 1 } );
+    ok( $::cfg, "Got config" );
     use_ok("EB::Format");
     use_ok("EB::Booking::IV");
     use_ok("EB::Booking::BKM");

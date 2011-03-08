@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:24:04 2010
-# Update Count    : 101
+# Last Modified On: Tue Mar  8 20:26:23 2011
+# Update Count    : 102
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -95,7 +95,7 @@ sub numround_bankers {
     $sign * POSIX::floor($x + $_half);
 }
 
-sub _setup  {
+sub init_formats  {
 
     assert( NUMGROUPS != AMTPRECISION, "NUMGROUPS != AMTPRECISION" );
 
@@ -363,7 +363,5 @@ push( @EXPORT,
       qw($amount_width numfmt numfmt_plain),
       qw($date_width datefmt datefmt_full datefmt_plain),
     );
-
-_setup();
 
 1;

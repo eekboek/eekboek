@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 10:50:02 2011
-# Update Count    : 998
+# Last Modified On: Tue Mar  8 20:35:26 2011
+# Update Count    : 1000
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -23,7 +23,6 @@ use warnings;
 
 use EekBoek;
 use EB;
-use EB::Config;
 use EB::DB;
 use Getopt::Long 2.13;
 
@@ -67,7 +66,7 @@ sub run {
     $opts->{trace} |= ($opts->{debug} || $opts->{test});
 
     # Initialize config.
-    EB::Config->init_config( { app => $EekBoek::PACKAGE, %$opts } );
+    EB->app_init( { app => $EekBoek::PACKAGE, %$opts } );
     if ( $opts->{printconfig} ) {
 	$cfg->printconf( \@ARGV );
 	exit;
@@ -85,8 +84,7 @@ sub run {
 	require EB::IniWiz;
 	EB::IniWiz->run($opts); # sets $opts->{runeb}
 	die("?"._T("Geen administratie geselecteerd")."\n") unless $opts->{runeb};
-	undef $cfg;
-	EB::Config->init_config( { app => $EekBoek::PACKAGE, %$opts } );
+	EB->app_init( { app => $EekBoek::PACKAGE, %$opts } );
       }
     }
 

@@ -4,10 +4,10 @@
 use strict;
 use warnings;
 
-use EB::Config;
-BEGIN { EB::Config->init_config( { app => "Test", nostdconf => 1 } ) }
 use EB;
 use EB::Format;
+
+EB->app_init( { app => "Test", nostdconf => 1 } );
 
 my @tests;
 BEGIN {

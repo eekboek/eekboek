@@ -4,8 +4,6 @@
 use strict;
 use warnings;
 
-use EB::Config;
-BEGIN { EB::Config->init_config( { app => "Test", nostdconf => 1 } ) }
 use EB;
 
 my @tests1;
@@ -45,6 +43,8 @@ BEGIN {
 }
 
 use Test::More tests => @tests1 + @tests2/2;
+
+EB->app_init( { app => "Test", nostdconf => 1 } );
 
 # Test date parsing.
 while ( @tests1 ) {

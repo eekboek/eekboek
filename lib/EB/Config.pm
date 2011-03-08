@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 10:17:08 2011
-# Update Count    : 244
+# Last Modified On: Tue Mar  8 20:52:16 2011
+# Update Count    : 246
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -92,7 +92,6 @@ sub init_config {
 
     $cfg->_plug(qw(locale       lang         EB_LANG));
     $ENV{LANG} = $cfg->val(qw(locale lang));
-    EB::Locale->set_language($ENV{LANG}) if $EB::Locale::LOCALISER;
 
     $cfg->_plug(qw(database     name         EB_DB_NAME));
 
@@ -131,9 +130,6 @@ sub import {
     my ($self, $app) = @_;
     return unless defined $app;
     die("PROGRAM ERROR: EB::Config cannot import anything");
-    # my $opts = ref($app) ? { %$app } : { app => $app };
-    # return if $cfg && $opts->{app} && $cfg->app eq lc($opts->{app});
-    # $cfg = $self->init_config($opts);
 }
 
 package EB::Config::Handler;

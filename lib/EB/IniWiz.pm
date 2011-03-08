@@ -519,7 +519,7 @@ EOD
 	    $req--;
 	    my $ret;
 	    undef $cfg;
-	    EB::Config->init_config( { app => $EekBoek::PACKAGE, %opts } );
+	    EB->app_init( { app => $EekBoek::PACKAGE, %opts } );
 	    require EB::Main;
 	    local @ARGV = qw( --init );
 	    $ret = EB::Main->run;
