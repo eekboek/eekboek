@@ -6,8 +6,8 @@ my $RCS_Id = '$Id: example.pl,v 1.1 2006/07/19 08:54:04 jv Exp $ ';
 # Author          : Johan Vromans
 # Created On      : Sun Apr 13 17:25:07 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct 28 23:43:40 2009
-# Update Count    : 82
+# Last Modified On: Tue Mar  8 21:13:38 2011
+# Update Count    : 88
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,16 +22,9 @@ my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
 # Tack '*' if it is not checked in into RCS.
 $my_version .= '*' if length('$Locker:  $ ') > 12;
 
-# EekBoek 'handles'.
-our $cfg;			# configuration
-our $dbh;			# data base
-
 # EekBoek modules.
 
-use EekBoek;
-# The name passed will be used for the config files,
-# e.g., Foo -> /etc/foo.conf, ~/.foo/foo.conf, ./.foo.conf
-use EB::Config ( $EekBoek::PACKAGE );
+use EekBoek;	  # optional (but we'll use PACKAGE)
 use EB;				# common
 use EB::DB;			# database
 
@@ -55,12 +48,20 @@ $trace |= ($debug || $test);
 
 ################ Presets ################
 
+binmode( STDOUT, ':encoding(utf-8)' );
 my $TMPDIR = $ENV{TMPDIR} || $ENV{TEMP} || '/usr/tmp';
 
 ################ The Process ################
 
+# Initialise.
+# The app name passed will be used for the config files,
+# e.g., Foo -> /etc/foo.conf, ~/.foo/foo.conf, ./.foo.conf
+my $cfg = EB->app_init( { app => $EekBoek::PACKAGE,
+			  config => "eekboek.conf",	# local
+			} );
+
 # Connect to the data base.
-EB::DB::->connect;
+my $dbh = EB::DB::->connect;
 
 # SQL query.
 my $sql =
