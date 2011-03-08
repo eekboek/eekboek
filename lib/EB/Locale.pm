@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 20:24:34 2011
-# Update Count    : 137
+# Last Modified On: Tue Mar  8 13:10:40 2011
+# Update Count    : 143
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -30,7 +30,8 @@ our @EXPORT = @EXPORT_OK;
 
 use POSIX qw(setlocale LC_MESSAGES);
 
-our $core_localiser;
+my $core_localiser;
+our $LOCALISER;			# for outside checking
 
 eval {
     require Locale::gettext;
@@ -43,19 +44,23 @@ eval {
 	$core_localiser->dir(EB::libfile("locale"));
 
 	eval 'sub _T($) { $core_localiser->get($_[0]) }';
-	eval 'sub LOCALISER() { "Locale::gettext" };';
+	$LOCALISER = "Locale::gettext";
     }
 };
 
 unless ( $core_localiser ) {
     $core_localiser = "<dummy>";
     eval 'sub _T($) { $_[0] };';
-    eval 'sub LOCALISER() { "" };';
+    $LOCALISER = "";
+}
+
+sub get_language {
+    $ENV{LANG};
 }
 
 sub set_language {
     # Set/change language.
-    setlocale( LC_MESSAGES, $_[1] );
+    setlocale( LC_MESSAGES, $ENV{LANG} = $_[1] );
 }
 
 1;

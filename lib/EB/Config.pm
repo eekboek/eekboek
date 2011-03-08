@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  7 22:48:27 2011
-# Update Count    : 243
+# Last Modified On: Tue Mar  8 10:17:08 2011
+# Update Count    : 244
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -92,8 +92,7 @@ sub init_config {
 
     $cfg->_plug(qw(locale       lang         EB_LANG));
     $ENV{LANG} = $cfg->val(qw(locale lang));
-    EB::Locale->set_language($ENV{LANG})
-	if exists($INC{"EB/Locale.pm"}) && EB::Locale->LOCALISER();
+    EB::Locale->set_language($ENV{LANG}) if $EB::Locale::LOCALISER;
 
     $cfg->_plug(qw(database     name         EB_DB_NAME));
 

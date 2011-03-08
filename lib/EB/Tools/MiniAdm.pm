@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Dec  5 22:56:44 2010
-# Update Count    : 107
+# Last Modified On: Tue Mar  8 13:25:54 2011
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -147,6 +147,11 @@ sub generate_config {
       ( $cfg->std_config, undef, $opts,
 	sub {
 	    my ( $self, $fd ) = @_;
+	    if ( $opts->{lang} ) {
+		print { $fd } ("[locale]\n");
+		printf { $fd } ( $fmt, "lang", $opts->{lang} );
+		print { $fd } ("\n");
+	    }
 	    print { $fd } ("[database]\n");
 	    printf { $fd } ( $fmt, "name", $opts->{db_naam} );
 	    foreach ( qw( driver host port user password path ) ) {

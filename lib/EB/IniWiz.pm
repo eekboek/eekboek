@@ -459,6 +459,10 @@ EOD
     return -1 unless $answers->{dbcreate};
 
     my %opts;
+
+    $opts{lang} = $ENV{EB_LANG} || $ENV{LANG};
+    $opts{lang} =~ s/\..*//;	# strip .utf8
+
     $opts{adm_naam} = $answers->{admname};
     $opts{adm_code} = $answers->{admcode};
     $opts{adm_begindatum} = $answers->{begindate};

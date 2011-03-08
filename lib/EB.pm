@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  7 23:00:07 2011
-# Update Count    : 281
+# Last Modified On: Tue Mar  8 10:15:09 2011
+# Update Count    : 285
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -95,7 +95,9 @@ use Carp::Assert;
 
 BEGIN {
     # The CLI and GUI use different EB::Locale modules.
-    if ( $app || $Cava::Packager::PACKAGED ) {
+    if ( $app || $Cava::Packager::PACKAGED && !Cava::Packager::IsLinux() ) {
+	# We do not have a good gettext for Windows, so use Wx.
+	# It's packaged anyway.
 	require EB::Wx::Locale;	# provides EB::Locale, really
     }
     else {
@@ -130,7 +132,7 @@ unless ( $ident ) {		# already done (can this happen?)
 		 name    => $EekBoek::PACKAGE,
 		 version => $EekBoek::VERSION);
     my @locextra;
-    push(@locextra, _T("Nederlands")) if EB::Locale::LOCALISER();
+    push(@locextra, _T("Nederlands")) if $EB::Locale::LOCALISER;
     $imsg = __x("{ident}{extra}{locale} -- Copyright {year} Squirrel Consultancy",
 		ident   => $ident,
 		extra   => ($app ? " Wx" : ""),

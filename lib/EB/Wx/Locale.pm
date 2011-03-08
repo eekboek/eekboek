@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 20:24:42 2011
-# Update Count    : 123
+# Last Modified On: Tue Mar  8 13:44:54 2011
+# Update Count    : 160
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -30,24 +30,43 @@ our @EXPORT = @EXPORT_OK;
 use Wx qw(wxLANGUAGE_DEFAULT wxLOCALE_LOAD_DEFAULT);
 use Wx::Locale gettext => '_T';
 
-our $gui_localiser;
+my $gui_localiser;
+our $LOCALISER = "Wx::Locale";
 
 unless ( $gui_localiser ) {
-    $gui_localiser = Wx::Locale->new(wxLANGUAGE_DEFAULT,
-				     wxLOCALE_LOAD_DEFAULT);
+    $gui_localiser = Wx::Locale->new( wxLOCALE_LOAD_DEFAULT, wxLOCALE_LOAD_DEFAULT );
+    __PACKAGE__->_set_language( wxLANGUAGE_DEFAULT );
+}
+
+sub get_language {
+    $gui_localiser->GetCanonicalName;
+}
+
+sub _set_language {
+    # Set/change language.
+    my ($self, $lang) = @_;
+
+    $gui_localiser->Init( $lang, wxLOCALE_LOAD_DEFAULT );
+
     # Since EB is use-ing Locale, we cannot use the EB exported libfile yet.
     $gui_localiser->AddCatalogLookupPathPrefix(EB::libfile("locale"));
+
     $gui_localiser->AddCatalog(GUIPACKAGE);
     $gui_localiser->AddCatalog(COREPACKAGE);
 }
 
-sub LOCALISER() { "Wx::Locale" }
-
 sub set_language {
     # Set/change language.
-    $gui_localiser->Init( $_[1], wxLOCALE_LOAD_DEFAULT );
-    $gui_localiser->AddCatalog(GUIPACKAGE);
-    $gui_localiser->AddCatalog(COREPACKAGE);
+    my ($self, $lang) = @_;
+    $lang =~ s/\..*//;		# strip .utf8
+
+    my $info = Wx::Locale::FindLanguageInfo($lang);
+    unless ( $info ) {
+	warn("%Cannot switch language -- no info for $lang\n");
+	return;
+    }
+
+    $self->_set_language( $info->GetLanguage );
 }
 
 1;
