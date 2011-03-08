@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  7 23:03:53 2011
-# Update Count    : 107
+# Last Modified On: Tue Mar  8 14:02:54 2011
+# Update Count    : 109
 
 use strict;
 use warnings;
@@ -20,9 +20,6 @@ my $remaining;
 use Test::More
   $ENV{EB_SKIPDBTESTS} ? (skip_all => "Database tests skipped on request")
   : (tests => ( $remaining = 3*(NUMTESTS+2)-1+9 ));
-
-#### TODO: FIXME
-$ENV{LANG} = "nl_NL";
 
 use warnings;
 BEGIN { use_ok('IPC::Run3') }

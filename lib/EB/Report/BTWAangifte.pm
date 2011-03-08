@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:33:38 2010
-# Update Count    : 643
+# Last Modified On: Tue Mar  8 13:55:48 2011
+# Update Count    : 644
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -226,7 +226,7 @@ sub periode {
     }
     elsif ( $p == 12 ) {
 	return __x("{month} {year}",
-		   month => $EB::Utils::month_names[$v-1],
+		   month => _T( $EB::Utils::month_names[$v-1] ),
 		   year => $year);
     }
     else {

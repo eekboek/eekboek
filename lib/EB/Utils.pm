@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Wed Sep 21 13:09:01 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  3 13:36:00 2011
-# Update Count    : 102
+# Last Modified On: Tue Mar  8 14:01:55 2011
+# Update Count    : 104
 # Status          : Unknown, Use with caution!
 
 package EB::Utils;
@@ -23,15 +23,15 @@ use Time::Local;
 *_T = *EB::_T;
 
 # These are only used by the BTW Aangifte modules.
-# Hmm. Should use locale functions instead of _T strings...
+# Note these are translated using _T where appropriate.
 our @months =
-      split(" ", _T("Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec"));
+      split(" ", "Jan Feb Mrt Apr Mei Jun Jul Aug Sep Okt Nov Dec");
 our @month_names =
-      split(" ", _T("Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December"));
+      split(" ", "Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December");
 our @days =
-      split(" ", _T("Zon Maa Din Woe Don Vri Zat"));
+      split(" ", "Zon Maa Din Woe Don Vri Zat");
 our @day_names =
-      split(" ", _T("Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag"));
+      split(" ", "Zondag Maandag Dinsdag Woensdag Donderdag Vrijdag Zaterdag");
 
 my $_i;
 
