@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-03 11:30+0100\n"
+"POT-Creation-Date: 2011-03-08 14:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,194 +67,198 @@ msgstr ""
 msgid "Number of input lines to keep in history:"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:77
+#: ../lib/EB/Wx/Shell/MainFrame.pm:78
 msgid "Input"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:115
+#: ../lib/EB/Wx/Shell/MainFrame.pm:116
 msgid "&Open\tCtrl-O"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:117
+#: ../lib/EB/Wx/Shell/MainFrame.pm:118
 msgid "Prefere&nces..."
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:119
+#: ../lib/EB/Wx/Shell/MainFrame.pm:120
 msgid "E&xit\tCtrl-Q"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:120 ../lib/EB/Wx/Shell/MainFrame.pm:126
-#: ../lib/EB/Wx/Shell/MainFrame.pm:152 ../lib/EB/Wx/Shell/MainFrame.pm:155
+#: ../lib/EB/Wx/Shell/MainFrame.pm:121 ../lib/EB/Wx/Shell/MainFrame.pm:127
+#: ../lib/EB/Wx/Shell/MainFrame.pm:153 ../lib/EB/Wx/Shell/MainFrame.pm:157
 msgid "menubar"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:120
+#: ../lib/EB/Wx/Shell/MainFrame.pm:121
 msgid "&File"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:122
+#: ../lib/EB/Wx/Shell/MainFrame.pm:123
 msgid "&Edit input line\tCtrl+Enter"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:123
+#: ../lib/EB/Wx/Shell/MainFrame.pm:124
 msgid "E&xecute input line\tEnter"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:125
+#: ../lib/EB/Wx/Shell/MainFrame.pm:126
 msgid "&Clear output"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:126
+#: ../lib/EB/Wx/Shell/MainFrame.pm:127
 msgid "&Edit"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:127 ../lib/EB/Wx/Shell/MainFrame.pm:128
-#: ../lib/EB/Wx/Shell/MainFrame.pm:135 ../lib/EB/Wx/Shell/MainFrame.pm:142
-#: ../lib/EB/Wx/Shell/MainFrame.pm:143 ../lib/EB/Wx/Shell/MainFrame.pm:144
-#: ../lib/EB/Wx/Shell/MainFrame.pm:145 ../lib/EB/Wx/Shell/MainFrame.pm:146
-#: ../lib/EB/Wx/Shell/MainFrame.pm:147 ../lib/EB/Wx/Shell/MainFrame.pm:148
-#: ../lib/EB/Wx/Shell/MainFrame.pm:149 ../lib/EB/Wx/Shell/MainFrame.pm:150
-#: ../lib/EB/Wx/Shell/MainFrame.pm:151 ../lib/EB/Wx/Shell/MainFrame.pm:152
+#: ../lib/EB/Wx/Shell/MainFrame.pm:128 ../lib/EB/Wx/Shell/MainFrame.pm:129
+#: ../lib/EB/Wx/Shell/MainFrame.pm:136 ../lib/EB/Wx/Shell/MainFrame.pm:143
+#: ../lib/EB/Wx/Shell/MainFrame.pm:144 ../lib/EB/Wx/Shell/MainFrame.pm:145
+#: ../lib/EB/Wx/Shell/MainFrame.pm:146 ../lib/EB/Wx/Shell/MainFrame.pm:147
+#: ../lib/EB/Wx/Shell/MainFrame.pm:148 ../lib/EB/Wx/Shell/MainFrame.pm:149
+#: ../lib/EB/Wx/Shell/MainFrame.pm:150 ../lib/EB/Wx/Shell/MainFrame.pm:151
+#: ../lib/EB/Wx/Shell/MainFrame.pm:152 ../lib/EB/Wx/Shell/MainFrame.pm:153
 msgid "Reports"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:128
+#: ../lib/EB/Wx/Shell/MainFrame.pm:129
 msgid "Trial"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:129 ../lib/EB/Wx/Shell/MainFrame.pm:130
-#: ../lib/EB/Wx/Shell/MainFrame.pm:131 ../lib/EB/Wx/Shell/MainFrame.pm:132
-#: ../lib/EB/Wx/Shell/MainFrame.pm:133 ../lib/EB/Wx/Shell/MainFrame.pm:134
-#: ../lib/EB/Wx/Shell/MainFrame.pm:135
+#: ../lib/EB/Wx/Shell/MainFrame.pm:130 ../lib/EB/Wx/Shell/MainFrame.pm:131
+#: ../lib/EB/Wx/Shell/MainFrame.pm:132 ../lib/EB/Wx/Shell/MainFrame.pm:133
+#: ../lib/EB/Wx/Shell/MainFrame.pm:134 ../lib/EB/Wx/Shell/MainFrame.pm:135
+#: ../lib/EB/Wx/Shell/MainFrame.pm:136
 msgid "Reports_bal"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:130 ../lib/EB/Wx/Shell/MainFrame.pm:137
+#: ../lib/EB/Wx/Shell/MainFrame.pm:131 ../lib/EB/Wx/Shell/MainFrame.pm:138
 msgid "By account"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:132 ../lib/EB/Wx/Shell/MainFrame.pm:139
+#: ../lib/EB/Wx/Shell/MainFrame.pm:133 ../lib/EB/Wx/Shell/MainFrame.pm:140
 msgid "By master group"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:133 ../lib/EB/Wx/Shell/MainFrame.pm:140
+#: ../lib/EB/Wx/Shell/MainFrame.pm:134 ../lib/EB/Wx/Shell/MainFrame.pm:141
 msgid "By group"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:134 ../lib/EB/Wx/Shell/MainFrame.pm:141
+#: ../lib/EB/Wx/Shell/MainFrame.pm:135 ../lib/EB/Wx/Shell/MainFrame.pm:142
 msgid "Detailed"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:135
+#: ../lib/EB/Wx/Shell/MainFrame.pm:136
 msgid "Balance"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:136 ../lib/EB/Wx/Shell/MainFrame.pm:137
-#: ../lib/EB/Wx/Shell/MainFrame.pm:138 ../lib/EB/Wx/Shell/MainFrame.pm:139
-#: ../lib/EB/Wx/Shell/MainFrame.pm:140 ../lib/EB/Wx/Shell/MainFrame.pm:141
-#: ../lib/EB/Wx/Shell/MainFrame.pm:142
+#: ../lib/EB/Wx/Shell/MainFrame.pm:137 ../lib/EB/Wx/Shell/MainFrame.pm:138
+#: ../lib/EB/Wx/Shell/MainFrame.pm:139 ../lib/EB/Wx/Shell/MainFrame.pm:140
+#: ../lib/EB/Wx/Shell/MainFrame.pm:141 ../lib/EB/Wx/Shell/MainFrame.pm:142
+#: ../lib/EB/Wx/Shell/MainFrame.pm:143
 msgid "Reports_res"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:142
+#: ../lib/EB/Wx/Shell/MainFrame.pm:143
 msgid "Results"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:144
+#: ../lib/EB/Wx/Shell/MainFrame.pm:145
 msgid "Journal"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:146
+#: ../lib/EB/Wx/Shell/MainFrame.pm:147
 msgid "Unsettled Accounts"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:148
+#: ../lib/EB/Wx/Shell/MainFrame.pm:149
 msgid "Accounts Payable"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:149
+#: ../lib/EB/Wx/Shell/MainFrame.pm:150
 msgid "Accounts Receivable"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:151
+#: ../lib/EB/Wx/Shell/MainFrame.pm:152
 msgid "VAT Report"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:152
+#: ../lib/EB/Wx/Shell/MainFrame.pm:153
 msgid "&Reports"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:154
+#: ../lib/EB/Wx/Shell/MainFrame.pm:155
+msgid "&Help..."
+msgstr ""
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:156
 msgid "&About..."
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:155
+#: ../lib/EB/Wx/Shell/MainFrame.pm:157
 msgid "&Help"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:221
+#: ../lib/EB/Wx/Shell/MainFrame.pm:224
 msgid "EekBoek"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:276
+#: ../lib/EB/Wx/Shell/MainFrame.pm:279
 msgid "Please select a valid .eekboek.conf first"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:277
+#: ../lib/EB/Wx/Shell/MainFrame.pm:280
 msgid "Missing config"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:374
+#: ../lib/EB/Wx/Shell/MainFrame.pm:377
 msgid "EekBoek program has finished"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:375
+#: ../lib/EB/Wx/Shell/MainFrame.pm:378
 msgid "Finished"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:397
+#: ../lib/EB/Wx/Shell/MainFrame.pm:400
 msgid "Error"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:402
+#: ../lib/EB/Wx/Shell/MainFrame.pm:405
 msgid "Warning"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:407
+#: ../lib/EB/Wx/Shell/MainFrame.pm:410
 msgid "Information"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:475
+#: ../lib/EB/Wx/Shell/MainFrame.pm:478
 msgid "Choose"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:576
+#: ../lib/EB/Wx/Shell/MainFrame.pm:590
 #, perl-brace-format
 msgid "{pkg} {app} version {ver}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:581
+#: ../lib/EB/Wx/Shell/MainFrame.pm:595
 #, perl-brace-format
 msgid "Written by {author}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:585
+#: ../lib/EB/Wx/Shell/MainFrame.pm:599
 #, perl-brace-format
 msgid "Support: {url}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:588
+#: ../lib/EB/Wx/Shell/MainFrame.pm:602
 #, perl-brace-format
 msgid "GUI design with {wxglade}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:590 ../lib/EB/Wx/Shell/MainFrame.pm:593
-#: ../lib/EB/Wx/Shell/MainFrame.pm:596 ../lib/EB/Wx/Shell/MainFrame.pm:600
+#: ../lib/EB/Wx/Shell/MainFrame.pm:604 ../lib/EB/Wx/Shell/MainFrame.pm:607
+#: ../lib/EB/Wx/Shell/MainFrame.pm:610 ../lib/EB/Wx/Shell/MainFrame.pm:614
 #, perl-brace-format
 msgid "{pkg} version {ver}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:604
+#: ../lib/EB/Wx/Shell/MainFrame.pm:618
 #, perl-brace-format
 msgid "About {pkg} {app}"
 msgstr ""

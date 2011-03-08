@@ -145,7 +145,7 @@ sub runwizard {
     my $year = 1900 + (localtime(time))[5];
 
     my @ebz = map { [ $_, "" ] } glob( libfile("templates/*.ebz") );
-    my @ebz_desc = ( "Lege administratie" );
+    my @ebz_desc = ( _T("Lege administratie") );
 
     my $i = 0;
     foreach my $ebz ( @ebz ) {
@@ -160,7 +160,7 @@ sub runwizard {
 	    $desc = $1;
 	}
 	elsif ( $desc =~ /export van (.*) aangemaakt door eekboek/i ) {
-	    $desc = $1;
+	    $desc = _T($1);
 	}
 	else {
 	    $desc = $1 if $ebz->[0] =~ m/([^\\\/]+)\.ebz$/i;
@@ -182,7 +182,7 @@ sub runwizard {
     my @btw = qw( Maand Kwartaal Jaar );
 
     my $answers = {
-		   admname    => "Mijn eerste EekBoek",
+		   admname    => _T("Mijn eerste EekBoek"),
 		   begindate  => $year,
 		   admbtw     => 1,
 		   btwperiod  => findchoice( "kwartaal", \@btw ),
@@ -203,17 +203,17 @@ sub runwizard {
     my $queries;
     $queries    = [
 		   { code => "admname",
-		     text => <<EOD,
+		     text => _T(<<EOD),
 Geef een unieke naam voor de nieuwe administratie. Deze wordt gebruikt
 voor rapporten en dergelijke.
 EOD
 		     type => "string",
-		     prompt => "Naam",
+		     prompt => _T("Naam"),
 		     post => sub {
 			 my $c = shift;
 			 foreach ( @adm_names ) {
 			     next unless lc($_) eq lc($c);
-			     warn("Er bestaat al een administratie met deze naam.\n");
+			     warn(_T("Er bestaat al een administratie met deze naam.")."\n");
 			     return;
 			 }
 			 $c = lc($c);
@@ -224,11 +224,11 @@ EOD
 		     },
 		   },
 		   { code => "begindate",
-		     text => <<EOD,
+		     text => _T(<<EOD),
 Geef het boekjaar voor deze administatie. De administatie
 begint op 1 januari van het opgegeven jaar.
 EOD
-		     prompt => "Begindatum",
+		     prompt => _T("Begindatum"),
 		     type => "int",
 		     range => [ $year-20, $year+10 ],
 		     post => sub {
@@ -239,13 +239,13 @@ EOD
 		     },
 		   },
 		   { code => "admcode",
-		     text => <<EOD,
+		     text => _T(<<EOD),
 Geef een unieke code voor de administratie. Deze wordt gebruikt als
 interne naam voor de database en administratiefolders.
 De standaardwaarde is afgeleid van de administratienaam en de begindatum.
 EOD
 		     type => "string",
-		     prompt => "Code",
+		     prompt => _T("Code"),
 		     pre => sub {
 			 return if $answers->{admcode};
 			 my $c = $answers->{admname};
@@ -259,19 +259,19 @@ EOD
 			 my $c = shift;
 			 foreach ( @adm_dirs ) {
 			     next unless lc($_) eq lc($c);
-			     warn("Er bestaat al een administratie met code \"$c\".\n");
+			     warn(__x("Er bestaat al een administratie met code \"{code}\"", code => $c)."\n");
 			     return;
 			 }
 			 return 1;
 		     },
 		   },
 		   { code => "template",
-		     text => <<EOD,
+		     text => _T(<<EOD),
 U kunt een van de meegeleverde sjablonen gebruiken voor uw
 administratie.
 EOD
 		     type => "choice",
-		     prompt => "Sjabloon",
+		     prompt => _T("Sjabloon"),
 		     choices => \@ebz_desc,
 		     post => sub {
 			 my $c = shift;
@@ -293,7 +293,7 @@ EOD
 		     },
 		   },
 		   { code => "admbtw",
-		     prompt => "Moet BTW worden toegepast in deze administratie",
+		     prompt => _T("Moet BTW worden toegepast in deze administratie"),
 		     type => "bool",
 		     post => sub {
 			 my $c = shift;
@@ -302,17 +302,17 @@ EOD
 		     },
 		   },
 		   { code => "btwperiod",
-		     prompt => "Aangifteperiode voor de BTW",
+		     prompt => _T("Aangifteperiode voor de BTW"),
 		     type => "choice",
 		     choices => \@btw,
 		   },
 		   { code => "dbdriver",
-		     text => <<EOD,
+		     text => _T(<<EOD),
 Kies het type database dat u wilt gebruiken voor deze
 administratie.
 EOD
 		     type => "choice",
-		     prompt => "Database",
+		     prompt => _T("Database"),
 		     choices => \@db_drivers,
 		     post => sub {
 			 my $c = shift;
@@ -322,40 +322,40 @@ EOD
 		     }
 		   },
 		   { code => "dbhost",
-		     prompt => "Database server host, indien niet lokaal",
+		     prompt => _T("Database server host, indien niet lokaal"),
 		     type => "string",
 		     skip => 1,
 		   },
 		   { code => "dbport",
-		     prompt => "Database server netwerk poort, indien niet standaard",
+		     prompt => _T("Database server netwerk poort, indien niet standaard"),
 		     type => "int",
 		     skip => 1,
 		   },
 		   { code => "dbuser",
-		     prompt => "Usernaam voor de database",
+		     prompt => _T("Usernaam voor de database"),
 		     type => "string",
 		     skip => 1,
 		   },
 		   { code => "dbpassword",
-		     prompt => "Password voor de database user",
+		     prompt => _T("Password voor de database user"),
 		     type => "string",
 		     skip => 1,
 		   },
 		   { code => "dbcr_config",
-		     prompt => "Moet het configuratiebestand worden aangemaakt",
+		     prompt => _T("Moet het configuratiebestand worden aangemaakt"),
 		     type => "bool",
 		   },
 		   { code => "dbcr_admin",
-		     prompt => "Moeten de administratiebestanden worden aangemaakt",
+		     prompt => _T("Moeten de administratiebestanden worden aangemaakt"),
 		     type => "bool",
 		   },
 		   { code => "dbcr_database",
-		     prompt => "Moet de database worden aangemaakt",
+		     prompt => _T("Moet de database worden aangemaakt"),
 		     type => "bool",
 		   },
 		   { code => "dbcreate",
-		     text => "Gereed om de bestanden aan te maken.",
-		     prompt => "Doorgaan",
+		     text => _T("Gereed om de bestanden aan te maken."),
+		     prompt => _T("Doorgaan"),
 		     type => "bool",
 		   },
 		  ];
@@ -436,16 +436,24 @@ EOD
 			$q->{range}
 			&& ( $a < $q->{range}->[0]
 			     || $a > $q->{range}->[1] ) ) {
+		    if ( $q->{range} ) {
 		    warn("Ongeldig antwoord, het moet een getal",
 			 $q->{range} ? " tussen $q->{range}->[0] en $q->{range}->[1]" : "",
 			 " zijn\n");
+		    }
+		    else {
+			warn(_T("Ongeldig antwoord, het moet een getal zijn")."\n");
+		    }
+		    warn(__x("Ongeldig antwoord, het moet een getal tussen {first} en {last} zijn",
+			     first => $q->{range}->[0],
+			     last => $q->{range}->[1]) . "\n");
 		    redo QQ;
 		}
 		$a-- if $q->{type} eq 'choice';
 	    }
 
 	    else {
-		die("Unhandled request type: ", $q->{type}, "\n");
+		die("PROGRAM ERROR: Unhandled request type: ", $q->{type}, "\n");
 	    }
 
 	    if ( $q->{post} ) {

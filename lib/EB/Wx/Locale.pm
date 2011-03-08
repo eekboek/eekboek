@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 13:44:54 2011
-# Update Count    : 160
+# Last Modified On: Tue Mar  8 14:07:23 2011
+# Update Count    : 161
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -62,7 +62,8 @@ sub set_language {
 
     my $info = Wx::Locale::FindLanguageInfo($lang);
     unless ( $info ) {
-	warn("%Cannot switch language -- no info for $lang\n");
+	# Universal error message.
+	warn("%Ne povos sxangi la lingvon -- Neniu dateno por $lang\n");
 	return;
     }
 
