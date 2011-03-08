@@ -1,3 +1,22 @@
+2.01.00
+
+	* Interne cleanups en rework voor de EekBoek API.
+
+	* Localisatie cleanup. Alle componenten gedragen zich nu
+          gelocaliseerd. De locale instelling wordt initieel
+          overgenomen van de omgeving. De wizards nemen de locale op
+          in de gegenereerde config file. Locale switching op run time
+          is mogelijk.
+
+	* Verbetering wizards om aan bestaande databases (op server)
+	  te kunnen connecten.
+
+	* Introductie resource- en user-dir. Resources en user info
+          kunnen locale-dependent zijn.
+
+	* Packaging met Cava Packager en Windows installer met
+          InnoSetup.
+
 2.00.02
 
 	* (ebwxshell, linux) Workaround voor het HTML rendering
