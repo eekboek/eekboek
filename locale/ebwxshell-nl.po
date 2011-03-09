@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek/WxShell 0.01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-08 14:19+0100\n"
-"PO-Revision-Date: 2010-02-23 12:13+0100\n"
+"POT-Creation-Date: 2011-03-09 09:32+0100\n"
+"PO-Revision-Date: 2011-03-09 09:37+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: \n"
@@ -37,7 +37,7 @@ msgstr "HTML bestanden (*.html)|*.html"
 msgid "Edit Input Line"
 msgstr "Wijzigen invoerregel"
 
-#: ../lib/EB/Wx/Shell/Main.pm:202
+#: ../lib/EB/Wx/Shell/Main.pm:200
 #, perl-brace-format
 msgid "This is {pkg} [{name} {version}]"
 msgstr "Dit is {pkg} [{name} {version}]"
@@ -185,9 +185,8 @@ msgid "&Reports"
 msgstr "&Rapporten"
 
 #: ../lib/EB/Wx/Shell/MainFrame.pm:155
-#, fuzzy
 msgid "&Help..."
-msgstr "&Hulp"
+msgstr "&Hulp..."
 
 #: ../lib/EB/Wx/Shell/MainFrame.pm:156
 msgid "&About..."
