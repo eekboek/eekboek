@@ -82,3 +82,4 @@ dummies :
 	echo '---' >META.yml
 	echo '' > EekBoek.spec
 	echo '' > t/ivp/ref/export.xaf
+	unzip -q -o doc/docs.zip
