@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 21:00:10 2011
-# Update Count    : 304
+# Last Modified On: Wed Mar  9 21:54:25 2011
+# Update Count    : 309
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -169,6 +169,12 @@ sub app_init {
     EB::Format->init_formats();
 
     return $::cfg;		# until we've got something better
+}
+
+sub EB::Config::Handler::connect_db {
+    # Connect to the data base.
+    require EB::DB;
+    EB::DB::->connect;
 }
 
 1;
