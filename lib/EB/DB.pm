@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  7 23:09:21 2011
-# Update Count    : 444
+# Last Modified On: Thu Mar 10 21:48:55 2011
+# Update Count    : 445
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -239,7 +239,7 @@ sub bskid {
     if ( $nr =~ /^([[:alpha:]][^:]+)(?::([^:]+))?:(\d+)$/ ) {
 	$rr = $self->do("SELECT dbk_id, dbk_desc".
 			" FROM Dagboeken".
-			" WHERE dbk_desc ILIKE ?", $1);
+			" WHERE upper(dbk_desc) LIKE ?", uc($1));
 	unless ( $rr ) {
 	    return wantarray ? (undef, undef, __x("Onbekend dagboek: {dbk}", dbk => $1)) : undef;
 	}
