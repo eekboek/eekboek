@@ -27,8 +27,8 @@
 /Makefile
 /Makefile.old
 /debian/
-/lib/EB/schema/*ebz
-/lib/EB/mo/
+/lib/EB/res/templates/*ebz
+/lib/EB/res/locale
 /META.yml
 /regtest/
 /t/admtest_*
