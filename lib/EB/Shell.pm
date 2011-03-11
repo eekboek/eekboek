@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 28 11:00:55 2011
-# Update Count    : 108
+# Last Modified On: Fri Mar 11 07:55:54 2011
+# Update Count    : 109
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -85,7 +85,7 @@ sub outro { undef }
 sub postcmd {
     shift;
     if ( $dbh->in_transaction ) {
-	warn("%"._T("Openstaande transactie teruggedraaid")."\n");
+	warn("%"._T("Openstaande transactie is teruggedraaid")."\n");
 	$dbh->rollback;
     }
     shift
@@ -102,7 +102,7 @@ sub bky_msg {
 			     $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin)) :
 			     $dbh->adm("begin"));
     while ( my $rr = $sth->fetchrow_arrayref ) {
-	warn("!".__x("Pas op! Boekjaar {bky} is nog niet afgesloten",
+	warn("!".__x("Pas op! Boekjaar {bky} is nog niet afgesloten.",
 		     bky => $rr->[0])."\n");
     }
 }
@@ -1059,7 +1059,7 @@ sub do_export {
 	return;
     }
     if ( $t != 1 ) {
-	warn("?"._T("Specifieer --dir, --file of --xaf")."\n");
+	warn("?"._T("Specificeer --dir, --file of --xaf")."\n");
 	return;
     }
 
@@ -1122,7 +1122,7 @@ sub do_import {
 	return;
     }
     if ( !defined($opts->{dir}) && !defined($opts->{file}) ) {
-	warn("?"._T("Specifieer --dir of --file")."\n");
+	warn("?"._T("Specificeer --dir of --file")."\n");
 	return;
     }
 
