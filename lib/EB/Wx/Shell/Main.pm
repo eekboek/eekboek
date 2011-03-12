@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 20:34:23 2011
-# Update Count    : 424
+# Last Modified On: Fri Mar 11 09:37:21 2011
+# Update Count    : 431
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -168,9 +168,19 @@ sub app_options {
     my $help = 0;		# handled locally
     my $ident = 0;		# handled locally
 
+    # Filter psn arguments (Mac OSX).
+    @ARGV = grep { ! /psn_\d_\d+/ } @ARGV;
+
     # Process options, if any.
     # Make sure defaults are set before returning!
     return unless @ARGV > 0;
+
+    # Store valid & trap invalid option warnings
+    my @optionerrors;
+    local $SIG{__WARN__} = sub {
+	my $warning = shift;
+	push(@optionerrors, $warning);
+    };
 
     Getopt::Long::Configure(qw(no_ignore_case));
 
@@ -189,18 +199,27 @@ sub app_options {
 		      'debug',
 		    ) or $help )
     {
-	app_usage(2);
+	app_usage();
     }
-    app_usage(2) if @ARGV && !$opts->{printconfig};
+    app_usage() if @ARGV && !$opts->{printconfig};
     app_ident() if $ident;
+    return unless @optionerrors;
+    my $d = Wx::MessageDialog->new ( undef,
+				     join("\n", @optionerrors),
+				     "Opstartregelfouten",
+				     wxICON_ERROR|wxOK,
+				     wxDefaultPosition );
+    $d->ShowModal;
+    $d->Destroy;
+    CORE::exit(2);
 }
 
 sub app_ident {
     return;
-    print STDERR (__x("This is {pkg} [{name} {version}]",
-		      pkg     => $EekBoek::PACKAGE,
-		      name    => "WxShell",
-		      version => $EekBoek::VERSION) . "\n");
+    warn(__x("This is {pkg} [{name} {version}]",
+	     pkg     => $EekBoek::PACKAGE,
+	     name    => "WxShell",
+	     version => $EekBoek::VERSION) . "\n");
 }
 
 sub app_usage {
