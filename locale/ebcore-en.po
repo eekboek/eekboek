@@ -2,15 +2,15 @@
 # Copyright (C) 2005 Squirrel Consultancy.
 # This file is distributed under the same license as the EekBoek package.
 # Automatically generated, 2005.
-#
+# Automatically generated <>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-03-08 14:19+0100\n"
-"PO-Revision-Date: 2011-03-11 21:57+0100\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2011-03-12 20:15+0100\n"
+"Last-Translator: Automatically generated <>\n"
+"Language-Team: none <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -282,7 +282,7 @@ msgstr ""
 #: ../lib/EB/Booking/IV.pm:49
 #, perl-brace-format
 msgid "Ongeldige operatie (IV) voor dagboek type {type}"
-msgstr "Invalid operation (IV) voor batch type {type}"
+msgstr "Invalid operation (IV) voor daybook type {type}"
 
 #: ../lib/EB/Booking/IV.pm:165
 msgid "De omschrijving van de boekstukregel ontbreekt"
@@ -296,7 +296,7 @@ msgstr "Reference {ref} already exists for relation {rel}"
 #: ../lib/EB/Booking/IV.pm:250
 #, perl-brace-format
 msgid "Pas op! U boekt {ko} in een {iv} dagboek"
-msgstr "Warning! Posting has {ko} but batch is {iv}"
+msgstr "Warning! Posting has {ko} but daybook is {iv}"
 
 #: ../lib/EB/Booking/IV.pm:251
 msgid "kosten"
@@ -799,22 +799,22 @@ msgstr "Intra-EC VAT transactions are not yet fully supported"
 #: ../lib/EB/DB.pm:244
 #, perl-brace-format
 msgid "Onbekend dagboek: {dbk}"
-msgstr "Unknown batch: {dbk}"
+msgstr "Unknown daybook: {dbk}"
 
 #: ../lib/EB/Relation.pm:76
 #, perl-brace-format
 msgid "Ongeldig dagboek voor relatie: {dbk}"
-msgstr "Invalid batch for relation: {dbk}"
+msgstr "Invalid daybook for relation: {dbk}"
 
 #: ../lib/EB/Relation.pm:96
 #, perl-brace-format
 msgid "Dagboek {dbk} implicieert {typ1} maar {acct} impliceert {typ2}"
-msgstr "Batch {dbk} implies {typ1} but {acct} implies {typ2}"
+msgstr "Daybook {dbk} implies {typ1} but {acct} implies {typ2}"
 
 #: ../lib/EB/Relation.pm:136
 #, perl-brace-format
 msgid "Relatiecode {code} is niet uniek in dagboek {dbk}"
-msgstr "Relation code {code} is not unique in batch {dbk}"
+msgstr "Relation code {code} is not unique in daybook {dbk}"
 
 #: ../lib/EB/Export/XAF.pm:35
 #, perl-brace-format
@@ -863,32 +863,32 @@ msgstr "Schema {schema} has been initialised"
 #: ../lib/EB/Tools/Schema.pm:112
 #, perl-brace-format
 msgid "Dubbel: dagboek {dbk}"
-msgstr "Duplicate: batch {dbk}"
+msgstr "Duplicate: daybook {dbk}"
 
 #: ../lib/EB/Tools/Schema.pm:128
 #, perl-brace-format
 msgid "Dagboek {id} onbekend type \"{type}\""
-msgstr "Batch {id}: unknown type \"{type}\""
+msgstr "Daybook {id}: unknown type \"{type}\""
 
 #: ../lib/EB/Tools/Schema.pm:138
 #, perl-brace-format
 msgid "Dagboek {id}: onbekende info \"{info}\""
-msgstr "Batch {id}: unknown information \"{info}\""
+msgstr "Daybook {id}: unknown information \"{info}\""
 
 #: ../lib/EB/Tools/Schema.pm:143
 #, perl-brace-format
 msgid "Dagboek {id}: het :type ontbreekt"
-msgstr "Batch {id}: the :type is missing"
+msgstr "Daybook {id}: the :type is missing"
 
 #: ../lib/EB/Tools/Schema.pm:144
 #, perl-brace-format
 msgid "Dagboek {id}: het :rekening nummer ontbreekt"
-msgstr "Batch {id}: the :rekening is missing"
+msgstr "Daybook {id}: the :rekening is missing"
 
 #: ../lib/EB/Tools/Schema.pm:146
 #, perl-brace-format
 msgid "Dagboek {id}: :dc is alleen toegestaan voor Kas en Bankboeken"
-msgstr "Batch {id}: :dc is only allowed for Cash and Bank"
+msgstr "Daybook {id}: :dc is only allowed for Cash and Bank"
 
 #: ../lib/EB/Tools/Schema.pm:159
 #, perl-brace-format
@@ -1200,7 +1200,7 @@ msgstr "Closing financial year {bky}"
 
 #: ../lib/EB/Tools/Einde.pm:129 ../lib/EB/Tools/Einde.pm:199
 msgid "Systeemdagboek"
-msgstr "Internal batch"
+msgstr "Internal daybook"
 
 #: ../lib/EB/Tools/Einde.pm:147
 #, perl-brace-format
@@ -1682,7 +1682,8 @@ msgstr ""
 "\n"
 "  adm_relatie <posting> <date> <code> <description> <amount>\n"
 "\n"
-"The <posting> must be fully qualified, <batch>:<financial year>:<number>. \n"
+"The <posting> must be fully qualified, <daybook>:<financial year>:"
+"<number>. \n"
 "\n"
 "If reservations are specified for Accounts Payable or Accounts\n"
 "Receivable, you should also specify unsettled postings for a total\n"
@@ -1784,9 +1785,9 @@ msgstr ""
 "\n"
 "followed by one or more:\n"
 "\n"
-"  crd [ <date> ] <code> <amount>\\t\\t\\t(payment by creditor)\n"
-"  deb [ <date> ] <code> <amount>\\t\\t\\t(payment by debtor)\n"
-"  std [ <date> ] <description>> <amount> <account>\\t(free entry)\n"
+"  crd [ <date> ] <code> <amount>\t\t(payment by creditor)\n"
+"  deb [ <date> ] <code> <amount>\t\t(payment by debtor)\n"
+"  std [ <date> ] <description>> <amount> <account>\t(free entry)\n"
 "\n"
 "Total amount for this posting can be checked with --totaal=<amount>.\n"
 "The new balance amount for this account can be verified with --"
@@ -1835,7 +1836,7 @@ msgstr "Database: {db}"
 #: ../lib/EB/Shell.pm:413
 #, perl-brace-format
 msgid "Onbekend of verkeerd dagboek: {dbk} [{type}]"
-msgstr "Unknown or erroneous batch: {dbk} [{type}]"
+msgstr "Unknown or erroneous daybook: {dbk} [{type}]"
 
 #: ../lib/EB/Shell.pm:442
 #, perl-brace-format
@@ -1865,8 +1866,8 @@ msgstr ""
 "\n"
 "  journal all\t\tAll posts\n"
 "  journal <id>\t\tSelect posting by id\n"
-"  journal <dagboek>\tAll journal entries from this batch\n"
-"  journal <dagboek>:<n>  Select posting from batch\n"
+"  journal <dagboek>\tAll journal entries from this daybook\n"
+"  journal <dagboek>:<n>  Select posting from daybook\n"
 "  Journal\t\tJournal entries from the last booking\n"
 "\n"
 "Options\n"
@@ -1875,7 +1876,7 @@ msgstr ""
 "  --totaal\t\tOnly the overall total (detail = 0)\n"
 "  --period=XXX\t\tOnly over this period\n"
 "\n"
-"See \"help rapporten\" for general information on how to make reports.\n"
+"See \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:514
 msgid "Openingsbalans kent geen einddatum"
@@ -1896,7 +1897,7 @@ msgid ""
 "Zie verder \"help rapporten\" voor algemene informatie over aan te maken\n"
 "rapporten.\n"
 msgstr ""
-"Shows the balans account.\n"
+"Shows the balance account.\n"
 "\n"
 "Options:\n"
 "  <none>\t\tBalance on general ledger account\n"
@@ -1948,6 +1949,16 @@ msgid ""
 "Zie verder \"help rapporten\" voor algemene informatie over aan te maken\n"
 "rapporten.\n"
 msgstr ""
+"Shows the Trial balance en Account balance.\n"
+"\n"
+"Options:\n"
+"  <none>\t\tTrial balance and Accounting balance on the general ledger\n"
+"  --verdicht\t\tAggregated, detailed (same as --detail=2)\n"
+"  --detail=<n>\t\tAggregated, level of detail <n> = 0,1,2\n"
+"  --per=<date>\t\tSelect end date\n"
+"  --boekjaar=<code>\tSelect financial year\n"
+"\n"
+"See also \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:644
 #, perl-brace-format
@@ -1968,6 +1979,16 @@ msgid ""
 "Zie verder \"help rapporten\" voor algemene informatie over aan te maken\n"
 "rapporten.\n"
 msgstr ""
+"Shows the General ledger, or a selection from it.\n"
+"\n"
+"  grootboek [ <acct> ... ]\n"
+"\n"
+"Options:\n"
+"\n"
+"  --detail=<n>\t\tLevel of detail, <n>=0,1,2 (default is 2)\n"
+"  --periode=<period>\tOnly over this period\n"
+"\n"
+"See also \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:676
 msgid "Nr"
@@ -1991,9 +2012,9 @@ msgid ""
 "\n"
 "  dagboeken\n"
 msgstr ""
-"Displays a list of available batches\n"
+"Displays a list of available daybooks\n"
 "\n"
-"  batches\n"
+"  dagboeken\n"
 
 #: ../lib/EB/Shell.pm:721
 msgid "Deze administratie voert geen BTW"
@@ -2032,6 +2053,35 @@ msgid ""
 "Zie verder \"help rapporten\" voor algemene informatie over aan te maken\n"
 "rapporten.\n"
 msgstr ""
+"Shows the VAT submission.\n"
+"\n"
+"  btwaangifte [ <options> ] [ <submission date> ]\n"
+"\n"
+"Submission period can be:\n"
+"\n"
+"  j jaar\t\tThe whole year\n"
+"  k1 k2 k3 k4\t\tQuarter 1, 2, 3, 4 (also: q1, etc...)\n"
+"  1 2 3 ...\t\tMonth (by number)\n"
+"  jan feb ...\t\tMonth (short name)\n"
+"  januari ...\t\tMonth (long name)\n"
+"\n"
+"The default period is the first period over which no VAT has been "
+"submitted.\n"
+"\n"
+"Options:\n"
+"\n"
+"  --definitief\t\tThe VAT period is completed. No further bookings within \n"
+"\t\t\tthis period are possible.\n"
+"  --periode=<period>\tSelect submission period. Dit kan niet samen\n"
+"\t\t\tmet boekjaar, en evenmin met de bovenvermelde\n"
+"\t\t\tmethode van periode-specificatie.\n"
+"  --boekjaar=<code>\tSelecteer boekjaar\n"
+"  --noreport\t\tGeen rapportage. Dit is enkel zinvol samen\n"
+"\t\t\tmet --definitief om de afgesloten BTW periode\n"
+"\t\t\taan te passen.\n"
+"  --noround\t\tAlle bedragen zonder af te ronden.\n"
+"\n"
+"See also \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:783
 msgid ""
@@ -2048,6 +2098,17 @@ msgid ""
 "Zie verder \"help rapporten\" voor algemene informatie over aan te maken\n"
 "rapporten.\n"
 msgstr ""
+"Shows an overview of bookings by debtor.\n"
+"\n"
+"  debiteuren [ <options> ] [ <relation codes> ... ]\n"
+"\n"
+"Options:\n"
+"\n"
+"  --periode <period>\tPeriod\n"
+"  --boekjaar=<code>\tSelect financial year\n"
+"  --openstaand\t\tOnly with open postings\n"
+"\n"
+"See also \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:819
 msgid ""
@@ -2064,6 +2125,17 @@ msgid ""
 "Zie verder \"help rapporten\" voor algemene informatie over aan te maken\n"
 "rapporten.\n"
 msgstr ""
+"Shows an overview of bookings by creditor.\n"
+"\n"
+"  crediteuren [ <options> ] [ <relation codes> ... ]\n"
+"\n"
+"Options:\n"
+"\n"
+"  --periode <period>\tPeriod\n"
+"  --boekjaar=<code>\tSelect financial year\n"
+"  --openstaand\t\tOnly with open postings\n"
+"\n"
+"See also \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:857
 msgid ""
@@ -2081,6 +2153,18 @@ msgid ""
 "Zie verder \"help rapporten\" voor algemene informatie over aan te maken\n"
 "rapporten.\n"
 msgstr ""
+"Shows an overview of open postings.\n"
+"\n"
+"  openstaand [ <options> ] [ <relation> ]\n"
+"\n"
+"Options:\n"
+"\n"
+"  --per=<date>\t\tEnd date\n"
+"  --boekjaar=<code>\tSelect financial year\n"
+"  --deb --debiteuren\tOnly debtors\n"
+"  --crd --crediteuren\tOnly creditors\n"
+"\n"
+"See also \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:875
 msgid ""
@@ -2103,6 +2187,24 @@ msgid ""
 "\t\t\t(Let op: --gen-XXX, niet --gen=XXX)\n"
 "  --page=<size>\t\tPaginagrootte voor tekstrapporten.\n"
 msgstr ""
+"All commands producing reports have the following options:\n"
+"\n"
+"  --per=<date>\t\tThe end date for the report.\n"
+"\t\t\tNot necessarily relevant for every command.\n"
+"\t\t\tSee \"help periodes\" for details.\n"
+"  --periode=<period>\tThe reporting period.\n"
+"\t\t\tNot necessarily relevant for every command.\n"
+"\t\t\tSee \"help periodes\" for details.\n"
+"  --output=<file>\tWrite the report to this file\n"
+"\t\t\tOutput type is dependent on the file extension,\n"
+"\t\t\tfor example xx.html produces an HTML file, and xx.txt \n"
+"\t\t\tproduces a text file, xx.csv prodices a CSV file, etc.\n"
+"  --gen-<type>\t\tForce output type (html, csv, text, ...)\n"
+"\t\t\tDepending on the available output types, also \n"
+"\t\t\tthe abbreviated options, such as --html, --csv and --text\n"
+"\t\t\tare possible.\n"
+"\t\t\tCaution: --gen-XXX, not --gen=XXX\n"
+"  --page=<size>\t\tPage size for textual reports.\n"
 
 #: ../lib/EB/Shell.pm:898
 msgid ""
@@ -2123,6 +2225,21 @@ msgid ""
 "  m4  (vierde maand)\n"
 "  jaar (gehele boekjaar)\n"
 msgstr ""
+"The following period identifiers are possible.\n"
+"If the year is omitted, it is assumed the current financial year is meant.\n"
+"\n"
+"  2005-04-01 - 2005-07-31\n"
+"  01-04-2005 - 31-07-2005\n"
+"  01-04 - 31-07-2005\n"
+"  01-04 - 31-07\n"
+"  1 april 2005 - 31 juli 2005 (and variants)\n"
+"  1 apr 2005 - 31 jul 2005 (and variants)\n"
+"  apr - jul\n"
+"  k2  (second quarter)\n"
+"  april 2003 (01-04-2003 - 30-04-2003)\n"
+"  april  (01-04 - 30-04 of current financial year)\n"
+"  m4  (fourth month)\n"
+"  jaar (entire calendar year)\n"
 
 #: ../lib/EB/Shell.pm:936
 #, perl-brace-format
@@ -2160,6 +2277,26 @@ msgid ""
 "     Wanneer enkel een nummer wordt opgegeven dan worden de gegevens\n"
 "     van de betreffende grootboekrekening getoond.\n"
 msgstr ""
+"Maintenance of the accounting scheme. This command has the following \n"
+"sub-commands:\n"
+"\n"
+"  schema <command> [ <options> ] <arguments>\n"
+"\n"
+"Create general ledger\n"
+"\n"
+"  schema gbk <account> [ <type> <description> <aggregation> ]\n"
+"\n"
+"     <account>\t\tThe intended general ledger account.\n"
+"     <type>\t\tD/C for Debit / Credit\n"
+"\t\t\tK/O/N for Costs / Revenue / Neutral\n"
+"\t\t\tOptionally followed by ! if this \n"
+"\t\t\tbalance account is fixed on one side.\n"
+"     <omschrijving>\tThe description of this general account\n"
+"     <verdichting>\tThe group account to which this account belongs\n"
+"\n"
+"     When only a number is specified, then all data of the respective "
+"general \n"
+"     ledger account are shown.\n"
 
 #: ../lib/EB/Shell.pm:999
 msgid "Ongeldig aantal argumenten voor deze opdracht"
@@ -2198,7 +2335,7 @@ msgstr ""
 
 #: ../lib/EB/Shell.pm:1058
 msgid "Opties --dir, --file en --xaf sluiten elkaar uit"
-msgstr "Options --dir, --file, and --xaf are mutually exclusive"
+msgstr "The options --dir, --file, and --xaf are mutually exclusive"
 
 #: ../lib/EB/Shell.pm:1062
 msgid "Specifieer --dir, --file of --xaf"
@@ -2226,6 +2363,21 @@ msgid ""
 "exports wordt altijd de gehele administratie geëxporteerd.\n"
 "Eventueel bestaande files worden overschreven.\n"
 msgstr ""
+"Exports the complete administration.\n"
+"\n"
+"  export [ <options> ]\n"
+"\n"
+"Options:\n"
+"\n"
+"  --file=<file>\tSelect output file\n"
+"  --dir=<directory>\tSelect output directory\n"
+"  --xaf=<bestand>\tExport XML Auditfile Financieel\n"
+"  --boekjaar=<code>\tSelect financial year (only with --xaf)\n"
+"\n"
+"One of the following options must be specified: --file, --dir or --xaf\n"
+"The XAF export exports always one financial year only. \n"
+"For the other export types the complete administration is exported.\n"
+"Any existing export files are overwritten.\n"
 
 #: ../lib/EB/Shell.pm:1121
 msgid "Opties --dir en --file sluiten elkaar uit"
@@ -2259,6 +2411,18 @@ msgid ""
 "\n"
 "LET OP: IMPORT VERVANGT DE COMPLETE ADMINISTRATIE!\n"
 msgstr ""
+"Imports a complete administration that was previously exported.\n"
+"\n"
+"  import [ <options> ]\n"
+"\n"
+"Options:\n"
+"\n"
+"  --input=<file>\tSelect export file for import\n"
+"  --dir=<directory>\tSelect directory for import\n"
+"\n"
+"One of the options --input or --dir must be specified.\n"
+"\n"
+"CAUTION: IMPORT REPLACES THE COMPLETE EXISTING ADMINISTRATION!\n"
 
 #: ../lib/EB/Shell.pm:1184
 msgid ""
@@ -2296,13 +2460,13 @@ msgid ""
 "\n"
 "  boekjaar <code>\n"
 msgstr ""
-"Use for the subsequent commands the specified financial year.\n"
+"Use the specified financial year for all commands that follow.\n"
 "\n"
 "  boekjaar <code>\n"
 
 #: ../lib/EB/Shell.pm:1219
 msgid "Deze opdracht is vervallen. Gebruik in plaats daarvan \"export\".\n"
-msgstr "This command is obsoleted. Use \"export\" instead.\n"
+msgstr "This command is obsolete. Use \"export\" instead.\n"
 
 #: ../lib/EB/Shell.pm:1238 ../lib/EB/Shell.pm:1296
 msgid "Gaarne een boekstuk"
@@ -2322,6 +2486,17 @@ msgid ""
 "Met een pijltje-omhoog kan dit worden teruggehaald en na eventuele\n"
 "wijziging opnieuw ingevoerd.\n"
 msgstr ""
+"Removes a posting. The posting may not be in use.\n"
+"\n"
+"  verwijder [ <options> ] <posting>\n"
+"\n"
+"Options:\n"
+"\n"
+"  --boekjaar=<code>\tSelect financial year\n"
+"\n"
+"The posting that is removed is placed in the command history.\n"
+"With arrow up this command can be retrieved and after any necessary editing\n"
+"the posting can be reinserted.\n"
 
 #: ../lib/EB/Shell.pm:1313
 msgid ""
@@ -2357,7 +2532,7 @@ msgstr ""
 
 #: ../lib/EB/Shell.pm:1343
 msgid "Opties \"definitief\" en \"verwijder\" sluiten elkaar uit"
-msgstr "Options \"definitief\" and \"verwijder\" are mutually exclusive"
+msgstr "The options \"definitief\" and \"verwijder\" are mutually exclusive"
 
 #: ../lib/EB/Shell.pm:1352
 msgid ""
@@ -2380,6 +2555,24 @@ msgid ""
 "  --verwijder\t\tVerwijder een niet-definitieve jaarafsluiting.\n"
 "  --eb=<bestand>\tSchrijf openingsopdrachten in dit bestand.\n"
 msgstr ""
+"Closes the financial year. The VAT accounts are debited and profit or loss "
+"is \n"
+"deducted from the designated account balance.\n"
+"\n"
+"This command generates two reports: a journal of debits and a summary \n"
+"of any outstanding items. If desired, a file can be created with the "
+"opening \n"
+"orders for the coming financial year.\n"
+"\n"
+"  jaareinde [ <options> ]\n"
+"\n"
+"Options:\n"
+"\n"
+"  --boekjaar=<code>\tCloses the specified financial year.\n"
+"  --definitief\t\tCloses the financial year definitively. No more \n"
+"\t\t\tbookings are then possible.\n"
+"  --verwijder\t\tRemove a financial year close which is not definitive.\n"
+"  --eb=<file>\tWrite opening commands to this file.\n"
 
 #: ../lib/EB/Shell.pm:1381
 msgid ""
@@ -2389,14 +2582,14 @@ msgid ""
 "  sql [ <opdracht> ]\n"
 msgstr ""
 "Execute a SQL command via the database driver. When using this command,\n"
-"there are no garantees for the correctness of the results.\n"
+"there are no guarantees for the correctness of the results.\n"
 "\n"
 "  sql [ <command> ]\n"
 
 #: ../lib/EB/Shell.pm:1406
 #, perl-brace-format
 msgid "Ongeldige periode-aanduiding: {per}"
-msgstr "Invalid period: {per}"
+msgstr "Invalid period identifier: {per}"
 
 #: ../lib/EB/Shell.pm:1417
 #, perl-brace-format
@@ -2622,15 +2815,15 @@ msgstr "Error {err} while creating file {file}"
 
 #: ../lib/EB/Report/GenBase.pm:113
 msgid "--per sluit --periode uit"
-msgstr "Option --per conflicts with --periode"
+msgstr "Options --per and --periode are mutually exclusive"
 
 #: ../lib/EB/Report/GenBase.pm:114
 msgid "--per sluit --boekjaar uit"
-msgstr "Option --per conflicts with --boekjaar"
+msgstr "Options --per and with --boekjaar are mutually exclusive"
 
 #: ../lib/EB/Report/GenBase.pm:120
 msgid "--periode sluit --boekjaar uit"
-msgstr "Option --perion conflicts with --boekjaar"
+msgstr "Options --perion with --boekjaar are mutually exclusive"
 
 #: ../lib/EB/Report/GenBase.pm:146
 #, perl-brace-format
@@ -2649,15 +2842,15 @@ msgstr "Date {per} is before the start {begin} of the administration"
 
 #: ../lib/EB/Report/BTWAangifte.pm:62
 msgid "per maand"
-msgstr "Monthly"
+msgstr "monthly"
 
 #: ../lib/EB/Report/BTWAangifte.pm:63
 msgid "per jaar"
-msgstr "Yearly"
+msgstr "annually"
 
 #: ../lib/EB/Report/BTWAangifte.pm:64
 msgid "per kwartaal"
-msgstr "Quarterly"
+msgstr "quarterly"
 
 #: ../lib/EB/Report/BTWAangifte.pm:202
 msgid "BTW aangifte periode sluit niet aan bij de vorige aangifte"
@@ -2754,7 +2947,7 @@ msgstr "Posting {nr}"
 #: ../lib/EB/Report/Journal.pm:109
 #, perl-brace-format
 msgid "Dagboek {nr}"
-msgstr "Batch {nr}"
+msgstr "Daybook {nr}"
 
 #: ../lib/EB/Report/Balres.pm:69 ../lib/EB/Report/Proof.pm:54
 msgid "RekNr"
@@ -2865,7 +3058,7 @@ msgstr "Total {debcrd}"
 
 #: ../lib/EB/Report/Open.pm:179
 msgid "Geen openstaande posten gevonden"
-msgstr "No unsettled postings have been found"
+msgstr "No open postings have been found"
 
 #: ../lib/EB/Report/Reporter/Html.pm:51
 #, perl-brace-format
@@ -2939,7 +3132,7 @@ msgstr "Unknown posting {ref} for relation {rel} ({desc})"
 #: ../lib/EB/DB.pm:259
 #, perl-brace-format
 msgid "Onbekend boekstuk {bsk} in dagboek {dbk}"
-msgstr "Unknown posting {bsk} in batch {dbk}"
+msgstr "Unknown posting {bsk} in daybook {dbk}"
 
 #: ../lib/EB/DB.pm:282
 #, perl-brace-format
@@ -2958,7 +3151,7 @@ msgstr "Unknown standard account: {std}"
 
 #: ../lib/EB/DB.pm:458
 msgid "Geen dataset opgegeven. Specificeer een dataset in de configuratiefile."
-msgstr "No dataset. Please specify a dataset name in the configuration file.\""
+msgstr "No dataset. Please specify a dataset name in the configuration file."
 
 #: ../lib/EB/DB.pm:590
 #, perl-brace-format
@@ -2975,7 +3168,7 @@ msgstr "VAT"
 
 #: ../lib/EB/Wx/IniWiz.pm:69
 msgid "Dagboeken"
-msgstr "Batches"
+msgstr "Daybooks"
 
 #: ../lib/EB/Wx/IniWiz.pm:71
 msgid "Bevestiging"
@@ -3091,7 +3284,7 @@ msgstr "Relations (debitors en creditors)"
 
 #: ../lib/EB/Wx/IniWiz.pm:112 ../lib/EB/Wx/IniWiz.pm:310
 msgid "Mutaties (boekingen)"
-msgstr "Mutations (postings)"
+msgstr "Movements (postings)"
 
 #: ../lib/EB/Wx/IniWiz.pm:114
 msgid "Let op! Eventuele bestaande bestanden worden overschreven!"
@@ -3134,11 +3327,11 @@ msgstr "The submission period for the corporate tax"
 
 #: ../lib/EB/Wx/IniWiz.pm:278
 msgid "Verkoop- en Debiteurenadministratie"
-msgstr "Sales and debtor administration"
+msgstr "Sales and Accounts payable administration"
 
 #: ../lib/EB/Wx/IniWiz.pm:280
 msgid "Inkoop- en Crediteurenadministratie"
-msgstr "Procurement and creditors administration"
+msgstr "Procurement and Accounts receivable administration"
 
 #: ../lib/EB/Wx/IniWiz.pm:282
 msgid "Kas (contant geld)"
@@ -3176,11 +3369,11 @@ msgstr "The password of the database user."
 
 #: ../lib/EB/Wx/IniWiz.pm:304
 msgid "Rekeningschema, dagboeken, BTW instellingen"
-msgstr "Account schema, batches and VAT configurations"
+msgstr "Account schema, daybooks and VAT configurations"
 
 #: ../lib/EB/Wx/IniWiz.pm:306
 msgid "Debiteuren en Crediteuren"
-msgstr "Debtors and Creditors"
+msgstr "Accounts receivable and Accounts payable"
 
 #: ../lib/EB/Wx/IniWiz.pm:308
 msgid "Administratieve gegevens"
