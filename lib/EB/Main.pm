@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 20:35:26 2011
-# Update Count    : 1000
+# Last Modified On: Sat Mar 12 22:20:16 2011
+# Update Count    : 1004
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -31,9 +31,11 @@ use Getopt::Long 2.13;
 sub run {
     my ( $pkg, $opts ) = @_;
     $opts = {} unless defined $opts;
-
     binmode(STDOUT, ":encoding(utf8)");
     binmode(STDERR, ":encoding(utf8)");
+
+    # Preliminary initialize config.
+    EB->app_init( { app => $EekBoek::PACKAGE } );
 
     # Command line options.
     $opts =
