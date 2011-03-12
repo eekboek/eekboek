@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-03-08 14:19+0100\n"
-"PO-Revision-Date: 2011-03-12 20:15+0100\n"
+"PO-Revision-Date: 2011-03-12 21:23+0100\n"
 "Last-Translator: Automatically generated <>\n"
 "Language-Team: none <>\n"
 "Language: \n"
@@ -528,19 +528,16 @@ msgid "Password voor de database user"
 msgstr "Password to access the database"
 
 #: ../lib/EB/IniWiz.pm:345
-#, fuzzy
 msgid "Moet het configuratiebestand worden aangemaakt"
-msgstr "The administration has been created"
+msgstr "Create the configuration file"
 
 #: ../lib/EB/IniWiz.pm:349
-#, fuzzy
 msgid "Moeten de administratiebestanden worden aangemaakt"
-msgstr "The administration has been created"
+msgstr "Create the administration data files"
 
 #: ../lib/EB/IniWiz.pm:353
-#, fuzzy
 msgid "Moet de database worden aangemaakt"
-msgstr "Created empty dataset {db}"
+msgstr "Create database?"
 
 #: ../lib/EB/IniWiz.pm:357
 msgid "Gereed om de bestanden aan te maken."
@@ -1417,7 +1414,6 @@ msgid "HET NIEUWE BOEKJAAR IS NIET GEOPEND!"
 msgstr "THE NEW FINANCIAL YEAR HAS NOT BEEN OPENED!"
 
 #: ../lib/EB/Tools/Opening.pm:580
-#, fuzzy
 msgid ""
 "Het openen van een administratie kan slechts éénmaal gebeuren, vóór\n"
 "het invoeren van de eerste mutatie. Het openen van een nieuw boekjaar\n"
