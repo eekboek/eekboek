@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 11 07:55:54 2011
-# Update Count    : 109
+# Last Modified On: Sat Mar 12 21:15:00 2011
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -1148,10 +1148,10 @@ Importeert een complete, geëxporteerde administratie.
 
 Opties:
 
-  --input=<bestand>	Selecteer exportbestand
+  --file=<bestand>	Selecteer exportbestand
   --dir=<directory>	Selecteer exportdirectory
 
-Er moet of een --input of een --dir optie worden opgegeven.
+Er moet of een --file of een --dir optie worden opgegeven.
 
 LET OP: IMPORT VERVANGT DE COMPLETE ADMINISTRATIE!
 EOS
