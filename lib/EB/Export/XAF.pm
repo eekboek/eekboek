@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sun Apr 13 17:25:07 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:27:42 2010
-# Update Count    : 239
+# Last Modified On: Sat Mar 12 12:50:10 2011
+# Update Count    : 240
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -320,7 +320,7 @@ sub printi {
 
 sub _numfmt {
     my ($v) = @_;
-    my $t = numfmt($v);
+    my $t = numfmt_plain($v);
     $t =~ s/,/./;
     $t;
 }
