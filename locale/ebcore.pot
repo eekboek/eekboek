@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-08 14:19+0100\n"
+"POT-Creation-Date: 2011-03-09 09:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/EB.pm:131
+#: ../lib/EB.pm:133
 #, perl-brace-format
 msgid "{name} {version}"
 msgstr ""
 
-#: ../lib/EB.pm:135
+#: ../lib/EB.pm:137
 msgid "Nederlands"
 msgstr ""
 
-#: ../lib/EB.pm:136
+#: ../lib/EB.pm:138
 #, perl-brace-format
 msgid "{ident}{extra}{locale} -- Copyright {year} Squirrel Consultancy"
 msgstr ""
 
-#: ../lib/EB.pm:148
+#: ../lib/EB.pm:150
 msgid ""
 "EekBoek is VRIJE software, ontwikkeld om vrij over uw eigen gegevens te "
 "kunnen beschikken."
 msgstr ""
 
-#: ../lib/EB.pm:149
+#: ../lib/EB.pm:151
 msgid ""
 "Met uw keuze voor het Microsoft Windows besturingssysteem geeft u echter "
 "alle vrijheden weer uit handen. Dat is erg triest."
@@ -634,28 +634,28 @@ msgstr ""
 msgid "Ongeldig getal: {num}"
 msgstr ""
 
-#: ../lib/EB/Main.pm:87
+#: ../lib/EB/Main.pm:86
 msgid "Geen administratie geselecteerd"
 msgstr ""
 
-#: ../lib/EB/Main.pm:98
+#: ../lib/EB/Main.pm:96
 msgid ""
 "Geen EekBoek database opgegeven. Specificeer een database in de "
 "configuratiefile, of selecteer een andere configuratiefile op de command "
 "line met \"--config=...\"."
 msgstr ""
 
-#: ../lib/EB/Main.pm:136
+#: ../lib/EB/Main.pm:134
 #, perl-brace-format
 msgid "Lege database {db} is aangemaakt"
 msgstr ""
 
-#: ../lib/EB/Main.pm:217
+#: ../lib/EB/Main.pm:215
 #, perl-brace-format
 msgid "Dit is {pkg} [{name} {version}]"
 msgstr ""
 
-#: ../lib/EB/Main.pm:227
+#: ../lib/EB/Main.pm:225
 #, perl-brace-format
 msgid ""
 "Gebruik: {prog} [options] [file ...]\n"
@@ -2872,7 +2872,7 @@ msgstr ""
 msgid "Er bestaat al een administratie met deze code."
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:537 ../lib/EB/Wx/IniWiz.pm:884
+#: ../lib/EB/Wx/IniWiz.pm:537 ../lib/EB/Wx/IniWiz.pm:883
 msgid "Database Test Resultaat"
 msgstr ""
 
@@ -2881,27 +2881,27 @@ msgstr ""
 msgid "Aanmaken {cfg}: "
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:723
+#: ../lib/EB/Wx/IniWiz.pm:722
 msgid "Mislukt"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:728
+#: ../lib/EB/Wx/IniWiz.pm:727
 msgid "Gereed"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:732
+#: ../lib/EB/Wx/IniWiz.pm:731
 msgid "Overgeslagen"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:764
+#: ../lib/EB/Wx/IniWiz.pm:763
 msgid "Afgebroken!"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:883
+#: ../lib/EB/Wx/IniWiz.pm:882
 msgid "Succes!"
 msgstr ""
 
-#: ../lib/EB/Wx/IniWiz.pm:905
+#: ../lib/EB/Wx/IniWiz.pm:904
 msgid "The Wiz"
 msgstr ""
 
