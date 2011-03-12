@@ -215,7 +215,7 @@ sub transactions {
     $self->xml_elt("totalDebit",    _numfmt($damt));
     $self->xml_elt("totalCredit",   _numfmt(-$camt));
 
-    # Get the list of batches (dagboeken).
+    # Get the list of daybooks (dagboeken).
     my $sth = $dbh->sql_exec
       ("SELECT dbk_id, dbk_desc, dbk_type".
        " FROM Dagboeken".
@@ -226,7 +226,7 @@ sub transactions {
 	push(@dbk, [@$rr]);
     }
 
-    # Process the batches (dagboeken).
+    # Process the daybooks (dagboeken).
     foreach my $dbk ( @dbk ) {
 
 	$self->xml_elt_open("journal");
