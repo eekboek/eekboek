@@ -563,7 +563,7 @@ sub help_result {
 Toont de resultatenrekening.
 
 Opties:
-  <geen>		Overzicth op grootboekrekening
+  <geen>		Overzicht op grootboekrekening
   --verdicht		Verdicht, gedetailleerd
   --detail=<n>		Verdicht, mate van detail <n> = 0,1,2
   --periode=<periode>	Selecteer periode
@@ -602,7 +602,7 @@ Toont de Proef- en Saldibalans.
 
 Opties:
   <geen>		Proef- en Saldibalans op grootboekrekening
-  --verdicht		Verdicht, gedetailleerd (zelfde als --detail=2)
+  --verdicht		Verdicht, gedetailleerd (hetzelfde als --detail=2)
   --detail=<n>		Verdicht, mate van detail <n> = 0,1,2
   --per=<datum>		Selecteer einddatum
   --boekjaar=<code>	Selecteer boekjaar
