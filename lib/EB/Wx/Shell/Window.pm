@@ -23,7 +23,9 @@ sub sizepos_save {
     $config->WriteInt( "windows/".$self->{mew}."/ypos", $y );
 
     unless ( $posonly ) {
-	($x, $y) = $self->GetSizeWH;
+	($x, $y) = ( Wx::wxMAC )
+	           ? $self->GetClientSizeWH
+	           : $self->GetSizeWH ;
 	$config->WriteInt( "windows/".$self->{mew}."/xwidth", $x );
 	$config->WriteInt( "windows/".$self->{mew}."/ywidth", $y );
     }
@@ -41,7 +43,14 @@ sub sizepos_restore {
     unless ( $posonly ) {
 	$x = $config->ReadInt( "windows/".$self->{mew}."/xwidth", -1 );
 	$y = $config->ReadInt( "windows/".$self->{mew}."/ywidth", -1 );
-	$self->SetSize( $x, $y ) if $x >= 0 && $y >= 0;
+	if ( $x >= 0 && $y >= 0 ) {
+	    $self->SetSize( $x, $y );
+	    $self->SetClientSize([$x, $y]) if Wx::wxMAC();
+	}
+	else {
+	    $self->SetSize(0, 0, $self->GetSizeWH);
+	    $self->Center;
+	}
     }
 
     # For convenience: CLOSE on Ctrl-W and Esc.
