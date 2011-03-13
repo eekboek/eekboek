@@ -19,6 +19,7 @@ use File::Spec;
 use Wx::Locale gettext => '_T';
 # end wxGlade
 
+use EB;
 use EB::Wx::Shell::HtmlViewer;
 use EB::Wx::Shell::EditDialog;
 use EB::Wx::Shell::PreferencesDialog;
@@ -32,7 +33,12 @@ my $prefctl;
 sub __expand($%) {
     my ($t, %args) = @_;
     my $re = join('|', map { quotemeta($_) } keys(%args));
-    $t =~ s/\{($re)\}/defined($args{$1}) ? $args{$1} : "{$1}"/ge;
+
+    #### WHOAH!!!!!
+    # $1 seems to be stuck to the EekBoek initial message.
+    #### WHOAH!!!!!
+
+    $t =~ s/(\{)($re)\}/defined($args{$2}) ? $args{$2} : "{$2}"/ge;
     $t;
 }
 
