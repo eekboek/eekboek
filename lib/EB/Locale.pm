@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 20:15:28 2011
-# Update Count    : 144
+# Last Modified On: Mon Mar 14 13:02:33 2011
+# Update Count    : 160
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -33,25 +33,60 @@ use POSIX qw(setlocale LC_MESSAGES);
 my $core_localiser;
 our $LOCALISER;			# for outside checking
 
-eval {
-    require Locale::gettext;
+sub __init__ {
+    return if $core_localiser;
+
+    # Since EB is use-ing Locale, we cannot use the EB exported libfile yet.
+    my $dir = EB::libfile("locale");
+
     # Use outer settings.
     setlocale(LC_MESSAGES);
 
-    unless ( $core_localiser ) {
+    # Try Locale::gettext
+    eval {
+	require Locale::gettext;
 	$core_localiser = Locale::gettext->domain(COREPACKAGE);
-	# Since EB is use-ing Locale, we cannot use the EB exported libfile yet.
-	$core_localiser->dir(EB::libfile("locale"));
-
+	$core_localiser->dir($dir);
 	eval 'sub _T { $core_localiser->get($_[0]) }';
 	$LOCALISER = "Locale::gettext";
-    }
-};
+    } and return;
 
-unless ( $core_localiser ) {
-    $core_localiser = "<dummy>";
-    eval 'sub _T { $_[0] };';
-    $LOCALISER = "";
+    # Try Locale::Messages (part of libintl-perl).
+    eval {
+	require Locale::Messages;
+	Locale::Messages::bindtextdomain( COREPACKAGE, $dir );
+	Locale::Messages::textdomain(COREPACKAGE);
+	eval 'sub _T { Locale::Messages::gettext($_[0]) }';
+	$LOCALISER = "Locale::Messages";
+    } and return;
+    return if $core_localiser;
+
+    # Try Locale::gettext_xs (part of libintl-perl).
+    eval {
+	require Locale::gettext_xs;
+	Locale::gettext_xs::bindtextdomain( COREPACKAGE, $dir );
+	Locale::gettext_xs::textdomain(COREPACKAGE);
+	eval 'sub _T { Locale::gettext_xs::gettext($_[0]) }';
+	$LOCALISER = "Locale::gettext_xs";
+    } and return;
+    return if $core_localiser;
+
+    # Try Locale::gettext_pp (part of libintl-perl).
+    eval {
+	require Locale::gettext_pp;
+	Locale::gettext_pp::bindtextdomain( COREPACKAGE, $dir );
+	Locale::gettext_pp::textdomain(COREPACKAGE);
+	eval 'sub _T { Locale::gettext_pp::gettext($_[0]) }';
+	$LOCALISER = "Locale::gettext_pp";
+    } and return;
+    return if $core_localiser;
+
+    # Fallback to none.
+    unless ( $core_localiser ) {
+	$core_localiser = "<dummy>";
+	eval 'sub _T { $_[0] };';
+	$LOCALISER = "";
+    }
 }
 
 sub get_language {
@@ -62,5 +97,7 @@ sub set_language {
     # Set/change language.
     setlocale( LC_MESSAGES, $ENV{LANG} = $_[1] );
 }
+
+__init__();
 
 1;
