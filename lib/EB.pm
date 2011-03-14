@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  9 21:54:25 2011
-# Update Count    : 309
+# Last Modified On: Mon Mar 14 13:01:00 2011
+# Update Count    : 316
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -106,6 +106,7 @@ use EB::Utils;
 
 our $ident;
 our $imsg;
+my $imsg_saved;
 our $url = "http://www.eekboek.nl";
 
 unless ( $ident ) {		# already done (can this happen?)
@@ -115,6 +116,8 @@ unless ( $ident ) {		# already done (can this happen?)
 }
 
 sub __init__ {
+    $imsg_saved = $imsg;
+
     # The CLI and GUI use different EB::Locale modules.
     if ( $app || $Cava::Packager::PACKAGED && !Cava::Packager::IsLinux() ) {
 	# We do not have a good gettext for Windows, so use Wx.
@@ -140,7 +143,11 @@ sub __init__ {
 		extra   => ($app ? " Wx" : ""),
 		locale  => (@locextra ? " (".join(", ", @locextra).")" : ""),
 		year    => $year);
-    warn($imsg, "\n") unless @ARGV && $ARGV[0] =~ /-(P|-?printconfig)$/;
+    if ( $imsg ne $imsg_saved
+	 && !( @ARGV && $ARGV[0] =~ /-(P|-?printconfig)$/ )
+       ) {
+	warn($imsg, "\n");
+    }
 
     eval {
 	require Win32;
