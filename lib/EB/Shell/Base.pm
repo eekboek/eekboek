@@ -78,7 +78,6 @@ sub init_rl {
     $self->term($term = Term::ReadLine->new(ref $self));
 
     if ( -t STDIN && $term->ReadLine ne 'Term::ReadLine::Gnu' ) {
-	warn("%".__x("U gebruikt nu {rl}.", rl => $term->ReadLine)."\n");
 	warn("%"._T("Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::Gnu installeren.")."\n");
 
 	# Some systems do not have Term::ReadLine::Gnu but provide
