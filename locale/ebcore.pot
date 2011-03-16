@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-16 17:26+0100\n"
+"POT-Creation-Date: 2011-03-16 22:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -424,7 +424,9 @@ msgid ""
 "voor rapporten en dergelijke.\n"
 msgstr ""
 
-#: ../lib/EB/IniWiz.pm:211 ../lib/EB/Shell.pm:686 ../lib/EB/Wx/IniWiz.pm:78
+#: ../lib/EB/IniWiz.pm:211 ../lib/EB/Config/Data.pm:24
+#: ../lib/EB/Config/Data.pm:50 ../lib/EB/Shell.pm:686
+#: ../lib/EB/Wx/IniWiz.pm:78
 msgid "Naam"
 msgstr ""
 
@@ -1515,6 +1517,142 @@ msgstr ""
 #: ../lib/EB/Tools/SQLEngine.pm:167
 #, perl-brace-format
 msgid "Incomplete SQL opdracht: {sql}"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:21
+msgid "Bedrijfsgegevens"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:25
+msgid "Administratienummer"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:26
+msgid "Adres"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:27
+msgid "Postcode"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:28
+msgid "Plaats"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:29
+msgid "Fiscaal nummer"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:33
+msgid "Algemeen"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:36
+msgid "Folder voor administraties"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:37
+msgid "Forceer wizard"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:41
+msgid "Voorkeursinstellingen"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:44
+msgid "Toon journaalpost na elke boeking"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:51
+msgid "Driver"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:55
+msgid "Gebruikersnaam"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:56
+msgid "Toegangscode"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:57
+msgid "Server systeem"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:58
+msgid "Server poort"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:61
+msgid "Strategie"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:64
+msgid "Afrondingsmethode"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:68
+msgid "Meervoudig afboeken"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:69
+msgid "BTW correcties"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:72
+msgid "Shell"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:75
+msgid "Prompt"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:76
+msgid "Eigen uitbreidingen"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:79
+msgid "Formaten"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:82
+msgid "Getalformaat"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:89
+msgid "Datumformaat"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:95
+msgid "Tekstrapporten"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:98
+msgid "Kolombreedte voor getallen"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:102
+msgid "HTML rapporten"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:105
+msgid "Style sheets"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:108
+msgid "CSV rapporten"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:111
+msgid "Scheidingsteken"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:117
+msgid "Beveiliging"
+msgstr ""
+
+#: ../lib/EB/Config/Data.pm:120
+msgid "Beveiliging voor MS Vista uitschakelen"
 msgstr ""
 
 #: ../lib/EB/Shell.pm:88
