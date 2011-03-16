@@ -77,7 +77,7 @@ CREATE TABLE BTWTabel (
 
 -- Create a foreign key reference from Accounts to BTWTabel
 ALTER TABLE ONLY Accounts
-    add constraint "acc_btw_fk_btw_id"
+    ADD CONSTRAINT "acc_btw_fk_btw_id"
         FOREIGN KEY (acc_btw) REFERENCES BTWTabel(btw_id);
 
 -- Dagboeken / Daybooks
