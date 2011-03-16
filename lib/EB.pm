@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 14 13:01:00 2011
-# Update Count    : 316
+# Last Modified On: Wed Mar 16 20:26:02 2011
+# Update Count    : 317
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -143,7 +143,7 @@ sub __init__ {
 		extra   => ($app ? " Wx" : ""),
 		locale  => (@locextra ? " (".join(", ", @locextra).")" : ""),
 		year    => $year);
-    if ( $imsg ne $imsg_saved
+    if ( !$imsg_saved || $imsg ne $imsg_saved
 	 && !( @ARGV && $ARGV[0] =~ /-(P|-?printconfig)$/ )
        ) {
 	warn($imsg, "\n");
