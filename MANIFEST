@@ -200,6 +200,7 @@ lib/EB/res/Wx/icons/eb.jpg
 lib/EB/res/Wx/icons/ebicon.png
 lib/EB/res/Wx/icons/ebwiz.jpg
 lib/EB/res/Wx/icons/edit.png
+lib/EB/res/help/en/docs.htb
 lib/EB/res/help/nl/docs.htb
 lib/EB/res/locale/en/LC_MESSAGES/ebcore.mo
 lib/EB/res/locale/nl/LC_MESSAGES/ebwxshell.mo
