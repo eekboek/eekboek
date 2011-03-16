@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-16 14:46+0100\n"
-"PO-Revision-Date: 2011-03-16 14:32+0100\n"
+"POT-Creation-Date: 2011-03-16 17:25+0100\n"
+"PO-Revision-Date: 2011-03-16 17:26+0100\n"
 "Last-Translator: Automatically generated <>\n"
 "Language-Team: none <>\n"
 "Language: \n"
@@ -445,7 +445,7 @@ msgstr ""
 msgid "Naam"
 msgstr "Name"
 
-#: ../lib/EB/IniWiz.pm:216 ../lib/EB/Wx/IniWiz.pm:516
+#: ../lib/EB/IniWiz.pm:216 ../lib/EB/Wx/IniWiz.pm:535
 msgid "Er bestaat al een administratie met deze naam."
 msgstr "An administration with that name already exists."
 
@@ -3296,7 +3296,7 @@ msgstr "Configuration file"
 msgid "Relaties (debiteuren en crediteuren)"
 msgstr "Relations (debitors en creditors)"
 
-#: ../lib/EB/Wx/IniWiz.pm:112 ../lib/EB/Wx/IniWiz.pm:310
+#: ../lib/EB/Wx/IniWiz.pm:112 ../lib/EB/Wx/IniWiz.pm:329
 msgid "Mutaties (boekingen)"
 msgstr "Movements (postings)"
 
@@ -3304,20 +3304,28 @@ msgstr "Movements (postings)"
 msgid "Let op! Eventuele bestaande bestanden worden overschreven!"
 msgstr "Caution: existing files will be overwritten"
 
-#: ../lib/EB/Wx/IniWiz.pm:242
+#: ../lib/EB/Wx/IniWiz.pm:243
 msgid "Kies"
 msgstr "Select"
 
-#: ../lib/EB/Wx/IniWiz.pm:263
+#: ../lib/EB/Wx/IniWiz.pm:255
+msgid "Administratie verwijderen?"
+msgstr "Remove administration data?"
+
+#: ../lib/EB/Wx/IniWiz.pm:256
+msgid "Verwijderen administratie"
+msgstr "Remove administration"
+
+#: ../lib/EB/Wx/IniWiz.pm:282
 msgid "EekBoek MiniAdm Setup"
 msgstr "EekBoek MiniAdm Setup"
 
-#: ../lib/EB/Wx/IniWiz.pm:268
+#: ../lib/EB/Wx/IniWiz.pm:287
 msgid ""
 "Een omschrijving van deze administratie, bijvoorbeeld \"Boekhouding 2009\"."
 msgstr "A description of this administration, for example \"Accounting 2009\"."
 
-#: ../lib/EB/Wx/IniWiz.pm:269
+#: ../lib/EB/Wx/IniWiz.pm:288
 msgid ""
 "Een korte, unieke aanduiding van deze administratie, bijvoorbeeld "
 "\"admin2009\"."
@@ -3325,116 +3333,116 @@ msgstr ""
 "A concise, unique description of this administration, for example "
 "\"admin2009\"."
 
-#: ../lib/EB/Wx/IniWiz.pm:270
+#: ../lib/EB/Wx/IniWiz.pm:289
 msgid "De begindatum. Het boekjaar begint op 1 januari van dit jaar."
 msgstr ""
 "The opening date. The financial year starts on the first of January of this "
 "year."
 
-#: ../lib/EB/Wx/IniWiz.pm:273
+#: ../lib/EB/Wx/IniWiz.pm:292
 msgid "BTW toepassen"
 msgstr "Apply VAT"
 
-#: ../lib/EB/Wx/IniWiz.pm:275
+#: ../lib/EB/Wx/IniWiz.pm:294
 msgid "De aangifteperiode voor de omzetbelasting"
 msgstr "The submission period for the corporate tax"
 
-#: ../lib/EB/Wx/IniWiz.pm:278
+#: ../lib/EB/Wx/IniWiz.pm:297
 msgid "Verkoop- en Debiteurenadministratie"
 msgstr "Sales and Accounts payable administration"
 
-#: ../lib/EB/Wx/IniWiz.pm:280
+#: ../lib/EB/Wx/IniWiz.pm:299
 msgid "Inkoop- en Crediteurenadministratie"
 msgstr "Procurement and Accounts receivable administration"
 
-#: ../lib/EB/Wx/IniWiz.pm:282
+#: ../lib/EB/Wx/IniWiz.pm:301
 msgid "Kas (contant geld)"
 msgstr "Cash"
 
-#: ../lib/EB/Wx/IniWiz.pm:284
+#: ../lib/EB/Wx/IniWiz.pm:303
 msgid "Er wordt gebruik gemaakt van een bankrekening"
 msgstr "A bank account is being used"
 
-#: ../lib/EB/Wx/IniWiz.pm:287
+#: ../lib/EB/Wx/IniWiz.pm:306
 msgid "De naam van de aan te maken database, b.v. \"admin2009\"."
 msgstr ""
 "The name of the database that should be set up, for example \"admin2009\"."
 
-#: ../lib/EB/Wx/IniWiz.pm:288
+#: ../lib/EB/Wx/IniWiz.pm:307
 msgid "Het databasesysteem waar de database wordt opgeslagen"
 msgstr "The system where the database is stored"
 
-#: ../lib/EB/Wx/IniWiz.pm:291
+#: ../lib/EB/Wx/IniWiz.pm:310
 msgid "Het systeem waarop de database server draait, indien niet lokaal."
 msgstr "For a remote database server, the system that runs the server."
 
-#: ../lib/EB/Wx/IniWiz.pm:294
+#: ../lib/EB/Wx/IniWiz.pm:313
 msgid "De netwerkpoort waarop de database server luistert, indien niet lokaal."
 msgstr ""
 "For a remote database server, the network port the server is listening to."
 
-#: ../lib/EB/Wx/IniWiz.pm:297
+#: ../lib/EB/Wx/IniWiz.pm:316
 msgid "De user naam voor de database server."
 msgstr "The user name to access the database server with."
 
-#: ../lib/EB/Wx/IniWiz.pm:300
+#: ../lib/EB/Wx/IniWiz.pm:319
 msgid "Het password van deze user."
 msgstr "The password of the database user."
 
-#: ../lib/EB/Wx/IniWiz.pm:304
+#: ../lib/EB/Wx/IniWiz.pm:323
 msgid "Rekeningschema, dagboeken, BTW instellingen"
 msgstr "Account schema, daybooks and VAT configurations"
 
-#: ../lib/EB/Wx/IniWiz.pm:306
+#: ../lib/EB/Wx/IniWiz.pm:325
 msgid "Debiteuren en Crediteuren"
 msgstr "Accounts receivable and Accounts payable"
 
-#: ../lib/EB/Wx/IniWiz.pm:308
+#: ../lib/EB/Wx/IniWiz.pm:327
 msgid "Administratieve gegevens"
 msgstr "Administrative data"
 
-#: ../lib/EB/Wx/IniWiz.pm:312
+#: ../lib/EB/Wx/IniWiz.pm:331
 msgid "De database wordt aangemaakt en gevuld"
 msgstr "The database is being set up and populated"
 
-#: ../lib/EB/Wx/IniWiz.pm:506
+#: ../lib/EB/Wx/IniWiz.pm:525
 msgid "Niet uniek"
 msgstr "Not unique"
 
-#: ../lib/EB/Wx/IniWiz.pm:525
+#: ../lib/EB/Wx/IniWiz.pm:544
 msgid "Er bestaat al een administratie met deze code."
 msgstr "An administration with that code already exists."
 
-#: ../lib/EB/Wx/IniWiz.pm:537 ../lib/EB/Wx/IniWiz.pm:883
+#: ../lib/EB/Wx/IniWiz.pm:556 ../lib/EB/Wx/IniWiz.pm:902
 msgid "Database Test Resultaat"
 msgstr "Database test results"
 
-#: ../lib/EB/Wx/IniWiz.pm:694
+#: ../lib/EB/Wx/IniWiz.pm:713
 #, perl-brace-format
 msgid "Aanmaken {cfg}: "
 msgstr "Create {cfg}:"
 
-#: ../lib/EB/Wx/IniWiz.pm:722
+#: ../lib/EB/Wx/IniWiz.pm:741
 msgid "Mislukt"
 msgstr "Failed"
 
-#: ../lib/EB/Wx/IniWiz.pm:727
+#: ../lib/EB/Wx/IniWiz.pm:746
 msgid "Gereed"
 msgstr "Completed"
 
-#: ../lib/EB/Wx/IniWiz.pm:731
+#: ../lib/EB/Wx/IniWiz.pm:750
 msgid "Overgeslagen"
 msgstr "Skipped"
 
-#: ../lib/EB/Wx/IniWiz.pm:763
+#: ../lib/EB/Wx/IniWiz.pm:782
 msgid "Afgebroken!"
 msgstr "Aborted!"
 
-#: ../lib/EB/Wx/IniWiz.pm:882
+#: ../lib/EB/Wx/IniWiz.pm:901
 msgid "Succes!"
 msgstr "Success!"
 
-#: ../lib/EB/Wx/IniWiz.pm:904
+#: ../lib/EB/Wx/IniWiz.pm:923
 msgid "The Wiz"
 msgstr "The Wiz"
 
@@ -3442,7 +3450,7 @@ msgstr "The Wiz"
 msgid "Beschikbare administraties"
 msgstr "Available administrations"
 
-#: ../lib/EB/Wx/IniWiz/OpenDialog.pm:69
+#: ../lib/EB/Wx/IniWiz/OpenDialog.pm:71
 msgid "Administratiekeuze"
 msgstr "Administration selection"
 

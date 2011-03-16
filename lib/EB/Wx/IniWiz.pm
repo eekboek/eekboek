@@ -216,6 +216,7 @@ sub runwiz {
 sub getadm {			# STATIC
     my ( $pkg, $opts ) = @_;
     chdir($opts->{admdir});
+
     my %h;
     $h{$_} = 1 foreach glob( "*/" . $cfg->std_config );
     $h{$_} = 1 foreach glob( "*/" . $cfg->std_config_alt );
@@ -242,8 +243,26 @@ sub getadm {			# STATIC
 						 _T("Kies"),
 						 wxDefaultPosition, wxDefaultSize, );
 	$d->init( \@adm_names );
-	if ( ($ret = $d->ShowModal) == wxID_OK ) {
+	$ret = $d->ShowModal;
+	if ( $ret == wxID_OK ) {
 	    chdir( $adm_dirs[ $d->GetSelection ] ) || die("chdir");
+	}
+	elsif ( $ret == wxID_REMOVE ) {
+	    my $sel = $d->GetSelection;
+	    $d->Destroy;
+	    $d = Wx::MessageDialog->new( undef,
+					 $adm_names[$sel] . "\n\n" .
+					 _T("Administratie verwijderen?"),
+					 _T("Verwijderen administratie"),
+					 wxOK|wxCANCEL, wxDefaultPosition );
+	    my $ret = $d->ShowModal;
+	    $d->Destroy;
+	    if ( $ret == wxID_OK ) {
+		use File::Path qw(remove_tree);
+		remove_tree( $adm_dirs[$sel], { verbose => 1 } );
+	    }
+	    # Try again.
+	    return getadm( $pkg, $opts );
 	}
 	$d->Destroy;
     }
