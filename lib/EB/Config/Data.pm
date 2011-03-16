@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Oct 24 21:30:54 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 22:23:11 2010
-# Update Count    : 12
+# Last Modified On: Wed Mar 16 20:22:16 2011
+# Update Count    : 17
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -13,109 +13,111 @@ use warnings;
 
 package EB::Config::Data;
 
+use EB;
+
 my $data =
     [
        { section => "cpy",
-	 tag => "Bedrijfsgegevens",
+	 tag => N__("Bedrijfsgegevens"),
 	 keys =>
 	 [
-	  { name => "name", tag => "Naam", type => 'string', value => undef },
-	  { name => "id", tag => "Administratienummer", type => 'string', value => undef },
-	  { name => "address", tag => "Adres", type => 'string', value => undef },
-	  { name => "zip", tag => "Postcode", type => 'string', value => undef },
-	  { name => "city", tag => "Plaats", type => 'string', value => undef },
-	  { name => "taxreg", tag => "Fiscaal nummer", type => 'string', value => undef },
+	  { name => "name", tag => N__("Naam"), type => 'string', value => undef },
+	  { name => "id", tag => N__("Administratienummer"), type => 'string', value => undef },
+	  { name => "address", tag => N__("Adres"), type => 'string', value => undef },
+	  { name => "zip", tag => N__("Postcode"), type => 'string', value => undef },
+	  { name => "city", tag => N__("Plaats"), type => 'string', value => undef },
+	  { name => "taxreg", tag => N__("Fiscaal nummer"), type => 'string', value => undef },
 	 ],
        },
        { section => "general",
-	 tag => "Algemeen",
+	 tag => N__("Algemeen"),
 	 keys =>
 	 [
-	  { name => "admdir", tag => "Folder voor administraties", type => 'folder', value => '$HOME/.eekboek/admdir' },
-	  { name => "wizard", tag => "Forceer wizard", type => 'bool', value => undef },
+	  { name => "admdir", tag => N__("Folder voor administraties"), type => 'folder', value => '$HOME/.eekboek/admdir' },
+	  { name => "wizard", tag => N__("Forceer wizard"), type => 'bool', value => undef },
 	 ],
        },
        { section => "prefs",
-	 tag => "Voorkeursinstellingen",
+	 tag => N__("Voorkeursinstellingen"),
 	 keys =>
 	 [
-	  { name => "journal", tag => "Toon journaalpost na elke boeking", type => 'bool', value => undef },
+	  { name => "journal", tag => N__("Toon journaalpost na elke boeking"), type => 'bool', value => undef },
 	 ],
        },
        { section => "Database",
 	 keys =>
 	 [
-	  { name => "name", tag => "Naam", type => 'string', value => undef },
-	  { name => "driver", tag => "Driver", type => 'choice', value => undef,
-	    choices => [ qw(PostgreSQL SQLite) ],
-	    values => [ qw(postgres sqlite) ],
+	  { name => "name", tag => N__("Naam"), type => 'string', value => undef },
+	  { name => "driver", tag => N__("Driver"), type => 'choice', value => undef,
+	    choices => [ qw(SQLite PostgreSQL) ],
+	    values => [ qw(sqlite postgres) ],
 	  },
-	  { name => "user", tag => "Gebruikersnaam", type => 'string', value => undef },
-	  { name => "password", tag => "Toegangscode", type => 'string', value => undef },
-	  { name => "host", tag => "Server systeem", type => 'string', value => undef },
-	  { name => "port", tag => "Server poort", type => 'int', value => undef },
+	  { name => "user", tag => N__("Gebruikersnaam"), type => 'string', value => undef },
+	  { name => "password", tag => N__("Toegangscode"), type => 'string', value => undef },
+	  { name => "host", tag => N__("Server systeem"), type => 'string', value => undef },
+	  { name => "port", tag => N__("Server poort"), type => 'int', value => undef },
 	 ],
        },
-       { section => "Strategy", tag => "Strategie",
+       { section => "Strategy", tag => N__("Strategie"),
 	 keys =>
 	 [
-	  { name => "round", tag => "Afrondingen", type => 'choice', value => undef,
+	  { name => "round", tag => N__("Afrondingsmethode"), type => 'choice', value => undef,
 	    choices => [ qw(IEEE Bankers POSIX) ],
 	    values => [ qw(ieee bankers posix) ],
 	  },
-	  { name => "bkm_multi", tag => "Meervoudig afboeken", type => 'bool', value => undef },
-	  { name => "iv_vc", tag => "BTW correcties", type => 'bool', value => undef },
+	  { name => "bkm_multi", tag => N__("Meervoudig afboeken"), type => 'bool', value => undef },
+	  { name => "iv_vc", tag => N__("BTW correcties"), type => 'bool', value => undef },
 	 ],
        },
-       { section => "shell", tag => "Shell",
+       { section => "shell", tag => N__("Shell"),
 	 keys =>
 	 [
-	  { name => "prompt", tag => "Prompt", type => 'string', value => undef },
-	  { name => "userdefs", tag => "Eigen uitbreidingen", type => 'string', value => undef },
+	  { name => "prompt", tag => N__("Prompt"), type => 'string', value => undef },
+	  { name => "userdefs", tag => N__("Eigen uitbreidingen"), type => 'string', value => undef },
 	 ],
        },
-       { section => "Format", tag => "Formaten",
+       { section => "Format", tag => N__("Formaten"),
 	 keys =>
 	 [
-	  { name => "numfmt", tag => "Getalformaat", type => 'choice', value => undef,
+	  { name => "numfmt", tag => N__("Getalformaat"), type => 'choice', value => undef,
 	    choices => [ "12345,99 (decimaalkomma)",
 			 "12345.99 (decimaalpunt)",
 			 "12.345,99 (duizendpunt + decimaalkomma)",
 			 "12,345.99 (duizendkomma + decimaalpunt)" ],
 	    values => [ "12345,99", "12345.99", "12.345,99", "12,345.99" ],
 	  },
-	  { name => "date", tag => "Datumformaat", type => 'choice', value => undef,
+	  { name => "date", tag => N__("Datumformaat"), type => 'choice', value => undef,
 	    choices => [ "2008-05-31 (ISO)", "31-05-2008 (NEN)", "31-05 (NEN, verkort)" ],
 	    values => [ "YYYY-MM-DD", "DD-MM-YYYY", "DD-MM" ],
 	  },
 	 ],
        },
-       { section => "text", tag => "Tekstrapporten",
+       { section => "text", tag => N__("Tekstrapporten"),
 	 keys =>
 	 [
-	  { name => "numwidth", tag => "Kolombreedte voor getallen", type => 'slider',
+	  { name => "numwidth", tag => N__("Kolombreedte voor getallen"), type => 'slider',
 	    range => [5, 20, 9], value => undef, }
 	 ],
        },
-       { section => "html", tag => "HTML rapporten",
+       { section => "html", tag => N__("HTML rapporten"),
 	 keys =>
 	 [
-	  { name => "cssdir", tag => "Style sheets", type => 'folder', value => undef, },
+	  { name => "cssdir", tag => N__("Style sheets"), type => 'folder', value => undef, },
 	 ],
        },
-       { section => "csv", tag => "CSV rapporten",
+       { section => "csv", tag => N__("CSV rapporten"),
 	 keys =>
 	 [
-	  { name => "separator", tag => "Separator", type => 'choice', value => undef,
+	  { name => "separator", tag => N__("Scheidingsteken"), type => 'choice', value => undef,
 	    choices => [ ", (komma)", "; (puntkomma)", ": (dubbelpunt)", "Tab", ],
 	    values  => [ ",", ";", ":", "\t", ],
 	  },
 	 ],
        },
-       { section => "security", tag => "Beveiliging",
+       { section => "security", tag => N__("Beveiliging"),
 	 keys =>
 	 [
-	  { name => "override_security_for_vista", tag => "Beveiliging voor MS Vista uitschakelen",
+	  { name => "override_security_for_vista", tag => N__("Beveiliging voor MS Vista uitschakelen"),
 	    type => 'bool', value => undef, },
 	 ],
        },

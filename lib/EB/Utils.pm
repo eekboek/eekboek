@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Wed Sep 21 13:09:01 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 14:01:55 2011
-# Update Count    : 104
+# Last Modified On: Wed Mar 16 20:06:16 2011
+# Update Count    : 105
 # Status          : Unknown, Use with caution!
 
 package EB::Utils;
@@ -240,7 +240,10 @@ sub __nx($$$@) {
 # Make __xn a synonym for __nx.
 *__xn = \&__nx;
 
-push( @EXPORT, qw(__x __n __nx __xn)  );
+# And the dummy...
+sub N__($) { $_[0] };
+
+push( @EXPORT, qw( __x __n __nx __xn N__ )  );
 
 # ... more to come ...
 
