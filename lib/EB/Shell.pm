@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar 12 21:15:00 2011
-# Update Count    : 111
+# Last Modified On: Wed Mar 16 14:45:19 2011
+# Update Count    : 126
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -201,6 +201,17 @@ use EB;
 
 # Plug in some commands dynamically.
 sub _plug_cmds {
+
+    foreach my $dbk_type ( 1 .. scalar(@{DBKTYPES()})-1 ) {
+	my $dbk = lc(DBKTYPES->[$dbk_type]);
+	no strict 'refs';
+	undef &{"help_$dbk"};
+	*{"help_$dbk"} = sub {
+	    my $self = shift;
+	    $self->_help($dbk_type);
+	};
+    }
+
     my $sth = $dbh->sql_exec("SELECT dbk_id,dbk_desc,dbk_type FROM Dagboeken");
     my $rr;
     while ( $rr = $sth->fetchrow_arrayref ) {
@@ -215,7 +226,7 @@ sub _plug_cmds {
 	undef &{"help_$dbk"};
 	*{"help_$dbk"} = sub {
 	    my $self = shift;
-	    $self->_help($dbk, $dbk_id, $dbk_desc, $dbk_type, @_);
+	    $self->_help($dbk_type);
 	};
 	if ( $dbk_type == DBKTYPE_INKOOP ) {
 	    $dbk_v_pat .= lc($dbk_desc)."|";
@@ -256,14 +267,13 @@ sub _plug_cmds {
 }
 
 sub _help {
-    my ($self, $dbk, $dbk_id, $dbk_desc, $dbk_type) = @_;
-    my $cmd = $dbk;
-    my $text = "Toevoegen boekstuk in dagboek $dbk_desc (type " .
-      DBKTYPES->[$dbk_type] . ").\n\n";
+    my ($self, $dbk_type) = @_;
+    my $text = __x("Toevoegen boekstuk in een dagboek van type {type}",
+		   type => DBKTYPES->[$dbk_type]) . ".\n\n";
 
     if ( $dbk_type == DBKTYPE_INKOOP ) {
-	$text .= __x( <<EOS, cmd => $cmd );
-  {cmd}[:nr] [ <datum> ] <boekstukomschrijving> <crediteur>
+	$text .= _T( <<EOS );
+  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving> <crediteur>
 
 gevolgd door een of meer:
 
@@ -274,8 +284,8 @@ De laatste <rekening> mag worden weggelaten.
 EOS
     }
     elsif ( $dbk_type == DBKTYPE_VERKOOP ) {
-	$text .= __x( <<EOS, cmd => $cmd );
-  {cmd}[:nr] [ <datum> ] <boekstukomschrijving> <debiteur>
+	$text .= _T( <<EOS );
+  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving> <debiteur>
 
 gevolgd door een of meer
 
@@ -288,8 +298,8 @@ EOS
     elsif ( $dbk_type == DBKTYPE_BANK || $dbk_type == DBKTYPE_KAS 
 	    || $dbk_type == DBKTYPE_MEMORIAAL
 	  ) {
-	$text .= __x( <<EOS, cmd => $cmd );
-  {cmd}[:nr] [ <datum> ] <boekstukomschrijving>
+	$text .= _T( <<EOS );
+  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving>
 
 gevolgd door een of meer:
 
@@ -382,7 +392,7 @@ sub do_database {
 }
 
 sub help_database {
-    <<EOD;
+    _T(<<EOD);
 Toont de naam van de huidige database.
 
   database
