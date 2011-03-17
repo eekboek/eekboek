@@ -4,6 +4,9 @@
 use Wx 0.15 qw[:allclasses];
 use strict;
 
+our $cfg;
+our $dbh;
+
 package EB::Wx::Shell::MainFrame;
 
 use EekBoek;
@@ -14,6 +17,7 @@ use strict;
 use utf8;
 use Encode;
 use File::Spec;
+use File::Basename;
 
 # begin wxGlade: ::dependencies
 use Wx::Locale gettext => '_T';
@@ -23,7 +27,6 @@ use EB;
 use EB::Wx::Shell::HtmlViewer;
 use EB::Wx::Shell::EditDialog;
 use EB::Wx::Shell::PreferencesDialog;
-use Wx::Perl::ProcessStream qw[:everything];
 
 my $prefctl;
 
@@ -155,10 +158,6 @@ sub new {
 	Wx::Event::EVT_CHAR($self->{t_input}, sub { $self->OnChar(@_) });
 #	Wx::Event::EVT_IDLE($self, \&OnIdle);
 
-	EVT_WXP_PROCESS_STREAM_STDOUT( $self, \&evt_process_stdout);
-	EVT_WXP_PROCESS_STREAM_STDERR( $self, \&evt_process_stderr);
-	EVT_WXP_PROCESS_STREAM_EXIT(   $self, \&evt_process_exit);
-
 	$prefctl ||=
 	  {
 	   repwin      => 0,
@@ -283,7 +282,7 @@ sub __do_layout {
 
 sub RunCommand {
     my ($self, $cmd) = @_;
-    unless ( defined $self->{_proc} ) {
+    unless ( defined $self->{_shell} ) {
 	unless ( $self->{_ebcfg} && -s $self->{_ebcfg} ) {
 	    my $md = Wx::MessageDialog->new
 	      ($self,
@@ -295,28 +294,97 @@ sub RunCommand {
 	    $self->OnOpen;
 	    return;
 	}
-	my @eb;
-	if ( $Cava::Packager::PACKAGED ) {
-            @eb = ( Cava::Packager::GetBinPath() . "/ebshell" );
-	}
-	else {
-	    @eb = ( $^X, File::Spec->catfile( $::bin, "ebshell" ) );
-	    #$eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
-	}
-	push(@eb, "-f", $self->{_ebcfg}) if $self->{_ebcfg};
-	$self->{_proc} =
-	  Wx::Perl::ProcessStream->OpenProcess(\@eb, 'EekBoek', $self);
-	$self->{_pid} =	$self->{_proc}->GetProcessId;
-	warn("STARTED: @eb\n");
+	my $cfg = EB->app_init( { app => "EekBoek", config => $self->{_ebcfg} } );
+	$self->{statusbar}->SetStatusText($EB::imsg, 0);
+	$cfg->connect_db;
+	require EB::Shell;
+	$self->{_shell} = EB::Shell->new;
     }
-
     $cmd = "database" unless defined $cmd;
     $self->{t_output}->AppendText("eb> ");
     $self->ShowText($cmd, wxBLUE);
-    if ( $cmd =~ /^(balans|result|proefensaldibalans|journaal|openstaand|(?:deb|cred)iteuren|btwaangifte)(?:\s|$)/ ) {
-	$cmd .= " --gen-wxhtml";
+    $self->_cmd($cmd);
+}
+
+use Text::ParseWords qw(shellwords);
+
+sub _cmd {
+    my ( $self, $cmd ) = @_;
+
+    my ( @cmd ) = shellwords($cmd);
+
+    # If there's a quoting mistake, parseline returns nothing.
+    if ( $cmd =~ /\S/ && $cmd[0] !~ /\S/ ) {
+	$self->process_stderr("?"._T("Fout in de invoerregel. Controleer de \" en ' tekens.")."\n");
+	return -1;
     }
-    $self->{_proc}->WriteProcess(encode("utf-8", $cmd."\n"));
+
+    my ( $cmd, @args ) = @cmd;
+    if (! length($cmd)) {
+	return -1;
+    }
+
+    if ( $cmd =~ /^(balans|result|proefensaldibalans|journaal|openstaand|(?:deb|cred)iteuren|btwaangifte)(?:\s|$)/ ) {
+	unshift( @args, "--gen-wxhtml" );
+    }
+
+    if ( $cmd =~ /^\s*(help|\?)/i ) {
+	$self->OnHelp;
+	return 1;
+    }
+
+    if ( $cmd =~ /^\s*(exit|quit|logout)/i ) {
+	$self->OnQuit;
+	return 1;
+    }
+
+    my $meth = "do_".lc($cmd);
+    unless ( $self->{_shell}->can($meth) ) {
+	$self->process_stderr("?"._T("Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten.")."\n");
+	return -1;
+    }
+
+    my ( $out, $t, @msg );
+    eval {
+	# Intercept warn and die.
+	local $SIG{__WARN__} = sub {
+	    push( @msg, join("\n", @_) );
+	};
+	local $SIG{__DIE__} = sub {
+	    push( @msg, "?".join("\n", @_) );
+	};
+
+	# Intercept STDOUT.
+	open( my $oldout, ">&STDOUT" );
+	close( STDOUT );
+	open( STDOUT, '>', \$out ) or die("STDOUT capture fail");
+
+	# Call API command.
+	$t = $self->{_shell}->$meth(@args);
+
+	# Restore STDOUT.
+	close(STDOUT);
+	open ( STDOUT, ">&", $oldout );
+    };
+    if ($@) {
+	my $err = $@;
+	chomp $err;
+	$self->process_stderr("?$err\n");
+    }
+    else {
+    	# Process output.
+	$out .= "\n" unless !$out || $out =~ /\n$/;
+	if ( $t =~ /^[%!?]/ ) {
+	    $self->process_stderr($t);
+	}
+	else {
+	    $out .= $t;
+	}
+	$self->process_stderr($_) for @msg;
+	$self->process_stdout($_) for split(/\n/, $out);
+    }
+
+    return 1;
 }
 
 sub ShowText {
@@ -334,10 +402,9 @@ sub ShowText {
 }
 
 my $capturing;
-sub evt_process_stdout {
-    my ($self, $event) = @_;
-    #$event->Skip(1);
-    my $out = decode("utf-8", $event->GetLine);
+sub process_stdout {
+    my ($self, $text) = @_;
+    my $out = decode("utf-8", $text);
     # warn("app: $out\n");
     if ( $capturing || $out eq "<html>" ) {
 	$capturing .= $out . "\n";
@@ -364,33 +431,11 @@ sub evt_process_stdout {
     }
 }
 
-sub evt_process_stderr {
-    my ($self, $event) = @_;
-    #$event->Skip(1);
-    my $out = decode("utf-8", $event->GetLine);
+sub process_stderr {
+    my ($self, $text) = @_;
+    my $out = decode("utf-8", $text);
     # warn("err: $out\n");
     $self->ProcessMessages($out);
-}
-
-sub evt_process_exit {
-    my ($self, $event) = @_;
-    #$event->Skip(1);
-    my $process = $event->GetProcess;
-    my $pid = $process->GetProcessId;
-    #my $line = $event->GetLine;
-    #my @buffers = @{ $process->GetStdOutBuffer };
-    #my @errors = @{ $process->GetStdOutBuffer };
-    #my $exitcode = $process->GetExitCode;
-    return if $self->{_pid} && $self->{_pid} != $pid;
-    $process->Destroy;
-    my $md = Wx::MessageDialog->new
-      ($self,
-       _T("EekBoek program has finished"),
-       _T("Finished"), wxOK|wxICON_INFORMATION,
-       wxDefaultPosition);
-    $md->ShowModal;
-    $md->Destroy;
-    $self->OnQuit;
 }
 
 sub ProcessMessages {
@@ -399,11 +444,6 @@ sub ProcessMessages {
     my @err = split(/\n+/, $err);
     while ( @err ) {
 	$err = shift(@err);
-	if ( $err =~ /^(EekBoek\s+([0-9.]+).*)/ ) {
-	    $self->{statusbar}->SetStatusText($1, 0);
-	    $self->{_eb} = $2;
-	    next;
-	}
 	my @i;
 	if ( $err =~ /^\?+(.*)/ ) {
 	    $self->ShowText($err, wxRED);
@@ -493,12 +533,12 @@ sub OnOpen {
 	   wxDefaultPosition);
 	my $ret = $fd->ShowModal;
 	if ( $ret == wxID_OK ) {
-	    if ( $self->{_proc} ) {
-		$self->{_proc}->TerminateProcess;
-		undef $self->{_proc};
-		undef $self->{_pid};
+	    if ( $self->{_shell} ) {
+		EB::DB->disconnect;
+		undef $self->{_shell};
 	    }
 	    $self->{_ebcfg} = $fd->GetPath;
+	    chdir(dirname($fd->GetPath));
 	    $self->RunCommand(undef);
 	}
 	$fd->Destroy;
@@ -731,10 +771,10 @@ sub OnMenuBal {
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuBal <event_handler>
 
 	if ( defined $sub && $sub >= 0 ) {
-	    $self->{_proc}->WriteProcess("balans --verdicht --detail=$sub --gen-wxhtml\n");
+	    $self->_cmd("balans --verdicht --detail=$sub --gen-wxhtml\n");
 	}
 	else {
-	    $self->{_proc}->WriteProcess("balans --gen-wxhtml\n");
+	    $self->_cmd("balans --gen-wxhtml\n");
 	}
 # end wxGlade
 }
@@ -745,10 +785,10 @@ sub OnMenuRes {
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuRes <event_handler>
 
 	if ( defined $sub && $sub >= 0 ) {
-	    $self->{_proc}->WriteProcess("result --verdicht --detail=$sub --gen-wxhtml\n");
+	    $self->_cmd("result --verdicht --detail=$sub --gen-wxhtml\n");
 	}
 	else {
-	    $self->{_proc}->WriteProcess("result --gen-wxhtml\n");
+	    $self->_cmd("result --gen-wxhtml\n");
 	}
 # end wxGlade
 }
@@ -758,7 +798,7 @@ sub OnMenuAP {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuAP <event_handler>
 
-	$self->{_proc}->WriteProcess("crediteuren --gen-wxhtml\n");
+	$self->_cmd("crediteuren --gen-wxhtml\n");
 
 # end wxGlade
 }
@@ -768,7 +808,7 @@ sub OnMenuAR {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuAR <event_handler>
 
-	$self->{_proc}->WriteProcess("debiteuren --gen-wxhtml\n");
+	$self->_cmd("debiteuren --gen-wxhtml\n");
 
 # end wxGlade
 }
@@ -777,7 +817,7 @@ sub OnMenuVAT {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuAR <event_handler>
 
-	$self->{_proc}->WriteProcess("btwaangifte --gen-wxhtml\n");
+	$self->_cmd("btwaangifte --gen-wxhtml\n");
 
 # end wxGlade
 }
@@ -787,7 +827,7 @@ sub OnMenuUns {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnMenuUns <event_handler>
 
-	$self->{_proc}->WriteProcess("openstaand --gen-wxhtml\n");
+	$self->_cmd("openstaand --gen-wxhtml\n");
 
 # end wxGlade
 }
@@ -797,7 +837,7 @@ sub OnTrial {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnTrial <event_handler>
 
-	$self->{_proc}->WriteProcess("proefensaldibalans --gen-wxhtml\n");
+	$self->_cmd("proefensaldibalans --gen-wxhtml\n");
 
 # end wxGlade
 }
@@ -807,7 +847,7 @@ sub OnJournal {
 	my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnJournal <event_handler>
 
-	$self->{_proc}->WriteProcess("journaal --gen-wxhtml\n");
+	$self->_cmd("journaal --gen-wxhtml\n");
 
 # end wxGlade
 }
@@ -825,7 +865,7 @@ sub _HTMLCallBack {
     }
     $cmd .= " --gen-wxhtml";
 
-    $self->{_proc}->WriteProcess($cmd."\n");
+    $self->_cmd($cmd."\n");
 }
 
 sub ShowRJnl { shift->_HTMLCallBack( "journaal",    @_ ) }

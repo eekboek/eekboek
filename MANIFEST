@@ -127,7 +127,6 @@ lib/EB/Booking/Delete.pm
 lib/EB/Booking/IV.pm
 lib/EB/CPAN/Carp/Assert.pm
 lib/EB/CPAN/Locale/gettext_pp.pm
-lib/EB/CPAN/Wx/Perl/ProcessStream.pm
 lib/EB/Config.pm
 lib/EB/Config/Data.pm
 lib/EB/DB.pm
