@@ -203,7 +203,7 @@ sub new {
 	$self->SetIcon($icon);
 	$self->{wiz}->SetIcon($icon);
 	$self->SetSize([450,300]);
-
+	$self->Center;
 	return $self;
 }
 
@@ -222,6 +222,7 @@ sub getadm {			# STATIC
     $h{$_} = 1 foreach glob( "*/" . $cfg->std_config_alt );
     my @files = keys(%h);
     @adm_names = ();
+    @adm_dirs = ();
     foreach ( sort @files ) {
 	push( @adm_dirs, dirname($_) );
 	my $desc = $adm_dirs[-1];
@@ -733,7 +734,7 @@ sub OnWizardFinished {
 			}
 			else {
 			    @eb = ( $^X, File::Spec->catfile( $bin, "ebshell"), "--init" );
-			    $eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
+			    #$eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
 			}
 			$ret = system(@eb);
 		    }
