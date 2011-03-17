@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  2 23:01:14 2011
-# Update Count    : 165
+# Last Modified On: Thu Mar 17 18:13:37 2011
+# Update Count    : 172
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -94,8 +94,13 @@ sub backend {
 	  or die("?".__x("Fout tijdens aanmaken {file}: {err}",
 			 file => $opts->{output}, err => $!)."\n");
     }
-    else {
+    elsif ( fileno(STDOUT) > 0 ) {
+	# Normal file.
 	$be->{fh} = IO::File->new_from_fd(fileno(STDOUT), "w");
+    }
+    else {
+	# In-memory.
+	$be->{fh} = bless \*STDOUT , 'IO::Handle';
     }
     binmode($be->{fh}, ":encoding(utf8)");
 
