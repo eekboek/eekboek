@@ -44,6 +44,8 @@ sub new {
 
 # end wxGlade
 
+	$self->SetSize(0, 0, $self->GetSizeWH);
+	$self->Center;
 	return $self;
 
 }
