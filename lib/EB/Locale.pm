@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 14 13:02:33 2011
-# Update Count    : 160
+# Last Modified On: Thu Mar 17 11:26:19 2011
+# Update Count    : 161
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -28,10 +28,14 @@ our @EXPORT = @EXPORT_OK;
 
 # This module supports three different gettext implementations.
 
-use POSIX qw(setlocale LC_MESSAGES);
+use POSIX qw(setlocale);
 
 my $core_localiser;
 our $LOCALISER;			# for outside checking
+
+sub LC_MESSAGES {
+    eval { POSIX::LC_MESSAGES() } || 5;
+}
 
 sub __init__ {
     return if $core_localiser;
