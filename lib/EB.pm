@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 16 20:26:02 2011
-# Update Count    : 317
+# Last Modified On: Thu Mar 17 11:09:33 2011
+# Update Count    : 319
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -109,14 +109,8 @@ our $imsg;
 my $imsg_saved;
 our $url = "http://www.eekboek.nl";
 
-unless ( $ident ) {		# already done (can this happen?)
-
-#    __init__();
-
-}
-
 sub __init__ {
-    $imsg_saved = $imsg;
+    $imsg_saved = $imsg || "";
 
     # The CLI and GUI use different EB::Locale modules.
     if ( $app || $Cava::Packager::PACKAGED && !Cava::Packager::IsLinux() ) {
@@ -143,7 +137,7 @@ sub __init__ {
 		extra   => ($app ? " Wx" : ""),
 		locale  => (@locextra ? " (".join(", ", @locextra).")" : ""),
 		year    => $year);
-    if ( !$imsg_saved || $imsg ne $imsg_saved
+    if ( $imsg ne $imsg_saved
 	 && !( @ARGV && $ARGV[0] =~ /-(P|-?printconfig)$/ )
        ) {
 	warn($imsg, "\n");
@@ -156,7 +150,7 @@ sub __init__ {
 	die unless defined $id;
 	warn(_T("EekBoek is VRIJE software, ontwikkeld om vrij over uw eigen gegevens te kunnen beschikken.")."\n");
 	warn(_T("Met uw keuze voor het Microsoft Windows besturingssysteem geeft u echter alle vrijheden weer uit handen. Dat is erg triest.")."\n");
-    } unless $ENV{AUTOMATED_TESTING};
+    } unless $imsg_saved eq $imsg || $ENV{AUTOMATED_TESTING};
 
 }
 
