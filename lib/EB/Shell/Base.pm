@@ -84,7 +84,7 @@ sub init_rl {
 	# Term::ReadLine::Perl instead. However, the latter is far too
 	# incapable.
 	if ( $term->ReadLine eq 'Term::ReadLine::Perl' ) {
-#	    $self->term($term = Term::ReadLine::Stub->new(ref $self));
+	    $self->term($term = Term::ReadLine::Stub->new(ref $self));
 	}
     }
 
