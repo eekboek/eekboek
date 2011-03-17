@@ -168,6 +168,7 @@ sub new {
 	   histlines   => 200,
 	  };
 
+	$self->SetSize(801, 551);
 	$self->sizepos_restore("main");
 
 	return $self;
@@ -300,7 +301,7 @@ sub RunCommand {
 	}
 	else {
 	    @eb = ( $^X, File::Spec->catfile( $::bin, "ebshell" ) );
-	    $eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
+	    #$eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
 	}
 	push(@eb, "-f", $self->{_ebcfg}) if $self->{_ebcfg};
 	$self->{_proc} =
