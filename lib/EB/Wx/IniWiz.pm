@@ -656,9 +656,6 @@ sub OnToggleCreate {
 sub OnWizardFinished {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OnWizardFinished <event_handler>
-
-    $self->Show(1);
-
     my %opts;
 
     $opts{lang} = $ENV{EB_LANG} || $ENV{LANG};
@@ -705,45 +702,36 @@ sub OnWizardFinished {
 	chdir($opts{adm_code}) or die("chdir($opts{adm_code}): $!\n");;
     }
 
+    $self->{b_ok}->Enable(0);
     eval {
 
 	EB::Tools::MiniAdm->sanitize(\%opts);
 
 	foreach my $c ( qw(config schema relaties opening mutaties database) ) {
-	    $self->{t_main}->AppendText(__x("Aanmaken {cfg}: ",
-					    cfg => $c));
-	    if ( $self->{"cb_cr_$c"}->IsChecked ) {
+	    my $msg = __x("Aanmaken {cfg}: ", cfg => $c);
+	    $self->{t_main}->AppendText($msg);
+	    if ( $opts{"create_$c"} ) {
 		if ( $c eq "database" ) {
-
+		    my $t = $self->{t_main}->GetInsertionPoint;
+		    $self->{t_main}->AppendText(_T("Even geduld..."));
+		    $self->Refresh;
+		    $self->Update;
 		    my $ret;
-		    if ( 0 ) {
-			# We can inline this, but it currently has no
-			# real advantage. So it's better to avoid the
-			# EB Shell code in this program.
-			EB->app_init( { app => $EekBoek::PACKAGE, %opts } );
-			require EB::Main;
-			local @ARGV = qw( --init );
-			$ret = EB::Main->run;
-		    }
-		    else {
-			my @eb;
-			if ( $Cava::Packager::PACKAGED ) {
-			    @eb = ( Cava::Packager::GetBinPath() . "/ebshell",
-				    "--init" );
-			}
-			else {
-			    @eb = ( $^X, File::Spec->catfile( $bin, "ebshell"), "--init" );
-			    #$eb[2] = "ebshell.pl" if $^O =~ /mswin/i;
-			}
-			$ret = system(@eb);
-		    }
-
-		    $self->{t_main}->AppendText(_T( $ret ? "Mislukt" : "Gereed")."\n");
+		    EB->app_init( { app => $EekBoek::PACKAGE, %opts } );
+		    require EB::Main;
+		    local @ARGV = qw( --init );
+		    $ret = EB::Main->run;
+		    $self->{t_main}->Replace($t,
+					     $self->{t_main}->GetInsertionPoint,
+					     _T( $ret ? "Mislukt" : "Gereed")."\n");
+		    $self->Update;
 		}
 		else {
+		    $self->Refresh;
 		    my $m = "generate_". $c;
 		    EB::Tools::MiniAdm->$m(\%opts);
 		    $self->{t_main}->AppendText(_T("Gereed")."\n");
+		    $self->Update;
 		}
 	    }
 	    else {
@@ -755,6 +743,7 @@ sub OnWizardFinished {
     $self->{t_main}->AppendText($@) if $@;
 
     $self->{b_ok}->Enable(1);
+    $self->{b_ok}->SetFocus;
 
     unless ( -e $cfg->std_config || -e $cfg->std_config_alt ) {
 	$self->{ch_runeb}->SetValue(0);
@@ -973,6 +962,7 @@ sub run {
 	my $top = EB::Wx::IniWiz->new();
 	$app->SetTopWindow($top);
 	$top->Center;
+	$top->Show(1);
 	$top->runwiz;
 	$app->MainLoop;
     }
