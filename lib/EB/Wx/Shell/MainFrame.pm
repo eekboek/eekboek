@@ -315,7 +315,7 @@ sub _cmd {
 
     # If there's a quoting mistake, parseline returns nothing.
     if ( $cmd =~ /\S/ && $cmd[0] !~ /\S/ ) {
-	$self->process_stderr("?"._T("Fout in de invoerregel. Controleer de \" en ' tekens.")."\n");
+	$self->process_stderr("?"._T("Error in the input: check the \" and ' characters")."\n");
 	return -1;
     }
 
@@ -340,7 +340,7 @@ sub _cmd {
 
     my $meth = "do_".lc($cmd);
     unless ( $self->{_shell}->can($meth) ) {
-	$self->process_stderr("?"._T("Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten.")."\n");
+	$self->process_stderr("?"._T("Unknown command. Enter \"help\" for a list of commands.")."\n");
 	return -1;
     }
 

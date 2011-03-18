@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek/WxShell 0.01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-16 13:51+0100\n"
-"PO-Revision-Date: 2011-03-09 09:37+0100\n"
+"POT-Creation-Date: 2011-03-18 21:46+0100\n"
+"PO-Revision-Date: 2011-03-18 21:48+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: \n"
@@ -67,7 +67,7 @@ msgstr "Popup window voor mededelingen"
 msgid "Number of input lines to keep in history:"
 msgstr "Aantal te bewaren regels invoer historie"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:102
+#: ../lib/EB/Wx/Shell/MainFrame.pm:105
 msgid "Input"
 msgstr "Invoer"
 
@@ -208,57 +208,57 @@ msgstr "Selecteer eerst een geldige .eekboek.conf"
 msgid "Missing config"
 msgstr "Geen configuratie"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:387
-msgid "EekBoek program has finished"
-msgstr "EekBoek programma is geëindigd"
+#: ../lib/EB/Wx/Shell/MainFrame.pm:318
+msgid "Error in the input: check the \" and ' characters"
+msgstr "Fout in de invoerregel. Controleer de \\\" en ' tekens."
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:388
-msgid "Finished"
-msgstr "Beëindigd"
+#: ../lib/EB/Wx/Shell/MainFrame.pm:343
+msgid "Unknown command. Enter \"help\" for a list of commands."
+msgstr "Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten."
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:410
+#: ../lib/EB/Wx/Shell/MainFrame.pm:451
 msgid "Error"
 msgstr "Fout"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:415
+#: ../lib/EB/Wx/Shell/MainFrame.pm:456
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:420
+#: ../lib/EB/Wx/Shell/MainFrame.pm:461
 msgid "Information"
 msgstr "Mededeling"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:488
+#: ../lib/EB/Wx/Shell/MainFrame.pm:529
 msgid "Choose"
 msgstr "Kies"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:600
+#: ../lib/EB/Wx/Shell/MainFrame.pm:641
 #, perl-brace-format
 msgid "{pkg} {app} version {ver}"
 msgstr "{pkg} {app} versie {ver}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:605
+#: ../lib/EB/Wx/Shell/MainFrame.pm:646
 #, perl-brace-format
 msgid "Written by {author}"
 msgstr "Geschreven door {author}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:609
+#: ../lib/EB/Wx/Shell/MainFrame.pm:650
 #, perl-brace-format
 msgid "Support: {url}"
 msgstr "Voor ondersteuning: {url}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:612
+#: ../lib/EB/Wx/Shell/MainFrame.pm:653
 #, perl-brace-format
 msgid "GUI design with {wxglade}"
 msgstr "GUI ontwerp met {wxglade}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:614 ../lib/EB/Wx/Shell/MainFrame.pm:617
-#: ../lib/EB/Wx/Shell/MainFrame.pm:620 ../lib/EB/Wx/Shell/MainFrame.pm:624
+#: ../lib/EB/Wx/Shell/MainFrame.pm:655 ../lib/EB/Wx/Shell/MainFrame.pm:658
+#: ../lib/EB/Wx/Shell/MainFrame.pm:661 ../lib/EB/Wx/Shell/MainFrame.pm:665
 #, perl-brace-format
 msgid "{pkg} version {ver}"
 msgstr "{pkg} versie {ver}"
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:628
+#: ../lib/EB/Wx/Shell/MainFrame.pm:669
 #, perl-brace-format
 msgid "About {pkg} {app}"
 msgstr "Over {pkg} {app}"

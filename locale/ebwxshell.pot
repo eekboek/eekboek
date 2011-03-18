@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-16 22:02+0100\n"
+"POT-Creation-Date: 2011-03-18 21:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,7 +67,7 @@ msgstr ""
 msgid "Number of input lines to keep in history:"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:102
+#: ../lib/EB/Wx/Shell/MainFrame.pm:105
 msgid "Input"
 msgstr ""
 
@@ -208,57 +208,57 @@ msgstr ""
 msgid "Missing config"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:387
-msgid "EekBoek program has finished"
+#: ../lib/EB/Wx/Shell/MainFrame.pm:318
+msgid "Error in the input: check the \" and ' characters"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:388
-msgid "Finished"
+#: ../lib/EB/Wx/Shell/MainFrame.pm:343
+msgid "Unknown command. Enter \"help\" for a list of commands."
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:410
+#: ../lib/EB/Wx/Shell/MainFrame.pm:451
 msgid "Error"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:415
+#: ../lib/EB/Wx/Shell/MainFrame.pm:456
 msgid "Warning"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:420
+#: ../lib/EB/Wx/Shell/MainFrame.pm:461
 msgid "Information"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:488
+#: ../lib/EB/Wx/Shell/MainFrame.pm:529
 msgid "Choose"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:600
+#: ../lib/EB/Wx/Shell/MainFrame.pm:641
 #, perl-brace-format
 msgid "{pkg} {app} version {ver}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:605
+#: ../lib/EB/Wx/Shell/MainFrame.pm:646
 #, perl-brace-format
 msgid "Written by {author}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:609
+#: ../lib/EB/Wx/Shell/MainFrame.pm:650
 #, perl-brace-format
 msgid "Support: {url}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:612
+#: ../lib/EB/Wx/Shell/MainFrame.pm:653
 #, perl-brace-format
 msgid "GUI design with {wxglade}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:614 ../lib/EB/Wx/Shell/MainFrame.pm:617
-#: ../lib/EB/Wx/Shell/MainFrame.pm:620 ../lib/EB/Wx/Shell/MainFrame.pm:624
+#: ../lib/EB/Wx/Shell/MainFrame.pm:655 ../lib/EB/Wx/Shell/MainFrame.pm:658
+#: ../lib/EB/Wx/Shell/MainFrame.pm:661 ../lib/EB/Wx/Shell/MainFrame.pm:665
 #, perl-brace-format
 msgid "{pkg} version {ver}"
 msgstr ""
 
-#: ../lib/EB/Wx/Shell/MainFrame.pm:628
+#: ../lib/EB/Wx/Shell/MainFrame.pm:669
 #, perl-brace-format
 msgid "About {pkg} {app}"
 msgstr ""
