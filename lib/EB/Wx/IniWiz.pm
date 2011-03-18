@@ -72,6 +72,7 @@ sub new {
 	$self->{wiz_p00} = Wx::WizardPanel->new($self->{p_dummy}, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->{t_main} = Wx::TextCtrl->new($self->{p_dummy}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY);
 	$self->{ch_runeb} = Wx::CheckBox->new($self->{p_dummy}, -1, _T("EekBoek opstarten"), wxDefaultPosition, wxDefaultSize, );
+	$self->{b_details} = Wx::Button->new($self->{p_dummy}, -1, _T("Details..."));
 	$self->{b_ok} = Wx::Button->new($self->{p_dummy}, wxID_OK, "");
 	$self->{label_2} = Wx::StaticText->new($self->{wiz_p00}, -1, _T("Welkom bij de EekBoek administratie-wizard."), wxDefaultPosition, wxDefaultSize, );
 	$self->{rb_select} = Wx::RadioBox->new($self->{wiz_p00}, -1, _T("Maak uw keuze"), wxDefaultPosition, wxDefaultSize, [_T("Een nieuwe administratie aanmaken"), _T("Verbinden met een bestaande administratie")], 0, wxRA_SPECIFY_ROWS);
@@ -116,6 +117,7 @@ sub new {
 	$self->__set_properties();
 	$self->__do_layout();
 
+	Wx::Event::EVT_BUTTON($self, $self->{b_details}->GetId, \&OnDetails);
 	Wx::Event::EVT_BUTTON($self, $self->{b_ok}->GetId, \&OnOk);
 
 # end wxGlade
@@ -281,7 +283,9 @@ sub __set_properties {
 # begin wxGlade: EB::Wx::IniWiz::__set_properties
 
 	$self->SetTitle(_T("EekBoek MiniAdm Setup"));
+	$self->{t_main}->SetFont(Wx::Font->new(10, wxTELETYPE, wxNORMAL, wxNORMAL, 0, ""));
 	$self->{ch_runeb}->SetValue(1);
+	$self->{b_details}->Show(0);
 	$self->{b_ok}->Enable(0);
 	$self->{rb_select}->SetSelection(0);
 	$self->{wiz_p00}->Show(0);
@@ -379,12 +383,13 @@ sub __do_layout {
 	$self->{sizer_11} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_17} = Wx::BoxSizer->new(wxVERTICAL);
 	$self->{sizer_9} = Wx::BoxSizer->new(wxVERTICAL);
-	$self->{sizer_10} = Wx::BoxSizer->new(wxHORIZONTAL);
+	$self->{sz_buttons} = Wx::BoxSizer->new(wxHORIZONTAL);
 	$self->{sizer_9}->Add($self->{t_main}, 1, wxBOTTOM|wxEXPAND|wxADJUST_MINSIZE, 10);
 	$self->{sizer_9}->Add($self->{ch_runeb}, 0, wxBOTTOM|wxADJUST_MINSIZE, 10);
-	$self->{sizer_10}->Add(1, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sizer_10}->Add($self->{b_ok}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sizer_9}->Add($self->{sizer_10}, 0, wxEXPAND, 0);
+	$self->{sz_buttons}->Add(1, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+	$self->{sz_buttons}->Add($self->{b_details}, 0, wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
+	$self->{sz_buttons}->Add($self->{b_ok}, 0, wxADJUST_MINSIZE, 0);
+	$self->{sizer_9}->Add($self->{sz_buttons}, 0, wxEXPAND, 0);
 	$self->{sz_main}->Add($self->{sizer_9}, 1, wxALL|wxEXPAND, 10);
 	$self->{sizer_17}->Add($self->{label_2}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
 	$self->{sizer_17}->Add($self->{rb_select}, 1, wxEXPAND|wxADJUST_MINSIZE, 10);
@@ -703,44 +708,85 @@ sub OnWizardFinished {
     }
 
     $self->{b_ok}->Enable(0);
+    my $log = $self->{t_main};
     eval {
 
 	EB::Tools::MiniAdm->sanitize(\%opts);
 
 	foreach my $c ( qw(config schema relaties opening mutaties database) ) {
 	    my $msg = __x("Aanmaken {cfg}: ", cfg => $c);
-	    $self->{t_main}->AppendText($msg);
+	    $log->AppendText($msg);
 	    if ( $opts{"create_$c"} ) {
 		if ( $c eq "database" ) {
-		    my $t = $self->{t_main}->GetInsertionPoint;
-		    $self->{t_main}->AppendText(_T("Even geduld..."));
+		    my $t = $log->GetInsertionPoint;
+		    $log->AppendText(_T("Even geduld..."));
 		    $self->Refresh;
 		    $self->Update;
 		    my $ret;
 		    EB->app_init( { app => $EekBoek::PACKAGE, %opts } );
 		    require EB::Main;
 		    local @ARGV = qw( --init );
+		    my @msg;
+		    my $out;
+		    # Intercept warn and die.
+		    local $SIG{__WARN__} = sub {
+			push( @msg, join("\n", @_) );
+		    };
+		    local $SIG{__DIE__} = sub {
+			push( @msg, "?".join("\n", @_) );
+		    };
+
+		    # Intercept STDOUT.
+		    open( my $oldout, ">&STDOUT" );
+		    close( STDOUT );
+		    open( STDOUT, '>', \$out ) or die("STDOUT capture fail");
+
 		    $ret = EB::Main->run;
-		    $self->{t_main}->Replace($t,
-					     $self->{t_main}->GetInsertionPoint,
-					     _T( $ret ? "Mislukt" : "Gereed")."\n");
+
+		    # Restore STDOUT.
+		    close(STDOUT);
+		    open ( STDOUT, ">&", $oldout );
+
+		    if ( $ret ) {
+			$log->Replace($t,
+				      $log->GetInsertionPoint,
+				      _T("Mislukt")."\n");
+		    }
+		    else {
+			$log->Replace($t,
+				      $log->GetInsertionPoint,
+				      _T("Gereed")."\n");
+		    }
+		    if ( $out || @msg ) {
+			$self->{b_details}->Show(1);
+			$self->{sz_buttons}->Layout;
+			$self->{_details} = "";
+			if ( @msg ) {
+			    $self->{_details} .= _T("==== Meldingen ====")."\n";
+			    $self->{_details} .= $_ . "\n" for @msg;
+			}
+			if ( $out ) {
+			    $self->{_details} .= _T("==== Uitvoer ====")."\n";
+			    $self->{_details} .= $out . "\n";
+			}
+		    }
 		    $self->Update;
 		}
 		else {
 		    $self->Refresh;
 		    my $m = "generate_". $c;
 		    EB::Tools::MiniAdm->$m(\%opts);
-		    $self->{t_main}->AppendText(_T("Gereed")."\n");
+		    $log->AppendText(_T("Gereed")."\n");
 		    $self->Update;
 		}
 	    }
 	    else {
-		$self->{t_main}->AppendText(_T("Overgeslagen")."\n");
+		$log->AppendText(_T("Overgeslagen")."\n");
 	    }
 	}
     };
 
-    $self->{t_main}->AppendText($@) if $@;
+    $log->AppendText($@) if $@;
 
     $self->{b_ok}->Enable(1);
     $self->{b_ok}->SetFocus;
@@ -761,6 +807,7 @@ sub OnWizardFinished {
 
 # end wxGlade
 }
+
 
 sub OnWizardCancel {
     my ($self, $event) = @_;
@@ -891,6 +938,19 @@ sub OnDbTest {
 				   $icon );
     $m->ShowModal;
     $m->Destroy;
+
+# end wxGlade
+}
+
+
+sub OnDetails {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::IniWiz::OnDetails <event_handler>
+
+    return unless $self->{_details};
+    $self->{t_main}->SetValue( $self->{_details} );
+    $self->{_details} = "";
+    $self->{b_details}->Enable(0);
 
 # end wxGlade
 }
