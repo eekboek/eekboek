@@ -1399,7 +1399,7 @@ msgstr "Creditors"
 
 #: ../lib/EB/Tools/Opening.pm:428
 msgid "DE OPENING IS NIET UITGEVOERD!"
-msgstr "OPENING HAS NOT BEEN COMPLETED!"
+msgstr "THE OPENING HAS NOT BEEN COMPLETED!"
 
 #: ../lib/EB/Tools/Opening.pm:527
 #, perl-brace-format
@@ -1847,12 +1847,11 @@ msgid "Beveiliging voor MS Vista uitschakelen"
 msgstr "Bypass restrictions for Microsoft Vista"
 
 #: ../lib/EB/Shell.pm:92
-#, fuzzy
 msgid "Openstaande transactie is teruggedraaid"
 msgstr "Pending transaction has been rolled back"
 
 #: ../lib/EB/Shell.pm:109
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "Pas op! Boekjaar {bky} is nog niet afgesloten."
 msgstr "Warning! Financial year {bky} has not been closed yet"
 
@@ -2057,7 +2056,6 @@ msgstr ""
 "See also \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:577
-#, fuzzy
 msgid ""
 "Toont de resultatenrekening.\n"
 "\n"
@@ -2074,14 +2072,13 @@ msgstr ""
 "Shows the results account.\n"
 "\n"
 "Options:\n"
-"  <none>\t\tOverzicth op grootboekrekening\n"
-"  --verdicht\t\tVerdicht, gedetailleerd\n"
-"  --detail=<n>\t\tVerdicht, mate van detail <n> = 0,1,2\n"
-"  --periode=<periode>\tSelecteer periode\n"
-"  --boekjaar=<code>\tSelecteer boekjaar\n"
+"  <none>\t\tOverview at general ledger account level\n"
+"  --verdicht\t\tAggregated, detailed\n"
+"  --detail=<n>\t\tAggregated, level of detail <n> = 0,1,2\n"
+"  --periode=<periode>\tSelect period\n"
+"  --boekjaar=<code>\tSelect financial year\n"
 "\n"
-"Zie verder \"help rapporten\" voor algemene informatie over aan te maken\n"
-"rapporten.\n"
+"See also \"help rapporten\" for general information on creating reports.\n"
 
 #: ../lib/EB/Shell.pm:615
 #, fuzzy
@@ -2167,7 +2164,7 @@ msgstr ""
 
 #: ../lib/EB/Shell.pm:735
 msgid "Deze administratie voert geen BTW"
-msgstr "The administration does not have VAT"
+msgstr "The administration does not have VAT specified"
 
 #: ../lib/EB/Shell.pm:743
 msgid ""
@@ -2487,9 +2484,8 @@ msgid "Opties --dir, --file en --xaf sluiten elkaar uit"
 msgstr "The options --dir, --file, and --xaf are mutually exclusive"
 
 #: ../lib/EB/Shell.pm:1076
-#, fuzzy
 msgid "Specificeer --dir, --file of --xaf"
-msgstr "Please specify one of --dir, --file, or --xaf"
+msgstr "Please specify one of --dir, --file or --xaf"
 
 #: ../lib/EB/Shell.pm:1091
 msgid "Optie --boekjaar wordt niet ondersteund door deze export"
@@ -2534,7 +2530,6 @@ msgid "Opties --dir en --file sluiten elkaar uit"
 msgstr "Options --dir and --file are mutually exclusive"
 
 #: ../lib/EB/Shell.pm:1139
-#, fuzzy
 msgid "Specificeer --dir of --file"
 msgstr "Please specify one of --dir or --file"
 
@@ -2548,7 +2543,6 @@ msgstr ""
 "command line option."
 
 #: ../lib/EB/Shell.pm:1159
-#, fuzzy
 msgid ""
 "Importeert een complete, geëxporteerde administratie.\n"
 "\n"
@@ -2569,7 +2563,7 @@ msgstr ""
 "\n"
 "Options:\n"
 "\n"
-"  --input=<file>\tSelect export file for import\n"
+"  --file=<file>\tSelect export file for import\n"
 "  --dir=<directory>\tSelect directory for import\n"
 "\n"
 "One of the options --input or --dir must be specified.\n"
@@ -2878,7 +2872,7 @@ msgstr "Entering administration"
 
 #: ../lib/EB/Export.pm:264 ../lib/EB/Export.pm:346
 msgid "Boekingen"
-msgstr "Postings"
+msgstr "Bookings"
 
 #: ../lib/EB/Export.pm:312
 msgid "Openen nieuw boekjaar"
@@ -2971,11 +2965,11 @@ msgstr "Options --per and --periode are mutually exclusive"
 
 #: ../lib/EB/Report/GenBase.pm:123
 msgid "--per sluit --boekjaar uit"
-msgstr "Options --per and with --boekjaar are mutually exclusive"
+msgstr "Options --per and --boekjaar are mutually exclusive"
 
 #: ../lib/EB/Report/GenBase.pm:129
 msgid "--periode sluit --boekjaar uit"
-msgstr "Options --perion with --boekjaar are mutually exclusive"
+msgstr "Options --periode and --boekjaar are mutually exclusive"
 
 #: ../lib/EB/Report/GenBase.pm:155
 #, perl-brace-format
@@ -3007,7 +3001,8 @@ msgstr "quarterly"
 #: ../lib/EB/Report/BTWAangifte.pm:202
 msgid "BTW aangifte periode sluit niet aan bij de vorige aangifte"
 msgstr ""
-"The period of the VAT submission does not match with the previous submission"
+"The period of the VAT submission does not match with the previous VAT "
+"submission"
 
 #: ../lib/EB/Report/BTWAangifte.pm:219
 #, perl-brace-format
@@ -3472,8 +3467,7 @@ msgid ""
 "Een korte, unieke aanduiding van deze administratie, bijvoorbeeld "
 "\"admin2009\"."
 msgstr ""
-"A concise, unique description of this administration, for example "
-"\"admin2009\"."
+"A concise, unique description of this administration, for example \"admin2009\"."
 
 #: ../lib/EB/Wx/IniWiz.pm:294
 msgid "De begindatum. Het boekjaar begint op 1 januari van dit jaar."
