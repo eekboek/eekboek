@@ -657,7 +657,6 @@ sub OnWizardFinished {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OnWizardFinished <event_handler>
 
-    $self->{wiz}->Destroy;
     $self->Show(1);
 
     my %opts;
@@ -778,7 +777,6 @@ sub OnWizardCancel {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::IniWiz::OnWizardCancel <event_handler>
 
-    $self->{wiz}->Destroy;
     $self->Show(1);
     $self->{t_main}->SetValue(_T("Afgebroken!")."\n");
     $self->{b_ok}->Enable(1);
