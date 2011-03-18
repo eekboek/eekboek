@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 20:52:16 2011
-# Update Count    : 246
+# Last Modified On: Fri Mar 18 20:31:19 2011
+# Update Count    : 251
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -252,7 +252,11 @@ sub printconf {
 
 sub user_dir {
     my ( $app, $item ) = @_;
-    eval { $app = $app->app };
+    {
+	local $SIG{__WARN__};
+	local $SIG{__DIE__};
+	eval { $app = $app->app };
+    }
 
     if ( $^O =~ /^mswin/i ) {
 	my $f = File::Spec->catpath( $ENV{HOMEDRIVE}, $ENV{HOMEPATH},
@@ -268,7 +272,11 @@ sub user_dir {
 
 sub std_config {
     my ( $app ) = @_;
-    eval { $app = $app->app };
+    {
+	local $SIG{__WARN__};
+	local $SIG{__DIE__};
+	eval { $app = $app->app };
+    }
     lc($app) . ".conf";
 }
 

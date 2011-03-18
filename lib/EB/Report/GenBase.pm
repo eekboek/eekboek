@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar 17 18:13:37 2011
-# Update Count    : 172
+# Last Modified On: Fri Mar 18 20:33:41 2011
+# Update Count    : 174
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -77,7 +77,11 @@ sub backend {
     $pkg .= ".pm";
 
     # Try to load backend. Gives user the opportunity to override.
-    eval { require $pkg } unless $ENV{AUTOMATED_TESTING};
+    eval {
+	local $SIG{__WARN__};
+	local $SIG{__DIE__};
+	require $pkg;
+    } unless $ENV{AUTOMATED_TESTING};
     if ( ! _loaded($class) ) {
 	my $err = $@;
 	if ( $err =~ /^can't locate /i ) {

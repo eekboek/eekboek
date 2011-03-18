@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 16 14:45:19 2011
-# Update Count    : 126
+# Last Modified On: Fri Mar 18 20:32:16 2011
+# Update Count    : 127
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -46,7 +46,11 @@ sub new {
 	die($@) if $@;
     }
     else {
-	eval { require EB::Shell::Userdefs };
+	eval {
+	    local $SIG{__WARN__};
+	    local $SIG{__DIE__};
+	    require EB::Shell::Userdefs;
+	};
 	die($@) if $@ && $@ !~ /can't locate eb.shell.userdefs\.pm in \@inc/i;
     }
 
