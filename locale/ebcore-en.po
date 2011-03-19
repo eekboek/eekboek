@@ -570,14 +570,6 @@ msgstr "The administration has been created"
 msgid "U kunt meteen aan de slag."
 msgstr "You can start now"
 
-#: ../lib/EB/Shell/Base.pm:81
-msgid ""
-"Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::"
-"Gnu installeren."
-msgstr ""
-"For more ease of use when entering commands, you can install module term::"
-"ReadLine::Gnu."
-
 #: ../lib/EB/Shell/Base.pm:205
 msgid "Fout in de invoerregel. Controleer de \" en ' tekens."
 msgstr "Error in the input: check the \" and ' characters"
@@ -3556,7 +3548,7 @@ msgstr "Database test results"
 #: ../lib/EB/Wx/IniWiz.pm:717
 #, perl-brace-format
 msgid "Aanmaken {cfg}: "
-msgstr "Create {cfg}:"
+msgstr "Create {cfg}: "
 
 #: ../lib/EB/Wx/IniWiz.pm:722
 msgid "Even geduld..."
