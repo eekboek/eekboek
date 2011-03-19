@@ -77,27 +77,24 @@ sub init_rl {
     require Term::ReadLine;
     $self->term($term = Term::ReadLine->new(ref $self));
 
-    if ( -t STDIN && $term->ReadLine ne 'Term::ReadLine::Gnu' ) {
-	warn("%"._T("Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::Gnu installeren.")."\n");
-
-	# Some systems do not have Term::ReadLine::Gnu but provide
-	# Term::ReadLine::Perl instead. However, the latter is far too
-	# incapable.
-	if ( $term->ReadLine eq 'Term::ReadLine::Perl' ) {
-	    $self->term($term = Term::ReadLine::Stub->new(ref $self));
-	}
-    }
-
-    binmode( $term->Attribs->{'outstream'}, 'utf8' );
-
     # Setup default tab-completion function.
     $attr = $term->Attribs;
     $attr->{completion_function} = sub { $self->complete(@_) };
 
     if (my $histfile = $args->{ HISTFILE }) {
         $self->histfile($histfile);
-        $term->ReadHistory($histfile)
-	  if $term->can("ReadHistory");
+	if ( $term->can("ReadHistory") ) {
+	    $term->ReadHistory($histfile);
+	}
+	elsif ( open( my $fd, '<:encoding(utf8)', $histfile ) ) {
+	    $self->{_history} = [];
+	    while ( <$fd> ) {
+		chomp;
+		$term->addhistory($_);
+		push( @{ $self->{_history} }, $_, "\n" );
+	    }
+	    close($fd);
+	}
     }
 
     return $self;
@@ -287,9 +284,16 @@ sub run {
 # as a separate method within Shell::Base so that subclasses which
 # do not want to use Term::ReadLine don't have to.
 # ----------------------------------------------------------------------
-sub readline {
+sub __orig_readline {
     my ($self, $prompt) = @_;
     return $self->term->readline($prompt);
+}
+
+sub readline {
+    my ($self, $prompt) = @_;
+    my $line = $self->term->readline($prompt);
+    push( @{ $self->{_history} }, $line."\n" ) if $line =~ /\S/;
+    return $line;
 }
 
 # ----------------------------------------------------------------------
@@ -299,11 +303,16 @@ sub readline {
 # stream without having to do silly things like tie STDOUT (although
 # they still can if they want, by overriding this method).
 # ----------------------------------------------------------------------
-sub print {
+sub __orig_print {
     my ($self, @stuff) = @_;
     my $OUT = $self->term->Attribs->{'outstream'};
     $OUT ||= *STDOUT;
     CORE::print $OUT @stuff;
+}
+
+sub print {
+    my ($self, @stuff) = @_;
+    CORE::print STDOUT @stuff;
 }
 
 # ----------------------------------------------------------------------
@@ -317,8 +326,13 @@ sub quit {
 
     if (my $h = $self->histfile) {
         # XXX Can this be better encapsulated?
-        $self->term->WriteHistory($h)
-	  if $self->term->can("WriteHistory");
+	if ( $self->term->can("WriteHistory") ) {
+	    $self->term->WriteHistory($h);
+	}
+	elsif ( open( my $fd, '>:encoding(utf8)', $h ) ) {
+	    print { $fd } @{ $self->{_history} };
+	    close($fd);
+	}
     }
 
     return $status;

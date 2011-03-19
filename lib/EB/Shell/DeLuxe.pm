@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 14 17:42:09 2010
-# Update Count    : 289
+# Last Modified On: Sat Mar 19 23:17:34 2011
+# Update Count    : 293
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -66,7 +66,7 @@ sub new {
 
 sub readline_interactive {
     my ($self, $prompt) = @_;
-    return $self->term->readline($prompt);
+    return $self->SUPER::readline($prompt);
 }
 
 use Encode;
