@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-18 21:46+0100\n"
+"POT-Creation-Date: 2011-03-21 15:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -425,7 +425,7 @@ msgid ""
 msgstr ""
 
 #: ../lib/EB/IniWiz.pm:211 ../lib/EB/Config/Data.pm:24
-#: ../lib/EB/Config/Data.pm:50 ../lib/EB/Shell.pm:690
+#: ../lib/EB/Config/Data.pm:50 ../lib/EB/Shell.pm:697
 #: ../lib/EB/Wx/IniWiz.pm:79
 msgid "Naam"
 msgstr ""
@@ -546,42 +546,41 @@ msgstr ""
 msgid "U kunt meteen aan de slag."
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:81
-msgid ""
-"Voor meer gebruiksgemak tijdens het typen kunt u de module Term::ReadLine::"
-"Gnu installeren."
+#: ../lib/EB/Shell/Base.pm:79
+#, perl-brace-format
+msgid "Using ReadLine: {rl}"
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:205
+#: ../lib/EB/Shell/Base.pm:202
 msgid "Fout in de invoerregel. Controleer de \" en ' tekens."
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:256
+#: ../lib/EB/Shell/Base.pm:253
 msgid " ****** Afgebroken wegens fouten in de invoer ******"
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:262
+#: ../lib/EB/Shell/Base.pm:259
 msgid "Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten."
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:338
+#: ../lib/EB/Shell/Base.pm:352
 msgid "Toon versie."
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:437
+#: ../lib/EB/Shell/Base.pm:451
 #, perl-brace-format
 msgid "Sorry, geen hulp voor {topic}."
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:445
+#: ../lib/EB/Shell/Base.pm:459
 msgid "Hulp is beschikbaar voor de volgende onderwerpen."
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:446
+#: ../lib/EB/Shell/Base.pm:460
 msgid "Typ 'help [onderwerp]' voor meer gedetailleerde informatie."
 msgstr ""
 
-#: ../lib/EB/Shell/Base.pm:451
+#: ../lib/EB/Shell/Base.pm:465
 msgid "Geen hulp beschikbaar."
 msgstr ""
 
@@ -1500,12 +1499,12 @@ msgid ""
 "administratie. Zie \"help adm_open\" voor meer informatie.\n"
 msgstr ""
 
-#: ../lib/EB/Tools/Opening.pm:744 ../lib/EB/Shell.pm:1440
+#: ../lib/EB/Tools/Opening.pm:744 ../lib/EB/Shell.pm:1454
 #: ../lib/EB/Booking.pm:35 ../lib/EB/Report/BTWAangifte.pm:45
 msgid "De administratie is nog niet geopend"
 msgstr ""
 
-#: ../lib/EB/Tools/Opening.pm:747 ../lib/EB/Shell.pm:1455
+#: ../lib/EB/Tools/Opening.pm:747 ../lib/EB/Shell.pm:1469
 msgid "De administratie is reeds in gebruik"
 msgstr ""
 
@@ -1655,21 +1654,21 @@ msgstr ""
 msgid "Beveiliging voor MS Vista uitschakelen"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:92
+#: ../lib/EB/Shell.pm:93
 msgid "Openstaande transactie is teruggedraaid"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:109
+#: ../lib/EB/Shell.pm:110
 #, perl-brace-format
 msgid "Pas op! Boekjaar {bky} is nog niet afgesloten."
 msgstr ""
 
-#: ../lib/EB/Shell.pm:275
+#: ../lib/EB/Shell.pm:276
 #, perl-brace-format
 msgid "Toevoegen boekstuk in een dagboek van type {type}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:280
+#: ../lib/EB/Shell.pm:281
 msgid ""
 "  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving> <crediteur>\n"
 "\n"
@@ -1681,7 +1680,7 @@ msgid ""
 "De laatste <rekening> mag worden weggelaten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:292
+#: ../lib/EB/Shell.pm:293
 msgid ""
 "  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving> <debiteur>\n"
 "\n"
@@ -1693,7 +1692,7 @@ msgid ""
 "De laatste <rekening> mag worden weggelaten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:306
+#: ../lib/EB/Shell.pm:307
 msgid ""
 "  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving>\n"
 "\n"
@@ -1709,62 +1708,67 @@ msgid ""
 "<code> het boekstuknummer worden opgegeven.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:329
+#: ../lib/EB/Shell.pm:326
+#, perl-brace-format
+msgid "Opdracht \"{cmd}\" is niet beschikbaar."
+msgstr ""
+
+#: ../lib/EB/Shell.pm:336
 msgid "Te weinig argumenten voor deze opdracht"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:330 ../lib/EB/Shell.pm:608 ../lib/EB/Shell.pm:732
+#: ../lib/EB/Shell.pm:337 ../lib/EB/Shell.pm:615 ../lib/EB/Shell.pm:739
 msgid "Te veel argumenten voor deze opdracht"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:339 ../lib/EB/Shell.pm:361 ../lib/EB/Shell.pm:375
-#: ../lib/EB/Shell.pm:389
+#: ../lib/EB/Shell.pm:346 ../lib/EB/Shell.pm:368 ../lib/EB/Shell.pm:382
+#: ../lib/EB/Shell.pm:396
 msgid "aan"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:340 ../lib/EB/Shell.pm:361 ../lib/EB/Shell.pm:375
-#: ../lib/EB/Shell.pm:389
+#: ../lib/EB/Shell.pm:347 ../lib/EB/Shell.pm:368 ../lib/EB/Shell.pm:382
+#: ../lib/EB/Shell.pm:396
 msgid "uit"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:361
+#: ../lib/EB/Shell.pm:368
 #, perl-brace-format
 msgid "SQL Trace: {state}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:375
+#: ../lib/EB/Shell.pm:382
 #, perl-brace-format
 msgid "Journal: {state}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:389
+#: ../lib/EB/Shell.pm:396
 #, perl-brace-format
 msgid "Bevestiging: {state}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:395
+#: ../lib/EB/Shell.pm:402
 #, perl-brace-format
 msgid "Database: {db}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:400
+#: ../lib/EB/Shell.pm:407
 msgid ""
 "Toont de naam van de huidige database.\n"
 "\n"
 "  database\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:427
+#: ../lib/EB/Shell.pm:434
 #, perl-brace-format
 msgid "Onbekend of verkeerd dagboek: {dbk} [{type}]"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:456
+#: ../lib/EB/Shell.pm:463
 #, perl-brace-format
 msgid "Geboekt: {bsk}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:489
+#: ../lib/EB/Shell.pm:496
 msgid ""
 "Overzicht journaalposten.\n"
 "\n"
@@ -1784,11 +1788,11 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:528
+#: ../lib/EB/Shell.pm:535
 msgid "Openingsbalans kent geen einddatum"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:538
+#: ../lib/EB/Shell.pm:545
 msgid ""
 "Toont de balansrekening.\n"
 "\n"
@@ -1804,7 +1808,7 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:577
+#: ../lib/EB/Shell.pm:584
 msgid ""
 "Toont de resultatenrekening.\n"
 "\n"
@@ -1819,7 +1823,7 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:615
+#: ../lib/EB/Shell.pm:622
 msgid ""
 "Toont de Proef- en Saldibalans.\n"
 "\n"
@@ -1834,12 +1838,12 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:658
+#: ../lib/EB/Shell.pm:665
 #, perl-brace-format
 msgid "Ongeldig rekeningnummer: {acct}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:669
+#: ../lib/EB/Shell.pm:676
 msgid ""
 "Toont het Grootboek, of een selectie daaruit.\n"
 "\n"
@@ -1854,34 +1858,34 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:690
+#: ../lib/EB/Shell.pm:697
 msgid "Nr"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:690
+#: ../lib/EB/Shell.pm:697
 msgid "Type"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:690
+#: ../lib/EB/Shell.pm:697
 msgid "Rekening"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:693
+#: ../lib/EB/Shell.pm:700
 msgid "n.v.t."
 msgstr ""
 
-#: ../lib/EB/Shell.pm:701
+#: ../lib/EB/Shell.pm:708
 msgid ""
 "Toont een lijstje van beschikbare dagboeken.\n"
 "\n"
 "  dagboeken\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:735
+#: ../lib/EB/Shell.pm:742
 msgid "Deze administratie voert geen BTW"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:743
+#: ../lib/EB/Shell.pm:750
 msgid ""
 "Toont de BTW aangifte.\n"
 "\n"
@@ -1915,7 +1919,7 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:797
+#: ../lib/EB/Shell.pm:804
 msgid ""
 "Toont een overzicht van boekingen op debiteuren.\n"
 "\n"
@@ -1931,7 +1935,7 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:833
+#: ../lib/EB/Shell.pm:840
 msgid ""
 "Toont een overzicht van boekingen op crediteuren.\n"
 "\n"
@@ -1947,7 +1951,7 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:871
+#: ../lib/EB/Shell.pm:878
 msgid ""
 "Toont een overzicht van openstaande posten.\n"
 "\n"
@@ -1964,7 +1968,7 @@ msgid ""
 "rapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:889
+#: ../lib/EB/Shell.pm:896
 msgid ""
 "Alle rapport-producerende opdrachten kennen de volgende opties:\n"
 "\n"
@@ -1986,7 +1990,7 @@ msgid ""
 "  --page=<size>\t\tPaginagrootte voor tekstrapporten.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:912
+#: ../lib/EB/Shell.pm:919
 msgid ""
 "De volgende periode-aanduidingen zijn mogelijk. Indien het jaartal "
 "ontbreekt,\n"
@@ -2006,22 +2010,22 @@ msgid ""
 "  jaar (gehele boekjaar)\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:950
+#: ../lib/EB/Shell.pm:957
 #, perl-brace-format
 msgid "Ongeldig of ontbrekend rekeningnummer: {x}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:956
+#: ../lib/EB/Shell.pm:963
 #, perl-brace-format
 msgid "Ongeldige of ontbrekende type specificatie: {x}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:961
+#: ../lib/EB/Shell.pm:968
 #, perl-brace-format
 msgid "Ongeldige of ontbrekende verdichting: {x}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:977
+#: ../lib/EB/Shell.pm:984
 msgid ""
 "Onderhoud van het schema. Deze opdracht kent sub-opdrachten:\n"
 "\n"
@@ -2043,11 +2047,11 @@ msgid ""
 "     van de betreffende grootboekrekening getoond.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1013
+#: ../lib/EB/Shell.pm:1020
 msgid "Ongeldig aantal argumenten voor deze opdracht"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1026
+#: ../lib/EB/Shell.pm:1033
 msgid ""
 "Aanmaken een of meer nieuwe relaties.\n"
 "\n"
@@ -2058,7 +2062,7 @@ msgid ""
 "  --dagboek=<dagboek>\tSelecteer dagboek voor deze relatie\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1036
+#: ../lib/EB/Shell.pm:1043
 msgid ""
 "  --btw=<type>\t\tBTW type: normaal, verlegd, intra, extra\n"
 "\n"
@@ -2066,19 +2070,19 @@ msgid ""
 "*** BTW type 'intra' wordt nog niet geheel ondersteund ***\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1072
+#: ../lib/EB/Shell.pm:1079
 msgid "Opties --dir, --file en --xaf sluiten elkaar uit"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1076
+#: ../lib/EB/Shell.pm:1083
 msgid "Specificeer --dir, --file of --xaf"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1091
+#: ../lib/EB/Shell.pm:1098
 msgid "Optie --boekjaar wordt niet ondersteund door deze export"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1104
+#: ../lib/EB/Shell.pm:1111
 msgid ""
 "Exporteert de complete administratie.\n"
 "\n"
@@ -2097,22 +2101,22 @@ msgid ""
 "Eventueel bestaande files worden overschreven.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1135
+#: ../lib/EB/Shell.pm:1143
 msgid "Opties --dir en --file sluiten elkaar uit"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1139
+#: ../lib/EB/Shell.pm:1147
 msgid "Specificeer --dir of --file"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1146
+#: ../lib/EB/Shell.pm:1154
 #, perl-brace-format
 msgid ""
 "Database type {drv} ondersteunt niet het import commando. Gebruik de --"
 "import command line optie."
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1159
+#: ../lib/EB/Shell.pm:1167
 msgid ""
 "Importeert een complete, geëxporteerde administratie.\n"
 "\n"
@@ -2126,9 +2130,12 @@ msgid ""
 "Er moet of een --file of een --dir optie worden opgegeven.\n"
 "\n"
 "LET OP: IMPORT VERVANGT DE COMPLETE ADMINISTRATIE!\n"
+"\n"
+"Deze opdracht wordt niet door alle database systemen ondersteund.\n"
+"Deze opdracht is alleen in de command line versie beschikbaar.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1198
+#: ../lib/EB/Shell.pm:1209
 msgid ""
 "Leest opdrachten uit een bestand.\n"
 "\n"
@@ -2140,32 +2147,32 @@ msgid ""
 "\t\t\twordt dan verder genegeerd.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1215
+#: ../lib/EB/Shell.pm:1226
 #, perl-brace-format
 msgid "Onbekend boekjaar: {code}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1218
+#: ../lib/EB/Shell.pm:1229
 #, perl-brace-format
 msgid "Boekjaar voor deze sessie: {bky} ({desc})"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1223
+#: ../lib/EB/Shell.pm:1234
 msgid ""
 "Gebruik voor navolgende opdrachten het opgegeven boekjaar.\n"
 "\n"
 "  boekjaar <code>\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1233
+#: ../lib/EB/Shell.pm:1244
 msgid "Deze opdracht is vervallen. Gebruik in plaats daarvan \"export\".\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1252 ../lib/EB/Shell.pm:1310
+#: ../lib/EB/Shell.pm:1263 ../lib/EB/Shell.pm:1321
 msgid "Gaarne een boekstuk"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1272
+#: ../lib/EB/Shell.pm:1283
 msgid ""
 "Verwijdert een boekstuk. Het boekstuk mag niet in gebruik zijn.\n"
 "\n"
@@ -2180,7 +2187,7 @@ msgid ""
 "wijziging opnieuw ingevoerd.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1327
+#: ../lib/EB/Shell.pm:1338
 msgid ""
 "Toont een boekstuk in tekst- of commando-vorm.\n"
 "\n"
@@ -2198,11 +2205,11 @@ msgid ""
 "wijziging opnieuw ingevoerd.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1357
+#: ../lib/EB/Shell.pm:1368
 msgid "Opties \"definitief\" en \"verwijder\" sluiten elkaar uit"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1366
+#: ../lib/EB/Shell.pm:1377
 msgid ""
 "Sluit het boekjaar af. De BTW rekeningen worden afgeboekt, en de\n"
 "winst of het verlies wordt verrekend met de daartoe aangewezen\n"
@@ -2224,29 +2231,31 @@ msgid ""
 "  --eb=<bestand>\tSchrijf openingsopdrachten in dit bestand.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1395
+#: ../lib/EB/Shell.pm:1407
 msgid ""
 "Voer een SQL opdracht uit via de database driver. Met het gebruik\n"
 "hiervan vervalt alle garantie op correcte resultaten.\n"
 "\n"
 "  sql [ <opdracht> ]\n"
+"\n"
+"Deze opdracht is alleen in de command line versie beschikbaar.\n"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1420
+#: ../lib/EB/Shell.pm:1434
 #, perl-brace-format
 msgid "Ongeldige periode-aanduiding: {per}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1431
+#: ../lib/EB/Shell.pm:1445
 #, perl-brace-format
 msgid "Ongeldige datum: {per}"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1443
+#: ../lib/EB/Shell.pm:1457
 msgid "De administratie is reeds geopend"
 msgstr ""
 
-#: ../lib/EB/Shell.pm:1452
+#: ../lib/EB/Shell.pm:1466
 msgid "De administratie is nog niet in gebruik"
 msgstr ""
 

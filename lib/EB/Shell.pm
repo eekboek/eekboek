@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 18 20:32:16 2011
-# Update Count    : 127
+# Last Modified On: Mon Mar 21 14:57:33 2011
+# Update Count    : 132
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -13,6 +13,7 @@ package main;
 
 our $cfg;
 our $dbh;
+our $app;
 
 package EB::Shell;
 
@@ -318,6 +319,12 @@ Voor deelbetalingen of betalingen met afwijkend bedrag kan in plaats van de
 EOS
     }
     $text;
+}
+
+sub clionly {
+    my ( $self, $cmd ) = @_;
+    warn("?".__x("Opdracht \"{cmd}\" is niet beschikbaar.", cmd => $cmd)."\n");
+    undef;
 }
 
 ################ Service ################
@@ -1121,6 +1128,7 @@ EOS
 
 sub do_import {
     my ($self, @args) = @_;
+    return $self->clionly("import") if $app;
     my $opts = { clean => 1,
 	       };
 
@@ -1168,6 +1176,9 @@ Opties:
 Er moet of een --file of een --dir optie worden opgegeven.
 
 LET OP: IMPORT VERVANGT DE COMPLETE ADMINISTRATIE!
+
+Deze opdracht wordt niet door alle database systemen ondersteund.
+Deze opdracht is alleen in de command line versie beschikbaar.
 EOS
 }
 
@@ -1386,6 +1397,7 @@ EOS
 
 sub do_sql {
     my ($self, @args) = @_;
+    return $self->clionly("sql") if $app;
     $dbh->isql(@args);
     undef;
 }
@@ -1396,6 +1408,8 @@ Voer een SQL opdracht uit via de database driver. Met het gebruik
 hiervan vervalt alle garantie op correcte resultaten.
 
   sql [ <opdracht> ]
+
+Deze opdracht is alleen in de command line versie beschikbaar.
 EOS
 }
 
