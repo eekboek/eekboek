@@ -1,5 +1,9 @@
 #! perl
 
+package main;
+
+our $cfg;
+
 package EB::Shell::Base;
 
 # ----------------------------------------------------------------------
@@ -54,6 +58,7 @@ sub new {
         HISTFILE    => undef,           # history file
         PROMPT      => "eb> ",          # default prompt
         TERM        => undef,           # Term::ReadLine instance
+	RL_DEBUG    => $cfg->val(qw(readline debug), 0),
     } => $class;
 
     $self->init_rl($args);
@@ -75,7 +80,28 @@ sub init_rl {
     my ($term, $attr);
 
     require Term::ReadLine;
-    $self->term($term = Term::ReadLine->new(ref $self));
+    warn("\%Trying: ReadLine (", $ENV{PERL_RL}||"default", ")\n") if $self->{RL_DEBUG};
+    eval {
+	local $SIG{__WARN__};
+	local $SIG{__DIE__};
+	$term = Term::ReadLine->new(ref $self);
+    };
+    unless ( $term ) {
+	warn("\%TFallback: ReadLine (Perl)\n") if $self->{RL_DEBUG};
+	$ENV{PERL_RL} = "Perl";
+    }
+    eval {
+	local $SIG{__WARN__};
+	local $SIG{__DIE__};
+	$term = Term::ReadLine->new(ref $self);
+    };
+    unless ( $term ) {
+	warn("\%TFallback: ReadLine (Stub)\n") if $self->{RL_DEBUG};
+	$ENV{PERL_RL} = "Stub";
+    }
+    $term = Term::ReadLine->new(ref $self);
+    warn("\%Using: ", $term->ReadLine, "\n") if $self->{RL_DEBUG};
+    $self->term($term);
 
     # Setup default tab-completion function.
     $attr = $term->Attribs;
