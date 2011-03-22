@@ -195,6 +195,7 @@ lib/EB/examples/relaties.eb
 lib/EB/examples/schema.dat
 lib/EB/examples/vereniging.dat
 lib/EB/res/Wx/icons/button_ok.png
+lib/EB/res/Wx/icons/eb.icns
 lib/EB/res/Wx/icons/eb.ico
 lib/EB/res/Wx/icons/eb.jpg
 lib/EB/res/Wx/icons/ebicon.png
