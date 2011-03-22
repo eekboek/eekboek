@@ -713,14 +713,8 @@ sub checktx {
     $allow ? warn("!$msg\n") : die("?$msg\n");
 }
 
-sub rollback {
-    my ($self) = @_;
-    warn("=> ROLLBACK WORK;", $dbh ? "" : " (ignored)", "\n") if $trace;
-    return unless $dbh;
-    die("?INTERNAL ERROR: ROLLBACK while not in transaction\n") unless $tx;
-    $tx = 0;
-    $dbh->rollback
-}
+#
+# http://en.wikipedia.org/wiki/Database_transaction#In_SQL 
 
 sub begin_work {
     my ($self) = @_;
@@ -737,6 +731,15 @@ sub commit {
     die("?INTERNAL ERROR: COMMIT while not in transaction\n") unless $tx;
     $tx = 0;
     $dbh->commit;
+}
+
+sub rollback {
+    my ($self) = @_;
+    warn("=> ROLLBACK WORK;", $dbh ? "" : " (ignored)", "\n") if $trace;
+    return unless $dbh;
+    die("?INTERNAL ERROR: ROLLBACK while not in transaction\n") unless $tx;
+    $tx = 0;
+    $dbh->rollback
 }
 
 END {
