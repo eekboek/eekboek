@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar 17 11:09:33 2011
-# Update Count    : 319
+# Last Modified On: Wed Mar 23 11:17:11 2011
+# Update Count    : 320
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -72,9 +72,9 @@ sub findlib {
     # Cava.
     if ( $Cava::Packager::PACKAGED ) {
 	my $found = Cava::Packager::GetUserFile($file);
-	return $found if -f $found;
+	return $found if -e $found;
 	$found = Cava::Packager::GetResource($file);
-	return $found if -f $found;
+	return $found if -e $found;
     }
 
     foreach ( @INC ) {
