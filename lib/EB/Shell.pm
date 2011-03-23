@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 21 14:57:33 2011
-# Update Count    : 132
+# Last Modified On: Wed Mar 23 21:09:43 2011
+# Update Count    : 145
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -127,9 +127,13 @@ sub eb_complete {
     select(STDERR); $| = 1; select(STDOUT);
 
     if ( $i < 0 || $i > $pos-1 || $pre =~ /^help\s+$/ ) {
-	my @extra;
-	@extra = qw(rapporten periodes) if $pre =~ /^help\s+$/;
-	my @a = grep { /^$word/ } (@extra, $self->completions);
+	my @words = $self->completions;
+	if ( $pre =~ /^help\s+$/ ) {
+	    push( @words,
+		  $self->{cm}->{rapporten},
+		  $self->{cm}->{periodes});
+	}
+	my @a = grep { /^$word/ } @words;
 	if ( @a ) {
 	    return $a[0] if @a == 1;
 	    $self->term->display_match_list([$a[0],@a], $#a+1, -1);
@@ -208,7 +212,7 @@ use EB;
 sub _plug_cmds {
 
     foreach my $dbk_type ( 1 .. scalar(@{DBKTYPES()})-1 ) {
-	my $dbk = lc(DBKTYPES->[$dbk_type]);
+	my $dbk = lc(_T(DBKTYPES->[$dbk_type]));
 	no strict 'refs';
 	undef &{"help_$dbk"};
 	*{"help_$dbk"} = sub {
@@ -222,7 +226,7 @@ sub _plug_cmds {
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($dbk_id, $dbk_desc, $dbk_type) = @$rr;
 	no strict 'refs';
-	my $dbk = lc($dbk_desc);
+	my $dbk = lc(_T($dbk_desc));
 	undef &{"do_$dbk"};
 	*{"do_$dbk"} = sub {
 	    my $self = shift;
@@ -1012,8 +1016,8 @@ sub do_relatie {
 
     return unless
     parse_args(\@args,
-	       [ 'dagboek=s',
-		 $dbh->does_btw ? 'btw=s' : (),
+	       [ __xt("cmo:relatie:dagboek").'=s',
+		 $dbh->does_btw ? __xt("cmo:relatie:btw").'=s' : (),
 	       ], $opts)
       or goto &help_relatie;
 
@@ -1405,7 +1409,7 @@ sub do_sql {
 sub help_sql {
     _T( <<EOS );
 Voer een SQL opdracht uit via de database driver. Met het gebruik
-hiervan vervalt alle garantie op correcte resultaten.
+hiervan vervalt alle garantie op correcte financiële resultaten.
 
   sql [ <opdracht> ]
 

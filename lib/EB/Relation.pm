@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:32:40 2010
-# Update Count    : 102
+# Last Modified On: Wed Mar 23 21:25:48 2011
+# Update Count    : 108
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -30,8 +30,8 @@ sub new {
 
 sub add {
     my ($self, $code, $desc, $acct, $opts) = @_;
-    my $bstate = $opts->{btw};
-    my $dbk = $opts->{dagboek};
+    my $bstate = $opts->{__xt("cmo:relatie:btw")};
+    my $dbk = $opts->{__xt("cmo:relatie:dagboek")};
 
     if ( defined($bstate) ) {
 	$bstate = lc($bstate);
@@ -144,8 +144,11 @@ sub add {
 		       $code, $desc, $debcrd, $bstate || 0, $dbk, $acct);
 
     $dbh->commit;
-    ($debcrd ? _T("Debiteur") : _T("Crediteur")) . " " . $code .
-      " -> $acct ($adesc), dagboek $ddesc";
+    $debcrd
+      ? __x("Debiteur {code} -> {acct} ({desc}), dagboek {dbk}",
+	    code => $code, acct => $acct, desc => $adesc, dbk => $ddesc)
+      : __x("Crediteur {code} -> {acct} ({desc}), dagboek {dbk}",
+	    code => $code, acct => $acct, desc => $adesc, dbk => $ddesc);
 }
 
 1;
