@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:28:03 2010
-# Update Count    : 234
+# Last Modified On: Wed Mar 23 21:09:08 2011
+# Update Count    : 240
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -151,8 +151,8 @@ sub _relaties {
 	    $cur_dbk = $dbk;
 	    $dbk =~ s/[^[:alnum]]/_/g;
 	    $out .= "\n\n" if $out;
-	    $out .= "relatie --dagboek=".lc($dbk);
-	    $out .= " --btw=".lc(BTWTYPES->[$btw]) unless $btw == BTWTYPE_NORMAAL;
+	    $out .= _xt("cmd:relatie")." --".__xt("cmo:relatie:dagboek")."=".lc($dbk);
+	    $out .= " --".__xt("cmo:relatie:btw")."=".lc(BTWTYPES->[$btw]) unless $btw == BTWTYPE_NORMAAL;
 	}
 	$out .= " \\\n        ";
 	$out .= sprintf("%-12s %-40s %d", _quote($code), _quote($desc), $acct);
@@ -174,7 +174,7 @@ sub _opening {
 		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
 	      "# Content-Type: text/plain; charset = UTF-8\n\n";
 
-    $out .= "adm_naam         " . _quote($dbh->adm("name")) . "\n";
+    $out .= _xt("cmd:adm_naam") . "         " . _quote($dbh->adm("name")) . "\n";
 
     my $begin = $dbh->do("SELECT min(bky_begin)".
 			 " FROM Boekjaren".
@@ -182,10 +182,10 @@ sub _opening {
 			 BKY_PREVIOUS);
     $begin = $begin->[0];
 
-    $out .= "adm_begindatum   " . substr($begin, 0, 4) . "\n";
-    $out .= "adm_boekjaarcode " . _quote($dbh->lookup($begin, qw(Boekjaren bky_begin bky_code))) . "\n";
-    $out .= "adm_btwperiode   " .
-      (qw(geen jaar x x kwartaal x x x x x x x maand)[$dbh->lookup($begin, qw(Boekjaren bky_begin bky_btwperiod))]).
+    $out .= _xt("cmd:adm_begindatum") . "   " . substr($begin, 0, 4) . "\n";
+    $out .= _xt("cmd:adm_boekjaarcode") . " " . _quote($dbh->lookup($begin, qw(Boekjaren bky_begin bky_code))) . "\n";
+    $out .= _xt("cmd:adm_btwperiode") . "   " .
+      _T(qw(geen jaar x x kwartaal x x x x x x x maand)[$dbh->lookup($begin, qw(Boekjaren bky_begin bky_btwperiod))]).
 	"\n" if $dbh->does_btw;
 
     $out .= "\n# " . _T("Openingsbalans") . "\n";
@@ -213,7 +213,8 @@ sub _opening {
 	if ( !defined($debcrd) || $acc_debcrd != $debcrd ) {
 	    $out .= "\n# " . ($acc_debcrd ? _T("Debet") : _T("Credit")) . "\n";
 	}
-	$out .= sprintf("adm_balans %-5s %10s   # %s\n",
+	$out .= sprintf("%s %-5s %10s   # %s\n",
+			_xt("cmd:adm_balans"),
 			$acc_id, numfmt_plain($acc_balance),
 			$acc_desc);
 	$debcrd = $acc_debcrd;
@@ -223,7 +224,7 @@ sub _opening {
 		arg1 => numfmt_plain($dt),
 		arg2 => numfmt_plain($ct))."\n")
       unless $dt == $ct;
-    $out .= "\n# " .  _T("Totaal") . "\n" . "adm_balanstotaal " . numfmt_plain($dt) . "\n";
+    $out .= "\n# " .  _T("Totaal") . "\n" . _xt("cmd:adm_balanstotaal") . " " . numfmt_plain($dt) . "\n";
 
     $sth = $dbh->sql_exec("SELECT bsk_id".
 			  " FROM Boekstukken".
@@ -252,7 +253,7 @@ sub _opening {
 	$rr = $sth->fetchrow_arrayref;
     }
 
-    $out .= "\n# "._T("Openen van de administratie")."\n\nadm_open\n";
+    $out .= "\n# "._T("Openen van de administratie")."\n\n"._xt("cmd:adm_open")."\n";
     $out .= "\n# " . __x("Einde {what}", what => _T("Openingsgegevens")) . "\n";
     $out;
 }
@@ -279,7 +280,7 @@ sub _mutaties {
     my $check_je = sub {
 	my ($bky) = @_;
 	if ( $dbh->lookup($bky, qw(Boekjaren bky_code bky_closed)) ) {
-	    $out .= "jaareinde --boekjaar=" . _quote($bky) . " --definitief\n";
+	    $out .= _xt("cmd:jaareinde")." --boekjaar=" . _quote($bky) . " --definitief\n";
 	}
 	else {
 	    $sth = $dbh->sql_exec("SELECT COUNT(*)".
@@ -287,7 +288,7 @@ sub _mutaties {
 				  " WHERE bkb_bky = ?", $bky);
 	    my $rr;
 	    if ( ($rr = $sth->fetchrow_arrayref) && $rr->[0] ) {
-		$out .= "jaareinde --boekjaar=" . _quote($bky) . "\n";
+		$out .= _xt("cmd:jaareinde") . " --boekjaar=" . _quote($bky) . "\n";
 	    }
 	    $sth->finish;
 	}
@@ -297,7 +298,7 @@ sub _mutaties {
 	    my $bkb = $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin));
 	    if ( $bb gt $bkb ) {
 		$bke = parse_date($bb, undef, -1) if $bb le $bke;
-		$out .= "btwaangifte --periode=".
+		$out .= _xt("cmd:btwaangifte")." --periode=".
 		  datefmt_full($bkb)."-".datefmt_full($bke)." --definitief --noreport\n";
 	    }
 	}
@@ -310,12 +311,12 @@ sub _mutaties {
 	    $check_je->($cur_bky);
 	    my $bp = $dbh->lookup($bky, qw(Boekjaren bky_code bky_btwperiod));
 	    $out .= "\n# ". _T("Openen nieuw boekjaar") . "\n\n";
-	    $out .= "adm_boekjaarcode " . _quote($bky) . "\n";
-	    $out .= "adm_btwperiode " . lc(BTWPERIODES->[$bp]) . "\n" if $bp;
-	    $out .= "adm_open\n";
+	    $out .= _xt("cmd:adm_boekjaarcode") . " " . _quote($bky) . "\n";
+	    $out .= _xt("cmd:adm_btwperiode") . " " . lc(BTWPERIODES->[$bp]) . "\n" if $bp;
+	    $out .= _xt("cmd:adm_open") . "\n";
 	    $cur_bky = $bky;
 	}
-	$out .= "boekjaar " . _quote($bky) . "\n";
+	$out .= _xt("cmd:boekjaar") . " " . _quote($bky) . "\n";
 
 	$sth = $dbh->sql_exec("SELECT bsk_id, dbk_id".
 			      " FROM Boekstukken, Dagboeken".
@@ -347,5 +348,10 @@ sub _mutaties {
     $out;
 }
 
+sub _xt {			# scm:btw -> scm:vat -> vat
+    my $t = _T(shift);
+    $t =~ s/^.*://;
+    $t;
+}
 
 1;

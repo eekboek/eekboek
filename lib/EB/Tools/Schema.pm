@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar 22 16:30:41 2011
-# Update Count    : 837
+# Last Modified On: Wed Mar 23 17:23:12 2011
+# Update Count    : 862
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -104,51 +104,56 @@ sub init_vars {
 
 sub init_kmap {
     %km = ();
-    $km{type}		 = substr( _T("scm:type")	    , 4 );
-    $km{rek}		 = substr( _T("scm:rek")	    , 4 );
-    $km{rekening}	 = substr( _T("scm:rekening")	    , 4 );
-    $km{percentage}	 = substr( _T("scm:percentage")	    , 4 );
-    $km{perc}		 = substr( _T("scm:perc")	    , 4 );
-    $km{tariefgroep}	 = substr( _T("scm:tariefgroep")    , 4 );
-    $km{tg_hoog}	 = substr( _T("scm:tg:hoog")	    , 7 );
-    $km{tg_laag}	 = substr( _T("scm:tg:laag")	    , 7 );
-    $km{tg_nul}		 = substr( _T("scm:tg:nul")	    , 7 );
-    $km{tg_geen}	 = substr( _T("scm:tg:geen")	    , 7 );
-    $km{tg_prive}	 = substr( _T("scm:tg:privé")	    , 7 );
-    $km{tg_anders}	 = substr( _T("scm:tg:anders")	    , 7 );
-    $km{btw_ok}		 = substr( _T("scm:btw_ok")	    , 4 );
-    $km{btw_vh}		 = substr( _T("scm:btw_vh")	    , 4 );
 
-    $km{winst}		 = substr( _T("scm:std:winst")	    , 8 );
-    $km{crd}		 = substr( _T("scm:std:crd")	    , 8 );
-    $km{deb}		 = substr( _T("scm:std:deb")	    , 8 );
-    $km{btw_il}		 = substr( _T("scm:std:btw_il")	    , 8 );
-    $km{btw_vl}		 = substr( _T("scm:std:btw_vl")	    , 8 );
-    $km{btw_ih}		 = substr( _T("scm:std:btw_ih")	    , 8 );
-    $km{btw_vp}		 = substr( _T("scm:std:btw_vp")	    , 8 );
-    $km{btw_ip}		 = substr( _T("scm:std:btw_ip")	    , 8 );
-    $km{btw_va}		 = substr( _T("scm:std:btw_va")	    , 8 );
-    $km{btw_ia}		 = substr( _T("scm:std:btw_ia")	    , 8 );
+    # BTW tariefgroepen.
+    $km{tg_hoog}	 = __xt("scm:tg:hoog");
+    $km{tg_laag}	 = __xt("scm:tg:laag");
+    $km{tg_nul}		 = __xt("scm:tg:nul");
+    $km{tg_geen}	 = __xt("scm:tg:geen");
+    $km{tg_privé}	 = __xt("scm:tg:privé");
+    $km{tg_anders}	 = __xt("scm:tg:anders");
 
-    $km{btw_Nul}	 = substr( _T("scm:btw:Nul")	    , 8 );
-    $km{btw_Hoog}	 = substr( _T("scm:btw:Hoog")	    , 8 );
-    $km{btw_Laag}	 = substr( _T("scm:btw:Laag")	    , 8 );
+    # Koppelingen.
+    $km{winst}		 = __xt("scm:std:winst");
+    $km{crd}		 = __xt("scm:std:crd");
+    $km{deb}		 = __xt("scm:std:deb");
+    $km{btw_il}		 = __xt("scm:std:btw_il");
+    $km{btw_vl}		 = __xt("scm:std:btw_vl");
+    $km{btw_ih}		 = __xt("scm:std:btw_ih");
+    $km{btw_vp}		 = __xt("scm:std:btw_vp");
+    $km{btw_ip}		 = __xt("scm:std:btw_ip");
+    $km{btw_va}		 = __xt("scm:std:btw_va");
+    $km{btw_ia}		 = __xt("scm:std:btw_ia");
+    $km{btw_ok}		 = __xt("scm:std:btw_ok");
+    $km{btw_vh}		 = __xt("scm:std:btw_vh");
 
-    $km{balans}		 = substr( _T("scm:balans")	    , 4 );
-    $km{result}		 = substr( _T("scm:result")	    , 4 );
-    $km{dagboeken}	 = substr( _T("scm:dagboeken")	    , 4 );
-    $km{tarieven}	 = substr( _T("scm:tarieven")	    , 4 );
-    $km{verdichting}	 = substr( _T("scm:verdichting")    , 4 );
-    $km{inclusief}	 = substr( _T("scm:inclusief")	    , 4 );
-    $km{exclusief}	 = substr( _T("scm:exclusief")	    , 4 );
-    $km{incl}		 = substr( _T("scm:incl")	    , 4 );
-    $km{excl}		 = substr( _T("scm:excl")	    , 4 );
-    $km{btw}		 = substr( _T("scm:btw")	    , 4 );
-    $km{kosten}		 = substr( _T("scm:kosten")	    , 4 );
-    $km{kostenrekening}	 = substr( _T("scm:kostenrekening") , 4 );
-    $km{omzet}		 = substr( _T("scm:omzet")	    , 4 );
-    $km{omzetrekening}	 = substr( _T("scm:omzetrekening")  , 4 );
-    $km{koppeling}	 = substr( _T("scm:koppeling")	    , 4 );
+    # Section headings.
+    $km{hdr_verdichting} = __xt("scm:hdr:Verdichting");
+    $km{hdr_balans}      = __xt("scm:hdr:Balansrekeningen");
+    $km{balans}		 = __xt("scm:balans");
+    $km{hdr_resultaat}   = __xt("scm:hdr:Resultaatrekeningen");
+    $km{result}		 = __xt("scm:result");
+    $km{hdr_dagboeken}	 = __xt("scm:hdr:Dagboeken");
+    $km{dagboeken}	 = __xt("scm:dagboeken");
+    $km{hdr_btwtarieven} = __xt("scm:hdr:BTW Tarieven");
+
+    # Misc.
+    $km{inclusief}	 = __xt("scm:inclusief");
+    $km{exclusief}	 = __xt("scm:exclusief");
+    $km{incl}		 = __xt("scm:incl");
+    $km{excl}		 = __xt("scm:excl");
+    $km{btw}		 = __xt("scm:btw");
+    $km{kosten}		 = __xt("scm:kosten");
+    $km{kostenrekening}	 = __xt("scm:kostenrekening");
+    $km{omzet}		 = __xt("scm:omzet");
+    $km{omzetrekening}	 = __xt("scm:omzetrekening");
+    $km{koppeling}	 = __xt("scm:koppeling");
+    $km{type}		 = __xt("scm:type");
+    $km{rek}		 = __xt("scm:rek");
+    $km{rekening}	 = __xt("scm:rekening");
+    $km{percentage}	 = __xt("scm:percentage");
+    $km{perc}		 = __xt("scm:perc");
+    $km{tariefgroep}	 = __xt("scm:tariefgroep");
 }
 
 sub _xt {			# scm:btw -> scm:vat -> vat
@@ -252,7 +257,7 @@ sub scan_btw {
 	    warn("!"._T("Gelieve BTW tariefgroep \"Geen\" te vervangen door \"Nul\"")."\n")
 	      if lc($1) eq $km{tg_geen};
 	}
-	elsif ( $extra =~ m/^$km{tariefgroep}=(prive|$km{tg_prive})$/i ) {
+	elsif ( $extra =~ m/^$km{tariefgroep}=(prive|$km{tg_privé})$/i ) {
 	    $groep = BTWTARIEF_PRIV;
 	}
 	elsif ( $extra =~ m/^$km{tariefgroep}=$km{tg_anders}??$/i ) {
@@ -358,7 +363,7 @@ sub scan_balres {
 		    if ( $balres && /^($km{kosten}|$km{omzet})$/ ) {
 			$btw_ko = $1 eq $km{kosten};
 		    }
-		    elsif ( /^($km{tg_hoog}|$km{tg_laag}|$km{tg_nul}|prive|$km{tg_prive}|$km{tg_anders})$/ ) {
+		    elsif ( /^($km{tg_hoog}|$km{tg_laag}|$km{tg_nul}|prive|$km{tg_privé}|$km{tg_anders})$/ ) {
 			$btw_type = substr(_xtr("scm:tg:$1"), 0, 1);
 		    }
 		    elsif ( /^\d+$/ ) {
@@ -461,25 +466,25 @@ sub load_schema {
 	next unless /\S/;
 
 	# Scanner selectie.
-	if ( /^$km{balans}/i ) {
+	if ( /^($km{balans}|$km{hdr_balans})/i ) {
 	    $scanner = \&scan_balans;
 	    next;
 	}
-	if ( /^$km{result}/i ) {
+	if ( /^($km{result}|$km{hdr_resultaat})/i ) {
 	    $scanner = \&scan_result;
 	    next;
 	}
-	if ( /^$km{dagboeken}/i ) {
+	if ( /^($km{dagboeken}|$km{hdr_dagboeken})/i ) {
 	    $scanner = \&scan_dagboeken;
 	    next;
 	}
-	if ( /^$km{btw}\s*$km{tarieven}/i ) {
+	if ( /^$km{hdr_btwtarieven}/i ) {
 	    $scanner = \&scan_btw;
 	    next;
 	}
 
 	# Overige settings.
-	if ( /^$km{verdichting}\s+(\d+)\s+(\d+)/i && $1 < $2 ) {
+	if ( /^$km{hdr_verdichting}\s+(\d+)\s+(\d+)/i && $1 < $2 ) {
 	    $max_hvd = $1;
 	    $max_vrd = $2;
 	    next;
@@ -763,6 +768,7 @@ sub dump_schema {
 
     $dbh = EB::DB->new(trace => $trace);
     $dbh->connectdb;		# can't wait...
+    init_kmap();
 
     print {$fh} ("# $EekBoek::PACKAGE Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
 	  "# Aangemaakt door $EekBoek::PACKAGE $EekBoek::VERSION");
@@ -853,7 +859,7 @@ $max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct 
 # nummer voor hoofdverdichtingen resp. verdichtingen.
 EOD
 
-    printf {$fh} ( "\nVerdichting %d %d\n\n",
+    printf {$fh} ( "\n$km{hdr_verdichting} %d %d\n\n",
 		   ( $max_hvd > 9 || $max_vrd > 99 )
 		  ? ( $max_hvd, $max_vrd )
 		  : ( 9, 99 ) );
@@ -924,7 +930,7 @@ EOD
 sub dump_acc {
     my ($balres, $fh) = @_;
 
-    print {$fh} ("\n", $balres ? "Balans" : "Resultaat", "rekeningen\n");
+    print {$fh} ("\n", $balres ? $km{hdr_balans} : $km{hdr_resultaat}, "\n");
 
     my $sth = $dbh->sql_exec("SELECT vdi_id, vdi_desc".
 			     " FROM Verdichtingen".
@@ -969,47 +975,47 @@ sub dump_acc {
 		}
 		my $extra = "";
 		if ( $btw == BTWTARIEF_HOOG ) {
-		    $extra .= " :btw=hoog";
-		    $extra .= ",excl" unless $btwincl;
+		    $extra .= " :$km{btw}=$km{tg_hoog}";
+		    $extra .= ",$km{excl}" unless $btwincl;
 		    if ( $balres ) {
-			$extra .= ",kosten" if $acc_kstomz;
-			$extra .= ",omzet"  if !$acc_kstomz;
+			$extra .= ",$km{kosten}" if $acc_kstomz;
+			$extra .= ",$km{omzet}"  if !$acc_kstomz;
 		    }
 		}
 		elsif ( $btw == BTWTARIEF_LAAG ) {
-		    $extra .= " :btw=laag";
-		    $extra .= ",excl" unless $btwincl;
+		    $extra .= " :$km{btw}=$km{tg_laag}";
+		    $extra .= ",$km{excl}" unless $btwincl;
 		    if ( $balres ) {
-			$extra .= ",kosten" if $acc_kstomz;
-			$extra .= ",omzet"  if !$acc_kstomz;
+			$extra .= ",$km{kosten}" if $acc_kstomz;
+			$extra .= ",$km{omzet}"  if !$acc_kstomz;
 		    }
 		}
 		elsif ( $btw == BTWTARIEF_PRIV ) {
-		    $extra .= " :btw=privé";
-		    $extra .= ",excl" unless $btwincl;
+		    $extra .= " :$km{btw}=$km{tg_privé}";
+		    $extra .= ",$km{excl}" unless $btwincl;
 		    if ( $balres ) {
-			$extra .= ",kosten" if $acc_kstomz;
-			$extra .= ",omzet"  if !$acc_kstomz;
+			$extra .= ",$km{kosten}" if $acc_kstomz;
+			$extra .= ",$km{omzet}"  if !$acc_kstomz;
 		    }
 		}
 		elsif ( $btw == BTWTARIEF_ANDERS ) {
-		    $extra .= " :btw=anders";
-		    $extra .= ",excl" unless $btwincl;
+		    $extra .= " :$km{btw}=$km{tg_anders}";
+		    $extra .= ",$km{excl}" unless $btwincl;
 		    if ( $balres ) {
-			$extra .= ",kosten" if $acc_kstomz;
-			$extra .= ",omzet"  if !$acc_kstomz;
+			$extra .= ",$km{kosten}" if $acc_kstomz;
+			$extra .= ",$km{omzet}"  if !$acc_kstomz;
 		    }
 		}
 		elsif ( $btw != BTWTARIEF_NUL ) {
-		    $extra .= " :btw=$btw_id";
+		    $extra .= " :$km{btw}=$btw_id";
 		}
 		else {
 		    if ( $balres && defined($acc_kstomz) ) {
-			$extra .= " :btw=kosten" if $acc_kstomz;
-			$extra .= " :btw=omzet"  if !$acc_kstomz;
+			$extra .= " :$km{btw}=$km{kosten}" if $acc_kstomz;
+			$extra .= " :$km{btw}=$km{omzet}"  if !$acc_kstomz;
 		    }
 		}
-		$extra .= " :koppeling=".$kopp{$id} if exists($kopp{$id});
+		$extra .= " :$km{koppeling}=".$km{$kopp{$id}} if exists($kopp{$id});
 		$desc =~ s/^\s+//;
 		$desc =~ s/\s+$//;
 		my $t = sprintf("         %-4s  %-2s  %-40.40s  %s",
@@ -1028,17 +1034,17 @@ sub dump_acc {
 
 sub dump_btw {
     my $fh = shift;
-    print {$fh} ("\nBTW Tarieven\n\n");
+    print {$fh} ("\n$km{hdr_btwtarieven}\n\n");
     my $sth = $dbh->sql_exec("SELECT btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
 			     " FROM BTWTabel".
 			     " ORDER BY btw_id");
     while ( my $rr = $sth->fetchrow_arrayref ) {
 	my ($id, $desc, $perc, $btg, $incl) = @$rr;
 	my $extra = "";
-	$extra .= " :tariefgroep=" . lc(BTWTARIEVEN->[$btg]);
+	$extra .= " :$km{tariefgroep}=" . $km{"tg_".lc(BTWTARIEVEN->[$btg])};
 	if ( $btg != BTWTARIEF_NUL ) {
-	    $extra .= " :perc=".btwfmt($perc);
-	    $extra .= " :" . qw(exclusief inclusief)[$incl] unless $incl;
+	    $extra .= " :$km{perc}=".btwfmt($perc);
+	    $extra .= " :$km{exclusief}" unless $incl;
 	}
 	my $t = sprintf(" %3d  %-20s  %s",
 			$id, $desc, $extra);
@@ -1049,7 +1055,7 @@ sub dump_btw {
 
 sub dump_dbk {
     my $fh = shift;
-    print {$fh} ("\nDagboeken\n\n");
+    print {$fh} ("\n$km{hdr_dagboeken}\n\n");
     my $sth = $dbh->sql_exec("SELECT dbk_id, dbk_desc, dbk_type, dbk_dcsplit, dbk_acc_id".
 			     " FROM Dagboeken".
 			     " ORDER BY dbk_id");
@@ -1059,7 +1065,7 @@ sub dump_dbk {
 	$acc_id = 0 if $type == DBKTYPE_VERKOOP && $dbh->std_acc("deb", 0) == $acc_id;
 	my $t = sprintf("  %-4s  %-20s  :type=%-10s %s",
 			$id, $desc, lc(DBKTYPES->[$type]),
-			($acc_id ? ":rekening=$acc_id" : "").
+			($acc_id ? ":$km{rekening}=$acc_id" : "").
 			($dc ? " :dc" : ""),
 		       );
 	$t =~ s/\s+$//;

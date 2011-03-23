@@ -61,12 +61,69 @@ sub new {
 	RL_DEBUG    => $cfg->val(qw(readline debug), 0),
     } => $class;
 
+    $self->init_cm($args);
     $self->init_rl($args);
     $self->init_completions($args);
     $self->init_help($args);
     $self->init($args);
 
     return $self;
+}
+
+# ----------------------------------------------------------------------
+# init_km(\%args)
+#
+# Initialize command name maps for translation.
+# ----------------------------------------------------------------------
+sub init_cm {
+    my ($self, $args) = @_;
+
+    my %cm;
+
+    # Opening.
+    $cm{adm_balans}	     = __xt("cmd:adm_balans");
+    $cm{adm_balanstotaal}    = __xt("cmd:adm_balanstotaal");
+    $cm{adm_begindatum}	     = __xt("cmd:adm_begindatum");
+    $cm{adm_boekjaarcode}    = __xt("cmd:adm_boekjaarcode");
+    $cm{adm_btwperiode}	     = __xt("cmd:adm_btwperiode");
+    $cm{adm_naam}	     = __xt("cmd:adm_naam");
+    $cm{adm_open}	     = __xt("cmd:adm_open");
+    $cm{adm_relatie}	     = __xt("cmd:adm_relatie");
+
+    # Globale settings.
+    $cm{boekjaar}	     = __xt("cmd:boekjaar");
+
+    # Rapporten.
+    $cm{balans}		     = __xt("cmd:balans");
+    $cm{btwaangifte}	     = __xt("cmd:btwaangifte");
+    $cm{crediteuren}	     = __xt("cmd:crediteuren");
+    $cm{debiteuren}	     = __xt("cmd:debiteuren");
+    $cm{grootboek}	     = __xt("cmd:grootboek");
+    $cm{journaal}	     = __xt("cmd:journaal");
+    $cm{openstaand}	     = __xt("cmd:openstaand");
+    $cm{proefensaldibalans}  = __xt("cmd:proefensaldibalans");
+    $cm{result}		     = __xt("cmd:result");
+
+    # Informatie.
+    $cm{dagboeken}	     = __xt("cmd:dagboeken");
+    $cm{database}	     = __xt("cmd:database");
+    $cm{periodes}	     = __xt("cmd:periodes");
+    $cm{rapporten}	     = __xt("cmd:rapporten");
+
+    # Bewerkingen.
+    $cm{export}		     = __xt("cmd:export");
+    $cm{import}		     = __xt("cmd:import");
+    $cm{jaareinde}	     = __xt("cmd:jaareinde");
+    $cm{relatie}	     = __xt("cmd:relatie");
+    $cm{schema}		     = __xt("cmd:schema");
+    $cm{toon}		     = __xt("cmd:toon");
+    $cm{verwijder}	     = __xt("cmd:verwijder");
+
+    # Diversen.
+    $cm{include}	     = __xt("cmd:include");
+    $cm{sql}		     = __xt("cmd:sql");
+
+    $self->{cm} = \%cm;
 }
 
 # ----------------------------------------------------------------------
@@ -141,10 +198,22 @@ sub init_help {
     no strict qw(refs);
     $self->helps(
         grep { ++$uniq{$_} == 1 }
-        map { s/^help_//; $_ }
+        map { s/^help_//; $self->{cm}->{$_}||$_ }
         grep /^help_/,
         map({ %{"$_\::"} } @{"$class\::ISA"}),
         keys  %{"$class\::"});
+}
+
+sub _xtr {
+    my ( $self, $t ) = @_;
+    (my $pfx, $t) = ( $1, $2 ) if $t =~ /^(.*):(.*)/;
+    keys( %{$self->{cm}} );			# reset iteration
+    while ( my ($k, $v) = each %{$self->{cm}} ) {
+	next unless $t eq $v;
+	return $1 if $k =~ /^tg_(.*)/;
+	return $k;
+    }
+    undef;
 }
 
 # ----------------------------------------------------------------------
@@ -164,7 +233,7 @@ sub init_completions {
         sort 
         "help",
         grep { ++$uniq{$_} == 1 }
-        map { s/^(do|pp)_//; $_ }
+        map { s/^(do|pp)_//; $self->{cm}->{$_}||$_ }
         grep /^(do|pp)_/,
         map({ %{"$_\::"} } @{"$class\::ISA"}),
         keys  %{"$class\::"});
@@ -239,7 +308,7 @@ sub run {
             return $self->quit($anyfail?1:0);
         }
         else {
-	    my $meth = "pp_$cmd";
+	    my $meth = "pp_".($self->_xtr("cmd:$cmd")||$cmd);
 	    if ( $self->can($meth) ) {
 		eval {
 		    ($cmd, @args) = $self->$meth($cmd, @args);
@@ -251,7 +320,7 @@ sub run {
 		    next;
 		}
 	    }
-	    $meth = "do_".lc($cmd);
+	    $meth = "do_".($self->_xtr("cmd:".lc($cmd))||$cmd);
 	    if ( $self->can($meth) ) {
 		eval {
 		    # Check warnings for ? (errors).
@@ -282,7 +351,7 @@ sub run {
 		}
 	    }
 	    else {
-		warn("?"._T("Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten.")."\n");
+		warn("?".__x("Onbekende opdracht \"{cmd}\".\n\"help\" geeft een lijst van mogelijke opdrachten.", cmd => $cmd)."\n");
 		undef($output);
 		return $self->quit(1) if $self->{errexit};
 	    }
