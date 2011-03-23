@@ -324,7 +324,7 @@ sub _cmd {
 	return -1;
     }
 
-    if ( $cmd =~ /^(balans|result|proefensaldibalans|journaal|openstaand|(?:deb|cred)iteuren|btwaangifte)(?:\s|$)/ ) {
+    if ( $cmd =~ /^(balans|result|proefensaldibalans|journaal|openstaand|(?:deb|cred)iteuren|grootboek|btwaangifte)(?:\s|$)/ ) {
 	unshift( @args, "--gen-wxhtml" );
     }
 
