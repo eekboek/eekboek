@@ -725,6 +725,7 @@ sub OnWizardFinished {
 		    my $ret;
 		    EB->app_init( { app => $EekBoek::PACKAGE, %opts } );
 		    require EB::Main;
+		    local $::app; # defeat Shell blocking of import command
 		    local @ARGV = qw( --init );
 		    my @msg;
 		    my $out;
