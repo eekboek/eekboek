@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-03-23 21:16+0100\n"
-"PO-Revision-Date: 2011-03-23 21:19+0100\n"
+"PO-Revision-Date: 2011-03-29 20:55+0200\n"
 "Last-Translator: Automatically generated <>\n"
 "Language-Team: none <>\n"
 "Language: \n"
@@ -1132,7 +1132,7 @@ msgstr "scm:revenue account"
 
 #: ../lib/EB/Tools/Schema.pm:150
 msgid "scm:koppeling"
-msgstr "scm:association"
+msgstr "scm:mapping"
 
 #: ../lib/EB/Tools/Schema.pm:151
 msgid "scm:type"
@@ -1227,7 +1227,7 @@ msgstr "Duplicate: group {vrd}"
 #: ../lib/EB/Tools/Schema.pm:327
 #, perl-brace-format
 msgid "Verdichting {vrd} heeft geen hoofdverdichting"
-msgstr "Group {vrd} has no associated master group"
+msgstr "Group {vrd} has no corresponding master group"
 
 #: ../lib/EB/Tools/Schema.pm:332
 #, perl-brace-format
@@ -1252,25 +1252,24 @@ msgstr "Error in VAT specification: {spec}"
 #: ../lib/EB/Tools/Schema.pm:390
 #, perl-brace-format
 msgid "Rekening {id}: onbekende koppeling \"{std}\""
-msgstr "Account {id}: unknown association to \"{std}\""
+msgstr "Account {id}: unknown mapping to \"{std}\""
 
 #: ../lib/EB/Tools/Schema.pm:393
 #, perl-brace-format
 msgid "Rekening {id}: extra koppeling voor \"{std}\""
-msgstr "Account {id}: extra association to \"{std}\""
+msgstr "Account {id}: extra mapping to \"{std}\""
 
 #: ../lib/EB/Tools/Schema.pm:400
 #, perl-brace-format
 msgid "Rekening {id}: BTW koppeling '{ko}' met een {acc} is niet toegestaan"
-msgstr "Account {id}: Associating VAT code '{ko}' with {acc} is not allowed"
+msgstr "Account {id}: Mapping VAT code '{ko}' with {acc} is not allowed"
 
 #: ../lib/EB/Tools/Schema.pm:404
 #, perl-brace-format
 msgid ""
 "Rekening {id}: BTW koppeling met neutrale resultaatrekening is niet "
 "toegestaan"
-msgstr ""
-"Account {id}: Associating a VAT code with a neutral account is not allowed"
+msgstr "Account {id}: Mapping a VAT code with a neutral account is not allowed"
 
 #: ../lib/EB/Tools/Schema.pm:406
 #, perl-brace-format
@@ -1278,7 +1277,7 @@ msgid ""
 "Rekening {id}: BTW koppeling met een balansrekening vereist kosten/omzet "
 "specificatie"
 msgstr ""
-"Account {id}: Associating a VAT code with a balance account requires a KO "
+"Account {id}: Mapping a VAT code with a balance account requires a KO "
 "specification"
 
 #: ../lib/EB/Tools/Schema.pm:497 ../lib/EB/Tools/Schema.pm:502
@@ -1293,7 +1292,7 @@ msgstr ""
 #: ../lib/EB/Tools/Schema.pm:530
 #, perl-brace-format
 msgid "Dagboek {id} heeft geen tegenrekening"
-msgstr "Account {id} has no associated account"
+msgstr "Account {id} has no contra account"
 
 #: ../lib/EB/Tools/Schema.pm:551
 #, perl-brace-format
@@ -1661,7 +1660,7 @@ msgstr "Unsettled postings have not been specified"
 msgid ""
 "Er zijn openstaande posten opgegeven, maar geen corresponderende balansposten"
 msgstr ""
-"There are open postings, but no associated balance accounts have been "
+"There are open postings, but no corresponding balance accounts have been "
 "specified"
 
 #: ../lib/EB/Tools/Opening.pm:342
@@ -3785,11 +3784,11 @@ msgstr "A description of this administration, for example \"Accounting 2009\"."
 
 #: ../lib/EB/Wx/IniWiz.pm:293
 msgid ""
-"Een korte, unieke aanduiding van deze administratie, bijvoorbeeld "
-"\"admin2009\"."
+"Een korte, unieke aanduiding van deze administratie, bijvoorbeeld \"admin2009"
+"\"."
 msgstr ""
-"A concise, unique description of this administration, for example "
-"\"admin2009\"."
+"A concise, unique description of this administration, for example \"admin2009"
+"\"."
 
 #: ../lib/EB/Wx/IniWiz.pm:294
 msgid "De begindatum. Het boekjaar begint op 1 januari van dit jaar."
