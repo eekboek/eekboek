@@ -32,45 +32,46 @@
 #   :btw=privé
 #   :btw=anders
 #
-# Ook is het mogelijk aan te geven dat een rekening een koppeling
-# (speciale betekenis) heeft met :koppeling=xxx. De volgende koppelingen
-# zijn mogelijk:
+# It is also possible to specify that an account has a specific meaning 
+# or a mapping through the use of :mapping=xxx. The following mappings
+# are allowed:
 #
-#   crd		de standaard tegenrekening (Crediteuren) voor inkoopboekingen
-#   deb		de standaard tegenrekening (Debiteuren) voor verkoopboekingen
-#   btw_ih	de rekening voor BTW boekingen voor inkopen, hoog tarief
-#   btw_il	idem, laag tarief
-#   btw_vh	idem, verkopen, hoog tarief
-#   btw_vl	idem, laag tarief
-#   btw_ph	idem, privé, hoog tarief
-#   btw_pl	idem, laag tarief
-#   btw_ah	idem, anders, hoog tarief
-#   btw_al	idem, laag tarief
-#   btw_ok	rekening voor de betaalde BTW
-#   winst	rekening waarop de winst wordt geboekt
+#   crd		the standard contra account (Accounts payable) for purchases
+#   deb		the standard contra account (Accounts receivable) for sales
+#   btw_ih	the account for VAT Bookings for purchases, high tariff
+#   btw_il	idem, low tarif
+#   btw_vh	idem, sales, high tariff
+#   btw_vl	idem, low tariff
+#   btw_ph	idem, private, high tariff
+#   btw_pl	idem, low tariff
+#   btw_ah	idem, other, high tariff
+#   btw_al	idem, low tariff
+#   btw_ok	account for the VAT which has been paid
+#   winst	account to which the profit is booked
 #
-# De koppeling winst is verplicht en moet altijd in een administratie
-# voorkomen in verband met de jaarafsluiting.
-# De koppelingen voor BTW moeten worden opgegeven indien BTW
-# van toepassing is op de administratie.
-# De koppelingen voor Crediteuren en Debiteuren moeten worden
-# opgegeven indien er inkoop dan wel verkoopdagboeken zijn die gebruik
-# maken van de standaardwaarden (dus zelf geen tegenrekening hebben
-# opgegeven).
+# The mapping to "winst" is mandatory and must be present in an 
+# administration for the year end close.
+# The mappings for VAT must be specified in case VAT is applicable
+# for the administration.
+# The mappings for Accounts payable and Accounts receivable must
+# be specified in case purchase and sales daybooks are used, which
+# use the standard values (in other words, do not have a contra
+# account).
 
-# Normaal lopen hoofdverdichtingen van 1 t/m 9, en verdichtingen
-# van 10 t/m 99. Indien daarvan wordt afgeweken kan dit worden opgegeven
-# met de opdracht "Verdichting". De twee getallen geven het hoogste
-# nummer voor hoofdverdichtingen resp. verdichtingen.
+# Normally the master groups run from 1 to 9 and the groupings from 10 
+# to 99. In case an accounting scheme must be used that does not conform 
+# to this setup, the command Grouping can be used to specify the maximum 
+# allowable master group number and maximum allowable grouping number.
 
 Grouping 9 99
 
-# De nummers van de grootboekrekeningen worden geacht groter te zijn
-# dan de maximale verdichting. Daarvan kan worden afgeweken door
-# middels voorloopnullen de _lengte_ van het nummer groter te maken
-# dan de lengte van de maximale verdichting. Als bijvoorbeeld 99 de
-# maximale verdichting is, dan geeft 001 een grootboekrekening met
-# nummer 1 aan.
+# The numbers of the general ledger accounts are normally larger than the
+# maximum number of the grouping account. In case an accounting scheme must 
+# be used that does not conform to this setup, then zeroes can be prepended
+# to increase the length of the number, thereby making it longer than the 
+# length of the maximum number of the master group account. 
+# If for instance 99 is the maximum grouping, then 001 would be the general 
+# ledger account with number 1.
 
 Balance Accounts
 
@@ -190,19 +191,19 @@ Result Accounts
 	 9380  O   Bijtelling privégebruik auto		      :vat=private,excl
          9390  O   Kleine ondernemersregeling
 
-# DAGBOEKEN
+# DAYBOOKS
 #
-# EekBoek ondersteunt vijf soorten dagboeken: Kas, Bank, Inkoop,
-# Verkoop en Memoriaal. Er kunnen een in principe onbeperkt aantal
-# dagboeken worden aangemaakt.
-# In de eerste kolom wordt de korte naam (code) voor het dagboek
-# opgegeven. Verder moet voor elk dagboek worden opgegeven van welk
-# type het is. Voor dagboeken van het type Kas en Bank moet een
-# tegenrekening worden opgegeven, voor de overige dagboeken mag een
-# tegenrekening worden opgegeven.
-# De optie :dc kan worden gebruikt om aan te geven dat het journaal
-# voor dit dagboek de boekstuktotalen in gescheiden debet en credit
-# moet tonen.
+# EekBoek supports five types of daybooks: Cash, Bank, Purchases,
+# Sales and Memorial. The number of daybooks that can be created 
+# is unlimited.
+# The first column shows the short name (code) for the daybook
+# specified. Furthermore, for each journal must be specified from which
+# type it is. Daybooks for the type of Kas or Bank, must be specified with
+# a contra account, for the other daybooks a contra account is optional.
+#
+# The option :dc can be used to indicate that the journals
+# for this daybook have the totals of the debits and credits
+# displayed separately.
 
 Daybooks
 
