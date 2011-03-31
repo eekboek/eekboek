@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar 12 22:20:16 2011
-# Update Count    : 1004
+# Last Modified On: Thu Mar 31 21:28:13 2011
+# Update Count    : 1006
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -50,7 +50,7 @@ sub run {
 	#title,				# title for export
 	errexit	      => 0,		# disallow errors in batch
 	verbose	      => 0,		# verbose processing
-	#bky,				# boekjaar
+	#boekjaar,			# boekjaar
 
 	# Development options (not shown with -help).
 	debug	     => 0,		# debugging
@@ -149,7 +149,7 @@ sub run {
 	 journal	   => $cfg->val(qw(preferences journal), 0),
 	 echo		   => $opts->{echo},
 	 prompt		   => lc($cfg->app),
-	 boekjaar	   => $opts->{bky},
+	 boekjaar	   => $opts->{boekjaar},
        });
 
     $| = 1;
