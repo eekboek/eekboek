@@ -93,6 +93,7 @@ sub new {
 	use constant MENU_REP_AP => Wx::NewId();
 	use constant MENU_REP_AR => Wx::NewId();
 	use constant MENU_REP_VAT => Wx::NewId();
+	use constant MENU_HELP_SUPPORT => Wx::NewId();
 
 # begin wxGlade: EB::Wx::Shell::MainFrame::new
 
@@ -149,6 +150,7 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_REP_VAT, \&OnMenuVAT);
 
 	Wx::Event::EVT_MENU($self, wxID_HELP,  \&OnHelp);
+	Wx::Event::EVT_MENU($self, MENU_HELP_SUPPORT, \&OnSupport);
 	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
 
 	#### End of MenuBar
@@ -221,6 +223,9 @@ sub __set_menubar {
 	$self->{_T("menubar")}->Append($self->{_T("Reports")}, _T("&Reports"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_HELP, _T("&Help..."), "");
+	$wxglade_tmp_menu->AppendSeparator();
+	$wxglade_tmp_menu->Append(MENU_HELP_SUPPORT, _T("&Support..."), "");
+	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("&About..."), "");
 	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&Help"));
 	$self->SetMenuBar($self->{menubar});
@@ -677,6 +682,36 @@ sub OnAbout {
 # end wxGlade
 }
 
+sub OnSupport {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::Shell::MainFrame::OnSupport <event_handler>
+
+    my $title = _T("Support");
+    my $md = EB::Wx::Shell::HtmlViewer->new($self, -1, $title);
+    $md->info_only;
+    $md->html->SetPage(_T(<<EOD));
+<p>For support questions you can subscribe to the mailing list for
+<font color='#C81900'>EekBoek</font> users: <a
+href="http://lists.sourceforge.net/lists/listinfo/eekboek-users">SourceForge</a>.</p>
+
+<p>The <font color='#C81900'>EekBoek</font> users maintain a  <a
+href="http://wiki.eekboek.nl/" target="_blank">een wiki</a> where they share experienes, tips and techniques, and so on.</p>
+
+<p><font color='#C81900'>EekBoek</font> can be downloaded and used for free.
+If you have additional wishes for features or support you can contact
+<a href="http://www.squirrel.nl/nl/index.html"
+target="_blank">Squirrel Consultancy</a> for commercial support, for example, to help you 
+migrating your current administration to <font color='#C81900'>EekBoek</font>.
+Also they can implement custom features and extensions according to your demands.</p>
+<p>For more information:  <a
+href="mailto:info\@squirrel.nl">info\@squirrel.nl</a>.</p>
+EOD
+    $md->SetTitle($title);
+    $md->ShowModal;
+    $md->Destroy;
+
+# end wxGlade
+}
 
 sub OnClear {
 	my ($self, $event) = @_;

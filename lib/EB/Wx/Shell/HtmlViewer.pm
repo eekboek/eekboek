@@ -53,6 +53,12 @@ sub new {
 
 }
 
+sub info_only {
+    my ( $self ) = @_;
+    $self->{b_print}->Hide;
+    $self->{b_save}->Hide;
+}
+
 sub html     { $_[0]->{p_htmlview}  }
 sub htmltext :lvalue { $_[0]->{_HTMLTEXT} }
 sub printer  { $_[0]->{_PRINTER}  }
@@ -142,6 +148,9 @@ sub OnLinkClicked {
 	    }
 	}
 	$rep->($self->GetParent->GetParent, $args);
+    }
+    elsif ( $link =~ m;^(https?|mailto):; ) {
+	Wx::LaunchDefaultBrowser($link);
     }
     else {
 	Wx::LogMessage('Link: "%s"', $1);
