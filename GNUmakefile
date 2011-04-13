@@ -29,12 +29,12 @@ PODIR := locale
 locales :
 	for locale in $(LOCALES); \
 	do \
-	  test -d $(MODIR)/$$locale/LC_MESSAGES || mkdir -p $(MODIR)/$$locale/LC_MESSAGES; \
+	  test -d $(MODIR)/$$locale || mkdir -p $(MODIR)/$$locale; \
 	done
-	msgfmt -c -v -o $(MODIR)/nl/LC_MESSAGES/ebwxshell.mo $(PODIR)/ebwxshell-nl.po
+	msgfmt -c -v -o $(MODIR)/nl/ebwxshell.mo $(PODIR)/ebwxshell-nl.po
 
-# Generate lib/EB/res/templates/foo.ebz out of lib/EB/examples/foo.dat.
-# Generate lib/EB/res/templates/sampledb.ebz.
+# Generate lib/EB/schema/foo.ebz out of lib/EB/examples/foo.dat.
+# Generate lib/EB/schema/sampledb.ebz.
 
 schemas :
 	rm -fr tmp && mkdir tmp && cd tmp; \
