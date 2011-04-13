@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-my $RCS_Id = '$Id: exirel.pl,v 1.11 2006/01/31 18:53:16 jv Exp $ ';
+my $RCS_Id = '$Id$ ';
 
 # Author          : Johan Vromans
 # Created On      : Fri Jun 17 21:31:52 2005
@@ -22,7 +22,7 @@ my $my_package = 'EekBoek';
 # Program name and version.
 my ($my_name, $my_version) = $RCS_Id =~ /: (.+).pl,v ([\d.]+)/;
 # Tack '*' if it is not checked in into RCS.
-$my_version .= '*' if length('$Locker:  $ ') > 12;
+$my_version .= '*' if length('$Locker$ ') > 12;
 
 ################ Command line parameters ################
 

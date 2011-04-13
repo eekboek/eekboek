@@ -1,5 +1,5 @@
 # Makefile.PL -- Build file for EekBoek
-# RCS Info        : $Id: Makefile.PL,v 1.17 2008/09/09 19:16:33 jv Exp $
+# RCS Info        : $Id$
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans

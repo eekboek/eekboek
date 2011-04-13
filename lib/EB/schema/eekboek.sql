@@ -1,5 +1,5 @@
 -- EekBoek Database Schema			-*- coding: utf-8 -*-
--- $Id: eekboek.sql,v 1.37 2009/10/14 21:14:01 jv Exp $
+-- $Id$
 
 -- Constanten. Deze worden gegenereerd door de EB::Globals module.
 CREATE TABLE Constants (

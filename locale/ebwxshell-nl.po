@@ -1,0 +1,262 @@
+# Dutch translations for PACKAGE package.
+# Copyright (C) 2007 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: EekBoek/WxShell 0.01\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-02-23 12:17+0100\n"
+"PO-Revision-Date: 2010-02-23 12:13+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../lib/EB/Wx/Shell/HtmlViewer.pm:65
+msgid "HTML View"
+msgstr "HTML Uitvoer"
+
+#: ../lib/EB/Wx/Shell/HtmlViewer.pm:104
+msgid "Save as..."
+msgstr "Opslaan als..."
+
+#: ../lib/EB/Wx/Shell/HtmlViewer.pm:105
+msgid "report.html"
+msgstr "rapport.html"
+
+#: ../lib/EB/Wx/Shell/HtmlViewer.pm:106
+msgid "HTML files (*.html)|*.html"
+msgstr "HTML bestanden (*.html)|*.html"
+
+#: ../lib/EB/Wx/Shell/EditDialog.pm:55
+msgid "Edit Input Line"
+msgstr "Wijzigen invoerregel"
+
+#: ../lib/EB/Wx/Shell/Main.pm:212
+#, perl-brace-format
+msgid "This is {pkg} [{name} {version}]"
+msgstr "Dit is {pkg} [{name} {version}]"
+
+#: ../lib/EB/Wx/Shell/PreferencesDialog.pm:31
+#: ../lib/EB/Wx/Shell/PreferencesDialog.pm:58
+msgid "Preferences"
+msgstr "Instellingen"
+
+#: ../lib/EB/Wx/Shell/PreferencesDialog.pm:32
+msgid "Single window for reports"
+msgstr "Rapporten in hetzelfde venster"
+
+#: ../lib/EB/Wx/Shell/PreferencesDialog.pm:33
+msgid "Popup window for errors"
+msgstr "Popup window voor foutboodschappen"
+
+#: ../lib/EB/Wx/Shell/PreferencesDialog.pm:34
+msgid "Popup window for warnings"
+msgstr "Popup window voor waarschuwingen"
+
+#: ../lib/EB/Wx/Shell/PreferencesDialog.pm:35
+msgid "Popup window for informational messages"
+msgstr "Popup window voor mededelingen"
+
+#: ../lib/EB/Wx/Shell/PreferencesDialog.pm:36
+msgid "Number of input lines to keep in history:"
+msgstr "Aantal te bewaren regels invoer historie"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:76
+msgid "Input"
+msgstr "Invoer"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:114
+msgid "&Open\tCtrl-O"
+msgstr "&Open\tCtrl-O"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:116
+msgid "Prefere&nces..."
+msgstr "I&nstellingen"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:118
+msgid "E&xit\tCtrl-Q"
+msgstr "Afsluiten\tCtrl-Q"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:119 ../lib/EB/Wx/Shell/MainFrame.pm:125
+#: ../lib/EB/Wx/Shell/MainFrame.pm:151 ../lib/EB/Wx/Shell/MainFrame.pm:154
+msgid "menubar"
+msgstr "menubar"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:119
+msgid "&File"
+msgstr "&Bestand"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:121
+msgid "&Edit input line\tCtrl+Enter"
+msgstr "&Edit invoerregel\tCtrl+Enter"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:122
+msgid "E&xecute input line\tEnter"
+msgstr "&Uitvoeren opdracht\tEnter"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:124
+msgid "&Clear output"
+msgstr "Uitvoer schoonmaken"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:125
+msgid "&Edit"
+msgstr "B&ewerken"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:126 ../lib/EB/Wx/Shell/MainFrame.pm:127
+#: ../lib/EB/Wx/Shell/MainFrame.pm:134 ../lib/EB/Wx/Shell/MainFrame.pm:141
+#: ../lib/EB/Wx/Shell/MainFrame.pm:142 ../lib/EB/Wx/Shell/MainFrame.pm:143
+#: ../lib/EB/Wx/Shell/MainFrame.pm:144 ../lib/EB/Wx/Shell/MainFrame.pm:145
+#: ../lib/EB/Wx/Shell/MainFrame.pm:146 ../lib/EB/Wx/Shell/MainFrame.pm:147
+#: ../lib/EB/Wx/Shell/MainFrame.pm:148 ../lib/EB/Wx/Shell/MainFrame.pm:149
+#: ../lib/EB/Wx/Shell/MainFrame.pm:150 ../lib/EB/Wx/Shell/MainFrame.pm:151
+msgid "Reports"
+msgstr "&Rapporten"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:127
+msgid "Trial"
+msgstr "Proef- en Saldibalans"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:128 ../lib/EB/Wx/Shell/MainFrame.pm:129
+#: ../lib/EB/Wx/Shell/MainFrame.pm:130 ../lib/EB/Wx/Shell/MainFrame.pm:131
+#: ../lib/EB/Wx/Shell/MainFrame.pm:132 ../lib/EB/Wx/Shell/MainFrame.pm:133
+#: ../lib/EB/Wx/Shell/MainFrame.pm:134
+msgid "Reports_bal"
+msgstr "BalansRapporten"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:129 ../lib/EB/Wx/Shell/MainFrame.pm:136
+msgid "By account"
+msgstr "Op grootboekrekening"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:131 ../lib/EB/Wx/Shell/MainFrame.pm:138
+msgid "By master group"
+msgstr "Op hoofdverdichting"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:132 ../lib/EB/Wx/Shell/MainFrame.pm:139
+msgid "By group"
+msgstr "Op verdichting"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:133 ../lib/EB/Wx/Shell/MainFrame.pm:140
+msgid "Detailed"
+msgstr "Gedetailleerd"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:134
+msgid "Balance"
+msgstr "Balans"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:135 ../lib/EB/Wx/Shell/MainFrame.pm:136
+#: ../lib/EB/Wx/Shell/MainFrame.pm:137 ../lib/EB/Wx/Shell/MainFrame.pm:138
+#: ../lib/EB/Wx/Shell/MainFrame.pm:139 ../lib/EB/Wx/Shell/MainFrame.pm:140
+#: ../lib/EB/Wx/Shell/MainFrame.pm:141
+msgid "Reports_res"
+msgstr "ResultaatRapporten"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:141
+msgid "Results"
+msgstr "Verlies/Winst"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:143
+msgid "Journal"
+msgstr "Journaal"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:145
+msgid "Unsettled Accounts"
+msgstr "Openstaande posten"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:147
+msgid "Accounts Payable"
+msgstr "Crediteuren"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:148
+msgid "Accounts Receivable"
+msgstr "Debiteuren"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:150
+msgid "VAT Report"
+msgstr "BTW Aangifte"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:151
+msgid "&Reports"
+msgstr "&Rapporten"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:153
+msgid "&About..."
+msgstr "&Over..."
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:154
+msgid "&Help"
+msgstr "&Hulp"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:220
+msgid "EekBoek"
+msgstr "EekBoek"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:272
+msgid "Please select a valid .eekboek.conf first"
+msgstr "Selecteer eerst een geldige .eekboek.conf"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:273
+msgid "Missing config"
+msgstr "Geen configuratie"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:364
+msgid "EekBoek program has finished"
+msgstr "EekBoek programma is geëindigd"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:365
+msgid "Finished"
+msgstr "Beëindigd"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:387
+msgid "Error"
+msgstr "Fout"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:392
+msgid "Warning"
+msgstr "Waarschuwing"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:397
+msgid "Information"
+msgstr "Mededeling"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:465
+msgid "Choose"
+msgstr "Kies"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:566
+#, perl-brace-format
+msgid "{pkg} {app} version {ver}"
+msgstr "{pkg} {app} versie {ver}"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:571
+#, perl-brace-format
+msgid "Written by {author}"
+msgstr "Geschreven door {author}"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:575
+#, perl-brace-format
+msgid "Support: {url}"
+msgstr "Voor ondersteuning: {url}"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:578
+#, perl-brace-format
+msgid "GUI design with {wxglade}"
+msgstr "GUI ontwerp met {wxglade}"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:580 ../lib/EB/Wx/Shell/MainFrame.pm:583
+#: ../lib/EB/Wx/Shell/MainFrame.pm:586
+#, perl-brace-format
+msgid "{pkg} version {ver}"
+msgstr "{pkg} versie {ver}"
+
+#: ../lib/EB/Wx/Shell/MainFrame.pm:589
+#, perl-brace-format
+msgid "About {pkg} {app}"
+msgstr "Over {pkg} {app}"
+
+#~ msgid "Bugs: {bugs}"
+#~ msgstr "Fouten rapporteren: {bugs}"

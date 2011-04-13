@@ -1,4 +1,4 @@
-# $Id: 80_db_postgresql.t,v 1.7 2008/02/27 09:54:47 jv Exp $  -*-perl-*-
+# $Id: 80_postgresql.t,v 1.7 2008/02/27 09:54:47 jv Exp $  -*-perl-*-
 
 use strict;
 use warnings;
