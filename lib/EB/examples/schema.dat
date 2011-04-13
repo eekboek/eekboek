@@ -187,7 +187,7 @@ Resultaatrekeningen
          9230  K   Rente last Postbank Inbedrijf
          9290  K   Rente last overige
      93  Overige baten
-	 9380  O   Bijtelling privégebruik auto		      :btw=privé
+	 9380  O   Bijtelling privégebruik auto		      :btw=privé,excl
          9390  O   Kleine ondernemersregeling
 
 # DAGBOEKEN
@@ -237,6 +237,7 @@ BTW Tarieven
    2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief
    3  BTW 6,0% incl.         :tariefgroep=laag :perc=6,00
    4  BTW 6,0% excl.         :tariefgroep=laag :perc=6,00 :exclusief
-   5  BTW Privé 12% ex.	     :tariefgroep=privé :perc=12,00 :exclusief
+   5  BTW Privé 12% incl.    :tariefgroep=privé :perc=12,00
+   6  BTW Privé 12% excl.    :tariefgroep=privé :perc=12,00 :exclusief
 
 # Einde EekBoek schema

@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 25 18:36:12 2010
-# Update Count    : 774
+# Last Modified On: Tue Mar 22 20:25:37 2011
+# Update Count    : 775
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -591,7 +591,7 @@ ESQL
 	my $g = $acc{$i};
 	croak(__x("Geen BTW tariefgroep voor code {code}",
 		  code => $g->[5]))
-	  unless exists $btwmap{$g->[5]} || exists $btwmap{$g->[5]."-"};
+	  unless exists $btwmap{$g->[5]};
 	$out .= _tsv($i, $g->[0], $g->[1],
 		     _tf($g->[2]),
 		     _tf($g->[3]),

@@ -30,7 +30,7 @@ if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
 check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/schema/eekboek.sql" );
 
 require EekBoek;
-check_version( "EekBoek", $EekBoek::VERSION, "2.00.00" );
+check_version( "EekBoek", $EekBoek::VERSION, "2.00.03" );
 
 require EB::Main;
 EB::Main->run;

@@ -12,7 +12,7 @@ use 5.008003;
 
 my $RCS_Id = '$Id: EekBoek.pm,v 1.101 2010/05/06 10:03:08 jv Exp $ ';
 our $PACKAGE = 'EekBoek';
-our $VERSION = '2.00.02';
+our $VERSION = '2.00.03';
 
 =head1 NAME
 
@@ -45,7 +45,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2010 by Squirrel Consultancy. All
+This program is Copyright 2005-2011 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify
