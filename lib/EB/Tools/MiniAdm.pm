@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 13:25:54 2011
-# Update Count    : 110
+# Last Modified On: Fri May  6 13:44:19 2011
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -480,7 +480,8 @@ BTW Tarieven
    2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief
    3  BTW 6,0% incl.         :tariefgroep=laag :perc=6,00
    4  BTW 6,0% excl.         :tariefgroep=laag :perc=6,00 :exclusief
-   5  BTW Privé 12% ex.	     :tariefgroep=privé :perc=12,00 :exclusief
+   5  BTW Privé 12% incl.    :tariefgroep=privé :perc=12,00
+   6  BTW Privé 12% ex.	     :tariefgroep=privé :perc=12,00 :exclusief
 EOD
 	    }
 	    print { $fd } ( <<"EOD" );
