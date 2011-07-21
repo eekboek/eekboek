@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 23 21:09:43 2011
-# Update Count    : 145
+# Last Modified On: Thu Jul 21 20:28:33 2011
+# Update Count    : 166
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -472,22 +472,31 @@ sub _add {
 sub do_journaal {
     my ($self, @args) = @_;
     my $b = $bsk;
-    my $opts = { detail       => 1,
+    my $opts = { _cmd         => "journaal",
+		 detail       => 1,
 		 d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
-
     require EB::Report::Journal;
     require EB::Report::GenBase;
 
+    if ( 0 ) {			# force translating
+	N__"cmo:journaal:detail|details";
+	N__"cmo:journaal:nodetail|nodetails";
+	N__"cmo:journaal:totaal";
+	N__"cmo:journaal:boekjaar";
+	N__"cmo:journaal:periode";
+    }
+
     return unless
-    parse_args(\@args,
-	       [ 'detail!',
+    parse_args2(\@args,
+	       [ 'detail|details!',
 		 'totaal' => sub { $opts->{detail} = 0 },
 		 'boekjaar=s',
 		 'periode=s' => sub { periode_arg($opts, @_) },
 		 EB::Report::GenBase->backend_options(EB::Report::Journal::, $opts),
 	       ], $opts);
 
+    # print STDERR Dumper($opts), "\n";
     $b = shift(@args) if @args;
     undef $b if $b && lc($b) eq "all";
     $opts->{select} = $b;
@@ -1427,6 +1436,103 @@ sub parse_args {
     Getopt::Long::Configure("prefix_pattern=--");
     my $ret = GetOptions($opts, @$ctl);
     $ret;
+}
+
+sub parse_args2 {
+    my ( $argv, $c, $opts ) = @_;
+    my @resarg;
+    my $ok = -1;
+    my $pfx = "cmo:" . $opts->{_cmd} . ":";
+
+    my @ctl = @$c;
+    my %ctl;
+    while ( my $ctl = shift(@ctl) ) {
+	my $dest;
+	my $needvalue = 0;
+	my $negate = 0;
+	if ( $ctl =~ /^(.*)=[is]$/ ) {
+	    $ctl = $1;
+	    $needvalue = 1;
+	}
+	elsif ( $ctl =~ /^(.*)!$/ ) {
+	    $ctl = $1;
+	    $negate = 1;
+	}
+	foreach ( split( /\|/, $ctl ) ) {
+	    $dest ||= @ctl && ref($ctl[0]) ? shift(@ctl) : \($opts->{$_});
+	    die("?".__x("Ongeldige optiespecificatie \"{opt}\"",
+			 opt => $ctl), "\n"), return -1
+	      unless /^[-\w]+$/;
+	    $ctl{__xt($pfx.$_)} = [ $dest, $needvalue ];
+	    $ctl{__xt($pfx."no".$_)} = [ $dest, -1 ] if $negate;
+	}
+    }
+    # print STDERR Dumper(\%ctl), "\n";
+
+    my $i = 0;
+    while ( $i < @$argv ) {
+	my $opt = $argv->[$i++];
+	unless ( $opt =~ /^--(.+)/ ) {
+	    push( @resarg, $opt );
+	    next;
+	}
+	$opt = $1;
+	my $has_value;
+	if ( $opt =~ /^(.*?)=(.*)/ ) {
+	    $opt = $1;
+	    $has_value = $2;
+	}
+	my $ctl;
+	unless ( $ctl = $ctl{$opt} ) {
+	    die("?".__x("Onbekende optie: \"{opt}\"", opt => $opt)."\n");
+	    $ok = 0;
+	    next;
+	}
+	my $value = 1;
+	if ( $ctl->[1] < 0 ) {	# negate
+	    $value = 0;
+	}
+	elsif ( $ctl->[1] > 0 ) {	# need value
+	    if ( defined $has_value ) {
+		$value = $has_value;
+	    }
+	    elsif ( $i < @$argv && $argv->[$i] !~ /^--/ ) {
+		$value = $argv->[$i++];
+	    }
+	    else {
+		die("?".__x("Optie \"{opt}\" moet een waarde krijgen.", opt => $opt), "\n");
+		$ok = 0;
+		next;
+	    }
+	}
+	elsif ( defined $has_value ) {
+	    die("?".__x("Optie \"{opt}\" neemt geen waarde.", opt => $opt), "\n");
+	    $ok = 0;
+	    next;
+	}
+	my $dest = $ctl->[0];
+	if ( ref($dest) eq 'SCALAR' ) {
+	    $$dest = $value;
+	}
+	elsif ( ref($dest) eq 'CODE' ) {
+	    $dest->( $opt, $value );
+	}
+	else {
+	    die("?".__x("Optie \"{opt}\" oeps {ref}.",
+			 opt => $opt, ref => $dest), "\n");
+	    $ok = 0;
+	}
+    }
+
+    # Copy remaining arguments.
+    @$argv = @resarg;
+
+    # Weed out undefined entries in $opts.
+    while ( my($k,$v) = each(%$opts) ) {
+	delete $opts->{$k} unless defined $v;
+    }
+
+    return $ok;
 }
 
 sub periode_arg {

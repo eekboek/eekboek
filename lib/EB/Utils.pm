@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Wed Sep 21 13:09:01 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 23 17:31:26 2011
-# Update Count    : 108
+# Last Modified On: Wed Mar 30 13:25:32 2011
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 package EB::Utils;
@@ -246,12 +246,20 @@ sub N__($) { $_[0] };
 # This is for context sensitive translations, where e.g., cmd:btw
 # translates to cmd:vat and we deliver need the part after the colon.
 sub __xt {
-    my $t = _T(shift);
+    my $t = _T($_[0]);
     $t =~ s/^.*://;
     $t;
 }
 
-push( @EXPORT, qw( __x __n __nx __xn N__ __xt )  );
+# Same, without translating.
+# Basically, __xt is __XN(_T($_[0])).
+sub __XN {
+    my $t = $_[0];
+    $t =~ s/^.*://;
+    $t;
+}
+
+push( @EXPORT, qw( __x __n __nx __xn N__ __xt __XN )  );
 
 # ... more to come ...
 

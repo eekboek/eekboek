@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 23 17:23:12 2011
-# Update Count    : 862
+# Last Modified On: Tue Apr  5 15:04:05 2011
+# Update Count    : 865
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -104,6 +104,8 @@ sub init_vars {
 
 sub init_kmap {
     %km = ();
+
+    ####FIXME: Use N__ and __XN and friends.
 
     # BTW tariefgroepen.
     $km{tg_hoog}	 = __xt("scm:tg:hoog");

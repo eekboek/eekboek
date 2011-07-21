@@ -78,50 +78,51 @@ sub new {
 sub init_cm {
     my ($self, $args) = @_;
 
-    my %cm;
+    # See EB::Utils for __XN, __xt and N__ .
+    my %cm = map { __XN($_) => __xt($_) }
+	# Opening.
+	N__("cmd:adm_balans"),
+	N__("cmd:adm_balanstotaal"),
+	N__("cmd:adm_begindatum"),
+	N__("cmd:adm_boekjaarcode"),
+	N__("cmd:adm_btwperiode"),
+	N__("cmd:adm_naam"),
+	N__("cmd:adm_open"),
+	N__("cmd:adm_relatie"),
 
-    # Opening.
-    $cm{adm_balans}	     = __xt("cmd:adm_balans");
-    $cm{adm_balanstotaal}    = __xt("cmd:adm_balanstotaal");
-    $cm{adm_begindatum}	     = __xt("cmd:adm_begindatum");
-    $cm{adm_boekjaarcode}    = __xt("cmd:adm_boekjaarcode");
-    $cm{adm_btwperiode}	     = __xt("cmd:adm_btwperiode");
-    $cm{adm_naam}	     = __xt("cmd:adm_naam");
-    $cm{adm_open}	     = __xt("cmd:adm_open");
-    $cm{adm_relatie}	     = __xt("cmd:adm_relatie");
+	# Globale settings.
+	N__("cmd:boekjaar"),
 
-    # Globale settings.
-    $cm{boekjaar}	     = __xt("cmd:boekjaar");
+	# Rapporten.
+	N__("cmd:balans"),
+	N__("cmd:btwaangifte"),
+	N__("cmd:crediteuren"),
+	N__("cmd:debiteuren"),
+	N__("cmd:grootboek"),
+	N__("cmd:journaal"),
+	N__("cmd:openstaand"),
+	N__("cmd:proefensaldibalans"),
+	N__("cmd:result"),
 
-    # Rapporten.
-    $cm{balans}		     = __xt("cmd:balans");
-    $cm{btwaangifte}	     = __xt("cmd:btwaangifte");
-    $cm{crediteuren}	     = __xt("cmd:crediteuren");
-    $cm{debiteuren}	     = __xt("cmd:debiteuren");
-    $cm{grootboek}	     = __xt("cmd:grootboek");
-    $cm{journaal}	     = __xt("cmd:journaal");
-    $cm{openstaand}	     = __xt("cmd:openstaand");
-    $cm{proefensaldibalans}  = __xt("cmd:proefensaldibalans");
-    $cm{result}		     = __xt("cmd:result");
+	# Informatie.
+	N__("cmd:dagboeken"),
+	N__("cmd:database"),
+	N__("cmd:periodes"),
+	N__("cmd:rapporten"),
 
-    # Informatie.
-    $cm{dagboeken}	     = __xt("cmd:dagboeken");
-    $cm{database}	     = __xt("cmd:database");
-    $cm{periodes}	     = __xt("cmd:periodes");
-    $cm{rapporten}	     = __xt("cmd:rapporten");
+	# Bewerkingen.
+	N__("cmd:export"),
+	N__("cmd:import"),
+	N__("cmd:jaareinde"),
+	N__("cmd:relatie"),
+	N__("cmd:schema"),
+	N__("cmd:toon"),
+	N__("cmd:verwijder"),
 
-    # Bewerkingen.
-    $cm{export}		     = __xt("cmd:export");
-    $cm{import}		     = __xt("cmd:import");
-    $cm{jaareinde}	     = __xt("cmd:jaareinde");
-    $cm{relatie}	     = __xt("cmd:relatie");
-    $cm{schema}		     = __xt("cmd:schema");
-    $cm{toon}		     = __xt("cmd:toon");
-    $cm{verwijder}	     = __xt("cmd:verwijder");
-
-    # Diversen.
-    $cm{include}	     = __xt("cmd:include");
-    $cm{sql}		     = __xt("cmd:sql");
+	# Diversen.
+	N__("cmd:include"),
+	N__("cmd:sql"),
+	;
 
     $self->{cm} = \%cm;
 }
