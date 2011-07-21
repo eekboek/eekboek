@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:26:28 2010
-# Update Count    : 308
+# Last Modified On: Thu Jul 21 20:44:33 2011
+# Update Count    : 309
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -153,6 +153,7 @@ sub perform {
 	return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
 	  unless @$args >= 2;
 	my ($desc, $amt, $acct) = splice(@$args, 0, 3);
+	my $bsr_ref;
 	$desc = $gdesc if $desc !~ /\S/;
 	$gdesc = $desc if $gdesc !~ /\S/;
 	$acct ||= $rel_acc_id;
@@ -274,11 +275,11 @@ sub perform {
 	$dbh->sql_insert("Boekstukregels",
 			 [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 			     bsr_btw_id bsr_btw_acc bsr_btw_class bsr_type bsr_acc_id
-			     bsr_rel_code bsr_dbk_id)],
+			     bsr_rel_code bsr_dbk_id bsr_ref)],
 			 $nr++, $date, $bsk_id, $desc, $amt,
 			 $btw_id, $btw_acc,
 			 BTWKLASSE($does_btw ? defined($kstomz) : 0, $rel_btw, defined($kstomz) ? $kstomz : $iv),
-			 0, $acct, $debcode, $dagboek);
+			 0, $acct, $debcode, $dagboek, $bsr_ref);
     }
 
     my $ret = $self->journalise($bsk_id, $iv, $totaal);

@@ -1,5 +1,7 @@
 2.01.00
 
+	>>> Nieuwe database versie; auto-migratie beschikbaar <<<
+
 	* Interne cleanups en rework voor de EekBoek API.
 
 	* Localisatie cleanup. Alle componenten gedragen zich nu
@@ -16,6 +18,10 @@
 
 	* Packaging met Cava Packager en Windows installer met
           InnoSetup.
+
+	* Fix bug #3374176.
+	  BELANGRIJK: Administraties die last hebben van deze bug
+	  moeten opnieuw worden aangemaakt.
 
 2.00.02
 

@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 200
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:30:47 2010
-# Update Count    : 101
+# Last Modified On: Thu Jul 21 20:58:57 2011
+# Update Count    : 102
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -47,7 +47,7 @@ sub N__($) { $_[0] }
 
 _newconst("SCM_MAJVERSION",  1);
 _newconst("SCM_MINVERSION",  0);
-_newconst("SCM_REVISION",   14);
+_newconst("SCM_REVISION",   15);
 
 _newconst("AMTPRECISION",    2);
 _newconst("AMTWIDTH",        9);

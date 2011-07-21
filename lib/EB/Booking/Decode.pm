@@ -10,8 +10,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:25:59 2010
-# Update Count    : 174
+# Last Modified On: Thu Jul 21 21:06:18 2011
+# Update Count    : 175
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -123,7 +123,7 @@ sub decode {
 
     my $sth = $dbh->sql_exec("SELECT bsr_nr, bsr_date, ".
 			     "bsr_desc, bsr_amount, bsr_btw_id, bsr_btw_class, ".
-			     "bsr_type, bsr_acc_id, bsr_rel_code, bsr_paid ".
+			     "bsr_type, bsr_acc_id, bsr_rel_code, bsr_paid, bsr_ref ".
 			     " FROM Boekstukregels".
 			     " WHERE bsr_bsk_id = ?".
 			     " ORDER BY bsr_nr", $bsk);
@@ -137,7 +137,7 @@ sub decode {
 
     while ( $rr ) {
 	my ($bsr_nr, $bsr_date, $bsr_desc, $bsr_amount, $bsr_btw_id,
-	    $bsr_btw_class, $bsr_type, $bsr_acc_id, $bsr_rel_code, $bsr_paid) = @$rr;
+	    $bsr_btw_class, $bsr_type, $bsr_acc_id, $bsr_rel_code, $bsr_paid, $bsr_ref) = @$rr;
 	if ( $bsr_nr == 1) {
 	    $setup->($bsr_rel_code);
 	}
@@ -218,6 +218,12 @@ sub decode {
 		$cmd .= "std$dd " . _quote($bsr_desc) . " " .
 		  numfmt_plain($bsr_amount) . $btw . " " .
 		    $bsr_acc_id;
+	    }
+	    elsif ( $bsr_ref && ( $bsr_type == 1 || $bsr_type == 2 ) ) {
+		my $type = $bsr_type == 1 ? "deb" : "crd";
+		$cmd .= $single ? " " : " \\\n\t";
+		$cmd .= "$type$dd " . _quote($bsr_ref) . " " .
+		  numfmt_plain($bsr_amount);
 	    }
 	    elsif ( $bsr_type == 1 || $bsr_type == 2 ) {
 		my $type = $bsr_type == 1 ? "deb" : "crd";

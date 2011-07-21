@@ -10,8 +10,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:25:39 2010
-# Update Count    : 528
+# Last Modified On: Thu Jul 21 20:56:18 2011
+# Update Count    : 532
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -127,6 +127,7 @@ sub perform {
   ENTRY:
     while ( @$args ) {
 	my $type = shift(@$args);
+	my $bsr_ref;
 
 	if ( $type eq "std" ) {
 	    return "?"._T("Deze opdracht is onvolledig. Gebruik de \"help\" opdracht voor meer aanwijzingen.")."\n"
@@ -245,11 +246,11 @@ sub perform {
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				 bsr_btw_id bsr_btw_acc bsr_btw_class bsr_type
-				 bsr_acc_id bsr_rel_code bsr_dbk_id)],
+				 bsr_acc_id bsr_rel_code bsr_dbk_id bsr_ref)],
 			     $nr++, $dd, $bsk_id, $desc, $orig_amount,
 			     $btw_id, $btw_acc,
 			     BTWKLASSE($does_btw ? defined($kstomz) : 0, BTWTYPE_NORMAAL, $kstomz||0),
-			     0, $acct, undef, undef);
+			     0, $acct, undef, undef, $bsr_ref);
 
 #	    warn("update $acct with ".numfmt(-$amt)."\n") if $trace_updates;
 #	    $dbh->upd_account($acct, -$amt);
@@ -301,6 +302,7 @@ sub perform {
 
 	    my ($rr, $sql, @sql_args);
 	    if ( $rel =~ /:/ ) {
+		$bsr_ref = $rel; # store in db
 		my ($id, $bsk, $err) = $dbh->bskid($rel, $bky);
 		unless ( defined($id) ) {
 		    warn("?$err\n");
@@ -510,9 +512,10 @@ sub perform {
 	    $dbh->sql_insert("Boekstukregels",
 			     [qw(bsr_nr bsr_date bsr_bsk_id bsr_desc bsr_amount
 				 bsr_btw_id bsr_type bsr_acc_id bsr_btw_class
-				 bsr_rel_code bsr_dbk_id bsr_paid)],
+				 bsr_rel_code bsr_dbk_id bsr_paid bsr_ref)],
 			     $nr++, $dd, $bsk_id, "*".$bsk_desc, -$amt, 0,
-			     $type eq "deb" ? 1 : 2, $acct, 0, $bsr_rel, $dbk_id, $bskid);
+			     $type eq "deb" ? 1 : 2, $acct, 0, $bsr_rel, $dbk_id,
+			     $bskid, $bsr_ref);
 	    $dbh->sql_exec("UPDATE Boekstukken".
 			   " SET bsk_open = bsk_open - ?".
 			   " WHERE bsk_id = ?",
