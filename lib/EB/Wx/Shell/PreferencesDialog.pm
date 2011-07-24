@@ -28,12 +28,12 @@ sub new {
 		unless defined $style;
 
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{sz_prefs_inner_staticbox} = Wx::StaticBox->new($self, -1, _T("Preferences") );
-	$self->{cx_repwin} = Wx::CheckBox->new($self, -1, _T("Single window for reports"), wxDefaultPosition, wxDefaultSize, );
-	$self->{cx_errorpopup} = Wx::CheckBox->new($self, -1, _T("Popup window for errors"), wxDefaultPosition, wxDefaultSize, );
-	$self->{cx_warnpopup} = Wx::CheckBox->new($self, -1, _T("Popup window for warnings"), wxDefaultPosition, wxDefaultSize, );
-	$self->{cx_infopopup} = Wx::CheckBox->new($self, -1, _T("Popup window for informational messages"), wxDefaultPosition, wxDefaultSize, );
-	$self->{l_histlines} = Wx::StaticText->new($self, -1, _T("Number of input lines to keep in history:"), wxDefaultPosition, wxDefaultSize, );
+	$self->{sz_prefs_inner_staticbox} = Wx::StaticBox->new($self, -1, _T("Voorkeuren") );
+	$self->{cx_repwin} = Wx::CheckBox->new($self, -1, _T("Rapporten in hetzelfde venster"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cx_errorpopup} = Wx::CheckBox->new($self, -1, _T("Popup window voor foutboodschappen"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cx_warnpopup} = Wx::CheckBox->new($self, -1, _T("Popup window voor waarschuwingen"), wxDefaultPosition, wxDefaultSize, );
+	$self->{cx_infopopup} = Wx::CheckBox->new($self, -1, _T("Popup window voor mededelingen"), wxDefaultPosition, wxDefaultSize, );
+	$self->{l_histlines} = Wx::StaticText->new($self, -1, _T("Aantal te bewaren regels invoer historie:"), wxDefaultPosition, wxDefaultSize, );
 	$self->{spin_histlines} = Wx::SpinCtrl->new($self, -1, "200", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 99999, 200);
 	$self->{b_prefs_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
 	$self->{b_prefs_ok} = Wx::Button->new($self, wxID_OK, "");
@@ -55,7 +55,7 @@ sub __set_properties {
 
 # begin wxGlade: EB::Wx::Shell::PreferencesDialog::__set_properties
 
-	$self->SetTitle(_T("Preferences"));
+	$self->SetTitle(_T("Voorkeursinstellingen"));
 	$self->{cx_errorpopup}->SetValue(1);
 	$self->{cx_warnpopup}->SetValue(1);
 	$self->{cx_infopopup}->SetValue(1);

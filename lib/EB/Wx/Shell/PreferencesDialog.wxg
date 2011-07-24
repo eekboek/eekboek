@@ -4,7 +4,7 @@
 <application path="PreferencesDialog.pm" name="" class="" option="0" language="perl" top_window="d_prefs" encoding="ISO-8859-1" use_gettext="1" overwrite="0" use_new_namespace="1" for_version="2.6" is_template="0" indent_amount="4" indent_symbol="space" source_extension=".cpp" header_extension=".h">
     <object class="EB::Wx::Shell::PreferencesDialog" name="d_prefs" base="EditDialog">
         <style>wxDEFAULT_DIALOG_STYLE</style>
-        <title>Preferences</title>
+        <title>Voorkeursinstellingen</title>
         <object class="wxBoxSizer" name="sz_prefs_outer" base="EditBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
@@ -13,7 +13,7 @@
                 <option>1</option>
                 <object class="wxStaticBoxSizer" name="sz_prefs_inner" base="EditStaticBoxSizer">
                     <orient>wxVERTICAL</orient>
-                    <label>Preferences</label>
+                    <label>Voorkeuren</label>
                     <object class="sizeritem">
                         <flag>wxLEFT|wxRIGHT|wxTOP|wxEXPAND</flag>
                         <border>5</border>
@@ -25,7 +25,7 @@
                                 <border>0</border>
                                 <option>0</option>
                                 <object class="wxCheckBox" name="cx_repwin" base="EditCheckBox">
-                                    <label>Single window for reports</label>
+                                    <label>Rapporten in hetzelfde venster</label>
                                 </object>
                             </object>
                             <object class="sizeritem">
@@ -34,7 +34,7 @@
                                 <option>0</option>
                                 <object class="wxCheckBox" name="cx_errorpopup" base="EditCheckBox">
                                     <checked>1</checked>
-                                    <label>Popup window for errors</label>
+                                    <label>Popup window voor foutboodschappen</label>
                                 </object>
                             </object>
                             <object class="sizeritem">
@@ -43,7 +43,7 @@
                                 <option>0</option>
                                 <object class="wxCheckBox" name="cx_warnpopup" base="EditCheckBox">
                                     <checked>1</checked>
-                                    <label>Popup window for warnings</label>
+                                    <label>Popup window voor waarschuwingen</label>
                                 </object>
                             </object>
                             <object class="sizeritem">
@@ -52,7 +52,7 @@
                                 <option>0</option>
                                 <object class="wxCheckBox" name="cx_infopopup" base="EditCheckBox">
                                     <checked>1</checked>
-                                    <label>Popup window for informational messages</label>
+                                    <label>Popup window voor mededelingen</label>
                                 </object>
                             </object>
                             <object class="sizeritem">
@@ -67,7 +67,7 @@
                                         <option>0</option>
                                         <object class="wxStaticText" name="l_histlines" base="EditStaticText">
                                             <attribute>1</attribute>
-                                            <label>Number of input lines to keep in history:</label>
+                                            <label>Aantal te bewaren regels invoer historie:</label>
                                         </object>
                                     </object>
                                     <object class="sizeritem">

@@ -17,7 +17,7 @@ test -d ${MODIR} || {
 
 cp /dev/null ${PODIR}/${APP}.pot
 xgettext ${GTF} -o ${PODIR}/${APP}.pot ${SRCROOT}script/ebshell
-find ${SRCROOT}lib/EekBoek.pm ${SRCROOT}lib/EB.pm ${SRCROOT}lib/EB ${SRCROOT}lib/EB/Wx/IniWiz.pm ${SRCROOT}lib/EB/Wx/IniWiz \( -name CVS -prune \) -o \( -name Wx -prune \) -o \( -name DeLuxe.pm -prune \) -o \( -name '*.pm' -a -print -exec xgettext ${GTF} -o ${PODIR}/${APP}.pot {} \; \)
+find ${SRCROOT}lib/EekBoek.pm ${SRCROOT}lib/EB.pm ${SRCROOT}lib/EB ${SRCROOT}lib/EB/Wx/IniWiz.pm ${SRCROOT}lib/EB/Wx/IniWiz ${SRCROOT}lib/EB/Wx/Shell \( -name CVS -prune \) -o \( -name Wx -prune \) -o \( -name DeLuxe.pm -prune \) -o \( -name '*.pm' -a -print -exec xgettext ${GTF} -o ${PODIR}/${APP}.pot {} \; \)
 
 for locale in en
 do

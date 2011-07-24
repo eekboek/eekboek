@@ -68,7 +68,7 @@ sub __set_properties {
 
 # begin wxGlade: EB::Wx::Shell::HtmlViewer::__set_properties
 
-	$self->SetTitle(_T("HTML View"));
+	$self->SetTitle(_T("HTML Uitvoer"));
 	$self->SetSize(Wx::Size->new(618, 522));
 	$self->{p_close}->SetFocus();
 	$self->{p_close}->SetDefault();
@@ -107,9 +107,9 @@ sub OnPrint {
 sub OnSave {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::HtmlViewer::OnSave <event_handler>
-    my $d = Wx::FileDialog->new($self, _T("Save as..."),
-				"", _T("report.html"),
-				_T("HTML files (*.html)|*.html"),
+    my $d = Wx::FileDialog->new($self, _T("Opslaan als..."),
+				"", _T("raport.html"),
+				_T("HTML bestanden (*.html)|*.html"),
 				wxSAVE | wxOVERWRITE_PROMPT);
     my $result = $d->ShowModal;
     if ( $result == wxID_OK ) {

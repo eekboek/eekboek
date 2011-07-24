@@ -95,6 +95,10 @@ sub new {
 	use constant MENU_REP_VAT => Wx::NewId();
 	use constant MENU_HELP_SUPPORT => Wx::NewId();
 
+#	###WARNING: Re-generating will loose
+#	$self->__set_menubar();
+#	insert before $self->{s_input_staticbox} = ...
+
 # begin wxGlade: EB::Wx::Shell::MainFrame::new
 
 	$style = wxDEFAULT_FRAME_STYLE 
@@ -103,7 +107,7 @@ sub new {
 	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
 	$self->{p_dummy} = Wx::Panel->new($self, -1, wxDefaultPosition, wxDefaultSize, );
 	$self->__set_menubar();
-	$self->{s_input_staticbox} = Wx::StaticBox->new($self->{p_dummy}, -1, _T("Input") );
+	$self->{s_input_staticbox} = Wx::StaticBox->new($self->{p_dummy}, -1, _T("Invoer") );
 	$self->{statusbar} = $self->CreateStatusBar(1, wxST_SIZEGRIP);
 	$self->{t_output} = Wx::TextCtrl->new($self->{p_dummy}, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL);
 	$self->{b_edit} = Wx::BitmapButton->new($self->{p_dummy}, -1, (Wx::Bitmap->new("edit.png", wxBITMAP_TYPE_ANY)));
@@ -185,49 +189,49 @@ sub __set_menubar {
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_OPEN, _T("&Open\tCtrl-O"), "");
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(wxID_PREFERENCES, _T("Prefere&nces..."), "");
+	$wxglade_tmp_menu->Append(wxID_PREFERENCES, _T("Voorkeuren..."), "");
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(wxID_EXIT, _T("E&xit\tCtrl-Q"), "");
-	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&File"));
+	$wxglade_tmp_menu->Append(wxID_EXIT, _T("Afsluiten\tCtrl-Q"), "");
+	$self->{menubar}->Append($wxglade_tmp_menu, _T("&Bestand"));
 	$wxglade_tmp_menu = Wx::Menu->new();
-	$wxglade_tmp_menu->Append(MENU_INPUTEDIT, _T("&Edit input line\tCtrl+Enter"), "");
-	$wxglade_tmp_menu->Append(MENU_INPUTEXEC, _T("E&xecute input line\tEnter"), "");
+	$wxglade_tmp_menu->Append(MENU_INPUTEDIT, _T("&Edit invoerregel\tCtrl+Enter"), "");
+	$wxglade_tmp_menu->Append(MENU_INPUTEXEC, _T("&Uitvoeren invoerregel\tEnter"), "");
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("&Clear output"), "");
-	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&Edit"));
-	$self->{_T("Reports")} = Wx::Menu->new();
-	$self->{_T("Reports")}->Append(MENU_REP_TRIAL, _T("Trial"), "");
-	$self->{_T("Reports_bal")} = Wx::Menu->new();
-	$self->{_T("Reports_bal")}->Append(MENU_REP_BAL_ACT, _T("By account"), "");
-	$self->{_T("Reports_bal")}->AppendSeparator();
-	$self->{_T("Reports_bal")}->Append(MENU_REP_BAL_MGP, _T("By master group"), "");
-	$self->{_T("Reports_bal")}->Append(MENU_REP_BAL_GRP, _T("By group"), "");
-	$self->{_T("Reports_bal")}->Append(MENU_REP_BAL_GAC, _T("Detailed"), "");
-	$self->{_T("Reports")}->Append(Wx::NewId(), _T("Balance"), $self->{_T("Reports_bal")}, "");
-	$self->{_T("Reports_res")} = Wx::Menu->new();
-	$self->{_T("Reports_res")}->Append(MENU_REP_RES_ACT, _T("By account"), "");
-	$self->{_T("Reports_res")}->AppendSeparator();
-	$self->{_T("Reports_res")}->Append(MENU_REP_RES_MGP, _T("By master group"), "");
-	$self->{_T("Reports_res")}->Append(MENU_REP_RES_GRP, _T("By group"), "");
-	$self->{_T("Reports_res")}->Append(MENU_REP_RES_GAC, _T("Detailed"), "");
-	$self->{_T("Reports")}->Append(Wx::NewId(), _T("Results"), $self->{_T("Reports_res")}, "");
-	$self->{_T("Reports")}->AppendSeparator();
-	$self->{_T("Reports")}->Append(MENU_REP_JNL, _T("Journal"), "");
-	$self->{_T("Reports")}->AppendSeparator();
-	$self->{_T("Reports")}->Append(MENU_REP_UN, _T("Unsettled Accounts"), "");
-	$self->{_T("Reports")}->AppendSeparator();
-	$self->{_T("Reports")}->Append(MENU_REP_AP, _T("Accounts Payable"), "");
-	$self->{_T("Reports")}->Append(MENU_REP_AR, _T("Accounts Receivable"), "");
-	$self->{_T("Reports")}->AppendSeparator();
-	$self->{_T("Reports")}->Append(MENU_REP_VAT, _T("VAT Report"), "");
-	$self->{_T("menubar")}->Append($self->{_T("Reports")}, _T("&Reports"));
+	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("Uitvoer schoonmaken"), "");
+	$self->{menubar}->Append($wxglade_tmp_menu, _T("B&ewerken"));
+	$self->{Reports} = Wx::Menu->new();
+	$self->{Reports}->Append(MENU_REP_TRIAL, _T("Proef- en Saldibalans"), "");
+	$self->{Reports_bal} = Wx::Menu->new();
+	$self->{Reports_bal}->Append(MENU_REP_BAL_ACT, _T("Op grootboekrekening"), "");
+	$self->{Reports_bal}->AppendSeparator();
+	$self->{Reports_bal}->Append(MENU_REP_BAL_MGP, _T("Op hoofdverdichting"), "");
+	$self->{Reports_bal}->Append(MENU_REP_BAL_GRP, _T("Op verdichting"), "");
+	$self->{Reports_bal}->Append(MENU_REP_BAL_GAC, _T("Gedetailleerd"), "");
+	$self->{Reports}->Append(Wx::NewId(), _T("Balans"), $self->{Reports_bal}, "");
+	$self->{Reports_res} = Wx::Menu->new();
+	$self->{Reports_res}->Append(MENU_REP_RES_ACT, _T("Op grootboekrekening"), "");
+	$self->{Reports_res}->AppendSeparator();
+	$self->{Reports_res}->Append(MENU_REP_RES_MGP, _T("Op hoofdverdichting"), "");
+	$self->{Reports_res}->Append(MENU_REP_RES_GRP, _T("Op verdichting"), "");
+	$self->{Reports_res}->Append(MENU_REP_RES_GAC, _T("Gedetailleerd"), "");
+	$self->{Reports}->Append(Wx::NewId(), _T("Verlies/Winst"), $self->{Reports_res}, "");
+	$self->{Reports}->AppendSeparator();
+	$self->{Reports}->Append(MENU_REP_JNL, _T("Journaal"), "");
+	$self->{Reports}->AppendSeparator();
+	$self->{Reports}->Append(MENU_REP_UN, _T("Openstaande posten"), "");
+	$self->{Reports}->AppendSeparator();
+	$self->{Reports}->Append(MENU_REP_AP, _T("Crediteuren"), "");
+	$self->{Reports}->Append(MENU_REP_AR, _T("Debiteuren"), "");
+	$self->{Reports}->AppendSeparator();
+	$self->{Reports}->Append(MENU_REP_VAT, _T("BTW Aangifte"), "");
+	$self->{menubar}->Append($self->{Reports}, _T("&Rapporten"));
 	$wxglade_tmp_menu = Wx::Menu->new();
-	$wxglade_tmp_menu->Append(wxID_HELP, _T("&Help..."), "");
+	$wxglade_tmp_menu->Append(wxID_HELP, _T("&Hulp..."), "");
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(MENU_HELP_SUPPORT, _T("&Support..."), "");
+	$wxglade_tmp_menu->Append(MENU_HELP_SUPPORT, _T("Ondersteuning..."), "");
 	$wxglade_tmp_menu->AppendSeparator();
-	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("&About..."), "");
-	$self->{_T("menubar")}->Append($wxglade_tmp_menu, _T("&Help"));
+	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("Over..."), "");
+	$self->{menubar}->Append($wxglade_tmp_menu, _T("&Hulp"));
 	$self->SetMenuBar($self->{menubar});
 }
 
@@ -291,15 +295,15 @@ sub RunCommand {
 	unless ( $self->{_ebcfg} && -s $self->{_ebcfg} ) {
 	    my $md = Wx::MessageDialog->new
 	      ($self,
-	       _T("Please select a valid .eekboek.conf first"),
-	       _T("Missing config"), wxOK|wxICON_INFORMATION,
+	       _T("Selecteer eerst een geldige eekboek.conf"),
+	       _T("Geen configuratie"), wxOK|wxICON_INFORMATION,
 	       wxDefaultPosition);
 	    $md->ShowModal;
 	    $md->Destroy;
 	    $self->OnOpen;
 	    return;
 	}
-	my $cfg = EB->app_init( { app => "EekBoek", config => $self->{_ebcfg} } );
+	my $cfg = EB->app_init( { app => $EekBoek::PACKAGE, config => $self->{_ebcfg} } );
 	$self->{statusbar}->SetStatusText($EB::imsg, 0);
 	$cfg->connect_db;
 	require EB::Shell;
@@ -320,7 +324,7 @@ sub _cmd {
 
     # If there's a quoting mistake, parseline returns nothing.
     if ( $cmd =~ /\S/ && $cmd[0] !~ /\S/ ) {
-	$self->process_stderr("?"._T("Error in the input: check the \" and ' characters")."\n");
+	$self->process_stderr("?"._T("Fout in de invoerregel. Controleer de \" en ' tekens.")."\n");
 	return -1;
     }
 
@@ -345,7 +349,7 @@ sub _cmd {
 
     my $meth = "do_".lc($cmd);
     unless ( $self->{_shell}->can($meth) ) {
-	$self->process_stderr("?"._T("Unknown command. Enter \"help\" for a list of commands.")."\n");
+	$self->process_stderr("?"._T("Onbekende opdracht. \"help\" geeft een lijst van mogelijke opdrachten.")."\n");
 	return -1;
     }
 
@@ -453,17 +457,17 @@ sub ProcessMessages {
 	if ( $err =~ /^\?+(.*)/ ) {
 	    $self->ShowText($err, wxRED);
 	    next unless $self->{prefs_errorpopup};
-	    @i = ($1, _T("Error"), wxOK|wxICON_ERROR);
+	    @i = ($1, _T("Fout"), wxOK|wxICON_ERROR);
 	}
 	elsif ( $err =~ /^\!+(.*)/ ) {
 	    $self->ShowText($err, Wx::Colour->new("magenta"));
 	    next unless $self->{prefs_warnpopup};
-	    @i = ($1, _T("Warning"), wxOK|wxICON_WARNING);
+	    @i = ($1, _T("Waarschuwing"), wxOK|wxICON_WARNING);
 	}
 	else {
 	    $self->ShowText($err, wxGREEN);
 	    next unless $self->{prefs_infopopup};
-	    @i = ($err, _T("Information"), wxOK|wxICON_INFORMATION);
+	    @i = ($err, _T("Mededeling"), wxOK|wxICON_INFORMATION);
 	}
 	my $md = Wx::MessageDialog->new($self, @i, wxDefaultPosition);
 	$md->ShowModal;
@@ -531,7 +535,7 @@ sub OnOpen {
 
 	my $fd = Wx::FileDialog->new
 	  ($self,
-	   _T("Choose"),
+	   _T("Kies"),
 	   "", "",
 	   ".eekboek.conf;eekboek.conf",
 	   0|wxFD_FILE_MUST_EXIST,
@@ -643,35 +647,35 @@ sub OnAbout {
 
 	my $md = Wx::MessageDialog->new
 	  ($self,
-	   __x("{pkg} {app} version {ver}",
+	   __x("{pkg} {app} versie {ver}",
 	       pkg => $EekBoek::PACKAGE,
 	       app => "WxShell",
 	       ver => $EekBoek::VERSION)."\n".
 	   "Copyright 2007-$year Squirrel Consultancy\n\n".
-	   __x("Written by {author}",
+	   __x("Geschreven door {author}",
 	       author => "Johan Vromans")."\n".
 	   "<jvromans\@squirrel.nl>\n".
 	   "http://www.squirrel.nl\n".
-	   __x("Support: {url}",
+	   __x("Voor ondersteuning: {url}",
 	       url => "http://www.eekboek.nl/support.html")."\n".
 	   "\n".
-	   __x("GUI design with {wxglade}",
+	   __x("GUI ontwerp met {wxglade}",
 	       wxglade => "wxGlade, http://wxglade.sourceforge.net")."\n\n".
-	   __x("{pkg} version {ver}",
+	   __x("{pkg} versie {ver}",
 	       pkg => "Perl",
 	       ver => sprintf("%vd",$^V))."\n".
-	   __x("{pkg} version {ver}",
+	   __x("{pkg} versie {ver}",
 	       pkg => "WxPerl",
 	       ver => $Wx::VERSION)."\n".
-	   __x("{pkg} version {ver}",
+	   __x("{pkg} versie {ver}",
 	       pkg => "wxWidgets",
 	       ver => Wx::wxVERSION)."\n".
 	   ( $Cava::Packager::PACKAGED
-	     ? __x("{pkg} version {ver}",
+	     ? __x("{pkg} versie {ver}",
 		   pkg => "CAVA Packager",
 		   ver => $Cava::Packager::VERSION)."\n"
 	     : () ),
-	   __x("About {pkg} {app}",
+	   __x("Over {pkg} {app}",
 	       pkg => $EekBoek::PACKAGE,
 	       app => "WxShell"),
 	   wxOK|wxICON_INFORMATION,
@@ -686,25 +690,27 @@ sub OnSupport {
     my ($self, $event) = @_;
 # wxGlade: EB::Wx::Shell::MainFrame::OnSupport <event_handler>
 
-    my $title = _T("Support");
+    my $title = _T("Ondersteuning");
     my $md = EB::Wx::Shell::HtmlViewer->new($self, -1, $title);
     $md->info_only;
     $md->html->SetPage(_T(<<EOD));
-<p>For support questions you can subscribe to the mailing list for
-<font color='#C81900'>EekBoek</font> users: <a
-href="http://lists.sourceforge.net/lists/listinfo/eekboek-users">SourceForge</a>.</p>
-
-<p>The <font color='#C81900'>EekBoek</font> users maintain a  <a
-href="http://wiki.eekboek.nl/" target="_blank">een wiki</a> where they share experienes, tips and techniques, and so on.</p>
-
-<p><font color='#C81900'>EekBoek</font> can be downloaded and used for free.
-If you have additional wishes for features or support you can contact
-<a href="http://www.squirrel.nl/nl/index.html"
-target="_blank">Squirrel Consultancy</a> for commercial support, for example, to help you 
-migrating your current administration to <font color='#C81900'>EekBoek</font>.
-Also they can implement custom features and extensions according to your demands.</p>
-<p>For more information:  <a
-href="mailto:info\@squirrel.nl">info\@squirrel.nl</a>.</p>
+<p>Voor het uitwisselen van ervaringen, vragen om ondersteuning e.d.
+kunt u zich abonneren op de mailing list voor gebruikers op
+<a href="http://lists.sourceforge.net/lists/listinfo/eekboek-users">SourceForge</a>.</p>
+<p>De <font color='#C81900'>EekBoek</font> gebruikers houden zelf
+<a href="http://wiki.eekboek.nl/" target="_blank">een wiki</a> bij met
+tips en ander wetenswaardigheden.</p>
+<p><font color='#C81900'>EekBoek</font> kan gratis worden gedownload en
+gebruikt. Mocht u echter aanvullende wensen hebben op het gebied van
+ondersteuning dan kan dat ook.
+<a href="http://www.squirrel.nl/nl/index.html" target="_blank">Squirrel Consultancy</a>
+is gaarne bereid u betaalde ondersteuning te bieden, bijvoorbeeld bij het
+installeren van <font color='#C81900'>EekBoek</font>, het opzetten van
+administraties, en het overzetten van uw bestaande administraties naar
+font color='#C81900'>EekBoek</font>. Ook kunnen specifieke uitbreidingen
+of aanpassingen naar uw wens worden gerealiseerd.</p>
+<p>Voor meer informatie:
+<a href="mailto:info\@squirrel.nl">info\@squirrel.nl</a>.</p>
 EOD
     $md->SetTitle($title);
     $md->ShowModal;

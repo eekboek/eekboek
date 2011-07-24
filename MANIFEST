@@ -204,7 +204,6 @@ lib/EB/res/Wx/icons/edit.png
 lib/EB/res/help/en/docs.htb
 lib/EB/res/help/nl/docs.htb
 lib/EB/res/locale/en/LC_MESSAGES/ebcore.mo
-lib/EB/res/locale/nl/LC_MESSAGES/ebwxshell.mo
 lib/EB/res/migrate/001000008001000009.pl
 lib/EB/res/migrate/001000009001000010.sql
 lib/EB/res/migrate/001000010001000011.sql
@@ -235,10 +234,7 @@ lib/EekBoek.pm
 locale/ebcore-en.po
 locale/ebcore-en.pox
 locale/ebcore.pot
-locale/ebwxshell-nl.po
-locale/ebwxshell.pot
 locale/make_locales_en
-locale/make_locales_nl
 relnotes-2.00.html
 script/ebshell
 script/ebwxshell

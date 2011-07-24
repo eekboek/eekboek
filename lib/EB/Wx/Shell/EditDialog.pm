@@ -52,7 +52,7 @@ sub __set_properties {
 
 # begin wxGlade: EB::Wx::Shell::EditDialog::__set_properties
 
-	$self->SetTitle(_T("Edit Input Line"));
+	$self->SetTitle(_T("Wijzigen invoerregel"));
 	$self->SetSize(Wx::Size->new(582, 318));
 	$self->{t_input}->SetFocus();
 

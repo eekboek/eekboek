@@ -4,7 +4,7 @@
 <application path="HtmlViewer.pm" name="" class="" option="0" language="perl" top_window="f_main" encoding="ISO-8859-1" use_gettext="1" overwrite="0" use_new_namespace="1" for_version="2.6" is_template="0" indent_amount="4" indent_symbol="space" source_extension=".cpp" header_extension=".h">
     <object class="EB::Wx::Shell::HtmlViewer" name="d_html" base="EditDialog">
         <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxTHICK_FRAME</style>
-        <title>HTML View</title>
+        <title>HTML Uitvoer</title>
         <size>618, 522</size>
         <object class="wxBoxSizer" name="sz_htmlview" base="EditBoxSizer">
             <orient>wxVERTICAL</orient>

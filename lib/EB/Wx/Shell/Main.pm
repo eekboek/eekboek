@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 11 09:37:21 2011
-# Update Count    : 431
+# Last Modified On: Sun Jul 24 14:56:14 2011
+# Update Count    : 432
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -216,7 +216,7 @@ sub app_options {
 
 sub app_ident {
     return;
-    warn(__x("This is {pkg} [{name} {version}]",
+    warn(__x("Dit is {pkg} [{name} {version}]",
 	     pkg     => $EekBoek::PACKAGE,
 	     name    => "WxShell",
 	     version => $EekBoek::VERSION) . "\n");
@@ -225,7 +225,7 @@ sub app_ident {
 sub app_usage {
     my ($exit) = @_;
     app_ident();
-    warn <<EndOfUsage;
+    warn _T(<<EndOfUsage);
 Gebruik: {prog} [options] [file ...]
 
     --config=XXX -f     specificeer configuratiebestand

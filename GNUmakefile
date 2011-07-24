@@ -15,7 +15,7 @@ bootstrap : locales schemas dummies
 # these should be integrated.
 
 MODIR := lib/EB/res/locale
-LOCALES := nl en
+LOCALES := en
 xxlocales :
 	for locale in $(LOCALES); \
 	do \
@@ -32,7 +32,6 @@ locales :
 	  test -d $(MODIR)/$$locale/LC_MESSAGES || mkdir -p $(MODIR)/$$locale/LC_MESSAGES; \
 	done
 	msgfmt -c -v -o $(MODIR)/en/LC_MESSAGES/ebcore.mo    $(PODIR)/ebcore-en.po
-	msgfmt -c -v -o $(MODIR)/nl/LC_MESSAGES/ebwxshell.mo $(PODIR)/ebwxshell-nl.po
 
 # Generate lib/EB/res/templates/foo.ebz out of lib/EB/examples/foo.dat.
 # Generate lib/EB/res/templates/sampledb.ebz.

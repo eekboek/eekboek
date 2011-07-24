@@ -51,7 +51,7 @@
                                     <option>0</option>
                                     <object class="wxStaticBoxSizer" name="s_input" base="EditStaticBoxSizer">
                                         <orient>wxHORIZONTAL</orient>
-                                        <label>Input</label>
+                                        <label>Invoer</label>
                                         <object class="sizeritem">
                                             <flag>wxRIGHT|wxADJUST_MINSIZE</flag>
                                             <border>5</border>
