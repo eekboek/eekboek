@@ -139,24 +139,6 @@ sub init_rl {
 
     require Term::ReadLine;
     warn("\%Trying: ReadLine (", $ENV{PERL_RL}||"default", ")\n") if $self->{RL_DEBUG};
-    eval {
-	local $SIG{__WARN__};
-	local $SIG{__DIE__};
-	$term = Term::ReadLine->new(ref $self);
-    };
-    unless ( $term ) {
-	warn("\%TFallback: ReadLine (Perl)\n") if $self->{RL_DEBUG};
-	$ENV{PERL_RL} = "Perl";
-    }
-    eval {
-	local $SIG{__WARN__};
-	local $SIG{__DIE__};
-	$term = Term::ReadLine->new(ref $self);
-    };
-    unless ( $term ) {
-	warn("\%TFallback: ReadLine (Stub)\n") if $self->{RL_DEBUG};
-	$ENV{PERL_RL} = "Stub";
-    }
     $term = Term::ReadLine->new(ref $self);
     warn("\%Using: ", $term->ReadLine, "\n") if $self->{RL_DEBUG};
     $self->term($term);
@@ -309,7 +291,7 @@ sub run {
             return $self->quit($anyfail?1:0);
         }
         else {
-	    my $meth = "pp_".($self->_xtr("cmd:$cmd")||$cmd);
+	    my $meth = "pp_".lc($self->_xtr("cmd:$cmd")||$cmd);
 	    if ( $self->can($meth) ) {
 		eval {
 		    ($cmd, @args) = $self->$meth($cmd, @args);
@@ -321,7 +303,7 @@ sub run {
 		    next;
 		}
 	    }
-	    $meth = "do_".($self->_xtr("cmd:".lc($cmd))||$cmd);
+	    $meth = "do_".lc($self->_xtr("cmd:".lc($cmd))||$cmd);
 	    if ( $self->can($meth) ) {
 		eval {
 		    # Check warnings for ? (errors).
