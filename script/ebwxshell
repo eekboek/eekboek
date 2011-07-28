@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Dec 18 21:54:24 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  5 20:48:49 2011
-# Update Count    : 108
+# Last Modified On: Thu Jul 28 21:06:15 2011
+# Update Count    : 109
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -63,6 +63,11 @@ if ( ( $Wx::VERSION =~ /^0[.,]9[56]$/ )
 }
 
 check_version( "wxWidgets", $Wx::wxVERSION, "2.008" );
+
+unless ( $ENV{LANG} =~ /^nl/i ) {
+    $ENV{LANG} = "nl_NL";
+    warning("WAARSCHUWING: Uw taalinstelling is niet Nederlands en wordt genegeerd.\n");
+}
 
 require EB::Wx::Shell::Main;
 EB::Wx::Shell::Main->run;
