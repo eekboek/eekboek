@@ -1,4 +1,14 @@
-2.01.01
+2.01.02
+
+	* (ebshell, ebwxshell) Forceer local naar nl_NL totdat de
+          engelse vertaling klaar is.
+
+	* (ebshell) Verwijder de Term::ReadLine::Gnu fallback hack zodat de
+	  workaround met PERL_RL weer bruikbaar is.
+
+	* (ebshell) Accepteer commando's weer case-insenstive.
+
+2.01.01	2011-07-25 08:11
 
 	* Alle programmacomponenten zijn nu in het Nederlands. Er is
           nog één enkele vertaling, namelijk die van Nederlands naar
