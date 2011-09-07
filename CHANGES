@@ -8,6 +8,10 @@
 	  Voor de export wordt de lowercase met underscores naam
 	  gehanteerd (zoals al het geval was).
 
+	* Fix bug #2209529
+	  Dagboeknamen die overlappen met ingebouwde commando's worden
+	  niet meer toegestaan.
+
 2.01.02 2011-07-28 21:31
 
 	* (ebshell, ebwxshell) Forceer locale naar nl_NL totdat de

@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep  7 14:04:38 2011
-# Update Count    : 167
+# Last Modified On: Wed Sep  7 14:43:35 2011
+# Update Count    : 177
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -228,7 +228,7 @@ sub _plug_cmds {
 	no strict 'refs';
 	my $dbk = lc(_T($dbk_desc));
 	$dbk =~ s/\s+/_/g;
-	undef &{"do_$dbk"};
+	undef &{"do_$dbk"} if defined &{"do_$dbk"};
 	*{"do_$dbk"} = sub {
 	    my $self = shift;
 	    $self->_add($dbk_id, @_);
@@ -258,7 +258,7 @@ sub _plug_cmds {
 	my $cmd = $adm;
 	$cmd =~ s/^set_//;
 	no strict 'refs';
-	undef &{"do_adm_$cmd"};
+	undef &{"do_adm_$cmd"} if defined &{"do_adm_$cmd"};
 	*{"do_adm_$cmd"} = sub {
 	    (shift->{o} ||= EB::Tools::Opening->new)->$adm(@_);
 	};

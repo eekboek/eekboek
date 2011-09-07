@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr  5 15:04:05 2011
-# Update Count    : 865
+# Last Modified On: Wed Sep  7 14:42:27 2011
+# Update Count    : 870
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -221,6 +221,12 @@ sub scan_dagboeken {
       if ( $type == DBKTYPE_KAS || $type == DBKTYPE_BANK ) && !$type;
     error(__x("Dagboek {id}: :dc is alleen toegestaan voor Kas en Bankboeken", id => $id)."\n")
       if $dcsplit && !( $type == DBKTYPE_KAS || $type == DBKTYPE_BANK );
+
+    my $t = lc(_T($desc));
+    $t =~ s/\s+/_/g;
+    error(__x("Dagboek naam \"{dbk}\" is niet toegestaan.", dbk => $desc)."\n")
+      if $desc =~ /^adm[ _]/i || defined &{"EB::Shell::do_$t"};
+
 
     $dbk{$id} = $dbkid;
     $dbk[$dbkid] = [ $id, $desc, $type, $dcsplit, $rek||undef ];
