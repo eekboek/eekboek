@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 21 20:28:33 2011
-# Update Count    : 166
+# Last Modified On: Wed Sep  7 14:04:38 2011
+# Update Count    : 167
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -227,6 +227,7 @@ sub _plug_cmds {
 	my ($dbk_id, $dbk_desc, $dbk_type) = @$rr;
 	no strict 'refs';
 	my $dbk = lc(_T($dbk_desc));
+	$dbk =~ s/\s+/_/g;
 	undef &{"do_$dbk"};
 	*{"do_$dbk"} = sub {
 	    my $self = shift;

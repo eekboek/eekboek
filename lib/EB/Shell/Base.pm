@@ -304,6 +304,7 @@ sub run {
 		}
 	    }
 	    $meth = "do_".lc($self->_xtr("cmd:".lc($cmd))||$cmd);
+	    $meth =~ s/\s+/_/g;
 	    if ( $self->can($meth) ) {
 		eval {
 		    # Check warnings for ? (errors).

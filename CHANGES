@@ -1,6 +1,16 @@
-2.01.02
+2.01.03
 
-	* (ebshell, ebwxshell) Forceer local naar nl_NL totdat de
+	* Fix bug #2624283
+	  Dagboeken met whitespace erin worden intern van een
+	  underscore voorzien.
+	  Dus de opdrachten "Post Bank" "post bank" en post_bank en
+	  POST_bank zijn gelijkwaardig.
+	  Voor de export wordt de lowercase met underscores naam
+	  gehanteerd (zoals al het geval was).
+
+2.01.02 2011-07-28 21:31
+
+	* (ebshell, ebwxshell) Forceer locale naar nl_NL totdat de
           engelse vertaling klaar is.
 
 	* (ebshell) Verwijder de Term::ReadLine::Gnu fallback hack zodat de
