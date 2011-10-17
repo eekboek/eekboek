@@ -11,7 +11,7 @@ use utf8;
 use 5.008003;
 
 our $PACKAGE = 'EekBoek';
-our $VERSION = '2.01.02';
+our $VERSION = '2.01.03';
 
 =head1 NAME
 
