@@ -11,6 +11,8 @@ result            --output=out/result.txt
 result --detail=0 --output=out/result0.txt
 result --detail=1 --output=out/result1.txt
 result --verdicht --output=out/result2.txt
+result --periode=apr --output=out/result-apr.txt
+result --periode=mei --output=out/result-mei.txt
 
 # Verify: Journaal.
 journaal             --output=out/journaal.txt

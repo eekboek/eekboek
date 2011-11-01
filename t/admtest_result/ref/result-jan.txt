@@ -1,0 +1,10 @@
+                                 Verlies/Winst
+Periode: 2009-01-01 t/m 2009-01-31
+testadministratie 2009                                       EekBoek, 31-12-2009
+
+RekNr   Grootboekrekening                                  Debet          Credit
+--------------------------------------------------------------------------------
+8000    Omzet BTW Hoog                                                    100,00
+        << Winst >>                                       100,00
+--------------------------------------------------------------------------------
+        TOTAAL Resultaten                                 100,00          100,00

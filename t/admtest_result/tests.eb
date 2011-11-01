@@ -1,0 +1,13 @@
+journaal                 --output=journaal.txt
+balans                   --output=balans.txt
+result                   --output=result.txt
+result --periode=jan     --output=result-jan.txt
+result --periode=feb     --output=result-feb.txt
+result --periode=jan-feb --output=result-jan-feb.txt
+result --periode=mrt     --output=result-mrt.txt
+result --periode=jan-mrt --output=result-jan-mrt.txt
+result --periode=feb-mrt --output=result-feb-mrt.txt
+result --periode=apr     --output=result-apr.txt
+result --periode=jan-apr --output=result-jan-apr.txt
+result --periode=feb-apr --output=result-feb-apr.txt
+result --periode=mrt-apr --output=result-mrt-apr.txt

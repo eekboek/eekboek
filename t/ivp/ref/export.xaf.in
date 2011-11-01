@@ -530,9 +530,9 @@
     </customerSupplier>
   </customersSuppliers>
   <transactions>
-    <numberEntries>138</numberEntries>
-    <totalDebit>38545.69</totalDebit>
-    <totalCredit>38545.69</totalCredit>
+    <numberEntries>142</numberEntries>
+    <totalDebit>38560.69</totalDebit>
+    <totalCredit>38560.69</totalCredit>
     <journal>
       <journalID>I</journalID>
       <description>Inkoop</description>
@@ -1382,7 +1382,7 @@
           <custSupID></custSupID>
           <documentID>5</documentID>
           <description>*Perl Cursus</description>
-          <creditAmount>595.00</creditAmount>
+          <creditAmount>600.00</creditAmount>
         </line>
         <line>
           <recordID>4</recordID>
@@ -1398,7 +1398,7 @@
           <custSupID></custSupID>
           <documentID>5</documentID>
           <description>Afschrift 5</description>
-          <debitAmount>467.28</debitAmount>
+          <debitAmount>472.28</debitAmount>
         </line>
       </transaction>
       <transaction>
@@ -1423,6 +1423,14 @@
         </line>
         <line>
           <recordID>3</recordID>
+          <accountID>2200</accountID>
+          <custSupID></custSupID>
+          <documentID>6</documentID>
+          <description>*Perl Cursus</description>
+          <debitAmount>5.00</debitAmount>
+        </line>
+        <line>
+          <recordID>4</recordID>
           <accountID>4100</accountID>
           <custSupID></custSupID>
           <documentID>6</documentID>
@@ -1430,12 +1438,12 @@
           <debitAmount>22.80</debitAmount>
         </line>
         <line>
-          <recordID>4</recordID>
+          <recordID>5</recordID>
           <accountID>2320</accountID>
           <custSupID></custSupID>
           <documentID>6</documentID>
           <description>Afschrift 6</description>
-          <debitAmount>688.50</debitAmount>
+          <debitAmount>683.50</debitAmount>
         </line>
       </transaction>
       <transaction>
@@ -1772,7 +1780,7 @@
           <custSupID>ACME</custSupID>
           <documentID>3</documentID>
           <description>Perl Cursus rest</description>
-          <creditAmount>500.00</creditAmount>
+          <creditAmount>504.20</creditAmount>
         </line>
         <line>
           <recordID>2</recordID>
@@ -1780,7 +1788,7 @@
           <custSupID>ACME</custSupID>
           <documentID>3</documentID>
           <description>BTW Perl Cursus rest</description>
-          <creditAmount>95.00</creditAmount>
+          <creditAmount>95.80</creditAmount>
         </line>
         <line>
           <recordID>3</recordID>
@@ -1788,42 +1796,42 @@
           <custSupID>ACME</custSupID>
           <documentID>3</documentID>
           <description>Perl Cursus</description>
-          <debitAmount>595.00</debitAmount>
+          <debitAmount>600.00</debitAmount>
         </line>
       </transaction>
       <transaction>
         <transactionID>4</transactionID>
         <period>05</period>
-        <transactionDate>2007-05-14</transactionDate>
+        <transactionDate>2007-05-12</transactionDate>
         <line>
           <recordID>1</recordID>
-          <accountID>8100</accountID>
+          <accountID>8400</accountID>
           <custSupID>ACME</custSupID>
           <documentID>4</documentID>
-          <description>Consultancy</description>
-          <creditAmount>600.00</creditAmount>
+          <description>Perl Cursus rest</description>
+          <debitAmount>4.20</debitAmount>
         </line>
         <line>
           <recordID>2</recordID>
           <accountID>4200</accountID>
           <custSupID>ACME</custSupID>
           <documentID>4</documentID>
-          <description>BTW Consultancy</description>
-          <creditAmount>114.00</creditAmount>
+          <description>BTW Perl Cursus rest</description>
+          <debitAmount>0.80</debitAmount>
         </line>
         <line>
           <recordID>3</recordID>
           <accountID>2200</accountID>
           <custSupID>ACME</custSupID>
           <documentID>4</documentID>
-          <description>Ondersteuning</description>
-          <debitAmount>714.00</debitAmount>
+          <description>Perl Cursus</description>
+          <creditAmount>5.00</creditAmount>
         </line>
       </transaction>
       <transaction>
         <transactionID>5</transactionID>
-        <period>07</period>
-        <transactionDate>2007-07-16</transactionDate>
+        <period>05</period>
+        <transactionDate>2007-05-14</transactionDate>
         <line>
           <recordID>1</recordID>
           <accountID>8100</accountID>
@@ -1851,13 +1859,42 @@
       </transaction>
       <transaction>
         <transactionID>6</transactionID>
+        <period>07</period>
+        <transactionDate>2007-07-16</transactionDate>
+        <line>
+          <recordID>1</recordID>
+          <accountID>8100</accountID>
+          <custSupID>ACME</custSupID>
+          <documentID>6</documentID>
+          <description>Consultancy</description>
+          <creditAmount>600.00</creditAmount>
+        </line>
+        <line>
+          <recordID>2</recordID>
+          <accountID>4200</accountID>
+          <custSupID>ACME</custSupID>
+          <documentID>6</documentID>
+          <description>BTW Consultancy</description>
+          <creditAmount>114.00</creditAmount>
+        </line>
+        <line>
+          <recordID>3</recordID>
+          <accountID>2200</accountID>
+          <custSupID>ACME</custSupID>
+          <documentID>6</documentID>
+          <description>Ondersteuning</description>
+          <debitAmount>714.00</debitAmount>
+        </line>
+      </transaction>
+      <transaction>
+        <transactionID>7</transactionID>
         <period>08</period>
         <transactionDate>2007-08-19</transactionDate>
         <line>
           <recordID>1</recordID>
           <accountID>8300</accountID>
           <custSupID>ORA</custSupID>
-          <documentID>6</documentID>
+          <documentID>7</documentID>
           <description>Produktie boek</description>
           <creditAmount>1000.00</creditAmount>
         </line>
@@ -1865,7 +1902,7 @@
           <recordID>2</recordID>
           <accountID>2200</accountID>
           <custSupID>ORA</custSupID>
-          <documentID>6</documentID>
+          <documentID>7</documentID>
           <description>Pocket Reference</description>
           <debitAmount>1000.00</debitAmount>
         </line>

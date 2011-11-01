@@ -88,7 +88,9 @@ verkoop 18-02 "Perl Cursus" ACME "Perl Cursus 1e bet."      3.570 8400
 
 verkoop 18-03 "Perl Cursus" ACME "Perl Cursus 2e bet."      3,570 8400
 
-verkoop 18-04 "Perl Cursus" ACME "Perl Cursus rest"           595 8400
+verkoop 18-04 "Perl Cursus" ACME "Perl Cursus rest"          600 8400
+
+verkoop 12-05 "Perl Cursus" ACME "Perl Cursus rest"           -5 8400
 
 verkoop 14-05 "Ondersteuning" ACME "Consultancy"             714
 
@@ -144,15 +146,16 @@ postbank 30-04 "Afschrift 4" --saldo=7963,75       \
          crd 06-04 XS4ALL              -22,80      \
          deb 12-04 ACME               3570,00
 
-postbank 31-05 "Afschrift 5" --saldo=8431,03       \
+postbank 31-05 "Afschrift 5" --saldo=8436,03       \
          std 11-05 "Girotel"            -2,70 6980 \
          crd 31-05 XS4ALL              -22,80      \
-         deb 31-05 ACME                595,00      \
+         deb 31-05 ACME                600,00      \
          crd 31-05 KPN                -102,22
 
 postbank 30-06 "Afschrift 6" --saldo=9119,53       \
          std 08-06 "Girotel"            -2,70 6980 \
          deb 08-06 ACME                714,00      \
+         deb 12-06 ACME                 -5,00      \
          crd 21-06 XS4ALL              -22,80
 
 postbank 31-07 "Afschrift 7" --saldo=8989,37       \

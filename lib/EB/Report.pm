@@ -8,8 +8,8 @@ our $dbh;
 # Author          : Johan Vromans
 # Created On      : Mon Nov 14 21:46:04 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:32:54 2010
-# Update Count    : 44
+# Last Modified On: Tue Nov  1 10:53:12 2011
+# Update Count    : 45
 # Status          : Unknown, Use with caution!
 
 package EB::Report;
@@ -136,6 +136,10 @@ sub GetTAccountsRes {
 		       " WHERE acc_id = ?",
 		       $acc_balance, $acc_id)->finish;
     }
+
+    # zet eindsaldo op beginsaldo
+    $dbh->sql_exec("UPDATE TAccounts".
+           " SET acc_balance = acc_ibalance")->finish;
 
     # eindsaldo(r, t2) = beginsaldo(r, t1) + sum(journaal, r, t1..t2)
     $sth = $dbh->sql_exec("SELECT jnl_acc_id,SUM(jnl_amount)".

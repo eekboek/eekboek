@@ -1,0 +1,25 @@
+# Januari.
+verkopen 2009-01-07 testrel test  100@H-
+# Result          Januari:  +100
+
+# Februari.
+verkopen 2009-02-07 testrel test -100@H-
+# Result          Februari: -100
+# Result  Januari-Februari:  ---
+
+# Maart.
+verkopen 2009-03-07 testrel test  100@H-
+# Result          Maart:    +100
+# Result  Januari-Maart:    +100
+# Result Februari-Maart:     ---
+
+# April.
+verkopen 2009-04-08 testrel test  10@H-
+verkopen 2009-04-09 testrel test -10@H-
+# Result          April:     ---
+# Result  Januari-April:    +100
+# Result Februari-April:     ---
+# Result    Maart-April:    +100
+
+# Total.
+# Result                    +100

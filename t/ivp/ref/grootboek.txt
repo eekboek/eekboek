@@ -34,13 +34,15 @@ EekBoek Demo Administratie                                                      
          Perl Cursus                   2007-03-18    3570,00       0,00  Verkoop:2
          *Perl Cursus                  2007-03-18       0,00    3570,00  Postbank:3      ACME
          *Perl Cursus                  2007-04-12       0,00    3570,00  Postbank:4      ACME
-         Perl Cursus                   2007-04-18     595,00       0,00  Verkoop:3
-         Ondersteuning                 2007-05-14     714,00       0,00  Verkoop:4
-         *Perl Cursus                  2007-05-31       0,00     595,00  Postbank:5      ACME
+         Perl Cursus                   2007-04-18     600,00       0,00  Verkoop:3
+         Perl Cursus                   2007-05-12       0,00       5,00  Verkoop:4
+         Ondersteuning                 2007-05-14     714,00       0,00  Verkoop:5
+         *Perl Cursus                  2007-05-31       0,00     600,00  Postbank:5      ACME
          *Ondersteuning                2007-06-08       0,00     714,00  Postbank:6      ACME
-         Ondersteuning                 2007-07-16     714,00       0,00  Verkoop:5
+         *Perl Cursus                  2007-06-12       5,00       0,00  Postbank:6      ACME
+         Ondersteuning                 2007-07-16     714,00       0,00  Verkoop:6
          *Ondersteuning                2007-08-10       0,00     714,00  Postbank:8      ACME
-         Pocket Reference              2007-08-19    1000,00       0,00  Verkoop:6
+         Pocket Reference              2007-08-19    1000,00       0,00  Verkoop:7
          *Pocket Reference             2007-08-19       0,00    1000,00  Postbank:8      ORA
         Totaal mutaties                                 0,00
  2200  Totaal Debiteuren                                0,00
@@ -51,8 +53,8 @@ EekBoek Demo Administratie                                                      
          Afschrift 2                   2007-02-28       0,00      25,50  Postbank:2
          Afschrift 3                   2007-03-31    3442,98       0,00  Postbank:3
          Afschrift 4                   2007-04-30    3544,50       0,00  Postbank:4
-         Afschrift 5                   2007-05-31     467,28       0,00  Postbank:5
-         Afschrift 6                   2007-06-30     688,50       0,00  Postbank:6
+         Afschrift 5                   2007-05-31     472,28       0,00  Postbank:5
+         Afschrift 6                   2007-06-30     683,50       0,00  Postbank:6
          Afschrift 7                   2007-07-31       0,00     130,16  Postbank:7
          Afschrift 8                   2007-08-31    1688,50       0,00  Postbank:8
          Afschrift 9                   2007-09-30       0,00     134,22  Postbank:9
@@ -118,9 +120,10 @@ EekBoek Demo Administratie                                                      
         Beginsaldo                                      0,00       0,00
          BTW Perl Cursus 1e bet.       2007-02-18       0,00     570,00  Verkoop:1
          BTW Perl Cursus 2e bet.       2007-03-18       0,00     570,00  Verkoop:2
-         BTW Perl Cursus rest          2007-04-18       0,00      95,00  Verkoop:3
-         BTW Consultancy               2007-05-14       0,00     114,00  Verkoop:4
-         BTW Consultancy               2007-07-16       0,00     114,00  Verkoop:5
+         BTW Perl Cursus rest          2007-04-18       0,00      95,80  Verkoop:3
+         BTW Perl Cursus rest          2007-05-12       0,80       0,00  Verkoop:4
+         BTW Consultancy               2007-05-14       0,00     114,00  Verkoop:5
+         BTW Consultancy               2007-07-16       0,00     114,00  Verkoop:6
         Totaal mutaties                                         1463,00
  4200  Totaal BTW Verkoop Hoog                                  1463,00
 
@@ -212,14 +215,14 @@ EekBoek Demo Administratie                                                      
 
  8100  Omzet advisering
         Beginsaldo                                      0,00       0,00
-         Consultancy                   2007-05-14       0,00     600,00  Verkoop:4
-         Consultancy                   2007-07-16       0,00     600,00  Verkoop:5
+         Consultancy                   2007-05-14       0,00     600,00  Verkoop:5
+         Consultancy                   2007-07-16       0,00     600,00  Verkoop:6
         Totaal mutaties                                         1200,00
  8100  Totaal Omzet advisering                                  1200,00
 
  8300  Omzet editing
         Beginsaldo                                      0,00       0,00
-         Produktie boek                2007-08-19       0,00    1000,00  Verkoop:6
+         Produktie boek                2007-08-19       0,00    1000,00  Verkoop:7
         Totaal mutaties                                         1000,00
  8300  Totaal Omzet editing                                     1000,00
 
@@ -227,7 +230,8 @@ EekBoek Demo Administratie                                                      
         Beginsaldo                                      0,00       0,00
          Perl Cursus 1e bet.           2007-02-18       0,00    3000,00  Verkoop:1
          Perl Cursus 2e bet.           2007-03-18       0,00    3000,00  Verkoop:2
-         Perl Cursus rest              2007-04-18       0,00     500,00  Verkoop:3
+         Perl Cursus rest              2007-04-18       0,00     504,20  Verkoop:3
+         Perl Cursus rest              2007-05-12       4,20       0,00  Verkoop:4
         Totaal mutaties                                         6500,00
  8400  Totaal Omzet cursussen                                   6500,00
 
