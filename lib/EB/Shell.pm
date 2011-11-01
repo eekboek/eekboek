@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep  7 14:43:35 2011
-# Update Count    : 177
+# Last Modified On: Tue Nov  1 10:12:43 2011
+# Update Count    : 187
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -226,7 +226,7 @@ sub _plug_cmds {
     while ( $rr = $sth->fetchrow_arrayref ) {
 	my ($dbk_id, $dbk_desc, $dbk_type) = @$rr;
 	no strict 'refs';
-	my $dbk = lc(_T($dbk_desc));
+	my $dbk = lc(_T($dbk_desc)); #### TODO: _T ???
 	$dbk =~ s/\s+/_/g;
 	undef &{"do_$dbk"} if defined &{"do_$dbk"};
 	*{"do_$dbk"} = sub {
@@ -273,6 +273,22 @@ sub _plug_cmds {
 
     foreach ($dbk_pat, $dbk_i_pat, $dbk_v_pat, $dbk_bkm_pat) {
 	chop if $_;
+    }
+}
+
+sub _forget_cmds {
+    # Delete daybook-associated shell functions.
+    my $t = "|".join( "|", @{ $dbh->tablesdb } )."|";
+    if ( $t =~ /\|dagboeken\|/i ) {
+	my $sth = $dbh->sql_exec("SELECT dbk_desc FROM Dagboeken");
+	my $rr;
+	while ( $rr = $sth->fetchrow_arrayref ) {
+	    my ($dbk_desc) = @$rr;
+	    no strict 'refs';
+	    my $dbk = lc(_T($dbk_desc)); #### TODO: _T ???
+	    $dbk =~ s/\s+/_/g;
+	    undef &{"do_$dbk"} if defined &{"do_$dbk"};
+	}
     }
 }
 

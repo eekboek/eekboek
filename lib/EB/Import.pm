@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:31:03 2010
-# Update Count    : 90
+# Last Modified On: Tue Nov  1 10:01:20 2011
+# Update Count    : 106
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -55,12 +55,17 @@ sub do_import {
 	# To temporary suspend journaling.
 	my $jnl_state = $cfg->val(qw(preferences journal), undef);
 
+	# Delete daybook-associated shell functions.
+	$cmdobj->_forget_cmds;
+
 	# Create DB.
 	$dbh->cleardb if $opts->{clean};
 
 	# Schema.
 	EB::Tools::Schema->create("$dir/schema.dat");
 	$dbh->setup;
+
+	# Add daybook-associated shell functions.
 	$cmdobj->_plug_cmds;
 
 	# Relaties, Opening, Mutaties.
@@ -134,13 +139,18 @@ sub do_import {
 	    $_ = [ map { "$_\n" } split(/[\n\r]+/, $_) ];
 	}
 
-	eval {
+	# Delete daybook-associated shell functions.
+	$cmdobj->_forget_cmds;
+
+	eval {			#### TODO: Why eval?
 	    # Create DB.
 	    $dbh->cleardb if $opts->{clean};
 
 	    # Schema.
 	    EB::Tools::Schema->_create(sub { shift(@$d_schema) });
 	    $dbh->setup;
+
+	    # Add daybook-associated shell functions.
 	    $cmdobj->_plug_cmds;
 
 	    # Relaties, Opening, Mutaties. In reverse order.
