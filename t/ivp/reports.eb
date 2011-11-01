@@ -33,6 +33,10 @@ grootboek            --output=out/grootboek.txt
 grootboek --detail=0 --output=out/grootboek0.txt
 grootboek --detail=1 --output=out/grootboek1.txt
 grootboek --detail=2 --output=out/grootboek2.txt
+grootboek 2          --output=out/grootboek_2.txt
+grootboek 23         --output=out/grootboek_23.txt
+grootboek 23 22      --output=out/grootboek_23_22.txt
+grootboek 2320       --output=out/grootboek_2320.txt
 
 # Verify: Crediteuren/Debiteuren.
 crediteuren          --output=out/crdrept.txt

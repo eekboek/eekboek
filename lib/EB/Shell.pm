@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov  1 10:12:43 2011
-# Update Count    : 187
+# Last Modified On: Tue Nov  1 13:13:28 2011
+# Update Count    : 193
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -682,14 +682,46 @@ sub do_grootboek {
 	       ], $opts);
 
     my $fail;
-    foreach ( @args ) {
+    my ($max_hvd, $max_vrd);
+    while ( @args ) {
+	$_ = shift(@args);
 	if ( /^\d+$/ ) {
-	    if ( defined($opts->{select}) ) {
+	    # Check for (Hoofd)Verdichtingen.
+	    $max_hvd ||= $dbh->do
+	      ( "SELECT MAX(vdi_id) FROM Verdichtingen ".
+		"WHERE vdi_struct IS NULL")->[0];
+	    $max_vrd ||= $dbh->do
+	      ( "SELECT MAX(vdi_id) FROM Verdichtingen ".
+		"WHERE NOT vdi_struct IS NULL")->[0];
+	    if ( $_ < $max_hvd ) {
+		my $sth = $dbh->sql_exec
+		  ( "SELECT acc_id FROM Accounts ".
+		    "WHERE acc_struct IN ".
+		    " ( SELECT vdi_id FROM Verdichtingen ".
+		    "   WHERE vdi_struct = ? ) ".
+		    "ORDER BY acc_id DESC", $_ );
+		while ( my $rr = $sth->fetch ) {
+		    unshift( @args, $rr->[0] );
+		}
+	    }
+	    elsif ( $_ < $max_vrd ) {
+		my $sth = $dbh->sql_exec
+		  ( "SELECT acc_id from Accounts ".
+		    "WHERE acc_struct = ? ".
+		    "ORDER BY acc_id DESC", $_ );
+		while ( my $rr = $sth->fetch ) {
+		    unshift( @args, $rr->[0] );
+		}
+	    }
+
+	    # Assume ordinary account number.
+	    elsif ( defined($opts->{select}) ) {
 		$opts->{select} .= ",$_";
 	    }
 	    else {
 		$opts->{select} = $_;
 	    }
+
 	    next;
 	}
 	warn("?".__x("Ongeldig rekeningnummer: {acct}",
@@ -705,12 +737,15 @@ sub help_grootboek {
     _T( <<EOS );
 Toont het Grootboek, of een selectie daaruit.
 
-  grootboek [ <rek> ... ]
+  grootboek [ <nr> ... ]
 
 Opties:
 
   --detail=<n>		Mate van detail, <n>=0,1,2 (standaard is 2)
   --periode=<periode>	Alleen over deze periode
+
+Naast rekeningnummers kunnen ook nummers van verdichtingen en
+hoofdverdichtingen worden opgegeven.
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.

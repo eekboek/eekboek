@@ -4,14 +4,14 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 20:57:21 2011
-# Update Count    : 112
+# Last Modified On: Tue Nov  1 13:22:15 2011
+# Update Count    : 114
 
 use strict;
 use warnings;
 
 # The actual number of database tests, as executed by report_tests.
-use constant NUMTESTS => 34;
+use constant NUMTESTS => 38;
 # There are 9 initial tests.
 # report_tests requires 1 more for the setup, and 1 for the export
 # (all but the last).
@@ -170,10 +170,14 @@ sub report_tests {
     vfy([@ebcmd, qw(-c proefensaldibalans --verdicht)], "proef2.txt");
 
     # Verify: Grootboek in varianten.
-    vfy([@ebcmd, qw(-c grootboek)           ], "grootboek.txt" );
-    vfy([@ebcmd, qw(-c grootboek --detail=0)], "grootboek0.txt");
-    vfy([@ebcmd, qw(-c grootboek --detail=1)], "grootboek1.txt");
-    vfy([@ebcmd, qw(-c grootboek --detail=2)], "grootboek2.txt");
+    vfy([@ebcmd, qw(-c grootboek)           ], "grootboek.txt"      );
+    vfy([@ebcmd, qw(-c grootboek --detail=0)], "grootboek0.txt"     );
+    vfy([@ebcmd, qw(-c grootboek --detail=1)], "grootboek1.txt"     );
+    vfy([@ebcmd, qw(-c grootboek --detail=2)], "grootboek2.txt"     );
+    vfy([@ebcmd, qw(-c grootboek 2)         ], "grootboek_2.txt"    );
+    vfy([@ebcmd, qw(-c grootboek 23)        ], "grootboek_23.txt"   );
+    vfy([@ebcmd, qw(-c grootboek 23 22)     ], "grootboek_23_22.txt");
+    vfy([@ebcmd, qw(-c grootboek 2320)      ], "grootboek_2320.txt" );
 
     # Verify: Crediteuren/Debiteuren.
     vfy([@ebcmd, qw(-c crediteuren)         ], "crdrept.txt");
