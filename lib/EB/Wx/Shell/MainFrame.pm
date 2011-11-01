@@ -93,6 +93,8 @@ sub new {
 	use constant MENU_REP_AP => Wx::NewId();
 	use constant MENU_REP_AR => Wx::NewId();
 	use constant MENU_REP_VAT => Wx::NewId();
+	use constant MENU_MAINT_DBK => Wx::NewId();
+	use constant MENU_MAINT_REL => Wx::NewId();
 	use constant MENU_HELP_SUPPORT => Wx::NewId();
 
 #	###WARNING: Re-generating will loose
@@ -153,6 +155,9 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_REP_AR,  \&OnMenuAR);
 	Wx::Event::EVT_MENU($self, MENU_REP_VAT, \&OnMenuVAT);
 
+	Wx::Event::EVT_MENU($self, MENU_MAINT_DBK, \&OnMaintDbk);
+	Wx::Event::EVT_MENU($self, MENU_MAINT_REL, \&OnMaintRel);
+
 	Wx::Event::EVT_MENU($self, wxID_HELP,  \&OnHelp);
 	Wx::Event::EVT_MENU($self, MENU_HELP_SUPPORT, \&OnSupport);
 	Wx::Event::EVT_MENU($self, wxID_ABOUT, \&OnAbout);
@@ -198,6 +203,7 @@ sub __set_menubar {
 	$wxglade_tmp_menu->Append(MENU_INPUTEXEC, _T("&Uitvoeren invoerregel\tEnter"), "");
 	$wxglade_tmp_menu->AppendSeparator();
 	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("Uitvoer schoonmaken"), "");
+	$wxglade_tmp_menu->AppendSeparator();
 	$self->{menubar}->Append($wxglade_tmp_menu, _T("B&ewerken"));
 	$self->{Reports} = Wx::Menu->new();
 	$self->{Reports}->Append(MENU_REP_TRIAL, _T("Proef- en Saldibalans"), "");
@@ -225,6 +231,10 @@ sub __set_menubar {
 	$self->{Reports}->AppendSeparator();
 	$self->{Reports}->Append(MENU_REP_VAT, _T("BTW Aangifte"), "");
 	$self->{menubar}->Append($self->{Reports}, _T("&Rapporten"));
+	$self->{Maint} = Wx::Menu->new();
+	$self->{Maint}->Append(MENU_MAINT_DBK, _T("Dagboeken"), "");
+	$self->{Maint}->Append(MENU_MAINT_REL, _T("Relaties"), "");
+	$self->{menubar}->Append($self->{Maint}, _T("&Onderhoud"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_HELP, _T("&Hulp..."), "");
 	$wxglade_tmp_menu->AppendSeparator();
@@ -891,6 +901,34 @@ sub OnJournal {
 	$self->_cmd("journaal --gen-wxhtml\n");
 
 # end wxGlade
+}
+
+sub OnMaintDbk {
+    my ($self, $event) = @_;
+    require EB::Wx::Maint::Dagboeken;
+    my $p = "d_mdbkpanel";
+    $self->{$p} ||= EB::Wx::Maint::Dagboeken->new
+      ($self, -1,
+       "Onderhoud Dagboeken",
+       wxDefaultPosition, wxDefaultSize,
+      );
+    $self->{$p}->sizepos_restore("dbkw");
+    $self->{$p}->refresh;
+    $self->{$p}->Show(1);
+}
+
+sub OnMaintRel {
+    my ($self, $event) = @_;
+    require EB::Wx::Maint::Relaties;
+    my $p = "d_mrelpanel";
+    $self->{$p} ||= EB::Wx::Maint::Relaties->new
+      ($self, -1,
+       "Onderhoud Relaties",
+       wxDefaultPosition, wxDefaultSize,
+      );
+    $self->{$p}->sizepos_restore("relw");
+    $self->{$p}->refresh;
+    $self->{$p}->Show(1);
 }
 
 #### Callbacks from HTML links

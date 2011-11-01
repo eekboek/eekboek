@@ -16,6 +16,7 @@ use Wx qw(:everything);
 
 sub sizepos_save {
     my ($self, $posonly) = @_;
+    return;
     my $h = $state->get($self->{mew});
     @$h{ qw(xpos   ypos  ) } = $self->GetPositionXY;
     @$h{ qw(xwidth ywidth) } = $self->GetSizeWH unless $posonly;
@@ -24,6 +25,7 @@ sub sizepos_save {
 
 sub sizepos_restore {
     my ($self, $mew, $posonly) = @_;
+    return;
     $self->{mew} = $mew if defined $mew;
     my $h = $state->get($self->{mew});
     $self->Move(    [ @$h{ qw(xpos   ypos  ) } ] )
