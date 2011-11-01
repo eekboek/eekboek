@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov  1 13:13:28 2011
-# Update Count    : 193
+# Last Modified On: Tue Nov  1 14:48:50 2011
+# Update Count    : 204
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -845,13 +845,20 @@ rapporten.
 EOS
 }
 
+use List::Util qw(first);
+
 sub do_debiteuren {
     my ($self, @args) = @_;
+
+    if ( first { $_ eq "--list" } @args ) {
+	return $self->list_debiteuren( @args );
+    }
+
     my $opts = { d_boekjaar => $bky || $dbh->adm("bky"),
 	       };
 
-    require EB::Report::Debcrd;
     require EB::Report::GenBase;
+    require EB::Report::Debcrd;
 
     return unless
     parse_args(\@args,
@@ -859,14 +866,34 @@ sub do_debiteuren {
 		 EB::Report::GenBase->backend_options(EB::Report::Debcrd::, $opts),
 		 'periode=s' => sub { periode_arg($opts, @_) },
 		 'openstaand',
+		 'list',
 	       ], $opts);
 
     EB::Report::Debcrd->new->debiteuren(\@args, $opts);
 }
 
+sub list_debiteuren {
+    my ($self, @args) = @_;
+
+    my $opts = {};
+
+    require EB::Report::GenBase;
+    require EB::Report::DebcrdList;
+
+    return unless
+    parse_args(\@args,
+	       [ EB::Report::GenBase->backend_options(EB::Report::DebcrdList::, $opts),
+		 'list',
+	       ], $opts);
+
+    EB::Report::DebcrdList->new->debiteuren(\@args, $opts);
+}
+
 sub help_debiteuren {
     _T( <<EOS );
-Toont een overzicht van boekingen op debiteuren.
+Toont een overzicht van debiteuren.
+
+  debiteuren --list [ <relatiecodes> ... ]
 
   debiteuren [ <opties> ] [ <relatiecodes> ... ]
 
@@ -883,6 +910,11 @@ EOS
 
 sub do_crediteuren {
     my ($self, @args) = @_;
+
+    if ( first { $_ eq "--list" } @args ) {
+	return $self->list_crediteuren( @args );
+    }
+
     my $opts = { d_boekjaar => $bky || $dbh->adm("bky"),
 	       };
 
@@ -900,9 +932,28 @@ sub do_crediteuren {
     EB::Report::Debcrd->new->crediteuren(\@args, $opts);
 }
 
+sub list_crediteuren {
+    my ($self, @args) = @_;
+
+    my $opts = {};
+
+    require EB::Report::GenBase;
+    require EB::Report::DebcrdList;
+
+    return unless
+    parse_args(\@args,
+	       [ EB::Report::GenBase->backend_options(EB::Report::DebcrdList::, $opts),
+		 'list',
+	       ], $opts);
+
+    EB::Report::DebcrdList->new->crediteuren(\@args, $opts);
+}
+
 sub help_crediteuren {
     _T( <<EOS );
-Toont een overzicht van boekingen op crediteuren.
+Toont een overzicht van crediteuren.
+
+  crediteuren --list [ <relatiecode> ... ]
 
   crediteuren [ <opties> ] [ <relatiecode> ... ]
 

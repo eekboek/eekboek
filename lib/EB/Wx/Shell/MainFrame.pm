@@ -92,6 +92,8 @@ sub new {
 	use constant MENU_REP_UN => Wx::NewId();
 	use constant MENU_REP_AP => Wx::NewId();
 	use constant MENU_REP_AR => Wx::NewId();
+	use constant MENU_LST_DEB => Wx::NewId();
+	use constant MENU_LST_CRD => Wx::NewId();
 	use constant MENU_REP_VAT => Wx::NewId();
 	use constant MENU_HELP_SUPPORT => Wx::NewId();
 
@@ -152,6 +154,8 @@ sub new {
 	Wx::Event::EVT_MENU($self, MENU_REP_AP,  \&OnMenuAP);
 	Wx::Event::EVT_MENU($self, MENU_REP_AR,  \&OnMenuAR);
 	Wx::Event::EVT_MENU($self, MENU_REP_VAT, \&OnMenuVAT);
+	Wx::Event::EVT_MENU($self, MENU_LST_DEB, \&OnMenuDeb);
+	Wx::Event::EVT_MENU($self, MENU_LST_CRD, \&OnMenuCrd);
 
 	Wx::Event::EVT_MENU($self, wxID_HELP,  \&OnHelp);
 	Wx::Event::EVT_MENU($self, MENU_HELP_SUPPORT, \&OnSupport);
@@ -222,6 +226,9 @@ sub __set_menubar {
 	$self->{Reports}->AppendSeparator();
 	$self->{Reports}->Append(MENU_REP_AP, _T("Crediteuren"), "");
 	$self->{Reports}->Append(MENU_REP_AR, _T("Debiteuren"), "");
+	$self->{Reports}->AppendSeparator();
+	$self->{Reports}->Append(MENU_LST_CRD, _T("Crediteurenlijst"), "");
+	$self->{Reports}->Append(MENU_LST_DEB, _T("Debiteurenlijst"), "");
 	$self->{Reports}->AppendSeparator();
 	$self->{Reports}->Append(MENU_REP_VAT, _T("BTW Aangifte"), "");
 	$self->{menubar}->Append($self->{Reports}, _T("&Rapporten"));
@@ -873,6 +880,23 @@ sub OnMenuUns {
 # end wxGlade
 }
 
+sub OnMenuDeb {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::Shell::MainFrame::OnMenuDeb <event_handler>
+
+    $self->_cmd("debiteuren --list --gen-wxhtml\n");
+
+# end wxGlade
+}
+
+sub OnMenuCrd {
+    my ($self, $event) = @_;
+# wxGlade: EB::Wx::Shell::MainFrame::OnMenuCrd <event_handler>
+
+    $self->_cmd("crediteuren --list --gen-wxhtml\n");
+
+# end wxGlade
+}
 
 sub OnTrial {
 	my ($self, $event) = @_;
