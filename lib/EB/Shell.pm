@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov  1 13:13:28 2011
-# Update Count    : 193
+# Last Modified On: Fri Nov 11 08:28:21 2011
+# Update Count    : 200
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -683,6 +683,7 @@ sub do_grootboek {
 
     my $fail;
     my ($max_hvd, $max_vrd);
+    my @accts;
     while ( @args ) {
 	$_ = shift(@args);
 	if ( /^\d+$/ ) {
@@ -701,7 +702,7 @@ sub do_grootboek {
 		    "   WHERE vdi_struct = ? ) ".
 		    "ORDER BY acc_id DESC", $_ );
 		while ( my $rr = $sth->fetch ) {
-		    unshift( @args, $rr->[0] );
+		    unshift( @accts, $rr->[0] );
 		}
 	    }
 	    elsif ( $_ < $max_vrd ) {
@@ -710,18 +711,19 @@ sub do_grootboek {
 		    "WHERE acc_struct = ? ".
 		    "ORDER BY acc_id DESC", $_ );
 		while ( my $rr = $sth->fetch ) {
-		    unshift( @args, $rr->[0] );
+		    unshift( @accts, $rr->[0] );
 		}
 	    }
 
 	    # Assume ordinary account number.
-	    elsif ( defined($opts->{select}) ) {
-		$opts->{select} .= ",$_";
+	    elsif ( $dbh->lookup( $_, qw(Accounts acc_id acc_id) ) ) {
+		push( @accts, $_ );
 	    }
 	    else {
-		$opts->{select} = $_;
+		warn("?".__x("Onbekend rekeningnummer: {acct}",
+			     acct => $_)."\n");
+		$fail++;
 	    }
-
 	    next;
 	}
 	warn("?".__x("Ongeldig rekeningnummer: {acct}",
@@ -729,6 +731,9 @@ sub do_grootboek {
 	$fail++;
     }
     return if $fail;
+
+    $opts->{select} = join( ",", @accts ) if @accts;
+
     EB::Report::Grootboek->new->perform($opts);
     undef;
 }
