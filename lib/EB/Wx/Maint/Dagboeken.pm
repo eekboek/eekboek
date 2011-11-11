@@ -352,6 +352,10 @@ sub apply {
 	     $msg, "Fout tijdens het bijwerken",
 	     wxOK|wxICON_ERROR);
     }
+    else {
+	EB::Shell::_forget_cmds();
+	EB::Shell::_plug_cmds();
+    }
 }
 
 # wxGlade: EB::Wx::Maint::Dagboeken::OnCBAcct <event_handler>

@@ -95,6 +95,7 @@ sub new {
 	use constant MENU_REP_VAT => Wx::NewId();
 	use constant MENU_MAINT_DBK => Wx::NewId();
 	use constant MENU_MAINT_REL => Wx::NewId();
+	use constant MENU_MAINT_VAT => Wx::NewId();
 	use constant MENU_HELP_SUPPORT => Wx::NewId();
 
 #	###WARNING: Re-generating will loose
@@ -157,6 +158,7 @@ sub new {
 
 	Wx::Event::EVT_MENU($self, MENU_MAINT_DBK, \&OnMaintDbk);
 	Wx::Event::EVT_MENU($self, MENU_MAINT_REL, \&OnMaintRel);
+	Wx::Event::EVT_MENU($self, MENU_MAINT_VAT, \&OnMaintVat);
 
 	Wx::Event::EVT_MENU($self, wxID_HELP,  \&OnHelp);
 	Wx::Event::EVT_MENU($self, MENU_HELP_SUPPORT, \&OnSupport);
@@ -234,6 +236,7 @@ sub __set_menubar {
 	$self->{Maint} = Wx::Menu->new();
 	$self->{Maint}->Append(MENU_MAINT_DBK, _T("Dagboeken"), "");
 	$self->{Maint}->Append(MENU_MAINT_REL, _T("Relaties"), "");
+	$self->{Maint}->Append(MENU_MAINT_VAT, _T("BTW Tarieven"), "");
 	$self->{menubar}->Append($self->{Maint}, _T("&Onderhoud"));
 	$wxglade_tmp_menu = Wx::Menu->new();
 	$wxglade_tmp_menu->Append(wxID_HELP, _T("&Hulp..."), "");
@@ -927,6 +930,20 @@ sub OnMaintRel {
        wxDefaultPosition, wxDefaultSize,
       );
     $self->{$p}->sizepos_restore("relw");
+    $self->{$p}->refresh;
+    $self->{$p}->Show(1);
+}
+
+sub OnMaintVat {
+    my ($self, $event) = @_;
+    require EB::Wx::Maint::BTWTarieven;
+    my $p = "d_mvatpanel";
+    $self->{$p} ||= EB::Wx::Maint::BTWTarieven->new
+      ($self, -1,
+       "Onderhoud BTW Tarieven",
+       wxDefaultPosition, wxDefaultSize,
+      );
+    $self->{$p}->sizepos_restore("vatw");
     $self->{$p}->refresh;
     $self->{$p}->Show(1);
 }

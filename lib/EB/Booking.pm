@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  2 23:00:27 2011
-# Update Count    : 143
+# Last Modified On: Tue Nov  1 17:23:00 2011
+# Update Count    : 145
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -156,7 +156,7 @@ sub parse_btw_spec {
 
     # Examine rest. Numeric -> BTW id.
     if ( $spec =~ /^(\d+)$/ ) {
-	$btw_id = $1;
+	$btw_id = $dbh->lookup($1, qw(BTWTabel btw_id btw_id));
     }
     # H L H- L- H+ L+
     elsif ( $spec =~ /^([hl])([-+])?$/ ) {

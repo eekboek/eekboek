@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 21 20:44:33 2011
-# Update Count    : 309
+# Last Modified On: Tue Nov  1 16:43:06 2011
+# Update Count    : 310
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -258,6 +258,7 @@ sub perform {
 	    if ( $btw_id && ($rel_btw == BTWTYPE_NORMAAL || $rel_btw == BTWTYPE_INTRA) ) {
 		my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
 		unless ( defined($tg) ) {
+		    $dbh->rollback;
 		    warn("?".__x("Onbekende BTW-code: {code}", code => $btw_id)."\n");
 		    return;
 		}
