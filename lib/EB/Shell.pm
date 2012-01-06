@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Nov 11 08:28:21 2011
-# Update Count    : 200
+# Last Modified On: Fri Jan  6 21:51:01 2012
+# Update Count    : 202
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -329,14 +329,14 @@ EOS
 
 gevolgd door een of meer:
 
-  crd [ <datum> ] <code> <bedrag>			(betaling van crediteur)
-  deb [ <datum> ] <code> <bedrag>			(betaling van debiteur)
+  crd [ <datum> ] <relatie> <bedrag>			(betaling van crediteur)
+  deb [ <datum> ] <relatie> <bedrag>			(betaling van debiteur)
   std [ <datum> ] <omschrijving> <bedrag> <rekening>	(vrije boeking)
 
 Controle van het eindsaldo kan met de optie --saldo=<bedrag>.
 Controle van het totale boekstukbedrag kan met de optie --totaal=<bedrag>.
 Voor deelbetalingen of betalingen met afwijkend bedrag kan in plaats van de
-<code> het boekstuknummer worden opgegeven.
+<relatie> het boekstuknummer worden opgegeven.
 EOS
     }
     $text;
