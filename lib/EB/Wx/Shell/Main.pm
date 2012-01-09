@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jul 24 14:56:14 2011
-# Update Count    : 432
+# Last Modified On: Mon Jan  9 12:36:22 2012
+# Update Count    : 435
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -48,6 +48,9 @@ sub run {
 
     binmode(STDOUT, ":encoding(utf8)");
     binmode(STDERR, ":encoding(utf8)");
+
+    # Preliminary initialize config.
+    EB->app_init( { app => $EekBoek::PACKAGE } );
 
     # Command line options.
     $opts =
@@ -165,8 +168,6 @@ use warnings 'redefine';
 
 sub app_options {
     my ( $opts ) = @_;
-    my $help = 0;		# handled locally
-    my $ident = 0;		# handled locally
 
     # Filter psn arguments (Mac OSX).
     @ARGV = grep { ! /psn_\d_\d+/ } @ARGV;
@@ -192,17 +193,17 @@ sub app_options {
 		      'open=s',
 		      'wizard!',
 		      'printconfig|P',
-		      'ident'	=> \$ident,
+		      'ident',
 		      'verbose',
 		      'trace!',
 		      'help|?',
 		      'debug',
-		    ) or $help )
+		    ) or $opts->{help} )
     {
 	app_usage();
     }
     app_usage() if @ARGV && !$opts->{printconfig};
-    app_ident() if $ident;
+    app_ident() if $opts->{ident};
     return unless @optionerrors;
     my $d = Wx::MessageDialog->new ( undef,
 				     join("\n", @optionerrors),
