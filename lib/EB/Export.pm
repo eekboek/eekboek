@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 23 21:09:08 2011
-# Update Count    : 240
+# Last Modified On: Mon Jan 16 14:38:13 2012
+# Update Count    : 242
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -138,9 +138,9 @@ sub _relaties {
 
     my $cur_dbk = "";
     my $cur_btw = -1;
-    my $out = __x("# {what} voor administratie {adm}",
-		  what => _T("Relaties"), adm => $dbh->adm("name")) . "\n" .
-	      __x("# Aangemaakt door {id} op {date}",
+    my $out = "# " . __x("{what} voor administratie {adm}",
+			 what => _T("Relaties"), adm => $dbh->adm("name")) . "\n" .
+	      "# " . __x("Aangemaakt door {id} op {date}",
 		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
 	      "# Content-Type: text/plain; charset = UTF-8";
     while ( my $rr = $sth->fetchrow_arrayref ) {
@@ -168,10 +168,10 @@ sub _opening {
 
     my $sth;
 
-    my $out = __x("# {what} voor administratie {adm}",
-		  what => _T("Openingsgegevens"), adm => $dbh->adm("name")) . "\n" .
-	      __x("# Aangemaakt door {id} op {date}",
-		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
+    my $out = "# " . __x("{what} voor administratie {adm}",
+			 what => _T("Openingsgegevens"), adm => $dbh->adm("name")) . "\n" .
+	      "# " . __x("Aangemaakt door {id} op {date}",
+			 id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
 	      "# Content-Type: text/plain; charset = UTF-8\n\n";
 
     $out .= _xt("cmd:adm_naam") . "         " . _quote($dbh->adm("name")) . "\n";
@@ -261,10 +261,10 @@ sub _opening {
 sub _mutaties {
     my ($self, $opts) = @_;
 
-    my $out = __x("# {what} voor administratie {adm}",
-		  what => _T("Boekingen"), adm => $dbh->adm("name")) . "\n" .
-	      __x("# Aangemaakt door {id} op {date}",
-		  id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
+    my $out = "# " . __x("{what} voor administratie {adm}",
+			 what => _T("Boekingen"), adm => $dbh->adm("name")) . "\n" .
+	      "# " . __x("Aangemaakt door {id} op {date}",
+			 id => $EB::ident, date => datefmt_full(iso8601date())) . "\n" .
 	      "# Content-Type: text/plain; charset = UTF-8\n\n";
 
     my @bky;
