@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 16 14:38:13 2012
-# Update Count    : 242
+# Last Modified On: Mon Jan 16 15:11:32 2012
+# Update Count    : 243
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -280,7 +280,9 @@ sub _mutaties {
     my $check_je = sub {
 	my ($bky) = @_;
 	if ( $dbh->lookup($bky, qw(Boekjaren bky_code bky_closed)) ) {
-	    $out .= _xt("cmd:jaareinde")." --boekjaar=" . _quote($bky) . " --definitief\n";
+	    $out .= _xt("cmd:jaareinde") .
+	      " --" . __xt("cmo:jaareinde:boekjaar") . "=" . _quote($bky) .
+	      " --" . __xt("cmo:jaareinde:definitief") . "\n";
 	}
 	else {
 	    $sth = $dbh->sql_exec("SELECT COUNT(*)".
@@ -288,7 +290,8 @@ sub _mutaties {
 				  " WHERE bkb_bky = ?", $bky);
 	    my $rr;
 	    if ( ($rr = $sth->fetchrow_arrayref) && $rr->[0] ) {
-		$out .= _xt("cmd:jaareinde") . " --boekjaar=" . _quote($bky) . "\n";
+		$out .= _xt("cmd:jaareinde") .
+		  " --" . __xt("cmo:jaareinde:boekjaar") . "=" . _quote($bky) . "\n";
 	    }
 	    $sth->finish;
 	}
@@ -298,8 +301,11 @@ sub _mutaties {
 	    my $bkb = $dbh->lookup($bky, qw(Boekjaren bky_code bky_begin));
 	    if ( $bb gt $bkb ) {
 		$bke = parse_date($bb, undef, -1) if $bb le $bke;
-		$out .= _xt("cmd:btwaangifte")." --periode=".
-		  datefmt_full($bkb)."-".datefmt_full($bke)." --definitief --noreport\n";
+		$out .= _xt("cmd:btwaangifte").
+		  " --" . __xt("cmo:btwaangifte:periode") . "=".
+		  datefmt_full($bkb)."-".datefmt_full($bke) .
+		  " --" . __xt("cmo:btwaangifte:definitief") .
+		  " --" . __xt("cmo:btwaangifte:noreport") . "\n";
 	    }
 	}
     };

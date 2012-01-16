@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 23 21:25:48 2011
-# Update Count    : 108
+# Last Modified On: Mon Jan 16 16:24:50 2012
+# Update Count    : 109
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -30,8 +30,8 @@ sub new {
 
 sub add {
     my ($self, $code, $desc, $acct, $opts) = @_;
-    my $bstate = $opts->{__xt("cmo:relatie:btw")};
-    my $dbk = $opts->{__xt("cmo:relatie:dagboek")};
+    my $bstate = $opts->{btw};
+    my $dbk = $opts->{dagboek};
 
     if ( defined($bstate) ) {
 	$bstate = lc($bstate);

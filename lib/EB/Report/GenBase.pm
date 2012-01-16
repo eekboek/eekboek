@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Mar 18 20:33:41 2011
-# Update Count    : 174
+# Last Modified On: Mon Jan 16 15:56:26 2012
+# Update Count    : 176
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -204,7 +204,12 @@ sub backend_options {
     foreach my $std ( qw(text html csv) ) {
 	$be{$std} = 1 if _loaded($package . "::" . ucfirst($std));
     }
-    my @opts = qw(output=s page=i);
+
+    #### FIXME: options dest is uncontrollable!!!!
+    #### DO NOT TRANSLATE UNTIL FIXED !!!!
+
+    my @opts = ( __xt("cmo:report:output")."=s",
+		 __xt("cmo:report:page")."=i" );
 
     if ( $Cava::Packager::PACKAGED ) {
 	$be{wxhtml}++;
@@ -239,7 +244,9 @@ sub backend_options {
     foreach ( qw(html csv text) ) {
 	push(@opts, $_) if $be{$_};
     }
-    push(@opts, "style=s", "title|titel=s") if $be{html};
+    push(@opts,
+	 __xt("cmo:report:style")."=s",
+	 __xt("cmo:report:title|titel")."=s") if $be{html};
 
     # Explicit --gen-XXX for all backends.
     push(@opts, map { +"gen-$_"} keys %be);

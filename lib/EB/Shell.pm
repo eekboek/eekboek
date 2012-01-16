@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jan  6 21:51:01 2012
-# Update Count    : 202
+# Last Modified On: Mon Jan 16 15:40:58 2012
+# Update Count    : 215
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -469,14 +469,17 @@ sub _add {
     my $args = \@args;
     return unless
     parse_args($args,
-	       [ 'boekstuk|nr=s',
-		 'boekjaar=s',
-		 'journal!',
-		 'totaal=s',
-		 'ref=s',
-		 'confirm!',
+	       [ __xt('cmo:boeking:boekstuk|nr').'=s' => \$opts->{boekstuk},
+		 __xt('cmo:boeking:boekjaar').'=s' => \$opts->{boekjaar},
+		 __xt('cmo:boeking:journal|journaal').'!' => \$opts->{journal},
+		 __xt('cmo:boeking:totaal').'=s' => \$opts->{totaal},
+		 __xt('cmo:boeking:ref').'=s' => \$opts->{ref},
+		 __xt('cmo:boeking:confirm').'!' => \$opts->{confirm},
 		 ( $dagboek_type == DBKTYPE_BANK
-		   || $dagboek_type == DBKTYPE_KAS ) ? ( 'saldo=s', 'beginsaldo=s' ) : (),
+		   || $dagboek_type == DBKTYPE_KAS )
+		 ? ( __xt('cmo:boeking:saldo').'=s' => \$opts->{saldo},
+		     __xt('cmo:boeking:beginsaldo').'=s' => \$opts->{beginsaldo} )
+		 : (),
 	       ], $opts);
 
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
@@ -496,20 +499,12 @@ sub do_journaal {
     require EB::Report::Journal;
     require EB::Report::GenBase;
 
-    if ( 0 ) {			# force translating
-	N__"cmo:journaal:detail|details";
-	N__"cmo:journaal:nodetail|nodetails";
-	N__"cmo:journaal:totaal";
-	N__"cmo:journaal:boekjaar";
-	N__"cmo:journaal:periode";
-    }
-
     return unless
-    parse_args2(\@args,
-	       [ 'detail|details!',
-		 'totaal' => sub { $opts->{detail} = 0 },
-		 'boekjaar=s',
-		 'periode=s' => sub { periode_arg($opts, @_) },
+    parse_args(\@args,
+	       [ __xt('cmo:journaal:detail|details').'!' => \$opts->{journal},
+		 __xt('cmo:journaal:totaal') => sub { $opts->{detail} = 0 },
+		 __xt('cmo:journaal:boekjaar').'=s' => \$opts->{boekjaar},
+		 __xt('cmo:journaal:periode').'=s' => sub { periode_arg($opts, "periode", $_[1]) },
 		 EB::Report::GenBase->backend_options(EB::Report::Journal::, $opts),
 	       ], $opts);
 
@@ -1082,8 +1077,10 @@ sub do_relatie {
 
     return unless
     parse_args(\@args,
-	       [ __xt("cmo:relatie:dagboek").'=s',
-		 $dbh->does_btw ? __xt("cmo:relatie:btw").'=s' : (),
+	       [ __xt("cmo:relatie:dagboek").'=s' => \$opts->{dagboek},
+		 $dbh->does_btw
+		 ? ( __xt("cmo:relatie:btw").'=s' => \$opts->{btw} )
+		 : (),
 	       ], $opts)
       or goto &help_relatie;
 
@@ -1495,6 +1492,8 @@ sub parse_args {
     $ret;
 }
 
+=begin maybelater
+
 sub parse_args2 {
     my ( $argv, $c, $opts ) = @_;
     my @resarg;
@@ -1591,6 +1590,8 @@ sub parse_args2 {
 
     return $ok;
 }
+
+=cut
 
 sub periode_arg {
     my ($opts, $name, $value) = @_;

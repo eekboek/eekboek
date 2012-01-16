@@ -522,7 +522,7 @@ sub help {
     my @ret;
 
     if ($topic) {
-        if (my $sub = $self->can("help_$topic")) {
+        if (my $sub = $self->can("help_".$self->_xtr("cmd:$topic"))) {
             push @ret,  $self->$sub(@_);
         }
         else {
