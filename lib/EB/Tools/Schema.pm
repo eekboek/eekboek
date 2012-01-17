@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 16 14:32:46 2012
-# Update Count    : 880
+# Last Modified On: Tue Jan 17 16:56:11 2012
+# Update Count    : 887
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -139,6 +139,13 @@ sub init_kmap {
     $km{dagboeken}	 = __xt("scm:dagboeken");
     $km{hdr_btwtarieven} = __xt("scm:hdr:BTW Tarieven");
 
+    # Daybook Types.
+    $km{inkoop}		 = __xt("scm:dbk:inkoop");
+    $km{verkoop}	 = __xt("scm:dbk:verkoop");
+    $km{bank}		 = __xt("scm:dbk:bank");
+    $km{kas}		 = __xt("scm:dbk:kas");
+    $km{memoriaal}	 = __xt("scm:dbk:memoriaal");
+
     # Misc.
     $km{inclusief}	 = __xt("scm:inclusief");
     $km{exclusief}	 = __xt("scm:exclusief");
@@ -197,7 +204,7 @@ sub scan_dagboeken {
 	if ( $extra =~ m/^$km{type}=(\S+)$/i ) {
 	    my $t = DBKTYPES;
 	    for ( my $i = 0; $i < @$t; $i++ ) {
-		next unless lc($1) eq lc($t->[$i]);
+		next unless lc($1) eq lc(_xt("scm:dbk:".lc($t->[$i])));
 		$type = $i;
 		last;
 	    }
@@ -1087,7 +1094,7 @@ sub dump_dbk {
 	$acc_id = 0 if $type == DBKTYPE_INKOOP  && $dbh->std_acc("crd", 0) == $acc_id;
 	$acc_id = 0 if $type == DBKTYPE_VERKOOP && $dbh->std_acc("deb", 0) == $acc_id;
 	my $t = sprintf("  %-4s  %-20s  :type=%-10s %s",
-			$id, $desc, lc(DBKTYPES->[$type]),
+			$id, $desc, _xt("scm:dbk:".lc(DBKTYPES->[$type])),
 			($acc_id ? ":$km{rekening}=$acc_id" : "").
 			($dc ? " :dc" : ""),
 		       );

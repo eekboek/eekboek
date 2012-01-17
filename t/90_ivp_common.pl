@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov  1 13:22:15 2011
-# Update Count    : 114
+# Last Modified On: Tue Jan 17 19:48:03 2012
+# Update Count    : 115
 
 use strict;
 use warnings;
@@ -45,7 +45,7 @@ chdir("ivp") if -d "ivp";
 my $f;
 for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
     ok(1, $_), next if -s $_;
-    if ( $f = findlib("examples/$_") and -s $f ) {
+    if ( $f = findlib($_, "examples") and -s $f ) {
 	copy($f, $_);
     }
     ok(-s $_, $_);

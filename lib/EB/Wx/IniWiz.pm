@@ -135,9 +135,11 @@ sub new {
 	    $prev = $page;
 	}
 
-	@ebz = map { [$_, "" ] } glob( libfile("templates/*.ebz") );
+	my $dir = dirname( findlib( "templates.txt", "templates" ) );
+	@ebz = map { [ $_, "" ] } glob( "$dir/*.ebz" );
 
 	my $i = 0;
+	my $dp = quotemeta( _T("Omschrijving").": " );
 	foreach my $ebz ( @ebz ) {
 	    require Archive::Zip;
 	    my $zip = Archive::Zip->new();
@@ -146,7 +148,7 @@ sub new {
 	    if ( $desc =~ /flags:\s*(.*)/i ) {
 		$ebz->[1] = $1;
 	    }
-	    if ( $desc =~ /omschrijving:\s+(.*)/i ) {
+	    if ( $desc =~ /^$dp\s*(.*)$/m ) {
 		$desc = $1;
 	    }
 	    elsif ( $desc =~ /export van (.*) aangemaakt door eekboek/i ) {

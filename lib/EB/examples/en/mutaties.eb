@@ -1,0 +1,118 @@
+# Bookings for administration EekBoek Sample Administration
+# Created by EekBoek 2.01.03 on 2012-01-16
+# Content-Type: text/plain; charset = UTF-8
+
+purchase 05-01 "Internet" "XS4ALL" --total=22.80 \
+        "ADSL" 22.80 6905
+purchase 15-01 "ADSL + Telefoon" "KPN" \
+        "ADSL" 24.20 6905 \
+        "Telefoonkosten" 80.45 6900
+purchase 09-02 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 08-03 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 18-03 "Telefoonkosten" "KPN" \
+        "ADSL + Telefoon" 101.52 6900
+purchase 05-04 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 10-05 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 20-05 "Telefoonkosten" "KPN" \
+        "ADSL + Telefoon" 102.22 6900
+purchase 07-06 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 05-07 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 15-07 "Telefoonkosten" "KPN" \
+        "ADSL + Telefoon" 104.66 6900
+purchase 09-08 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 06-09 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 16-09 "Telefoonkosten" "KPN" \
+        "ADSL + Telefoon" 108.72 6900
+purchase 11-10 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 07-11 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+purchase 17-11 "Telefoonkosten" "KPN" \
+        "ADSL + Telefoon" 109.67 6900
+purchase 06-12 "Internet" "XS4ALL" \
+        "ÁDSL" 22.80 6905
+purchase:20 07-12 "Internet" "XS4ALL" \
+        "ADSL" 22.80 6905
+
+sales 18-02 "Perl Cursus" "ACME" \
+        "Perl Cursus 1e bet." 3570.00 8400
+sales 18-03 "Perl Cursus" "ACME" \
+        "Perl Cursus 2e bet." 3570.00 8400
+sales 18-04 "Perl Cursus" "ACME" \
+        "Perl Cursus rest" 595.00 8400
+sales 14-05 "Ondersteuning" "ACME" \
+        "Consultancy" 714.00 8100
+sales 16-07 "Ondersteuning" "ACME" \
+        "Consultancy" 714.00 8100
+sales 19-08 "Pocket Reference" "ORA" \
+        "Produktie boek" 1000.00 8300
+
+postbank:1 31-01 "Afschrift 1" --init-balance=1131.92 --balance=1001.77 \
+        std 06-01 "Girotel" -2.70 6980 \
+        crd 19-01 "XS4ALL" -22.80 \
+        crd "KPN" -104.65
+postbank:2 28-02 "Afschrift 2" --balance=976.27 \
+        std 10-02 "Girotel" -2.70 6980 \
+        crd 23-02 "XS4ALL" -22.80
+postbank:3 31-03 "Afschrift 3" --balance=4419.25 \
+        std 09-03 "Girotel" -2.70 6980 \
+        deb 18-03 "ACME" 3570.00 \
+        crd "XS4ALL" -22.80 \
+        crd "KPN" -101.52
+postbank:4 30-04 "Afschrift 4" --balance=7963.75 \
+        std 06-04 "Girotel" -2.70 6980 \
+        crd 06-04 "XS4ALL" -22.80 \
+        deb 12-04 "ACME" 3570.00
+postbank:5 31-05 "Afschrift 5" --balance=8431.03 \
+        std 11-05 "Girotel" -2.70 6980 \
+        crd "XS4ALL" -22.80 \
+        deb "ACME" 595.00 \
+        crd "KPN" -102.22
+postbank:6 30-06 "Afschrift 6" --balance=9119.53 \
+        std 08-06 "Girotel" -2.70 6980 \
+        deb 08-06 "ACME" 714.00 \
+        crd 21-06 "XS4ALL" -22.80
+postbank:7 31-07 "Afschrift 7" --balance=8989.37 \
+        std 06-07 "Girotel" -2.70 6980 \
+        crd 30-07 "XS4ALL" -22.80 \
+        crd "KPN" -104.66
+postbank:8 31-08 "Afschrift 8" --balance=10677.87 \
+        std 10-08 "Girotel" -2.70 6980 \
+        deb 10-08 "ACME" 714.00 \
+        crd 10-08 "XS4ALL" -22.80 \
+        deb 19-08 "ORA" 1000.00
+postbank:9 30-09 "Afschrift 9" --balance=10543.65 \
+        std 17-09 "Girotel" -2.70 6980 \
+        crd "XS4ALL" -22.80 \
+        crd "KPN" -108.72
+postbank:10 31-10 "Afschrift 10" --balance=10518.15 \
+        std 12-10 "Girotel" -2.70 6980 \
+        crd 13-10 "XS4ALL" -22.80
+postbank:11 30-11 "Afschrift 11" --balance=10382.98 \
+        std 08-11 "Girotel" -2.70 6980 \
+        crd "XS4ALL" -22.80 \
+        crd "KPN" -109.67
+postbank:12 07-12 "Afschrift 12" --balance=10357.48 \
+        std 06-12 "Girotel" -2.70 6980 \
+        crd "XS4ALL" -22.80
+postbank:13 09-12 "Eerste deel ADSL" --balance=10347.48 \
+        crd "purchase:20" -10.00
+postbank:14 10-12 "Tweede deel ADSL" --balance=10334.68 \
+        crd "purchase:20" -12.80
+
+memorial:1 31-12 "Afschrijving inventaris" \
+        std "Afschrijving" -411.26@0 6800 \
+        std "Afschrijving" 411.26 1101
+memorial:2 31-12 "Afschrijving computers" \
+        std "Afschrijving" -396.82@0 6810 \
+        std "Afschrijving" 396.82 1111
+
+# End of Bookings
