@@ -12,5 +12,6 @@ if ( !$dbdriver && $0 =~ /\d+_ivp_(.+).t/ ) {
 
 chdir("t") if -d "t";
 
+$ENV{LANG} = "nl_NL";
 require "90_ivp_common.pl";
 

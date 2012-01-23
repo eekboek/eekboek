@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 17 19:48:03 2012
-# Update Count    : 115
+# Last Modified On: Mon Jan 23 22:51:48 2012
+# Update Count    : 126
 
 use strict;
 use warnings;
@@ -28,6 +28,7 @@ BEGIN { use_ok('EB') }
 BEGIN { use_ok('File::Copy') }
 EB->app_init( { app => "ivp" } );
 ok( $::cfg, "Got config");
+
 $remaining -= 5;
 
 our $dbdriver;
@@ -41,26 +42,34 @@ elsif ( $dbdriver eq "sqlite" ) {
 }
 BAIL_OUT("Unsupported database driver: $dbdriver") unless $dbddrv;
 
-chdir("ivp") if -d "ivp";
-my $f;
-for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
-    ok(1, $_), next if -s $_;
-    if ( $f = findlib($_, "examples") and -s $f ) {
-	copy($f, $_);
-    }
-    ok(-s $_, $_);
+my $l = $ENV{LANG};
+$l =~ s/_.*//;
+for ( "ivp_".$ENV{LANG}, "ivp_$l", "ivp" ) {
+    chdir($_), last if -d $_;
 }
-$remaining -= 4;
-for ( qw(ivp.conf opening.eb relaties.eb
-	 mutaties.eb reports.eb schema.dat ) ) {
-    die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
-}
-
-mkdir("out") unless -d "out";
-ok( -w "out" && -d "out", "writable output dir" );
-$remaining--;
 
 SKIP: {
+    diag("This test is not yet implemented -- SKIPPED") unless -d "ref";
+    skip("This test is not yet implemented", $remaining) unless -d "ref";
+
+    my $f;
+    for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
+	ok(1, $_), next if -s $_;
+	if ( $f = findlib($_, "examples") and -s $f ) {
+	    copy($f, $_);
+	}
+	ok(-s $_, $_);
+    }
+    $remaining -= 4;
+    for ( qw(ivp.conf opening.eb relaties.eb
+	     mutaties.eb reports.eb schema.dat ) ) {
+	die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
+    }
+
+    mkdir("out") unless -d "out";
+    ok( -w "out" && -d "out", "writable output dir" );
+    $remaining--;
+
     eval "require $dbddrv";
     skip("DBI $dbdriver driver ($dbddrv) not installed", $remaining) if $@;
 

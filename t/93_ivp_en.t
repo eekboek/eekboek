@@ -11,6 +11,7 @@ if ( !$dbdriver && $0 =~ /\d+_ivp_(.+).t/ ) {
 }
 
 chdir("t") if -d "t";
-chdir("ivp_en") or die;
-require "../90_ivp_common.pl";
+
+$ENV{LANG} = "en_US";
+require "90_ivp_common.pl";
 
