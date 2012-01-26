@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-01-17 15:27+0100\n"
-"PO-Revision-Date: 2012-01-17 20:24+0100\n"
+"PO-Revision-Date: 2012-01-19 19:30+0100\n"
 "Last-Translator: Automatically generated <>\n"
 "Language-Team: none <>\n"
 "Language: \n"
@@ -613,7 +613,7 @@ msgstr "You can start now."
 
 #: ../lib/EB/Shell/Base.pm:84
 msgid "cmd:adm_balans"
-msgstr "scm:adm_balance"
+msgstr "cmd:adm_balance"
 
 #: ../lib/EB/Shell/Base.pm:85
 msgid "cmd:adm_balanstotaal"
@@ -3327,7 +3327,7 @@ msgstr "cmo:yearend:finyear"
 
 #: ../lib/EB/Export.pm:285
 msgid "cmo:jaareinde:definitief"
-msgstr "cmd:yearend:final"
+msgstr "cmo:yearend:final"
 
 #: ../lib/EB/Export.pm:305
 msgid "cmo:btwaangifte:periode"
