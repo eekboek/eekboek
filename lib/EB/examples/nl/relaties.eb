@@ -19,8 +19,10 @@
 
 relatie --dagboek=inkoop \
         XS4ALL "XS4All Internet B.V." 6905
-relatie --dagboek=inkoop \
-        KPN "KPN" 6900
+#relatie --dagboek=inkoop \
+#        KPN "KPN" 6900
+# Met impiciete dagboekdetectie:
+relatie KPN "KPN" 6900
 
 # Meerdere relaties kunnen ook in een keer:
 #
