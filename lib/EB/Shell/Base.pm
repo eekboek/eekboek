@@ -348,6 +348,12 @@ sub run {
 	    $self->print("$output\n") if $output;
 	}
 
+	# Make sure we're not in a pending transaction.
+	if ( $::dbh->in_transaction ) {
+	    warn("?INTERNAL ERROR: Command failed but did not rollback.\n");
+	    $::dbh->rollback;
+	}
+
         # In case someone modified the prompt, we recollect it before
         # displaying it.
         $prompt = $self->prompt();
