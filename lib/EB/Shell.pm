@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 16 15:40:58 2012
-# Update Count    : 215
+# Last Modified On: Sun Jan 29 21:42:04 2012
+# Update Count    : 216
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -795,7 +795,7 @@ sub do_btwaangifte {
 		 "noreport",
 		 "noround",
 	       ], $opts)
-      or goto &_help_btwaangifte;
+      or goto &help_btwaangifte;
 
     if ( @args && lc($args[-1]) eq "definitief" ) {
 	$opts->{close} = 1;
