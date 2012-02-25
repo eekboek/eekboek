@@ -4,14 +4,14 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 20:57:21 2011
-# Update Count    : 112
+# Last Modified On: Mon Jan 23 22:51:48 2012
+# Update Count    : 126
 
 use strict;
 use warnings;
 
 # The actual number of database tests, as executed by report_tests.
-use constant NUMTESTS => 34;
+use constant NUMTESTS => 38;
 # There are 9 initial tests.
 # report_tests requires 1 more for the setup, and 1 for the export
 # (all but the last).
@@ -28,6 +28,7 @@ BEGIN { use_ok('EB') }
 BEGIN { use_ok('File::Copy') }
 EB->app_init( { app => "ivp" } );
 ok( $::cfg, "Got config");
+
 $remaining -= 5;
 
 our $dbdriver;
@@ -41,26 +42,34 @@ elsif ( $dbdriver eq "sqlite" ) {
 }
 BAIL_OUT("Unsupported database driver: $dbdriver") unless $dbddrv;
 
-chdir("ivp") if -d "ivp";
-my $f;
-for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
-    ok(1, $_), next if -s $_;
-    if ( $f = findlib("examples/$_") and -s $f ) {
-	copy($f, $_);
-    }
-    ok(-s $_, $_);
+my $l = $ENV{LANG};
+$l =~ s/_.*//;
+for ( "ivp_".$ENV{LANG}, "ivp_$l", "ivp" ) {
+    chdir($_), last if -d $_;
 }
-$remaining -= 4;
-for ( qw(ivp.conf opening.eb relaties.eb
-	 mutaties.eb reports.eb schema.dat ) ) {
-    die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
-}
-
-mkdir("out") unless -d "out";
-ok( -w "out" && -d "out", "writable output dir" );
-$remaining--;
 
 SKIP: {
+    diag("This test is not yet implemented -- SKIPPED") unless -d "ref";
+    skip("This test is not yet implemented", $remaining) unless -d "ref";
+
+    my $f;
+    for ( qw(opening.eb relaties.eb mutaties.eb schema.dat) ) {
+	ok(1, $_), next if -s $_;
+	if ( $f = findlib($_, "examples") and -s $f ) {
+	    copy($f, $_);
+	}
+	ok(-s $_, $_);
+    }
+    $remaining -= 4;
+    for ( qw(ivp.conf opening.eb relaties.eb
+	     mutaties.eb reports.eb schema.dat ) ) {
+	die("=== IVP configuratiefout: $_ ===\n") unless -s $_;
+    }
+
+    mkdir("out") unless -d "out";
+    ok( -w "out" && -d "out", "writable output dir" );
+    $remaining--;
+
     eval "require $dbddrv";
     skip("DBI $dbdriver driver ($dbddrv) not installed", $remaining) if $@;
 
@@ -170,10 +179,14 @@ sub report_tests {
     vfy([@ebcmd, qw(-c proefensaldibalans --verdicht)], "proef2.txt");
 
     # Verify: Grootboek in varianten.
-    vfy([@ebcmd, qw(-c grootboek)           ], "grootboek.txt" );
-    vfy([@ebcmd, qw(-c grootboek --detail=0)], "grootboek0.txt");
-    vfy([@ebcmd, qw(-c grootboek --detail=1)], "grootboek1.txt");
-    vfy([@ebcmd, qw(-c grootboek --detail=2)], "grootboek2.txt");
+    vfy([@ebcmd, qw(-c grootboek)           ], "grootboek.txt"      );
+    vfy([@ebcmd, qw(-c grootboek --detail=0)], "grootboek0.txt"     );
+    vfy([@ebcmd, qw(-c grootboek --detail=1)], "grootboek1.txt"     );
+    vfy([@ebcmd, qw(-c grootboek --detail=2)], "grootboek2.txt"     );
+    vfy([@ebcmd, qw(-c grootboek 2)         ], "grootboek_2.txt"    );
+    vfy([@ebcmd, qw(-c grootboek 23)        ], "grootboek_23.txt"   );
+    vfy([@ebcmd, qw(-c grootboek 23 22)     ], "grootboek_23_22.txt");
+    vfy([@ebcmd, qw(-c grootboek 2320)      ], "grootboek_2320.txt" );
 
     # Verify: Crediteuren/Debiteuren.
     vfy([@ebcmd, qw(-c crediteuren)         ], "crdrept.txt");

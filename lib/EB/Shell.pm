@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov  1 10:12:43 2011
-# Update Count    : 187
+# Last Modified On: Sun Jan 29 21:42:04 2012
+# Update Count    : 216
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -329,14 +329,14 @@ EOS
 
 gevolgd door een of meer:
 
-  crd [ <datum> ] <code> <bedrag>			(betaling van crediteur)
-  deb [ <datum> ] <code> <bedrag>			(betaling van debiteur)
+  crd [ <datum> ] <relatie> <bedrag>			(betaling van crediteur)
+  deb [ <datum> ] <relatie> <bedrag>			(betaling van debiteur)
   std [ <datum> ] <omschrijving> <bedrag> <rekening>	(vrije boeking)
 
 Controle van het eindsaldo kan met de optie --saldo=<bedrag>.
 Controle van het totale boekstukbedrag kan met de optie --totaal=<bedrag>.
 Voor deelbetalingen of betalingen met afwijkend bedrag kan in plaats van de
-<code> het boekstuknummer worden opgegeven.
+<relatie> het boekstuknummer worden opgegeven.
 EOS
     }
     $text;
@@ -469,14 +469,17 @@ sub _add {
     my $args = \@args;
     return unless
     parse_args($args,
-	       [ 'boekstuk|nr=s',
-		 'boekjaar=s',
-		 'journal!',
-		 'totaal=s',
-		 'ref=s',
-		 'confirm!',
+	       [ __xt('cmo:boeking:boekstuk|nr').'=s' => \$opts->{boekstuk},
+		 __xt('cmo:boeking:boekjaar').'=s' => \$opts->{boekjaar},
+		 __xt('cmo:boeking:journal|journaal').'!' => \$opts->{journal},
+		 __xt('cmo:boeking:totaal').'=s' => \$opts->{totaal},
+		 __xt('cmo:boeking:ref').'=s' => \$opts->{ref},
+		 __xt('cmo:boeking:confirm').'!' => \$opts->{confirm},
 		 ( $dagboek_type == DBKTYPE_BANK
-		   || $dagboek_type == DBKTYPE_KAS ) ? ( 'saldo=s', 'beginsaldo=s' ) : (),
+		   || $dagboek_type == DBKTYPE_KAS )
+		 ? ( __xt('cmo:boeking:saldo').'=s' => \$opts->{saldo},
+		     __xt('cmo:boeking:beginsaldo').'=s' => \$opts->{beginsaldo} )
+		 : (),
 	       ], $opts);
 
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
@@ -496,20 +499,12 @@ sub do_journaal {
     require EB::Report::Journal;
     require EB::Report::GenBase;
 
-    if ( 0 ) {			# force translating
-	N__"cmo:journaal:detail|details";
-	N__"cmo:journaal:nodetail|nodetails";
-	N__"cmo:journaal:totaal";
-	N__"cmo:journaal:boekjaar";
-	N__"cmo:journaal:periode";
-    }
-
     return unless
-    parse_args2(\@args,
-	       [ 'detail|details!',
-		 'totaal' => sub { $opts->{detail} = 0 },
-		 'boekjaar=s',
-		 'periode=s' => sub { periode_arg($opts, @_) },
+    parse_args(\@args,
+	       [ __xt('cmo:journaal:detail|details').'!' => \$opts->{journal},
+		 __xt('cmo:journaal:totaal') => sub { $opts->{detail} = 0 },
+		 __xt('cmo:journaal:boekjaar').'=s' => \$opts->{boekjaar},
+		 __xt('cmo:journaal:periode').'=s' => sub { periode_arg($opts, "periode", $_[1]) },
 		 EB::Report::GenBase->backend_options(EB::Report::Journal::, $opts),
 	       ], $opts);
 
@@ -682,13 +677,47 @@ sub do_grootboek {
 	       ], $opts);
 
     my $fail;
-    foreach ( @args ) {
+    my ($max_hvd, $max_vrd);
+    my @accts;
+    while ( @args ) {
+	$_ = shift(@args);
 	if ( /^\d+$/ ) {
-	    if ( defined($opts->{select}) ) {
-		$opts->{select} .= ",$_";
+	    # Check for (Hoofd)Verdichtingen.
+	    $max_hvd ||= $dbh->do
+	      ( "SELECT MAX(vdi_id) FROM Verdichtingen ".
+		"WHERE vdi_struct IS NULL")->[0];
+	    $max_vrd ||= $dbh->do
+	      ( "SELECT MAX(vdi_id) FROM Verdichtingen ".
+		"WHERE NOT vdi_struct IS NULL")->[0];
+	    if ( $_ < $max_hvd ) {
+		my $sth = $dbh->sql_exec
+		  ( "SELECT acc_id FROM Accounts ".
+		    "WHERE acc_struct IN ".
+		    " ( SELECT vdi_id FROM Verdichtingen ".
+		    "   WHERE vdi_struct = ? ) ".
+		    "ORDER BY acc_id DESC", $_ );
+		while ( my $rr = $sth->fetch ) {
+		    unshift( @accts, $rr->[0] );
+		}
+	    }
+	    elsif ( $_ < $max_vrd ) {
+		my $sth = $dbh->sql_exec
+		  ( "SELECT acc_id from Accounts ".
+		    "WHERE acc_struct = ? ".
+		    "ORDER BY acc_id DESC", $_ );
+		while ( my $rr = $sth->fetch ) {
+		    unshift( @accts, $rr->[0] );
+		}
+	    }
+
+	    # Assume ordinary account number.
+	    elsif ( $dbh->lookup( $_, qw(Accounts acc_id acc_id) ) ) {
+		push( @accts, $_ );
 	    }
 	    else {
-		$opts->{select} = $_;
+		warn("?".__x("Onbekend rekeningnummer: {acct}",
+			     acct => $_)."\n");
+		$fail++;
 	    }
 	    next;
 	}
@@ -697,6 +726,9 @@ sub do_grootboek {
 	$fail++;
     }
     return if $fail;
+
+    $opts->{select} = join( ",", @accts ) if @accts;
+
     EB::Report::Grootboek->new->perform($opts);
     undef;
 }
@@ -705,12 +737,15 @@ sub help_grootboek {
     _T( <<EOS );
 Toont het Grootboek, of een selectie daaruit.
 
-  grootboek [ <rek> ... ]
+  grootboek [ <nr> ... ]
 
 Opties:
 
   --detail=<n>		Mate van detail, <n>=0,1,2 (standaard is 2)
   --periode=<periode>	Alleen over deze periode
+
+Naast rekeningnummers kunnen ook nummers van verdichtingen en
+hoofdverdichtingen worden opgegeven.
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
@@ -760,7 +795,7 @@ sub do_btwaangifte {
 		 "noreport",
 		 "noround",
 	       ], $opts)
-      or goto &_help_btwaangifte;
+      or goto &help_btwaangifte;
 
     if ( @args && lc($args[-1]) eq "definitief" ) {
 	$opts->{close} = 1;
@@ -1042,8 +1077,10 @@ sub do_relatie {
 
     return unless
     parse_args(\@args,
-	       [ __xt("cmo:relatie:dagboek").'=s',
-		 $dbh->does_btw ? __xt("cmo:relatie:btw").'=s' : (),
+	       [ __xt("cmo:relatie:dagboek").'=s' => \$opts->{dagboek},
+		 $dbh->does_btw
+		 ? ( __xt("cmo:relatie:btw").'=s' => \$opts->{btw} )
+		 : (),
 	       ], $opts)
       or goto &help_relatie;
 
@@ -1455,6 +1492,8 @@ sub parse_args {
     $ret;
 }
 
+=begin maybelater
+
 sub parse_args2 {
     my ( $argv, $c, $opts ) = @_;
     my @resarg;
@@ -1551,6 +1590,8 @@ sub parse_args2 {
 
     return $ok;
 }
+
+=cut
 
 sub periode_arg {
     my ($opts, $name, $value) = @_;

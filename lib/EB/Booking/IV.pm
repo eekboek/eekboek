@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov  1 16:43:06 2011
-# Update Count    : 310
+# Last Modified On: Sat Feb 25 21:45:18 2012
+# Update Count    : 311
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -302,7 +302,7 @@ sub perform {
     $tot = -$tot if $iv;
     my $fail = defined($totaal) && $tot != $totaal;
     if ( $opts->{journal} ) {
-	warn("?"._T("Dit overicht is ter referentie, de boeking is niet uitgevoerd!")."\n") if $fail;
+	warn("?"._T("Dit overzicht is ter referentie, de boeking is niet uitgevoerd!")."\n") if $fail;
 	EB::Report::Journal->new->journal
 	    ({select => $bsk_id,
 	      d_boekjaar => $bky,

@@ -29,14 +29,15 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2007-04-12    Debiteuren                     2200               3570,00    *Perl Cursus                  ACME
 
 2007-05-31  Postbank:5                                                   Afschrift 5
-2007-05-31    Postbank                       2320     467,28               Afschrift 5
+2007-05-31    Postbank                       2320     472,28               Afschrift 5
 2007-05-31    Crediteuren                    4100     102,22               *Telefoonkosten               KPN
 2007-05-31    Crediteuren                    4100      22,80               *Internet                     XS4ALL
 2007-05-11    Bankkosten                     6980       2,70               Girotel
-2007-05-31    Debiteuren                     2200                595,00    *Perl Cursus                  ACME
+2007-05-31    Debiteuren                     2200                600,00    *Perl Cursus                  ACME
 
 2007-06-30  Postbank:6                                                   Afschrift 6
-2007-06-30    Postbank                       2320     688,50               Afschrift 6
+2007-06-12    Debiteuren                     2200       5,00               *Perl Cursus                  ACME
+2007-06-30    Postbank                       2320     683,50               Afschrift 6
 2007-06-21    Crediteuren                    4100      22,80               *Internet                     XS4ALL
 2007-06-08    Bankkosten                     6980       2,70               Girotel
 2007-06-08    Debiteuren                     2200                714,00    *Ondersteuning                ACME
@@ -84,4 +85,4 @@ Datum       Boekstuk/Grootboek                Rek      Debet     Credit  Boekstu
 2007-12-10    Crediteuren                    4100      12,80               *Internet                     XS4ALL
 2007-12-10    Postbank                       2320                 12,80    Tweede deel ADSL
 -------------------------------------------------------------------------------------------------------------------
-            Totaal Dagboek Postbank                 10792,00   10792,00
+            Totaal Dagboek Postbank                 10797,00   10797,00

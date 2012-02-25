@@ -10,8 +10,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 21 21:06:18 2011
-# Update Count    : 175
+# Last Modified On: Mon Jan 16 15:17:01 2012
+# Update Count    : 176
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -81,7 +81,7 @@ sub decode {
 	    $cmd =~ s/[^[:alnum:]]/_/g;
 	    $cmd .= ":$bsk_bky" if $ex_bky;
 	    $cmd .= ":$bsk_nr" if $ex_bsknr;
-	    $cmd .= " --ref=" . _quote($bsk_ref) if defined $bsk_ref;
+	    $cmd .= " --".__xt("cmo:boeking:ref")."=" . _quote($bsk_ref) if defined $bsk_ref;
 	    $cmd .= " ".datefmt_full($bsk_date)." ";
 	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 		$cmd .= $no_ivbskdesc ? _quote($rel_code) : _quote($bsk_desc, $rel_code);
@@ -90,11 +90,11 @@ sub decode {
 		$cmd .= _quote($bsk_desc);
 	    }
 	    else {
-		$cmd .= " --totaal=" . numfmt_plain($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
+		$cmd .= " --".__xt("cmo:boeking:totaal")."=" . numfmt_plain($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
 		  if $ex_tot && $acct;
 	    }
-	    $cmd .= " --beginsaldo=" . numfmt_plain($bsk_isaldo) if $ex_tot && defined $bsk_isaldo;
-	    $cmd .= " --saldo=" . numfmt_plain($bsk_saldo) if $ex_tot && defined $bsk_saldo;
+	    $cmd .= " --".__xt("cmo:boeking:beginsaldo")."=" . numfmt_plain($bsk_isaldo) if $ex_tot && defined $bsk_isaldo;
+	    $cmd .= " --".__xt("cmo:boeking:saldo")."=" . numfmt_plain($bsk_saldo) if $ex_tot && defined $bsk_saldo;
 	}
 	else {
 	    $cmd = "Boekstuk $bsk_id, nr $bsk_nr, dagboek " .

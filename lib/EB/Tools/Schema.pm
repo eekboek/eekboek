@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Sep  7 14:42:27 2011
-# Update Count    : 870
+# Last Modified On: Tue Jan 17 16:56:11 2012
+# Update Count    : 887
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -139,6 +139,13 @@ sub init_kmap {
     $km{dagboeken}	 = __xt("scm:dagboeken");
     $km{hdr_btwtarieven} = __xt("scm:hdr:BTW Tarieven");
 
+    # Daybook Types.
+    $km{inkoop}		 = __xt("scm:dbk:inkoop");
+    $km{verkoop}	 = __xt("scm:dbk:verkoop");
+    $km{bank}		 = __xt("scm:dbk:bank");
+    $km{kas}		 = __xt("scm:dbk:kas");
+    $km{memoriaal}	 = __xt("scm:dbk:memoriaal");
+
     # Misc.
     $km{inclusief}	 = __xt("scm:inclusief");
     $km{exclusief}	 = __xt("scm:exclusief");
@@ -197,7 +204,7 @@ sub scan_dagboeken {
 	if ( $extra =~ m/^$km{type}=(\S+)$/i ) {
 	    my $t = DBKTYPES;
 	    for ( my $i = 0; $i < @$t; $i++ ) {
-		next unless lc($1) eq lc($t->[$i]);
+		next unless lc($1) eq lc(_xt("scm:dbk:".lc($t->[$i])));
 		$type = $i;
 		last;
 	    }
@@ -774,16 +781,8 @@ sub dump_schema {
     my ($self, $fh) = @_;
     $fh ||= *STDOUT;
 
-    $dbh = EB::DB->new(trace => $trace);
-    $dbh->connectdb;		# can't wait...
-    init_kmap();
-
-    print {$fh} ("# $EekBoek::PACKAGE Rekeningschema voor ", $dbh->dbh->{Name}, "\n",
-	  "# Aangemaakt door $EekBoek::PACKAGE $EekBoek::VERSION");
-    my @t = localtime(time);
-    printf {$fh} (" op %02d-%02d-%04d %02d:%02d:%02d\n", $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0]);
-    print {$fh} ("# Content-Type: text/plain; charset = UTF-8\n");
-    print {$fh}  <<EOD;
+    # Only generate comments when translated.
+    my $preamble = <<EOD;
 
 # Dit bestand definiëert alle vaste gegevens van een administratie of
 # groep administraties: het rekeningschema (balansrekeningen en
@@ -797,6 +796,29 @@ sub dump_schema {
 # * Alle ingesprongen regels zijn gegevens voor dat onderdeel.
 
 EOD
+    my $comment = $preamble ne ( $preamble = _T($preamble) );
+
+    $dbh = EB::DB->new(trace => $trace);
+    $dbh->connectdb;		# can't wait...
+    init_kmap();
+
+    my @t = localtime(time);
+    print {$fh} ( "# ",
+		  __x( "{pkg} Rekeningschema voor {db}",
+		       pkg => $EekBoek::PACKAGE,
+		       db => $dbh->dbh->{Name} ),
+		  "\n",
+		  "# ",
+		  __x( "Aangemaakt door {pkg} {version} op {ts}",
+		       pkg => $EekBoek::PACKAGE,
+		       version => $EekBoek::VERSION,
+		       ts => sprintf( "%02d-%02d-%04d %02d:%02d:%02d",
+				      $t[3], 1+$t[4], 1900+$t[5], @t[2,1,0] ),
+		     ),
+		  "\n",
+		  "# Content-Type: text/plain; charset = UTF-8\n" );
+
+    print {$fh} $preamble if $comment;
 
     my $sth = $dbh->sql_exec("SELECT * FROM Standaardrekeningen");
     my $rr = $sth->fetchrow_hashref;
@@ -807,7 +829,7 @@ EOD
 	$kopp{$v} = $k;
     }
 
-print {$fh}  <<EOD;
+print {$fh}  <<EOD if $comment;
 # REKENINGSCHEMA
 #
 # Het rekeningschema is hiërarchisch opgezet volgende de beproefde
@@ -859,7 +881,7 @@ EOD
 $max_hvd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE vdi_struct IS NULL")->[0];
 $max_vrd = $dbh->do("SELECT MAX(vdi_id) FROM Verdichtingen WHERE NOT vdi_struct IS NULL")->[0];
 
-    print {$fh}  <<EOD;
+    print {$fh}  <<EOD if $comment;
 
 # Normaal lopen hoofdverdichtingen van 1 t/m 9, en verdichtingen
 # van 10 t/m 99. Indien daarvan wordt afgeweken kan dit worden opgegeven
@@ -872,7 +894,7 @@ EOD
 		  ? ( $max_hvd, $max_vrd )
 		  : ( 9, 99 ) );
 
-    print {$fh}  <<EOD;
+    print {$fh}  <<EOD if $comment;
 # De nummers van de grootboekrekeningen worden geacht groter te zijn
 # dan de maximale verdichting. Daarvan kan worden afgeweken door
 # middels voorloopnullen de _lengte_ van het nummer groter te maken
@@ -884,7 +906,7 @@ EOD
     dump_acc(1, $fh);		# Balansrekeningen
     dump_acc(0, $fh);		# Resultaatrekeningen
 
-print {$fh}  <<EOD;
+print {$fh}  <<EOD if $comment;
 
 # DAGBOEKEN
 #
@@ -904,7 +926,7 @@ EOD
     dump_dbk($fh);			# Dagboeken
 
     if ( $dbh->does_btw ) {
-	print {$fh}  <<EOD;
+	print {$fh}  <<EOD if $comment;
 
 # BTW TARIEVEN
 #
@@ -929,10 +951,10 @@ EOD
 
 	dump_btw($fh);			# BTW tarieven
     }
-print {$fh}  <<EOD;
 
-# Einde EekBoek schema
-EOD
+    print {$fh} ( "\n",
+		  "# ", __x( "Einde {pkg} schema",
+			     pkg => $EekBoek::PACKAGE ), "\n" );
 }
 
 sub dump_acc {
@@ -1072,7 +1094,7 @@ sub dump_dbk {
 	$acc_id = 0 if $type == DBKTYPE_INKOOP  && $dbh->std_acc("crd", 0) == $acc_id;
 	$acc_id = 0 if $type == DBKTYPE_VERKOOP && $dbh->std_acc("deb", 0) == $acc_id;
 	my $t = sprintf("  %-4s  %-20s  :type=%-10s %s",
-			$id, $desc, lc(DBKTYPES->[$type]),
+			$id, $desc, _xt("scm:dbk:".lc(DBKTYPES->[$type])),
 			($acc_id ? ":$km{rekening}=$acc_id" : "").
 			($dc ? " :dc" : ""),
 		       );

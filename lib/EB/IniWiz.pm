@@ -144,10 +144,12 @@ sub runwizard {
 
     my $year = 1900 + (localtime(time))[5];
 
-    my @ebz = map { [ $_, "" ] } glob( libfile("templates/*.ebz") );
+    my $dir = dirname( findlib( "templates.txt", "templates" ) );
+    my @ebz = map { [ $_, "" ] } glob( "$dir/*.ebz" );
     my @ebz_desc = ( _T("Lege administratie") );
 
     my $i = 0;
+    my $dp = quotemeta( _T("Omschrijving").": " );
     foreach my $ebz ( @ebz ) {
 	require Archive::Zip;
 	my $zip = Archive::Zip->new();
@@ -156,7 +158,7 @@ sub runwizard {
 	if ( $desc =~ /flags:\s*(.*)/i ) {
 	    $ebz->[1] = $1;
 	}
-	if ( $desc =~ /omschrijving:\s+(.*)/i ) {
+	if ( $desc =~ /^$dp\s*(.*)$/m ) {
 	    $desc = $1;
 	}
 	elsif ( $desc =~ /export van (.*) aangemaakt door eekboek/i ) {
@@ -179,14 +181,15 @@ sub runwizard {
     }
     my $db_default = findchoice( "sqlite", \@db_drivers );
 
-    my @btw = qw( Maand Kwartaal Jaar );
+    my @btw = ( _T("Maand"), _T("Kwartaal"), _T("Jaar") );
+    my @noyes = ( _T("Nee"), _T("Ja") );
 
     my $answers = {
 		   admname    => _T("Mijn eerste EekBoek"),
 		   begindate  => $year,
 		   admbtw     => 1,
-		   btwperiod  => findchoice( "kwartaal", \@btw ),
-		   template   => findchoice( "eekboek voorbeeldadministratie", \@ebz_desc ),
+		   btwperiod  => findchoice( _T("Kwartaal"), \@btw ),
+		   template   => findchoice( _T("EekBoek Voorbeeldadministratie"), \@ebz_desc ),
 		   dbdriver   => $db_default,
 		   dbcreate   => 1,
 		  };
@@ -391,7 +394,7 @@ EOD
 			   $q->{type} eq 'choice'
 			   ? $answers->{$code}+1
 			   : $q->{type} eq 'bool'
-			     ? qw(Nee Ja)[$answers->{$code}]
+			     ? $noyes[$answers->{$code}]
 			     : $answers->{$code},
 			   "]" )
 	      if defined $answers->{$code};
@@ -420,8 +423,12 @@ EOD
 		elsif ( $a =~ /^(ja?|ne?e?)$/i ) {
 		    $a = $a =~ /^j/i ? 1 : 0;
 		}
+		#### FIXME
+		elsif ( $a =~ /^(ye?s?|no?)$/i ) {
+		    $a = $a =~ /^y/i ? 1 : 0;
+		}
 		else {
-		    warn("Antwoordt 'ja' of 'nee' a.u.b.");
+		    warn( _T("Antwoordt 'ja' of 'nee' a.u.b.") );
 		    redo QQ;
 		}
 	    }
@@ -437,16 +444,13 @@ EOD
 			&& ( $a < $q->{range}->[0]
 			     || $a > $q->{range}->[1] ) ) {
 		    if ( $q->{range} ) {
-		    warn("Ongeldig antwoord, het moet een getal",
-			 $q->{range} ? " tussen $q->{range}->[0] en $q->{range}->[1]" : "",
-			 " zijn\n");
+			warn(__x("Ongeldig antwoord, het moet een getal tussen {first} en {last} zijn",
+				 first => $q->{range}->[0],
+				 last => $q->{range}->[1]) . "\n");
 		    }
 		    else {
 			warn(_T("Ongeldig antwoord, het moet een getal zijn")."\n");
 		    }
-		    warn(__x("Ongeldig antwoord, het moet een getal tussen {first} en {last} zijn",
-			     first => $q->{range}->[0],
-			     last => $q->{range}->[1]) . "\n");
 		    redo QQ;
 		}
 		$a-- if $q->{type} eq 'choice';
