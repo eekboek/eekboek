@@ -23,6 +23,8 @@ use EB::Wx::UI::BTWInput;
 use EB::Wx::UI::AccInput;
 use Wx::Grid;
 
+use constant STATE_BSR_PIN => "ivbsk/bsr_pin";
+
 sub new {
 	my( $self, $parent, $id, $title, $pos, $size, $style, $name ) = @_;
 	$parent = undef              unless defined $parent;
@@ -266,6 +268,7 @@ sub init {
     my ($self, $id) = @_;
     $self->{bsk_id} = $id;
     #$self->{gr_bsr}->SetColLabelAlignment(wxALIGN_LEFT, wxALIGN_CENTER);
+    $state ||= Wx::ConfigBase::Get;
 }
 
 my @bsrmap;
@@ -336,7 +339,7 @@ sub refresh {
     $self->resize_grid($gr);
     $self->{l_bsr_total}->SetLabel(__x("Totaal boekstukregels: {tot}",
 				       tot => numfmt($tot)));
-    if ( $state->bsr_pin ) {
+    if ( $state->ReadInt(STATE_BSR_PIN) ) {
 	$self->{cb_pin}->SetValue(1);
     }
     if ( $self->{bsr_shown} || $self->{cb_pin}->IsChecked ) {
@@ -470,14 +473,14 @@ sub OnPin {
 	$self->{sz_main}->Show(2,1);
 	$self->{bsr_shown} = 1;
 	$self->{sz_main}->Layout;
-	$state->bsr_pin(1);
+	$state->WriteInt(STATE_BSR_PIN, 1);
     }
     else {
 	$self->{sz_main}->Show(1,1);
 	$self->{sz_main}->Show(2,0);
 	$self->{bsr_shown} = 0;
 	$self->{sz_main}->Layout;
-	$state->bsr_pin(0);
+	$state->WriteInt(STATE_BSR_PIN, 0);
     }
 
 }

@@ -121,8 +121,11 @@ sub refresh {
     my ($begin, $end) = @{$dbh->do("SELECT bky_begin, bky_end".
 				   " FROM Boekjaren".
 				   " WHERE bky_code = ?",
-				   $state->bky ||
-				   $state->set("bky", $dbh->adm("bky")))};
+				   $dbh->adm("bky"))};
+
+    #### TODO: Originally, bky was fetched from the state. Should we do this?
+    #				   $state->bky ||
+    #				   $state->set("bky", $dbh->adm("bky")))};
 
     my $sth = $dbh->sql_exec("SELECT bsk_id, bsk_nr, bsk_desc,".
 			     " bsk_date, bsk_amount, bsk_open, bsr_rel_code".

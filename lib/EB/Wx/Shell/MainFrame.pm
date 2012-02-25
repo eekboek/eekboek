@@ -207,6 +207,8 @@ sub __set_menubar {
 	$wxglade_tmp_menu->Append(wxID_CLEAR, _T("Uitvoer schoonmaken"), "");
 	$wxglade_tmp_menu->AppendSeparator();
 	$self->{menubar}->Append($wxglade_tmp_menu, _T("B&ewerken"));
+	$self->{Daybooks} = Wx::Menu->new();
+	$self->{menubar}->Append($self->{Daybooks}, _T("&Dagboeken"));
 	$self->{Reports} = Wx::Menu->new();
 	$self->{Reports}->Append(MENU_REP_TRIAL, _T("Proef- en Saldibalans"), "");
 	$self->{Reports_bal} = Wx::Menu->new();
@@ -246,6 +248,61 @@ sub __set_menubar {
 	$wxglade_tmp_menu->Append(wxID_ABOUT, _T("Over..."), "");
 	$self->{menubar}->Append($wxglade_tmp_menu, _T("&Hulp"));
 	$self->SetMenuBar($self->{menubar});
+}
+
+sub adapt_menus {
+    my ( $self ) = @_;
+
+    $self->{menubar}->Enable(MENU_MAINT_VAT, $dbh->does_btw);
+    $self->{menubar}->Enable(MENU_REP_VAT,   $dbh->does_btw);
+
+    my $sth = $dbh->sql_exec("SELECT dbk_id,dbk_desc,dbk_type".
+			     " FROM Dagboeken".
+			     " ORDER BY dbk_desc");
+
+    use Wx::Event qw(EVT_MENU);
+
+    my $tmp = Wx::Menu->new;
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	my ($id, $desc, $type) = @$rr;
+	# This consumes Ids, but we do not expect to do this often.
+	my $m = Wx::NewId();
+	$tmp->Append($m, "$desc\tAlt-$id",
+		     __x("Dagboek {dbk}", dbk => $desc)."\n");
+	my $tp = qw(X IV IV BKM BKM BKM)[$type];
+	my $cl = "EB::Wx::Booking::${tp}Panel";
+	my $p = "d_dbkpanel$tp$id";
+	undef($self->{$p});
+	EVT_MENU($self, $m,
+		 sub { eval "require $cl";
+		       die($@) if $@;
+		       my $pos = wxDefaultPosition;
+		       my $width = wxDefaultSize;
+		       $self->{$p} ||=
+			 $cl->new($self, -1,
+				  __x("Dagboek {dbk}", dbk => $desc)."\n",
+				  $pos, $width, $type);
+		       $self->{$p}->sizepos_restore("dbk$tp${id}w");
+		       $self->{$p}->init($id, $desc, $type);
+		       $self->{$p}->refresh;
+		       $self->{$p}->Show(1);
+		       $self->{dbk_id} = $id;
+		   });
+    }
+
+    my $ix = $self->{menubar}->FindMenu(_T("&Dagboeken"));
+    $tmp = $self->{menubar}->Replace
+      ($ix, $tmp,
+       $self->{menubar}->GetLabelTop($ix));
+    $tmp->Destroy if $tmp;
+    $self->{menubar}->Refresh;
+
+    my $t = $::cfg->val(qw(database name));
+    $t =~ s/^eekboek_//;
+    $t = $dbh->adm("name");
+    $self->SetTitle(__x("EekBoek: {adm}",
+			adm => $dbh->adm("name")));
+
 }
 
 sub __set_properties {
@@ -318,7 +375,8 @@ sub RunCommand {
 	}
 	my $cfg = EB->app_init( { app => $EekBoek::PACKAGE, config => $self->{_ebcfg} } );
 	$self->{statusbar}->SetStatusText($EB::imsg, 0);
-	$cfg->connect_db;
+	$dbh = $cfg->connect_db;
+	$self->adapt_menus;
 	require EB::Shell;
 	$self->{_shell} = EB::Shell->new;
     }
