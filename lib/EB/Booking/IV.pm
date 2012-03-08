@@ -12,7 +12,7 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Feb 25 21:45:18 2012
+# Last Modified On: Thu Mar  8 14:32:08 2012
 # Update Count    : 311
 # Status          : Unknown, Use with caution!
 
@@ -262,9 +262,9 @@ sub perform {
 		    warn("?".__x("Onbekende BTW-code: {code}", code => $btw_id)."\n");
 		    return;
 		}
-		my $t = "btw_" . ($iv ? "i" : "v");
-		$t .= $tg == BTWTARIEF_HOOG ? 'h' : 'l';
-		$btw_acc = $dbh->std_acc($t);
+		my $tp = BTWTARIEVEN->[$tg];
+		my $t = qw(v i)[$iv] . lc(substr($tp, 0, 1));
+		$btw_acc = $dbh->std_acc("btw_$t");
 	    }
 	}
 	elsif ( $btw_id ) {
