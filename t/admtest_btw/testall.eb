@@ -1,0 +1,86 @@
+inkopen 01-01 RELN "Normaal inkoop BTW H" 1000
+inkopen 01-01 RELN "Normaal inkoop BTW L" 1000@L
+inkopen 01-01 RELN "Normaal inkoop BTW 0" 1000@0
+inkopen 01-01 RELN "Normaal inkoop zonder BTW" 1000@N
+inkopen 01-01 RELN "Normaal inkoop neutraal" 1000 4999
+verkopen 01-01 RELN "Normaal verkoop BTW H" 1000
+verkopen 01-01 RELN "Normaal verkoop BTW L" 1000@L
+verkopen 01-01 RELN "Normaal verkoop BTW 0" 1000@0
+verkopen 01-01 RELN "Normaal verkoop zonder BTW" 1000@N
+verkopen 01-01 RELN "Normaal verkoop neutraal" 1000 4999
+postbank 01-01 Div std "Std inkoop BTW H" -1000   4900
+postbank 01-01 Div std "Std inkoop BTW L" -1000@L 4900
+postbank 01-01 Div std "Std inkoop BTW 0" -1000@0 4900
+postbank 01-01 Div std "Std inkoop zonder BTW" -1000@N 4900
+postbank 01-01 Div std "Std inkoop neutraal" -1000 4999
+postbank 01-01 Div std "Std verkoop BTW H" 1000   8600
+postbank 01-01 Div std "Std verkoop BTW L" 1000@L 8600
+postbank 01-01 Div std "Std verkoop BTW 0" 1000@0 8600
+postbank 01-01 Div std "Std verkoop zonder BTW" 1000@N 8600
+postbank 01-01 Div std "Std verkoop neutraal" 1000 4999
+inkopen 01-01 RELX "Extracomm inkoop BTW H" 1000
+inkopen 01-01 RELX "Extracomm inkoop BTW L" 1000@3
+inkopen 01-01 RELX "Extracomm inkoop BTW 0" 1000@0
+inkopen 01-01 RELX "Extracomm inkoop zonder BTW" 1000@N
+inkopen 01-01 RELX "Extracomm inkoop neutraal" 1000 4999
+verkopen 01-01 RELX "Extracomm verkoop BTW H" 1000
+verkopen 01-01 RELX "Extracomm verkoop BTW L" 1000@3
+verkopen 01-01 RELX "Extracomm verkoop BTW 0" 1000@0
+verkopen 01-01 RELX "Extracomm verkoop zonder BTW" 1000@N
+verkopen 01-01 RELX "Extracomm verkoop neutraal" 1000 4999
+inkopen 01-01 RELI "Intracomm inkoop BTW H" 1000
+inkopen 01-01 RELI "Intracomm inkoop BTW L" 1000@3
+inkopen 01-01 RELI "Intracomm inkoop BTW 0" 1000@0
+inkopen 01-01 RELI "Intracomm inkoop zonder BTW" 1000@N
+inkopen 01-01 RELI "Intracomm inkoop neutraal" 1000 4999
+verkopen 01-01 RELI "Intracomm verkoop zonder BTW" 1000@N
+verkopen 01-01 RELI "Intracomm verkoop neutraal" 1000 4999
+inkopen 01-01 RELN "Normaal inkoop balans BTW H" 1000@HK 200
+inkopen 01-01 RELN "Normaal inkoop balans BTW L" 1000@LK 200
+inkopen 01-01 RELN "Normaal inkoop balans BTW 0" 1000@0K 200
+inkopen 01-01 RELN "Normaal inkoop balans neutraal" 1000 200
+verkopen 01-01 RELN "Normaal verkoop balans BTW H" 1000@HO 200
+verkopen 01-01 RELN "Normaal verkoop balans BTW L" 1000@LO 200
+verkopen 01-01 RELN "Normaal verkoop balans BTW 0" 1000@0O 200
+verkopen 01-01 RELN "Normaal verkoop balans neutraal" 1000 200
+postbank 01-01 Div std "Std inkoop balans BTW H" -1000@HK 200
+postbank 01-01 Div std "Std inkoop balans BTW L" -1000@LK 200
+postbank 01-01 Div std "Std inkoop balans BTW 0" -1000@0K 200
+postbank 01-01 Div std "Std inkoop balans neutraal" -1000 200
+postbank 01-01 Div std "Std verkoop balans BTW H" 1000@HO 200
+postbank 01-01 Div std "Std verkoop balans BTW L" 1000@LO 200
+postbank 01-01 Div std "Std verkoop balans BTW 0" 1000@0O 200
+postbank 01-01 Div std "Std verkoop balans neutraal" 1000 200
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW H" 1000@H 220
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW L" 1000@L 220
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW 0" 1000@0 220
+inkopen 01-01 RELN "Normaal inkoop balans/k neutraal" 1000@N 220
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW H" 1000@HO 220
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW L" 1000@LO 220
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW 0" 1000@0O 220
+verkopen 01-01 RELN "Normaal verkoop balans/k neutraal" 1000@N 220
+postbank 01-01 Div std "Std inkoop balans/k BTW H" -1000@H 220
+postbank 01-01 Div std "Std inkoop balans/k BTW L" -1000@L 220
+postbank 01-01 Div std "Std inkoop balans/k BTW 0" -1000@0 220
+postbank 01-01 Div std "Std inkoop balans/k neutraal" -1000@N 220
+postbank 01-01 Div std "Std verkoop balans/k BTW H" 1000@HO 220
+postbank 01-01 Div std "Std verkoop balans/k BTW L" 1000@LO 220
+postbank 01-01 Div std "Std verkoop balans/k BTW 0" 1000@0O 220
+postbank 01-01 Div std "Std verkoop balans/k neutraal" 1000@N 220
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW H" 1000@HK 240
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW L" 1000@LK 240
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW 0" 1000@0K 240
+inkopen 01-01 RELN "Normaal inkoop balans/o neutraal" 1000@N 240
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW H" 1000@H 240
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW L" 1000@L 240
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW 0" 1000@0 240
+verkopen 01-01 RELN "Normaal verkoop balans/o neutraal" 1000@N 240
+postbank 01-01 Div std "Std inkoop balans/o BTW H" -1000@HK 240
+postbank 01-01 Div std "Std inkoop balans/o BTW L" -1000@LK 240
+postbank 01-01 Div std "Std inkoop balans/o BTW 0" -1000@0K 240
+postbank 01-01 Div std "Std inkoop balans/o neutraal" -1000@N 240
+postbank 01-01 Div std "Std verkoop balans/o BTW H" 1000@H 240
+postbank 01-01 Div std "Std verkoop balans/o BTW L" 1000@L 240
+postbank 01-01 Div std "Std verkoop balans/o BTW 0" 1000@0 240
+postbank 01-01 Div std "Std verkoop balans/o neutraal" 1000@N 240
+verkopen 01-01 RELN "Afronding" -0.01 4900
