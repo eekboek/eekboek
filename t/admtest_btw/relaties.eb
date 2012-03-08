@@ -1,0 +1,7 @@
+relatie --dagboek=inkopen  RELN  "Normale crediteur"    4900
+relatie --dagboek=inkopen  RELX  "Extra-comm crediteur" 4900 --btw=extra
+relatie --dagboek=inkopen  RELI  "Intra-comm crediteur" 4900 --btw=intra
+
+relatie --dagboek=verkopen RELN  "Normale debiteur"     8600
+relatie --dagboek=verkopen RELX  "Extra-comm debiteur"  8600 --btw=extra
+relatie --dagboek=verkopen RELI  "Intra-comm debiteur"  8600 --btw=intra

@@ -1,0 +1,475 @@
+# Normale boeking
+inkopen 01-01 RELN "Normaal inkoop BTW H" 1000
+btwaangifte --out=xnih.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop BTW L" 1000@L
+btwaangifte --out=xnil.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop BTW 0" 1000@0
+btwaangifte --out=xni0.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop BTW A" 1000@5
+btwaangifte --out=xnia.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop BTW P" 1000@7
+btwaangifte --out=xnip.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop zonder BTW" 1000@N
+btwaangifte --out=xniz.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop neutraal" 1000 4999
+btwaangifte --out=xnin.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop BTW H" 1000
+btwaangifte --out=xnvh.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop BTW L" 1000@L
+btwaangifte --out=xnvl.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop BTW A" 1000@5
+btwaangifte --out=xnva.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop BTW P" 1000@7
+btwaangifte --out=xnvp.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop BTW 0" 1000@0
+btwaangifte --out=xnv0.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop zonder BTW" 1000@N
+btwaangifte --out=xnvz.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop neutraal" 1000 4999
+btwaangifte --out=xnvn.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop BTW H" -1000   4900
+btwaangifte --out=xsih.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop BTW L" -1000@L 4900
+btwaangifte --out=xsil.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop BTW 0" -1000@0 4900
+btwaangifte --out=xsi0.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop zonder BTW" -1000@N 4900
+btwaangifte --out=xsiz.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop neutraal" -1000 4999
+btwaangifte --out=xsin.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop BTW H" 1000   8600
+btwaangifte --out=xsvh.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop BTW L" 1000@L 8600
+btwaangifte --out=xsvl.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop BTW 0" 1000@0 8600
+btwaangifte --out=xsv0.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop zonder BTW" 1000@N 8600
+btwaangifte --out=xsvz.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop neutraal" 1000 4999
+btwaangifte --out=xsvn.txt
+verwijder
+
+inkopen 01-01 RELX "Extracomm inkoop BTW H" 1000
+btwaangifte --out=xxih.txt
+verwijder
+
+inkopen 01-01 RELX "Extracomm inkoop BTW L" 1000@3
+btwaangifte --out=xxil.txt
+verwijder
+
+inkopen 01-01 RELX "Extracomm inkoop BTW 0" 1000@0
+btwaangifte --out=xxi0.txt
+verwijder
+
+inkopen 01-01 RELX "Extracomm inkoop zonder BTW" 1000@N
+btwaangifte --out=xxiz.txt
+verwijder
+
+inkopen 01-01 RELX "Extracomm inkoop neutraal" 1000 4999
+btwaangifte --out=xxin.txt
+verwijder
+
+verkopen 01-01 RELX "Extracomm verkoop BTW H" 1000
+btwaangifte --out=xxvh.txt
+verwijder
+
+verkopen 01-01 RELX "Extracomm verkoop BTW L" 1000@3
+btwaangifte --out=xxvl.txt
+verwijder
+
+verkopen 01-01 RELX "Extracomm verkoop BTW 0" 1000@0
+btwaangifte --out=xxv0.txt
+verwijder
+
+verkopen 01-01 RELX "Extracomm verkoop zonder BTW" 1000@N
+btwaangifte --out=xxvz.txt
+verwijder
+
+verkopen 01-01 RELX "Extracomm verkoop neutraal" 1000 4999
+btwaangifte --out=xxvn.txt
+verwijder
+
+inkopen 01-01 RELI "Intracomm inkoop BTW H" 1000
+btwaangifte --out=xiih.txt
+verwijder
+
+inkopen 01-01 RELI "Intracomm inkoop BTW L" 1000@3
+btwaangifte --out=xiil.txt
+verwijder
+
+inkopen 01-01 RELI "Intracomm inkoop BTW 0" 1000@0
+btwaangifte --out=xii0.txt
+verwijder
+
+inkopen 01-01 RELI "Intracomm inkoop zonder BTW" 1000@N
+btwaangifte --out=xiiz.txt
+verwijder
+
+inkopen 01-01 RELI "Intracomm inkoop neutraal" 1000 4999
+btwaangifte --out=xiin.txt
+verwijder
+
+#verkopen 01-01 RELI "Intracomm verkoop BTW H" 1000
+#btwaangifte --out=xivh.txt
+#verwijder
+
+#verkopen 01-01 RELI "Intracomm verkoop BTW L" 1000@3
+#btwaangifte --out=xivl.txt
+#verwijder
+
+#verkopen 01-01 RELI "Intracomm verkoop BTW 0" 1000@0
+#btwaangifte --out=xiv0.txt
+#verwijder
+
+verkopen 01-01 RELI "Intracomm verkoop zonder BTW" 1000@N
+btwaangifte --out=xivz.txt
+verwijder
+
+verkopen 01-01 RELI "Intracomm verkoop neutraal" 1000 4999
+btwaangifte --out=xivn.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans BTW H" 1000@HK 200
+btwaangifte --out=xnbnih.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans BTW L" 1000@LK 200
+btwaangifte --out=xnbnil.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans BTW 0" 1000@0K 200
+btwaangifte --out=xnbni0.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans neutraal" 1000 200
+btwaangifte --out=xnbnin.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans BTW H" 1000@HO 200
+btwaangifte --out=xnbnvh.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans BTW L" 1000@LO 200
+btwaangifte --out=xnbnvl.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans BTW 0" 1000@0O 200
+btwaangifte --out=xnbnv0.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans neutraal" 1000 200
+btwaangifte --out=xnbnvn.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans BTW H" -1000@HK 200
+btwaangifte --out=xsbnih.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans BTW L" -1000@LK 200
+btwaangifte --out=xsbnil.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans BTW 0" -1000@0K 200
+btwaangifte --out=xsbni0.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans neutraal" -1000 200
+btwaangifte --out=xsbnin.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans BTW H" 1000@HO 200
+btwaangifte --out=xsbnvh.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans BTW L" 1000@LO 200
+btwaangifte --out=xsbnvl.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans BTW 0" 1000@0O 200
+btwaangifte --out=xsbnv0.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans neutraal" 1000 200
+btwaangifte --out=xsbnvn.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW H" 1000@H 220
+btwaangifte --out=xnbkih.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW L" 1000@L 220
+btwaangifte --out=xnbkil.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW 0" 1000@0 220
+btwaangifte --out=xnbki0.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans/k neutraal" 1000@N 220
+btwaangifte --out=xnbkin.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW H" 1000@HO 220
+btwaangifte --out=xnbkvh.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW L" 1000@LO 220
+btwaangifte --out=xnbkvl.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW 0" 1000@0O 220
+btwaangifte --out=xnbkv0.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans/k neutraal" 1000@N 220
+btwaangifte --out=xnbkvn.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans/k BTW H" -1000@H 220
+btwaangifte --out=xsbkih.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans/k BTW L" -1000@L 220
+btwaangifte --out=xsbkil.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans/k BTW 0" -1000@0 220
+btwaangifte --out=xsbki0.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans/k neutraal" -1000@N 220
+btwaangifte --out=xsbkin.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans/k BTW H" 1000@HO 220
+btwaangifte --out=xsbkvh.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans/k BTW L" 1000@LO 220
+btwaangifte --out=xsbkvl.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans/k BTW 0" 1000@0O 220
+btwaangifte --out=xsbkv0.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans/k neutraal" 1000@N 220
+btwaangifte --out=xsbkvn.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW H" 1000@HK 240
+btwaangifte --out=xnboih.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW L" 1000@LK 240
+btwaangifte --out=xnboil.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW 0" 1000@0K 240
+btwaangifte --out=xnboi0.txt
+verwijder
+
+inkopen 01-01 RELN "Normaal inkoop balans/o neutraal" 1000@N 240
+btwaangifte --out=xnboin.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW H" 1000@H 240
+btwaangifte --out=xnbovh.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW L" 1000@L 240
+btwaangifte --out=xnbovl.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW 0" 1000@0 240
+btwaangifte --out=xnbov0.txt
+verwijder
+
+verkopen 01-01 RELN "Normaal verkoop balans/o neutraal" 1000@N 240
+btwaangifte --out=xnbovn.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans/o BTW H" -1000@HK 240
+btwaangifte --out=xsboih.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans/o BTW L" -1000@LK 240
+btwaangifte --out=xsboil.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans/o BTW 0" -1000@0K 240
+btwaangifte --out=xsboi0.txt
+verwijder
+
+postbank 01-01 Div std "Std inkoop balans/o neutraal" -1000@N 240
+btwaangifte --out=xsboin.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans/o BTW H" 1000@H 240
+btwaangifte --out=xsbovh.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans/o BTW L" 1000@L 240
+btwaangifte --out=xsbovl.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans/o BTW 0" 1000@0 240
+btwaangifte --out=xsbov0.txt
+verwijder
+
+postbank 01-01 Div std "Std verkoop balans/o neutraal" 1000@N 240
+btwaangifte --out=xsbovn.txt
+verwijder
+
+# Dit is een voorbeeld van "Caveat Emptor".
+# 4900 is een kostenrekening, en er wordt verkoop geboekt.
+# EekBoek geeft een waarschuwing, maar uiteindelijk wordt
+# Het bedrag in mindering gebracht op "1e Belast met 0%".
+
+verkopen 01-01 RELN "Afronding" -0.01 4900
+btwaangifte --out=x001.txt
+verwijder
+
+################ Phase 2 ################
+
+inkopen 01-01 RELN "Normaal inkoop BTW H" 1000
+inkopen 01-01 RELN "Normaal inkoop BTW L" 1000@L
+inkopen 01-01 RELN "Normaal inkoop BTW 0" 1000@0
+inkopen 01-01 RELN "Normaal inkoop BTW A" 1000@5
+inkopen 01-01 RELN "Normaal inkoop BTW P" 1000@7
+inkopen 01-01 RELN "Normaal inkoop zonder BTW" 1000@N
+inkopen 01-01 RELN "Normaal inkoop neutraal" 1000 4999
+verkopen 01-01 RELN "Normaal verkoop BTW H" 1000
+verkopen 01-01 RELN "Normaal verkoop BTW L" 1000@L
+verkopen 01-01 RELN "Normaal verkoop BTW A" 1000@5
+verkopen 01-01 RELN "Normaal verkoop BTW P" 1000@7
+verkopen 01-01 RELN "Normaal verkoop BTW 0" 1000@0
+verkopen 01-01 RELN "Normaal verkoop zonder BTW" 1000@N
+verkopen 01-01 RELN "Normaal verkoop neutraal" 1000 4999
+postbank 01-01 Div std "Std inkoop BTW H" -1000   4900
+postbank 01-01 Div std "Std inkoop BTW L" -1000@L 4900
+postbank 01-01 Div std "Std inkoop BTW 0" -1000@0 4900
+postbank 01-01 Div std "Std inkoop zonder BTW" -1000@N 4900
+postbank 01-01 Div std "Std inkoop neutraal" -1000 4999
+postbank 01-01 Div std "Std verkoop BTW H" 1000   8600
+postbank 01-01 Div std "Std verkoop BTW L" 1000@L 8600
+postbank 01-01 Div std "Std verkoop BTW 0" 1000@0 8600
+postbank 01-01 Div std "Std verkoop zonder BTW" 1000@N 8600
+postbank 01-01 Div std "Std verkoop neutraal" 1000 4999
+inkopen 01-01 RELX "Extracomm inkoop BTW H" 1000
+inkopen 01-01 RELX "Extracomm inkoop BTW L" 1000@3
+inkopen 01-01 RELX "Extracomm inkoop BTW 0" 1000@0
+inkopen 01-01 RELX "Extracomm inkoop zonder BTW" 1000@N
+inkopen 01-01 RELX "Extracomm inkoop neutraal" 1000 4999
+verkopen 01-01 RELX "Extracomm verkoop BTW H" 1000
+verkopen 01-01 RELX "Extracomm verkoop BTW L" 1000@3
+verkopen 01-01 RELX "Extracomm verkoop BTW 0" 1000@0
+verkopen 01-01 RELX "Extracomm verkoop zonder BTW" 1000@N
+verkopen 01-01 RELX "Extracomm verkoop neutraal" 1000 4999
+inkopen 01-01 RELI "Intracomm inkoop BTW H" 1000
+inkopen 01-01 RELI "Intracomm inkoop BTW L" 1000@3
+inkopen 01-01 RELI "Intracomm inkoop BTW 0" 1000@0
+inkopen 01-01 RELI "Intracomm inkoop zonder BTW" 1000@N
+inkopen 01-01 RELI "Intracomm inkoop neutraal" 1000 4999
+verkopen 01-01 RELI "Intracomm verkoop zonder BTW" 1000@N
+verkopen 01-01 RELI "Intracomm verkoop neutraal" 1000 4999
+inkopen 01-01 RELN "Normaal inkoop balans BTW H" 1000@HK 200
+inkopen 01-01 RELN "Normaal inkoop balans BTW L" 1000@LK 200
+inkopen 01-01 RELN "Normaal inkoop balans BTW 0" 1000@0K 200
+inkopen 01-01 RELN "Normaal inkoop balans neutraal" 1000 200
+verkopen 01-01 RELN "Normaal verkoop balans BTW H" 1000@HO 200
+verkopen 01-01 RELN "Normaal verkoop balans BTW L" 1000@LO 200
+verkopen 01-01 RELN "Normaal verkoop balans BTW 0" 1000@0O 200
+verkopen 01-01 RELN "Normaal verkoop balans neutraal" 1000 200
+postbank 01-01 Div std "Std inkoop balans BTW H" -1000@HK 200
+postbank 01-01 Div std "Std inkoop balans BTW L" -1000@LK 200
+postbank 01-01 Div std "Std inkoop balans BTW 0" -1000@0K 200
+postbank 01-01 Div std "Std inkoop balans neutraal" -1000 200
+postbank 01-01 Div std "Std verkoop balans BTW H" 1000@HO 200
+postbank 01-01 Div std "Std verkoop balans BTW L" 1000@LO 200
+postbank 01-01 Div std "Std verkoop balans BTW 0" 1000@0O 200
+postbank 01-01 Div std "Std verkoop balans neutraal" 1000 200
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW H" 1000@H 220
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW L" 1000@L 220
+inkopen 01-01 RELN "Normaal inkoop balans/k BTW 0" 1000@0 220
+inkopen 01-01 RELN "Normaal inkoop balans/k neutraal" 1000@N 220
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW H" 1000@HO 220
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW L" 1000@LO 220
+verkopen 01-01 RELN "Normaal verkoop balans/k BTW 0" 1000@0O 220
+verkopen 01-01 RELN "Normaal verkoop balans/k neutraal" 1000@N 220
+postbank 01-01 Div std "Std inkoop balans/k BTW H" -1000@H 220
+postbank 01-01 Div std "Std inkoop balans/k BTW L" -1000@L 220
+postbank 01-01 Div std "Std inkoop balans/k BTW 0" -1000@0 220
+postbank 01-01 Div std "Std inkoop balans/k neutraal" -1000@N 220
+postbank 01-01 Div std "Std verkoop balans/k BTW H" 1000@HO 220
+postbank 01-01 Div std "Std verkoop balans/k BTW L" 1000@LO 220
+postbank 01-01 Div std "Std verkoop balans/k BTW 0" 1000@0O 220
+postbank 01-01 Div std "Std verkoop balans/k neutraal" 1000@N 220
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW H" 1000@HK 240
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW L" 1000@LK 240
+inkopen 01-01 RELN "Normaal inkoop balans/o BTW 0" 1000@0K 240
+inkopen 01-01 RELN "Normaal inkoop balans/o neutraal" 1000@N 240
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW H" 1000@H 240
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW L" 1000@L 240
+verkopen 01-01 RELN "Normaal verkoop balans/o BTW 0" 1000@0 240
+verkopen 01-01 RELN "Normaal verkoop balans/o neutraal" 1000@N 240
+postbank 01-01 Div std "Std inkoop balans/o BTW H" -1000@HK 240
+postbank 01-01 Div std "Std inkoop balans/o BTW L" -1000@LK 240
+postbank 01-01 Div std "Std inkoop balans/o BTW 0" -1000@0K 240
+postbank 01-01 Div std "Std inkoop balans/o neutraal" -1000@N 240
+postbank 01-01 Div std "Std verkoop balans/o BTW H" 1000@H 240
+postbank 01-01 Div std "Std verkoop balans/o BTW L" 1000@L 240
+postbank 01-01 Div std "Std verkoop balans/o BTW 0" 1000@0 240
+postbank 01-01 Div std "Std verkoop balans/o neutraal" 1000@N 240
+verkopen 01-01 RELN "Afronding" -0.01 4900
+
+btwaangifte --output=btwall1.txt
+export --file=foo.ebz --single --nototals
+import --file=foo.ebz
+btwaangifte --output=btwall2.txt

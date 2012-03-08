@@ -1,0 +1,39 @@
+                          BTW Aangifte
+Periode: 2006
+Test1                                         EekBoek, 2006-01-28
+
+-----------------------------------------------------------------
+
+Binnenland
+
+1. Door mij verrichte leveringen/diensten
+
+1a   Belast met hoog tarief                        6722      1277
+1b   Belast met laag tarief                        7547       452
+1c   Belast met ander tarief                       1000        90
+1d   Eigen gebruik                                 1000       120
+1e   Belast met 0% / verlegd                       8000
+
+Buitenland
+
+3. Door mij verrichte leveringen
+
+3a   Buiten de EU                                  3000
+3b   Binnen de EU                                     0
+
+4. Aan mij verrichte leveringen
+
+4a   Van buiten de EU                              3000         0
+4b   Verwervingen van goederen uit de EU           2783       217
+
+Berekening
+
+5. Berekening totaal
+
+5a   Subtotaal                                               2156
+5b   Voorbelasting                                           2157
+5c   Subtotaal                                                 -1
+5d   Vermindering kleineondernemersregeling                     0
+5g   Totaal terug te vragen                                     1
+     Totaal terug te vragen (onafgerond)           0,00
+     Afrondingsverschil                            1,00
