@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Mar  8 13:55:48 2011
-# Update Count    : 644
+# Last Modified On: Thu Mar  8 15:32:24 2012
+# Update Count    : 648
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -523,9 +523,11 @@ sub collect {
     # 5b. Voorbelasting
     my ($vb) = @{$dbh->do("SELECT SUM(jnl_amount)".
 			  " FROM Journal".
-			  " WHERE ( jnl_acc_id = ? OR jnl_acc_id = ? )".
+			  " WHERE ( jnl_acc_id = ? OR jnl_acc_id = ?".
+			  "         OR jnl_acc_id = ? OR jnl_acc_id = ? )".
 			  " AND jnl_bsr_date >= ? AND jnl_bsr_date <= ?",
 			  $dbh->std_acc("btw_ih"), $dbh->std_acc("btw_il"),
+			  $dbh->std_acc("btw_ia",0), $dbh->std_acc("btw_ip",0),
 			  $begin, $end)};
     $vb ||= 0;	# prevent warnings
     my $btw_i_delta = $vb - $crd_btw - $intra_crd_btw;
