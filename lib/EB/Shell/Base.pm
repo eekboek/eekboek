@@ -528,8 +528,11 @@ sub help {
     my @ret;
 
     if ($topic) {
-        if (my $sub = $self->can("help_".$self->_xtr("cmd:$topic"))) {
+        if (my $sub = $self->can("help_".
+				 ($self->_xtr("cmd:".lc($topic))||lc($topic)))) {
             push @ret,  $self->$sub(@_);
+	    push(@ret, _T("Opdrachtnamen zijn hoofdletterongevoelig.") )
+	      unless $topic eq lc($topic);
         }
         else {
             push @ret,
@@ -542,7 +545,8 @@ sub help {
         if (@helps) {
 	    push( @ret,
 		  _T("Hulp is beschikbaar voor de volgende onderwerpen."),
-		  _T("Typ 'help [onderwerp]' voor meer gedetailleerde informatie.") );
+		  _T("Typ 'help [onderwerp]' voor meer gedetailleerde informatie."),
+		  _T("Opdrachtnamen zijn hoofdletterongevoelig.") );
 	    my $t = "=" x max( length($ret[-1]), length($ret[-2]) );
 	    push(@ret, $t, map({ "  * $_" } sort @helps), $t);
         }

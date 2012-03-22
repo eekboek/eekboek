@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-17 15:27+0100\n"
-"PO-Revision-Date: 2012-01-19 19:30+0100\n"
+"POT-Creation-Date: 2012-03-22 11:41+0100\n"
+"PO-Revision-Date: 2012-03-22 11:45+0100\n"
 "Last-Translator: Automatically generated <>\n"
 "Language-Team: none <>\n"
 "Language: \n"
@@ -145,13 +145,13 @@ msgid "Ongeldig grootboekrekeningnummer: {acct}"
 msgstr "Invalid account number: {acct}"
 
 #: ../lib/EB/Booking/BKM.pm:175 ../lib/EB/Booking/IV.pm:182
-#: ../lib/EB/Relation.pm:109 ../lib/EB/Tools/Opening.pm:108
+#: ../lib/EB/Relation.pm:110 ../lib/EB/Tools/Opening.pm:108
 #, perl-brace-format
 msgid "Onbekende grootboekrekening: {acct}"
 msgstr "Unknown account: {acct}"
 
 #: ../lib/EB/Booking/BKM.pm:183 ../lib/EB/Booking/IV.pm:189
-#: ../lib/EB/Relation.pm:114
+#: ../lib/EB/Relation.pm:115
 #, perl-brace-format
 msgid "Grootboekrekening {acct} ({desc}) is een balansrekening"
 msgstr "Account {acct} ({desc}) is a balance account"
@@ -180,7 +180,7 @@ msgstr ""
 msgid "Ongeldige BTW-specificatie: {spec}"
 msgstr "Error in VAT specification: {spec}"
 
-#: ../lib/EB/Booking/BKM.pm:220
+#: ../lib/EB/Booking/BKM.pm:220 ../lib/EB/Booking/IV.pm:270
 msgid "BTW toepassen is niet mogelijk op een neutrale rekening"
 msgstr "Applying VAT on a neutral account is not allowed"
 
@@ -197,14 +197,14 @@ msgstr "Unknown {what}: {who}"
 
 #: ../lib/EB/Booking/BKM.pm:337 ../lib/EB/Booking/BKM.pm:476
 #: ../lib/EB/Booking/IV.pm:114 ../lib/EB/Booking/IV.pm:137
-#: ../lib/EB/Relation.pm:98 ../lib/EB/Relation.pm:100
+#: ../lib/EB/Relation.pm:99 ../lib/EB/Relation.pm:101
 #: ../lib/EB/Report/Debcrd.pm:54
 msgid "Debiteur"
 msgstr "Debtor"
 
 #: ../lib/EB/Booking/BKM.pm:337 ../lib/EB/Booking/BKM.pm:476
 #: ../lib/EB/Booking/IV.pm:114 ../lib/EB/Booking/IV.pm:137
-#: ../lib/EB/Relation.pm:98 ../lib/EB/Relation.pm:100
+#: ../lib/EB/Relation.pm:99 ../lib/EB/Relation.pm:101
 #: ../lib/EB/Report/Debcrd.pm:54
 msgid "Crediteur"
 msgstr "Creditor"
@@ -247,7 +247,7 @@ msgstr "New balance: {bal}"
 msgid "Saldo {new} klopt niet met de vereiste waarde {act}"
 msgstr "New balance {new} does not match the required value {act}"
 
-#: ../lib/EB/Booking/BKM.pm:555
+#: ../lib/EB/Booking/BKM.pm:555 ../lib/EB/Booking/IV.pm:316
 #, perl-brace-format
 msgid " Boekstuk totaal is {act} in plaats van {exp}"
 msgstr "Posting total is {act} instead of {exp}"
@@ -264,11 +264,11 @@ msgstr ""
 msgid "Boekstuk is niet in balans (verschil is {diff})"
 msgstr "Posting does not level out (the difference is {diff})"
 
-#: ../lib/EB/Booking/BKM.pm:576
-msgid "Dit overicht is ter referentie, de boeking is niet uitgevoerd!"
+#: ../lib/EB/Booking/BKM.pm:576 ../lib/EB/Booking/IV.pm:304
+msgid "Dit overzicht is ter referentie, de boeking is niet uitgevoerd!"
 msgstr "This overview is for your reference, the booking has not been done!"
 
-#: ../lib/EB/Booking/BKM.pm:584
+#: ../lib/EB/Booking/BKM.pm:584 ../lib/EB/Booking/IV.pm:313
 msgid "Boeking "
 msgstr "Posting "
 
@@ -752,24 +752,28 @@ msgstr ""
 "Unknown command \"{cmd}.\n"
 "Enter \"help\" for a list of commands."
 
-#: ../lib/EB/Shell/Base.pm:431
+#: ../lib/EB/Shell/Base.pm:437
 msgid "Toon versie."
 msgstr "Show version."
 
-#: ../lib/EB/Shell/Base.pm:530
+#: ../lib/EB/Shell/Base.pm:534 ../lib/EB/Shell/Base.pm:549
+msgid "Opdrachtnamen zijn hoofdletterongevoelig."
+msgstr "Command names are case insensitive."
+
+#: ../lib/EB/Shell/Base.pm:539
 #, perl-brace-format
 msgid "Sorry, geen hulp voor {topic}."
 msgstr "Sorry, no help available for {topic}."
 
-#: ../lib/EB/Shell/Base.pm:538
+#: ../lib/EB/Shell/Base.pm:547
 msgid "Hulp is beschikbaar voor de volgende onderwerpen."
 msgstr "Help is available for the following topics."
 
-#: ../lib/EB/Shell/Base.pm:539
+#: ../lib/EB/Shell/Base.pm:548
 msgid "Typ 'help [onderwerp]' voor meer gedetailleerde informatie."
 msgstr "Enter 'help [topic] for more detailed information."
 
-#: ../lib/EB/Shell/Base.pm:544
+#: ../lib/EB/Shell/Base.pm:554
 msgid "Geen hulp beschikbaar."
 msgstr "No help available."
 
@@ -967,22 +971,28 @@ msgstr "Unknown daybook: {dbk}"
 msgid "Ongeldig dagboek voor relatie: {dbk}"
 msgstr "Invalid daybook for relation: {dbk}"
 
-#: ../lib/EB/Relation.pm:96
+#: ../lib/EB/Relation.pm:93
+msgid ""
+"Waarschuwing: De toevoeging 'D' of 'C' aan het grootboeknummer wordt "
+"afgeraden! Gebruik de --dagboek optie indien nodig."
+msgstr "Warning: Using 'D' or 'C' attached to the account number is deprecated. Use the --daybook option if appropriate."
+
+#: ../lib/EB/Relation.pm:97
 #, perl-brace-format
 msgid "Dagboek {dbk} implicieert {typ1} maar {acct} impliceert {typ2}"
 msgstr "Daybook {dbk} implies {typ1} but {acct} implies {typ2}"
 
-#: ../lib/EB/Relation.pm:136
+#: ../lib/EB/Relation.pm:137
 #, perl-brace-format
 msgid "Relatiecode {code} is niet uniek in dagboek {dbk}"
 msgstr "Relation code {code} is not unique in daybook {dbk}"
 
-#: ../lib/EB/Relation.pm:148
+#: ../lib/EB/Relation.pm:149
 #, perl-brace-format
 msgid "Debiteur {code} -> {acct} ({desc}), dagboek {dbk}"
 msgstr "Debtor {code} -> {acct} ({desc}), daybook {dbk}"
 
-#: ../lib/EB/Relation.pm:150
+#: ../lib/EB/Relation.pm:151
 #, perl-brace-format
 msgid "Crediteur {code} -> {acct} ({desc}), dagboek {dbk}"
 msgstr "Creditor {code} -> {acct} ({desc}), daybook {dbk}"
@@ -3402,7 +3412,7 @@ msgstr "Reporting"
 msgid "Periode: t/m {to}"
 msgstr "Period: through {to}"
 
-#: ../lib/EB/Report/Reporter.pm:135 ../lib/EB/Report/BTWAangifte.pm:596
+#: ../lib/EB/Report/Reporter.pm:135 ../lib/EB/Report/BTWAangifte.pm:598
 #, perl-brace-format
 msgid "Periode: {from} t/m {to}"
 msgstr "Period {from} through {to}"
@@ -3541,16 +3551,16 @@ msgstr "y(ear)?"
 msgid "Ongeldige waarde voor BTW periode: \"{per}\""
 msgstr "Illegal value for VAT period: \"{per}\""
 
-#: ../lib/EB/Report/BTWAangifte.pm:593 ../lib/EB/Wx/Shell/MainFrame.pm:226
+#: ../lib/EB/Report/BTWAangifte.pm:595 ../lib/EB/Wx/Shell/MainFrame.pm:226
 msgid "BTW Aangifte"
 msgstr "VAT submission"
 
-#: ../lib/EB/Report/BTWAangifte.pm:595
+#: ../lib/EB/Report/BTWAangifte.pm:597
 #, perl-brace-format
 msgid "Periode: {per}"
 msgstr "Period: {per}"
 
-#: ../lib/EB/Report/BTWAangifte.pm:700
+#: ../lib/EB/Report/BTWAangifte.pm:702
 #, perl-brace-format
 msgid ""
 "Er is een verschil van {round}{amount} tussen de berekende en werkelijk "
@@ -3559,7 +3569,7 @@ msgstr ""
 "There is a difference of {round}{amount} between the calculated VAT and "
 "deducted VAT. For the submission the deducted amount has been used."
 
-#: ../lib/EB/Report/BTWAangifte.pm:712
+#: ../lib/EB/Report/BTWAangifte.pm:714
 #, perl-brace-format
 msgid ""
 "Er is een verschil van {round}{amount} tussen de berekende en werkelijk "
