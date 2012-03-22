@@ -174,6 +174,7 @@ sub perform {
     else {
 	$self->{compat_periode} = "";
     }
+    $self->{year} = $year;
 
     $opts->{STYLE} = "btwaangifte";
 
@@ -187,7 +188,7 @@ sub perform {
         { name	 => "num",
 	  width	 => 4 },
 	{ name	 => "desc",
-	  width	 => 40 },
+	  width	 => $year < 2010 ? 40 : 50 },
 	{ name	 => "col1",
 	  width	 => $amount_width,
 	  align	 => ">" },
@@ -574,6 +575,8 @@ sub collect {
 sub report {
     my ($self, $rep, $data) = @_;
 
+    my $os = $self->{year} < 2010; # old style
+
     my $outline = sub {
 	my ($column, $desc, $sub, $amt) = @_;
 	$rep->add({ _style => 'd',
@@ -600,11 +603,11 @@ sub report {
 		      to   => datefmt_full($rep->{per_end})));
 
     # Binnenland
-    $rep->add({ _style => 'h1', num  => "Binnenland" });
+    $rep->add({ _style => 'h1', num  => "Binnenland" }) if $os;
 
-    # 1. Door mij verrichte leveringen/diensten
+    # 1. Prestaties binnenland
     $rep->add({ _style => 'h2',
-		num => "1. Door mij verrichte leveringen/diensten",
+		num => $os ? "1. Binnenland" : "1. Prestaties binnenland",
 	      });
 
     # 1a. Belast met hoog tarief
@@ -621,7 +624,7 @@ sub report {
       if $data->{deb_a} || $data->{deb_btw_a};
 
     # 1d. Eigen gebruik
-    $outline->("1d", "Eigen gebruik",
+    $outline->("1d", "Privé gebruik",
     		  $data->{deb_p}, $data->{deb_btw_p})
       if $data->{deb_p} || $data->{deb_btw_p};
 
@@ -630,11 +633,11 @@ sub report {
 		  $data->{deb_0}, undef);
 
     # Buitenland
-    $rep->add({ _style => 'h1', num => "Buitenland" });
+    $rep->add({ _style => 'h1', num => "Buitenland" }) if $os;
 
     # 3. Door mij verrichte leveringen
     $rep->add({ _style => 'h2',
-		num => "3. Door mij verrichte leveringen" });
+		num => $os ? "3. Buitenland" : "3. Prestaties naar/in het buitenland" });
     # 3a. Buiten de EU
     $outline->("3a", "Buiten de EU", $data->{extra_deb}, undef);
 
@@ -643,23 +646,23 @@ sub report {
 
     # 4. Aan mij verrichte leveringen
     $rep->add({ _style => 'h2',
-		num => "4. Aan mij verrichte leveringen" });
+		num => $os ? "4. Aan mij verrichte leveringen" : "4. Prestaties uit het buitenland aan u verricht" });
 
     # 4a. Van buiten de EU
-    $outline->("4a", "Van buiten de EU",
+    $outline->("4a", "Buiten de EU",
 		  $data->{extra_crd}, 0);
 
     # 4b. Verwervingen van goederen uit de EU.
-    $outline->("4b", "Verwervingen van goederen uit de EU",
+    $outline->("4b", "Binnen de EU",
 		  $data->{intra_crd}, $data->{intra_crd_btw});
 
     # 5 Berekening totaal
     $rep->add({ _style => 'h1', num => "Berekening" });
     $rep->add({ _style => 'h2',
-		num => "5. Berekening totaal" });
+		num => $os ? "5. Berekening totaal" : "5. Voorbelasting, KOR, schatting en eindtotaal" });
 
     # 5a. Subtotaal
-    $outline->("5a", "Subtotaal", undef, $data->{sub0});
+    $outline->("5a", $os ? "Subtotaal" : "Verschuldigde omzetbelasting", undef, $data->{sub0});
 
     # 5b. Voorbelasting
     $outline->("5b", "Voorbelasting", undef, $data->{vb});
