@@ -5,6 +5,12 @@ ROADMAP voor EekBoek
 
 2.01	Development voor 2.02 (of 3.00?)
 
+	[100%] Herstructurering runtime files i.v.m. packaging.
+
+	[100%] Herstructurering call API.
+
+	[100%] Elimineren ebshell call vanuit ebwxshell.
+
 	[90%] Vertaalbaarheid (zo volledig mogelijk) inclusief Engelse
 	vertaling.
 
@@ -14,6 +20,18 @@ ROADMAP voor EekBoek
 	[50%] GUI maintenance panels voor grootboekrekeningen.
 
 	[20%] GUI maintenance panels voor boekingen.
+
+	[98%] Packaging: Linux 32 bit.
+
+	[98%] Packaging: Linux 64 bit.
+
+	[98%] Packaging: Mac OSX.
+
+	[98%] Packaging: Windows 32 bit.
+
+	[50%] Packaging: Windows 64 bit.
+
+	==> BTW aanduidingen ivm. tussentijdse BTW verhoging.
 
 3.00	Future
 
