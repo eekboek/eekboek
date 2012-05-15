@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  2 23:00:27 2011
-# Update Count    : 143
+# Last Modified On: Mon May  7 15:28:33 2012
+# Update Count    : 161
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -155,27 +155,54 @@ sub parse_btw_spec {
     }
 
     # Examine rest. Numeric -> BTW id.
-    if ( $spec =~ /^(\d+)$/ ) {
+    if ( $spec =~ /^(\d+)([-+])?$/ ) {
 	$btw_id = $1;
+	if ( defined $2 ) {
+	    my $excl = $2 eq '-';
+	    my $res = $dbh->do("SELECT btw_perc, btw_tariefgroep FROM BTWTabel".
+			       " WHERE btw_id = ?",
+			       $btw_id);
+	    return unless $res;
+	    $res = $dbh->do("SELECT btw_id FROM BTWTabel".
+			    " WHERE btw_perc = ? AND btw_tariefgroep = ?".
+			    "  AND ".($excl?"NOT ":"")."btw_incl",
+			    $res->[0], $res->[1]);
+	    return unless $res;
+	    $btw_id = $res->[0];
+	}
     }
     # H L H- L- H+ L+
     elsif ( $spec =~ /^([hl])([-+])?$/ ) {
 	$btw_id = $1;
 	my $excl;
 	$excl = $2 eq '-' if defined $2;
-	$btw_id = $dbh->do("SELECT btw_id FROM BTWTabel".
+	my $res = $dbh->da("SELECT btw_id, btw_desc FROM BTWTabel".
 			   " WHERE btw_tariefgroep = ?".
 			   " AND ".($excl?"NOT ":"")."btw_incl",
-			   $btw_id eq "h" ? BTWTARIEF_HOOG : BTWTARIEF_LAAG)->[0];
+			   $btw_id eq "h" ? BTWTARIEF_HOOG : BTWTARIEF_LAAG);
+	warn("!".__x("BTW aanduiding \"{spec}\" kent meerdere tariefcodes: {list} (code {code} \"{desc}\" is gebruikt)",
+		     spec => $spec,
+		     list => join(" ", map { $_->[0] } @$res),
+		     code => $res->[0]->[0],
+		     desc => $res->[0]->[1],
+		    )."\n") if @$res != 1;
+	$btw_id = $res->[0]->[0];
     }
     # + -
     elsif ( $spec =~ /^([-+])$/ && $btw_id ) {
-	$btw_id = $dbh->do("SELECT btw_id FROM BTWTabel".
+	my $res = $dbh->da("SELECT btw_id, btw_desc FROM BTWTabel".
 			   " WHERE btw_tariefgroep =".
 			   " ( SELECT btw_tariefgroep FROM BTWTabel".
 			   " WHERE btw_id = ? )".
 			   " AND ".($1 eq '-'?"NOT ":"")."btw_incl",
-			   $btw_id)->[0];
+			   $btw_id);
+	warn("!".__x("BTW aanduiding \"{spec}\" kent meerdere tariefcodes: {list} (code {code} \"{desc}\" is gebruikt)",
+		     spec => $spec,
+		     list => join(" ", map { $_->[0] } @$res),
+		     code => $res->[0]->[0],
+		     desc => $res->[0]->[1],
+		    )."\n") if @$res != 1;
+	$btw_id = $res->[0]->[0];
     }
     elsif ( $spec ne '' ) {
 	return;

@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar 10 21:48:55 2011
-# Update Count    : 445
+# Last Modified On: Mon May  7 14:16:26 2012
+# Update Count    : 446
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -692,6 +692,20 @@ sub do {
     my $rr = $sth->fetchrow_arrayref;
     $sth->finish;
     $rr;
+}
+
+sub da {			# do_all
+    my $self = shift;
+    my $sql = shift;
+    my $atts = ref($_[0]) eq 'HASH' ? shift : undef;
+    my @args = @_;
+    my $sth = $self->sql_exec($sql, @args);
+    my $res;
+    while ( my $rr = $sth->fetchrow_arrayref ) {
+	push( @$res, [@$rr] );
+    }
+    $sth->finish;
+    $res;
 }
 
 sub errstr {
