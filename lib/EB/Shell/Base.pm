@@ -144,10 +144,12 @@ sub init_rl {
     $self->term($term);
 
     # Setup default tab-completion function.
+    # Note that this will be overridden by EB::Shell->new.
     $attr = $term->Attribs;
     $attr->{completion_function} = sub { $self->complete(@_) };
 
     if (my $histfile = $args->{ HISTFILE }) {
+	# Should use $term->Features->{addhistory} .
         $self->histfile($histfile);
 	if ( $term->can("ReadHistory") ) {
 	    $term->ReadHistory($histfile);

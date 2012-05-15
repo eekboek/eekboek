@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 29 21:42:04 2012
-# Update Count    : 216
+# Last Modified On: Tue May 15 13:45:07 2012
+# Update Count    : 226
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -136,8 +136,10 @@ sub eb_complete {
 	my @a = grep { /^$word/ } @words;
 	if ( @a ) {
 	    return $a[0] if @a == 1;
-	    $self->term->display_match_list([$a[0],@a], $#a+1, -1);
-	    print STDERR ("$line");
+	    print STDERR ( "\n", join("  ", @a), "\n",
+			   # Re-prompt. We'll lose the ornaments,
+			   # but it's better than nothing (I hope).
+			   $self->prompt, "$line" );
 	}
 	return;
     }
