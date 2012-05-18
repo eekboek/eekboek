@@ -1,5 +1,34 @@
 2.01.03
 
+	* Term::ReadLine: Fallback naar T::R::Perl (meegeleverd) met
+	  command history en completion.
+
+	* Er wordt een waarschuwing gegeven wanneer in een boeking
+          '@H' en/of '@L' wordt gebruikt en er meerdere BTW tarieven
+          corresponderen met '@H' of '@L'.
+
+	* In het grootboek commando kunnen nu ook (hoofd)verdichtingen
+          worden opgegeven.
+
+	* Voer een rollback uit wanneer een mislukte opdracht dat
+          vergeet te doen. Dit is een tijdelijke stoplap totdat alle
+          opdrachten zich keurig aan de regels voor database
+          transacties houden.
+
+    	* Deprecieer het plaatsen van een D of C na het rekeningnummer
+	  bij de specificatie van relaties.
+
+	* Fix bug 3510006.
+
+	* Fix bug 3499522.
+
+    	* Many translation / localisation changes for the on-going
+	  translatability project.
+
+	* Fix typo in messages (Issue #3477452).
+
+    	* Fix --help handling.
+
 	* Fix bug #2624283
 	  Dagboeken met whitespace erin worden intern van een
 	  underscore voorzien.
