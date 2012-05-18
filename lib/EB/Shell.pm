@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue May 15 13:45:07 2012
-# Update Count    : 226
+# Last Modified On: Fri May 18 20:55:27 2012
+# Update Count    : 228
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -126,6 +126,9 @@ sub eb_complete {
 
     select(STDERR); $| = 1; select(STDOUT);
 
+    # Some ReadLiners put the terminal in raw mode...
+    my $nl = "\r\n";
+
     if ( $i < 0 || $i > $pos-1 || $pre =~ /^help\s+$/ ) {
 	my @words = $self->completions;
 	if ( $pre =~ /^help\s+$/ ) {
@@ -136,7 +139,7 @@ sub eb_complete {
 	my @a = grep { /^$word/ } @words;
 	if ( @a ) {
 	    return $a[0] if @a == 1;
-	    print STDERR ( "\n", join("  ", @a), "\n",
+	    print STDERR ( $nl, join("  ", @a), $nl,
 			   # Re-prompt. We'll lose the ornaments,
 			   # but it's better than nothing (I hope).
 			   $self->prompt, "$line" );
@@ -152,10 +155,9 @@ sub eb_complete {
 	my ($w, $d) = @$rr;
 	$rr = $sth->fetchrow_arrayref;
 	return ($w) unless $rr;
-	print STDERR ("\n");
-	printf STDERR ("%9d  %s\n", $w, $d);
+	printf STDERR ($nl."%9d  %s".$nl, $w, $d);
 	while ( $rr ) {
-	    printf STDERR ("%9d  %s\n", @$rr);
+	    printf STDERR ("%9d  %s".$nl, @$rr);
 	    $rr = $sth->fetchrow_arrayref;
 	}
 	print STDERR ("$line");
@@ -180,10 +182,9 @@ sub eb_complete {
 	if ( !$rr && $word ne "" ) {
 	    return ($w);
 	}
-	print STDERR ("\n");
-	printf STDERR ("  %s  %s\n", $w, $d);
+	printf STDERR ($nl."  %s  %s".$nl, $w, $d);
 	while ( $rr  ) {
-	    printf STDERR ("  %s  %s\n", @$rr);
+	    printf STDERR ("  %s  %s".$nl, @$rr);
 	    $rr = $sth->fetchrow_arrayref;
 	}
 	print STDERR ("$line");

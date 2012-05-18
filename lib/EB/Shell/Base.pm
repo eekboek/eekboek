@@ -137,6 +137,7 @@ sub init_rl {
     my ($self, $args) = @_;
     my ($term, $attr);
 
+    $ENV{PERL_READLINE_NOWARN} = 1 unless $self->{RL_DEBUG};
     require Term::ReadLine;
     warn("\%Trying: ReadLine (", $ENV{PERL_RL}||"default", ")\n") if $self->{RL_DEBUG};
     $term = Term::ReadLine->new(ref $self);
