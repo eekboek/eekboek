@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Dec 18 21:54:24 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov  1 10:14:31 2011
-# Update Count    : 110
+# Last Modified On: Tue May 22 22:18:57 2012
+# Update Count    : 112
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -19,7 +19,13 @@ use warnings;
 use File::Spec;
 use File::Basename;
 
-use Wx qw( :everything  );;
+use Wx qw[
+	  wxDefaultPosition
+	  wxICON_ERROR
+	  wxICON_EXCLAMATION
+	  wxICON_INFORMATION
+	  wxOK
+       ];
 # If we get here, we have Wx :)
 
 use FindBin;
@@ -62,6 +68,7 @@ if ( ( $Wx::VERSION =~ /^0[.,]9[56]$/ )
     };
 }
 
+# We currently support wxWidgets 2.8 and 2.9.
 check_version( "wxWidgets", $Wx::wxVERSION, "2.008" );
 
 unless ( $ENV{LANG} =~ /^nl/i ) {

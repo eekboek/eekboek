@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan  9 12:36:22 2012
-# Update Count    : 435
+# Last Modified On: Tue May 22 21:44:59 2012
+# Update Count    : 437
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -28,11 +28,18 @@ use Getopt::Long 2.13;
 
 ################ The Process ################
 
-use Wx 0.74 qw[:everything];
-
 my $app_dir;
 
 use base qw(Wx::App);
+
+use Wx qw[
+	  wxBITMAP_TYPE_ANY
+	  wxCONFIG_USE_LOCAL_FILE
+	  wxDefaultPosition
+	  wxDefaultSize
+	  wxICON_ERROR
+	  wxOK
+       ];
 
 sub OnInit {
     my( $self ) = shift;

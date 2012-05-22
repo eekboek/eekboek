@@ -25,6 +25,11 @@
     	* Many translation / localisation changes for the on-going
 	  translatability project.
 
+	* Several small updates to work with wxWidgets 2.9.x.
+
+	* Eliminated using Wx :allclasses and :everything. This solves
+          some problems with Cava packager and Wx 2.9.x.
+
 	* Fix typo in messages (Issue #3477452).
 
     	* Fix --help handling.

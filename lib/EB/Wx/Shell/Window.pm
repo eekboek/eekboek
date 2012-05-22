@@ -12,7 +12,12 @@ package EB::Wx::Shell::Window;
 use strict;
 use warnings;
 
-use Wx qw(:everything);
+use Wx qw[
+	  wxACCEL_CTRL
+	  wxACCEL_NORMAL
+	  wxID_CLOSE
+	  wxTHICK_FRAME
+       ];
 
 sub sizepos_save {
     my ($self, $posonly) = @_;
