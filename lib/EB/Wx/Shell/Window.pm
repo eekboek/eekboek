@@ -77,7 +77,8 @@ sub init {
 sub refresh {
 }
 
-# wxGlade insists on generating this.
-sub Wx::wxTHICK_FRAME() { 0 }
+# wxGlade insists on generating these.
+sub Wx::wxTHICK_FRAME() { 0 }		# removed 2.x
+sub Wx::wxADJUST_MINSIZE() { 0 }	# bogus 2.8, removed in 2.9
 
 1;
