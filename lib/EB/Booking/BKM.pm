@@ -10,8 +10,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 22 21:35:36 2012
-# Update Count    : 533
+# Last Modified On: Tue May 29 15:05:50 2012
+# Update Count    : 535
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################

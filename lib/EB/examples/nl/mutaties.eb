@@ -119,9 +119,9 @@ verkoop 19-08 "Pocket Reference" ORA  "Produktie boek"      1.000 8300
 #     @H         pas het hoge tarief toe
 #     @L         pas het lage tarief toe
 #     @n         pas BTW code n toe (afgeraden)
-# BTW wordt geboekt op de BTW-Verkooprekening voor positieve bedragen,
-# en op de BTW-Inkooprekening voor negatieve bedragen. Dit kan worden
-# gewijzigd door aan de codering een "I" (Inkoop) of "V" (verkoop) toe
+# BTW wordt geboekt op de BTW-Omzetrekening voor positieve bedragen,
+# en op de BTW-Kostenrekening voor negatieve bedragen. Dit kan worden
+# gewijzigd door aan de codering een "O" (Omzet) of "K" (Kosten) toe
 # te voegen.
 #
 # Door het eindsaldo op te geven wordt dit geverifieerd.

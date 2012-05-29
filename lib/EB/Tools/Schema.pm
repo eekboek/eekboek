@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 17 16:56:11 2012
-# Update Count    : 887
+# Last Modified On: Tue May 29 17:11:46 2012
+# Update Count    : 902
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -82,6 +82,8 @@ my %std;			# standaardrekeningen
 my %dbk;			# dagboeken
 my @dbk;			# dagboeken
 my @btw;			# btw tarieven
+my %btw;			# btw aliases
+my $btw_auto;			# btw auto code
 my %btwmap;			# btw type/incl -> code
 my $fail;			# any errors
 
@@ -97,6 +99,8 @@ sub init_vars {
     %dbk = ();			# dagboeken
     @dbk = ();			# dagboeken
     @btw = ();			# btw tarieven
+    %btw = ();			# btw aliases
+    $btw_auto = BTW_CODE_AUTO;	# btw auto code
     %btwmap = ();		# btw type/incl -> code
     undef $fail;		# any errors
     init_kmap();
@@ -240,10 +244,27 @@ sub scan_dagboeken {
 }
 
 sub scan_btw {
-    return 0 unless /^\s+(\d+)\s+(.*)/;
+    return 0 unless /^\s+(\w+)\s+(.*)/;
 
     my ($id, $desc) = ($1, $2);
-    error(__x("Dubbel: BTW tarief {id}", id => $id)."\n") if defined($btw[$id]);
+    my $id0 = $id;		# for messages
+    my $alias;
+
+    unless ( $id =~ /^\d+$/ ) {
+	error(__x("Ongeldige code voor BTW tarief: {id} (moet minstens twee tekens zijn)", id => $id0)."\n")
+	  if length($id) < 3;	# prevent clash with HK and such.
+	error(__x("Dubbel: BTW tarief {id}", id => $id0)."\n")
+	  if exists($btw{lc $id});
+	$btw_auto += 2;
+	$btw{lc $id} = $btw_auto;
+	$alias = $id;
+	$id = $btw_auto;
+    }
+    else {
+	error(__x("Ongeldige code voor BTW tarief: {id}", id => $id0)."\n")
+	  if $id > BTW_CODE_AUTO;
+    }
+    error(__x("Dubbel: BTW tarief {id}", id => $id0)."\n") if defined($btw[$id]);
 
     my $perc;
     my $groep = 0;
@@ -286,15 +307,17 @@ sub scan_btw {
 	}
 	else {
 	    error(__x("BTW tarief {id}: onbekende info \"{info}\"",
-		      id => $id, info => $extra)."\n");
+		      id => $id0, info => $extra)."\n");
 	}
     }
 
     error(__x("BTW tarief {id}: geen percentage en de tariefgroep is niet \"{none}\"",
-	      id => $id, none => _T("geen"))."\n")
+	      id => $id0, none => _T("geen"))."\n")
       unless defined($perc) || $groep == BTWTARIEF_NUL;
 
-    $btw[$id] = [ $id, $desc, $groep, $perc, $incl ];
+    $btw[$id]   = [ $id,  $alias, $desc, $groep, $perc, $incl ];
+    $btw[$id+1] = [ $id+1, undef, $alias.($incl?'-':'+'), $groep, $perc, !$incl ]
+      if $id > BTW_CODE_AUTO;
 
     if ( $groep == BTWTARIEF_NUL && !defined($btwmap{n}) ) {
 	$btwmap{n} = $id;
@@ -701,17 +724,18 @@ ESQL
 sub sql_btw {
     my $out = <<ESQL;
 -- BTW Tarieven
-COPY BTWTabel (btw_id, btw_desc, btw_tariefgroep, btw_perc, btw_incl) FROM stdin;
+COPY BTWTabel (btw_id, btw_alias, btw_desc, btw_tariefgroep, btw_perc, btw_incl) FROM stdin;
 ESQL
 
     foreach ( @btw ) {
 	next unless defined;
-	if ( $_->[2] == BTWTARIEF_NUL ) {
-	    $_->[3] = 0;
-	    $_->[4] = "\\N";
+	$_->[1] = "\\N" unless defined($_->[1]);
+	if ( $_->[3] == BTWTARIEF_NUL ) {
+	    $_->[4] = 0;
+	    $_->[5] = "\\N";
 	}
 	else {
-	    $_->[4] = _tf($_->[4]);
+	    $_->[5] = _tf($_->[5]);
 	}
 	$out .= _tsv(@$_);
     }

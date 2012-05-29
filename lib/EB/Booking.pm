@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon May  7 15:28:33 2012
-# Update Count    : 161
+# Last Modified On: Tue May 29 17:12:14 2012
+# Update Count    : 185
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -143,16 +143,22 @@ sub parse_btw_spec {
 	return (0, undef);
     }
     # Strip off trailing K|O.
-    elsif ( $spec =~ /^(.*)([ko])(.*)$/ ) {
-	$kstomz = $2 eq 'k';
-	$spec = $1.$3;
+    elsif ( $spec =~ /^([hl]|\d+)([-+]?)([ko])$/ || $spec =~ /^(\w+)([-+])([ko])$/ ) {
+	$kstomz = $3 eq 'k';
+	$spec = $1.$2;
     }
-    elsif ( $spec =~ /^(.*)([iv])(.*)$/ ) {
+
+=begin deprecated
+
+    # Deprecated since several years...
+    elseif ( $spec =~ /^(.*)([iv])(.*)$/ ) {
 	$kstomz = $2 eq 'i';
 	$spec = $1.$3;
 	warn("!".__x("BTW specificatie {spec}: Gebruik K of O in plaats van I of V",
 		     spec => $_[0])."\n");
     }
+
+=cut
 
     # Examine rest. Numeric -> BTW id.
     if ( $spec =~ /^(\d+)([-+])?$/ ) {
@@ -176,17 +182,40 @@ sub parse_btw_spec {
 	$btw_id = $1;
 	my $excl;
 	$excl = $2 eq '-' if defined $2;
-	my $res = $dbh->da("SELECT btw_id, btw_desc FROM BTWTabel".
+	my $res = $dbh->da("SELECT btw_id, btw_alias, btw_desc FROM BTWTabel".
 			   " WHERE btw_tariefgroep = ?".
 			   " AND ".($excl?"NOT ":"")."btw_incl",
 			   $btw_id eq "h" ? BTWTARIEF_HOOG : BTWTARIEF_LAAG);
 	warn("!".__x("BTW aanduiding \"{spec}\" kent meerdere tariefcodes: {list} (code {code} \"{desc}\" is gebruikt)",
 		     spec => $spec,
-		     list => join(" ", map { $_->[0] } @$res),
+		     list => join(" ", map { defined($_->[1]) ? $_->[1] : $_->[0] } @$res),
 		     code => $res->[0]->[0],
-		     desc => $res->[0]->[1],
+		     desc => $res->[0]->[2],
 		    )."\n") if @$res != 1;
 	$btw_id = $res->[0]->[0];
+    }
+    # alias
+    elsif ( $spec =~ /^(\w\w+)([-+])?$/ ) {
+	# warn("SPEC: $spec\n"); $dbh->trace(1);
+	my $res = $dbh->do("SELECT btw_id, btw_perc, btw_tariefgroep FROM BTWTabel".
+			   " WHERE btw_alias = ?",
+			   lc $1);
+	# $dbh->trace(0);
+	return unless $res;
+
+	$btw_id = $res->[0];
+	if ( defined $2 ) {
+	    my $excl = $2 eq '-';
+	    # $dbh->trace(1);
+	    $res = $dbh->do("SELECT btw_id FROM BTWTabel".
+			    " WHERE btw_perc = ? AND btw_tariefgroep = ?".
+			    "  AND ".($excl?"NOT ":"")."btw_incl",
+			    $res->[1], $res->[2]);
+	    # $dbh->trace(0);
+	    return unless $res;
+	    $btw_id = $res->[0];
+	}
+	# warn("SPEC: $spec => $btw_id\n");
     }
     # + -
     elsif ( $spec =~ /^([-+])$/ && $btw_id ) {
