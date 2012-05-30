@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue May 29 17:11:46 2012
-# Update Count    : 902
+# Last Modified On: Wed May 30 10:00:56 2012
+# Update Count    : 906
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -1089,19 +1089,26 @@ sub dump_acc {
 sub dump_btw {
     my $fh = shift;
     print {$fh} ("\n$km{hdr_btwtarieven}\n\n");
-    my $sth = $dbh->sql_exec("SELECT btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
+    my $sth = $dbh->sql_exec("SELECT btw_id, btw_alias, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
 			     " FROM BTWTabel".
 			     " ORDER BY btw_id");
     while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($id, $desc, $perc, $btg, $incl) = @$rr;
+	my ($id, $alias, $desc, $perc, $btg, $incl) = @$rr;
 	my $extra = "";
 	$extra .= " :$km{tariefgroep}=" . $km{"tg_".lc(BTWTARIEVEN->[$btg])};
 	if ( $btg != BTWTARIEF_NUL ) {
 	    $extra .= " :$km{perc}=".btwfmt($perc);
 	    $extra .= " :$km{exclusief}" unless $incl;
 	}
-	my $t = sprintf(" %3d  %-20s  %s",
-			$id, $desc, $extra);
+	if ( $id >= BTW_CODE_AUTO ) {
+	    next unless $alias;
+	    $alias = sprintf("%-10s", $alias);
+	}
+	else {
+	    $alias = sprintf("%3d", $id);
+	}
+	my $t = sprintf("  %s  %-20s  %s",
+			$alias, $desc, $extra);
 	$t =~ s/\s+$//;
 	print {$fh} ($t, "\n");
     }
