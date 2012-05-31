@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed May 30 10:00:56 2012
-# Update Count    : 906
+# Last Modified On: Wed May 30 15:36:15 2012
+# Update Count    : 910
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -60,15 +60,22 @@ sub create {
     open(my $fh, "<", $file)
       or die("?".__x("Toegangsfout schema data: {err}", err => $!)."\n");
     $schema = $name;
-    _create(undef, sub { <$fh> });
+    _create1(undef, sub { <$fh> });
+    seek( $fh, 0, 0 );
+    _create2(undef, sub { <$fh> });
     __x("Schema {schema} geïnitialiseerd", schema => $name);
 }
 
-sub _create {
+sub _create1 {			# 1st pass
     shift;			# singleton class method
     my ($rl) = @_;
     $dbh = EB::DB->new(trace => $trace) unless $sql;
-    load_schema($rl);
+    load_schema1($rl);
+}
+sub _create2 {			# 2nd pass
+    shift;			# singleton class method
+    my ($rl) = @_;
+    load_schema2($rl);
 }
 
 my @hvdi;			# hoofdverdichtingen
@@ -465,17 +472,93 @@ sub scan_result {
     goto &scan_balres;
 }
 
-sub load_schema {
+sub scan_ignore { 1 }
+
+sub load_schema1 {
     my ($rl) = shift;
 
     init_vars();
+    my $scanner;		# current scanner
+    my $uerr = 0;
+
+    %std = map { $_ => 0 }
+      qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih btw_vp btw_ip btw_va btw_ia);
+    while ( $_ = $rl->() ) {
+	if ( /^\# \s*
+	      content-type: \s*
+              text (?: \s* \/ \s* plain)? \s* ; \s*
+              charset \s* = \s* (\S+) \s* $/ix ) {
+	    my $charset = lc($1);
+	    if ( $charset =~ /^(?:utf-?8)$/i ) {
+		next;
+	    }
+	    error(_T("Invoer moet Unicode (UTF-8) zijn.")."\n");
+	}
+
+	my $s = "".$_;
+	eval {
+	    $_ = decode('utf8', $s, 1);
+	};
+	if ( $@ ) {
+	    warn("?".__x("Geen geldige UTF-8 tekens in regel {line} van de invoer",
+			 line => $.)."\n".$s."\n");
+	    warn($@);
+	    $fail++;
+	    next;
+	}
+
+	next if /^\s*#/;
+	next unless /\S/;
+
+	# Scanner selectie.
+	if ( /^($km{balans}|$km{hdr_balans})/i ) {
+	    $scanner = \&scan_ignore;
+	    next;
+	}
+	if ( /^($km{result}|$km{hdr_resultaat})/i ) {
+	    $scanner = \&scan_ignore;
+	    next;
+	}
+	if ( /^($km{dagboeken}|$km{hdr_dagboeken})/i ) {
+	    $scanner = \&scan_ignore;
+	    next;
+	}
+	if ( /^$km{hdr_btwtarieven}/i ) {
+	    $scanner = \&scan_btw;
+	    next;
+	}
+
+	# Overige settings.
+	if ( /^$km{hdr_verdichting}\s+(\d+)\s+(\d+)/i && $1 < $2 ) {
+	    $max_hvd = $1;
+	    $max_vrd = $2;
+	    next;
+	}
+
+	# Anders: Scan.
+	if ( $scanner ) {
+	    chomp;
+	    $scanner->() or
+	      error(__x("Ongeldige invoer in schema bestand, regel {lno}:\n{line}",
+			line => $_, lno => $.)."\n");
+	    next;
+	}
+
+	error(__x("Ongeldige invoer in schema bestand, regel {lno}:\n{line}",
+		  line => $_, lno => $.)."\n");
+
+    }
+
+}
+
+sub load_schema2 {
+    my ($rl) = shift;
+
     my $scanner;		# current scanner
     $max_hvd = 9;
     $max_vrd = 99;
     my $uerr = 0;
 
-    %std = map { $_ => 0 }
-      qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih btw_vp btw_ip btw_va btw_ia);
     while ( $_ = $rl->() ) {
 	if ( /^\# \s*
 	      content-type: \s*
@@ -517,7 +600,7 @@ sub load_schema {
 	    next;
 	}
 	if ( /^$km{hdr_btwtarieven}/i ) {
-	    $scanner = \&scan_btw;
+	    $scanner = \&scan_ignore;
 	    next;
 	}
 
