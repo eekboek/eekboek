@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue May 29 17:12:14 2012
-# Update Count    : 185
+# Last Modified On: Thu May 31 11:16:24 2012
+# Update Count    : 187
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -141,6 +141,10 @@ sub parse_btw_spec {
     # Quickie for G/N.
     if ( $spec =~ /^([gn])$/ ) {
 	return (0, undef);
+    }
+    # Quickie for K/O.
+    elsif ( $spec =~ /^([ko])$/ ) {
+	return ($btw_id, $1 eq 'k');
     }
     # Strip off trailing K|O.
     elsif ( $spec =~ /^([hl]|\d+)([-+]?)([ko])$/ || $spec =~ /^(\w+)([-+])([ko])$/ ) {
