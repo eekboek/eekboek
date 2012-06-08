@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  8 20:45:15 2012
-# Update Count    : 338
+# Last Modified On: Fri Jun  8 22:38:39 2012
+# Update Count    : 340
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -35,7 +35,7 @@ sub journal {
     my $pfx = $opts->{postfix} || "";
     my $detail = $opts->{detail};
 
-    my $extra_btw_info = $cfg->val(qw(journal btwxinfo), 1);
+    my $extra_btw_info = $cfg->val(qw(journal btwxinfo), $dbh->does_btw ? 1 : 0);
 
     $opts->{STYLE} = "journaal";
     $opts->{LAYOUT} =
