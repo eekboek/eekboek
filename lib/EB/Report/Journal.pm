@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:37:40 2010
-# Update Count    : 312
+# Last Modified On: Fri Jun  8 20:45:15 2012
+# Update Count    : 338
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -35,6 +35,8 @@ sub journal {
     my $pfx = $opts->{postfix} || "";
     my $detail = $opts->{detail};
 
+    my $extra_btw_info = $cfg->val(qw(journal btwxinfo), 1);
+
     $opts->{STYLE} = "journaal";
     $opts->{LAYOUT} =
       [ { name => "date", title => _T("Datum"),              width => $date_width, },
@@ -42,6 +44,9 @@ sub journal {
 	{ name => "acct", title => _T("Rek"),                width =>  5, align => ">", },
 	{ name => "deb",  title => _T("Debet"),              width => $amount_width, align => ">", },
 	{ name => "crd",  title => _T("Credit"),             width => $amount_width, align => ">", },
+	$extra_btw_info ?
+	({ name => "btw",  title => _T("BTW \%"),             width => $amount_width, align => ">", },
+	 { name => "btg",  title => _T("Tarief"),             width => 10, }) : (),
 	{ name => "bsk",  title => _T("Boekstuk/regel"),     width => 30, },
 	{ name => "rel",  title => _T("Relatie"),            width => 10, },
       ];
@@ -57,11 +62,12 @@ sub journal {
 		  "jnl_date",					# date
 		  "jnl_dbk_id",					# dagboek
 		  "bsk_nr",					# boekstuk
-		  "CASE WHEN jnl_bsr_seq = 0 THEN 0 ELSE 1 END",# bsr 0 eerst
+		  "CASE WHEN jnl_seq = 0 THEN 0 ELSE 1 END",# bsr 0 eerst
 		  "sign(jnl_amount) DESC",			# debet eerst
 		  "jnl_acc_id",					# rekeningnummer
 		  "jnl_amount DESC",				# grootste bedragen vooraan
-		  "jnl_bsr_seq");				# if all else fails
+		  "jnl_type",
+		  "jnl_seq");				# if all else fails
 
     $rep->start(_T("Journaal"));
 
@@ -76,8 +82,8 @@ sub journal {
 		warn("?".__x("Onbekend dagboek: {dbk}", dbk => $1)."\n");
 		return;
 	    }
-	    $sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
-				  "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
+	    $sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, jnl_seq, ".
+				  "jnl_type, jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
 				  " FROM Journal, Boekstukken, Dagboeken".
 				  " WHERE bsk_nr = ?".
 				  " AND dbk_id = ?".
@@ -97,8 +103,8 @@ sub journal {
 		warn("?".__x("Onbekend dagboek: {dbk}", dbk => $1)."\n");
 		return;
 	    }
-	    $sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
-				  "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
+	    $sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, jnl_seq, ".
+				  "jnl_type, jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
 				  " FROM Journal, Boekstukken, Dagboeken".
 				  " WHERE dbk_id = ?".
 				  " AND jnl_bsk_id = bsk_id".
@@ -109,8 +115,8 @@ sub journal {
 	    $pfx ||= __x("Dagboek {nr}", nr => $rr->[0]);
 	}
 	else {
-	    $sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
-				  "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel".
+	    $sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, jnl_seq, ".
+				  "jnl_type, jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel".
 				  " FROM Journal, Boekstukken".
 				  " WHERE jnl_bsk_id = ?".
 				  " AND jnl_bsk_id = bsk_id".
@@ -121,8 +127,8 @@ sub journal {
 	}
     }
     else {
-	$sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, ".
-			      "jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
+	$sth = $dbh->sql_exec("SELECT jnl_date, jnl_bsr_date, jnl_dbk_id, jnl_bsk_id, bsk_nr, jnl_bsr_seq, jnl_seq, ".
+			      "jnl_type, jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_bsk_ref".
 			      " FROM Journal, Boekstukken".
 			      " WHERE jnl_bsk_id = bsk_id".
 			      ($per ? " AND jnl_date >= ? AND jnl_date <= ?" : "").
@@ -134,13 +140,14 @@ sub journal {
     my $totd = my $totc = 0;
 
     while ( $rr = $sth->fetchrow_arrayref ) {
-	my ($jnl_date, $jnl_bsr_date, $jnl_dbk_id, $jnl_bsk_id, $bsk_nr, $jnl_bsr_seq, $jnl_acc_id,
+	my ($jnl_date, $jnl_bsr_date, $jnl_dbk_id, $jnl_bsk_id, $bsk_nr,
+	    $jnl_bsr_seq, $jnl_seq, $jnl_type, $jnl_acc_id,
 	    $jnl_amount, $jnl_damount, $jnl_desc, $jnl_rel, $jnl_bsk_ref) = @$rr;
 
 	my $iv = _dbk_type($jnl_dbk_id) == DBKTYPE_INKOOP ? 'c'
 	  : _dbk_type($jnl_dbk_id) == DBKTYPE_VERKOOP ? 'd' : '';
 
-	if ( $jnl_bsr_seq == 0 ) {
+	if ( $jnl_seq == 0 ) {
 	    $nl++, next unless $detail;
 	    my $t = $jnl_rel;
 	    if ( $t && $jnl_bsk_ref ) {
@@ -173,6 +180,27 @@ sub journal {
 	    $iv = '';
 	}
 
+	my $btw_perc = "";
+	my $btw_tg = "";
+	if ( $extra_btw_info > 1
+	     || ( $extra_btw_info && defined($jnl_type) && $jnl_type == 0 ) ) {
+	    my $res = $dbh->do( "SELECT bsr_btw_id, bsr_btw_class FROM Boekstukregels".
+				" WHERE bsr_bsk_id = ? AND bsr_nr = ?",
+				$jnl_bsk_id, $jnl_bsr_seq );
+	    if ( defined($res) && defined($res->[0])
+		 && defined($res->[1])
+		 && $res->[1] & BTWKLASSE_BTW_BIT ) {
+		my $btw_id = $res->[0];
+		$res = $dbh->do( "SELECT btw_perc, btw_tariefgroep".
+				 " FROM BTWTabel".
+				 " WHERE btw_id = ?",
+				 $btw_id );
+		$btw_perc = btwfmt( $res->[0] );
+		$btw_tg = BTWTARIEVEN->[$res->[1]];
+	    }
+	}
+
+
 	$rep->add({ _style => $iv.'data',
 		    date => datefmt($jnl_bsr_date),
 		    desc => _acc_desc($jnl_acc_id),
@@ -181,6 +209,7 @@ sub journal {
 		    ($crd || defined $jnl_damount) ? (crd => numfmt($crd)) : (),
 		    bsk  => $jnl_desc,
 		    $jnl_rel ? ( rel => $t ) : (),
+		    $extra_btw_info ? ( btw => $btw_perc, btg => $btw_tg ) : (),
 		  });
     }
     $rep->add({ _style => 'total',

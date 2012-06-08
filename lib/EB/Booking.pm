@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May 31 11:16:24 2012
-# Update Count    : 187
+# Last Modified On: Fri Jun  8 20:23:15 2012
+# Update Count    : 202
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -188,7 +188,8 @@ sub parse_btw_spec {
 	$excl = $2 eq '-' if defined $2;
 	my $res = $dbh->da("SELECT btw_id, btw_alias, btw_desc FROM BTWTabel".
 			   " WHERE btw_tariefgroep = ?".
-			   " AND ".($excl?"NOT ":"")."btw_incl",
+			   " AND ".($excl?"NOT ":"")."btw_incl".
+			   " ORDER BY btw_id ASC",
 			   $btw_id eq "h" ? BTWTARIEF_HOOG : BTWTARIEF_LAAG);
 	warn("!".__x("BTW aanduiding \"{spec}\" kent meerdere tariefcodes: {list} (code {code} \"{desc}\" is gebruikt)",
 		     spec => $spec,
@@ -286,7 +287,7 @@ sub journalise {
 
     # date  bsk_id  bsr_seq(0)   dbk_id  (acc_id) amount debcrd desc(bsk) (rel)
     # date (bsk_id) bsr_seq(>0) (dbk_id)  acc_id  amount debcrd desc(bsr) rel(acc=1200/1600)
-    my ($jnl_date, $jnl_bsk_id, $jnl_bsr_seq, $jnl_dbk_id, $jnl_acc_id,
+    my ($jnl_date, $jnl_bsk_id, $jnl_dbk_id, $jnl_acc_id,
 	$jnl_amount, $jnl_desc, $jnl_rel);
 
     my $rr = $::dbh->do("SELECT bsk_nr, bsk_desc, bsk_dbk_id, bsk_date, bsk_ref".
@@ -332,14 +333,14 @@ sub journalise {
 	$tot += $bsr_amount;
 	$dtot += $bsr_amount if $bsr_amount < 0;
 	$ctot += $bsr_amount if $bsr_amount > 0;
-
-	push(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
-		     $bsr_acc_id,
+	my $btwtag = _T("BTW ");
+	push(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsr_date, $bsr_nr, $nr++,
+		     0, $bsr_acc_id,
 		     $bsr_amount - $btw, undef, $bsr_desc,
 		     $bsr_type ? ($bsr_rel_code, $bsr_rel_dbk) : (undef, undef), undef]);
-	push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsr_date, $nr++,
-		     $bsr_btw_acc,
-		     $btw, undef, "BTW ".$bsr_desc,
+	push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsr_date, $bsr_nr, $nr++,
+		     1, $bsr_btw_acc,
+		     $btw, undef, $btwtag.$bsr_desc,
 		     undef, undef, undef]) if $btw;
     }
 
@@ -357,11 +358,9 @@ sub journalise {
 		#warn("=> [$k] $v->{btw} <-> $t\n");
 		# Corrigeer het totaal, en maak een correctieboekstukregel.
 		$tot -= $v->{btw} - $t;
-		push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++,
-			     $k,
-			     $t - $v->{btw},
-			     undef,
-			     "BTW Afr. ".$bsk_desc,
+		push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, undef, $nr++,
+			     1, $k,
+			     $t - $v->{btw}, undef, _T("BTW Afr. ").$bsk_desc,
 			     undef, undef, undef]);
 		warn("!".__x("BTW rek. nr. {acct}, correctie van {amt} uitgevoerd",
 			     acct => $k, amt => numfmt($t-$v->{btw}))."\n");
@@ -371,16 +370,18 @@ sub journalise {
 
     if ( $dbk_acc_id ) {
 	if ( $dbkdcsplit ) {
-	    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
+	    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, undef, $nr++,
+			 0, $dbk_acc_id,
 			 -$tot, -$dtot, $bsk_desc, undef, undef, undef]);
 	}
 	else {
-	    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, $nr++, $dbk_acc_id,
+	    push(@$ret, [$bsk_date,  $bsk_dbk_id, $bsk_id, $bsk_date, undef, $nr++,
+			 0, $dbk_acc_id,
 			 -$tot, undef, $bsk_desc, undef, undef, undef]);
 	}
     }
 
-    unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsk_date, 0, undef,
+    unshift(@$ret, [$bsk_date, $bsk_dbk_id, $bsk_id, $bsk_date, undef, 0, 0, undef,
 		    undef, undef, $bsk_desc, $g_bsr_rel_code, undef, $bsk_ref]);
 
     $ret;

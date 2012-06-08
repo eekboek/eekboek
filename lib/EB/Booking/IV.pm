@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  8 14:32:08 2012
-# Update Count    : 311
+# Last Modified On: Thu Jun  7 16:48:50 2012
+# Update Count    : 323
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -256,10 +256,24 @@ sub perform {
 	    }
 	    # Void BTW voor non-EU en verlegd.
 	    if ( $btw_id && ($rel_btw == BTWTYPE_NORMAAL || $rel_btw == BTWTYPE_INTRA) ) {
-		my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
-		unless ( defined($tg) ) {
+
+		my $res = $dbh->do( "SELECT btw_tariefgroep, btw_start, btw_end, btw_alias, btw_desc".
+				    " FROM BTWTabel".
+				    " WHERE btw_id = ?",
+				    $btw_id );
+
+		my $tg;
+		unless ( defined($res) && defined( $tg = $res->[0] ) ) {
 		    warn("?".__x("Onbekende BTW-code: {code}", code => $btw_id)."\n");
 		    return;
+		}
+		if ( defined( $res->[1] ) && $res->[1] gt $date ) {
+		    warn("!".__x("BTW-code: {code} is nog niet geldig op de boekingsdatum",
+				 code => $res->[3]||$res->[4]||$btw_id)."\n");
+		}
+		if ( defined( $res->[2] ) && $res->[2] lt $date ) {
+		    warn("!".__x("BTW-code: {code} is niet meer geldig op de boekingsdatum",
+				 code => $res->[3]||$res->[4]||$btw_id)."\n");
 		}
 		my $tp = BTWTARIEVEN->[$tg];
 		my $t = qw(v i)[$iv] . lc(substr($tp, 0, 1));
@@ -292,7 +306,7 @@ sub perform {
 #	warn("update $ac with ".numfmt($amt)."\n") if $trace_updates;
 #	$dbh->upd_account($ac, $amt);
 #    }
-    my $tot = $ret->[$#{$ret}]->[6];
+    my $tot = $ret->[$#{$ret}]->[8]; # ERROR PRONE
     $dbh->sql_exec("UPDATE Boekstukken SET bsk_amount = ?, bsk_open = ? WHERE bsk_id = ?",
 		   $tot, $tot, $bsk_id)->finish;
 

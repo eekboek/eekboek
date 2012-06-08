@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed May 30 15:36:15 2012
-# Update Count    : 910
+# Last Modified On: Fri Jun  8 21:02:03 2012
+# Update Count    : 931
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -163,6 +163,8 @@ sub init_kmap {
     $km{incl}		 = __xt("scm:incl");
     $km{excl}		 = __xt("scm:excl");
     $km{btw}		 = __xt("scm:btw");
+    $km{vanaf}		 = __xt("scm:vanaf");
+    $km{tot}		 = __xt("scm:tot");
     $km{kosten}		 = __xt("scm:kosten");
     $km{kostenrekening}	 = __xt("scm:kostenrekening");
     $km{omzet}		 = __xt("scm:omzet");
@@ -264,7 +266,7 @@ sub scan_btw {
 	  if exists($btw{lc $id});
 	$btw_auto += 2;
 	$btw{lc $id} = $btw_auto;
-	$alias = $id;
+	$alias = lc $id;
 	$id = $btw_auto;
     }
     else {
@@ -276,6 +278,8 @@ sub scan_btw {
     my $perc;
     my $groep = 0;
     my $incl = 1;
+    my $sdate;
+    my $edate;
     my $extra;
     while ( $desc =~ /^(.+?)\s+:([^\s:]+)\s*$/ ) {
 	$desc = $1;
@@ -303,14 +307,32 @@ sub scan_btw {
 	elsif ( $extra =~ m/^$km{tariefgroep}=(prive|$km{tg_privé})$/i ) {
 	    $groep = BTWTARIEF_PRIV;
 	}
-	elsif ( $extra =~ m/^$km{tariefgroep}=$km{tg_anders}??$/i ) {
+	elsif ( $extra =~ m/^$km{tariefgroep}=$km{tg_anders}$/i ) {
 	    $groep = BTWTARIEF_ANDERS;
 	}
-	elsif ( $extra =~ m/^(?:$km{incl}|$km{inclusief})?$/i ) {
+	elsif ( $extra =~ m/^(?:$km{incl}|$km{inclusief})$/i ) {
 	    $incl = 1;
 	}
-	elsif ( $extra =~ m/^(?:$km{excl}|$km{exclusief})?$/i ) {
+	elsif ( $extra =~ m/^(?:$km{excl}|$km{exclusief})$/i ) {
 	    $incl = 0;
+	}
+	elsif ( $extra =~ m/^(?:$km{vanaf})=(.+)$/i ) {
+	    $sdate = $1;
+	    error("Ongeldige datumaanduiding in {key}: {value}",
+		  key => $km{vanaf}, value => $sdate)
+	      unless $sdate =~ /^(\d{4}-\d\d-\d\d)$/;
+	    $sdate = parse_date($1)
+	      or error(__x("Ongeldige datumaanduiding in {key}: {value}",
+			   key => $km{vanaf}, value => $1));
+	}
+	elsif ( $extra =~ m/^(?:$km{tot})=(.+)$/i ) {
+	    $edate = $1;
+	    error("Ongeldige datumaanduiding in {key}: {value}",
+		  key => $km{tot}, value => $sdate)
+	      unless $edate =~ /^(\d{4}-\d\d-\d\d)$/;
+	    $edate = parse_date($1, undef, -1)
+	      or error(__x("Ongeldige datumaanduiding in {key}: {value}",
+			   key => $km{tot}, value => $1));
 	}
 	else {
 	    error(__x("BTW tarief {id}: onbekende info \"{info}\"",
@@ -322,42 +344,33 @@ sub scan_btw {
 	      id => $id0, none => _T("geen"))."\n")
       unless defined($perc) || $groep == BTWTARIEF_NUL;
 
-    $btw[$id]   = [ $id,  $alias, $desc, $groep, $perc, $incl ];
-    $btw[$id+1] = [ $id+1, undef, $alias.($incl?'-':'+'), $groep, $perc, !$incl ]
+    # Add the definition. Automatically add one for the non-$incl variant if it is named.
+    $btw[$id]   = [ $id,  $alias, $desc,
+		    $groep, $perc, $incl,  $sdate, $edate ];
+    $btw[$id+1] = [ $id+1, undef, $alias.($incl?'-':'+'),
+		    $groep, $perc, !$incl, $sdate, $edate ]
       if $id > BTW_CODE_AUTO;
 
     if ( $groep == BTWTARIEF_NUL && !defined($btwmap{n}) ) {
 	$btwmap{n} = $id;
     }
-    elsif ( $incl ) {
-	if ( $groep == BTWTARIEF_HOOG && !defined($btwmap{h}) ) {
-	    $btwmap{h} = $id;
-	}
-	elsif ( $groep == BTWTARIEF_LAAG && !defined($btwmap{l}) ) {
-	    $btwmap{l} = $id;
-	}
-	elsif ( $groep == BTWTARIEF_PRIV && !defined($btwmap{p}) ) {
-	    $btwmap{p} = $id;
-	}
-	elsif ( $groep == BTWTARIEF_ANDERS && !defined($btwmap{a}) ) {
-	    $btwmap{a} = $id;
-	}
-    }
     else {
-	if ( $groep == BTWTARIEF_HOOG && !defined($btwmap{"h-"}) ) {
-	    $btwmap{"h-"} = $id;
+	my $pfx = $incl ? "" : "-";
+	if ( $groep == BTWTARIEF_HOOG && !defined($btwmap{"h$pfx"}) ) {
+	    $btwmap{"h$pfx"} = $id;
 	}
-	elsif ( $groep == BTWTARIEF_LAAG && !defined($btwmap{"l-"}) ) {
-	    $btwmap{"l-"} = $id;
+	elsif ( $groep == BTWTARIEF_LAAG && !defined($btwmap{"l$pfx"}) ) {
+	    $btwmap{"l$pfx"} = $id;
 	}
-	elsif ( $groep == BTWTARIEF_PRIV && !defined($btwmap{"p-"}) ) {
-	    $btwmap{"p-"} = $id;
+	elsif ( $groep == BTWTARIEF_PRIV && !defined($btwmap{"p$pfx"}) ) {
+	    $btwmap{"p$pfx"} = $id;
 	}
-	elsif ( $groep == BTWTARIEF_ANDERS && !defined($btwmap{"a-"}) ) {
-	    $btwmap{"a-"} = $id;
+	elsif ( $groep == BTWTARIEF_ANDERS && !defined($btwmap{"a$pfx"}) ) {
+	    $btwmap{"a$pfx"} = $id;
 	}
     }
     $btwmap{$id} = $id;
+    $btwmap{$alias} = $id if defined($alias) && $alias !~ /^\d+$/;
     1;
 }
 
@@ -407,6 +420,9 @@ sub scan_balres {
 		foreach ( @spec ) {
 		    if ( $balres && /^($km{kosten}|$km{omzet})$/ ) {
 			$btw_ko = $1 eq $km{kosten};
+		    }
+		    elsif ( defined $btwmap{$_} ) {
+			$btw_type = $btwmap{$_};
 		    }
 		    elsif ( /^($km{tg_hoog}|$km{tg_laag}|$km{tg_nul}|prive|$km{tg_privé}|$km{tg_anders})$/ ) {
 			$btw_type = substr(_xtr("scm:tg:$1"), 0, 1);
@@ -479,7 +495,6 @@ sub load_schema1 {
 
     init_vars();
     my $scanner;		# current scanner
-    my $uerr = 0;
 
     %std = map { $_ => 0 }
       qw(btw_ok btw_vh winst crd deb btw_il btw_vl btw_ih btw_vp btw_ip btw_va btw_ia);
@@ -530,8 +545,6 @@ sub load_schema1 {
 
 	# Overige settings.
 	if ( /^$km{hdr_verdichting}\s+(\d+)\s+(\d+)/i && $1 < $2 ) {
-	    $max_hvd = $1;
-	    $max_vrd = $2;
 	    next;
 	}
 
@@ -557,7 +570,6 @@ sub load_schema2 {
     my $scanner;		# current scanner
     $max_hvd = 9;
     $max_vrd = 99;
-    my $uerr = 0;
 
     while ( $_ = $rl->() ) {
 	if ( /^\# \s*
@@ -807,12 +819,14 @@ ESQL
 sub sql_btw {
     my $out = <<ESQL;
 -- BTW Tarieven
-COPY BTWTabel (btw_id, btw_alias, btw_desc, btw_tariefgroep, btw_perc, btw_incl) FROM stdin;
+COPY BTWTabel (btw_id, btw_alias, btw_desc, btw_tariefgroep, btw_perc, btw_incl, btw_start, btw_end) FROM stdin;
 ESQL
 
     foreach ( @btw ) {
 	next unless defined;
 	$_->[1] = "\\N" unless defined($_->[1]);
+	$_->[6] = "\\N" unless defined($_->[6]);
+	$_->[7] = "\\N" unless defined($_->[7]);
 	if ( $_->[3] == BTWTARIEF_NUL ) {
 	    $_->[4] = 0;
 	    $_->[5] = "\\N";
@@ -1172,17 +1186,20 @@ sub dump_acc {
 sub dump_btw {
     my $fh = shift;
     print {$fh} ("\n$km{hdr_btwtarieven}\n\n");
-    my $sth = $dbh->sql_exec("SELECT btw_id, btw_alias, btw_desc, btw_perc, btw_tariefgroep, btw_incl".
+    my $sth = $dbh->sql_exec("SELECT btw_id, btw_alias, btw_desc, btw_perc, btw_tariefgroep,".
+			     "btw_incl, btw_start, btw_end".
 			     " FROM BTWTabel".
 			     " ORDER BY btw_id");
     while ( my $rr = $sth->fetchrow_arrayref ) {
-	my ($id, $alias, $desc, $perc, $btg, $incl) = @$rr;
+	my ($id, $alias, $desc, $perc, $btg, $incl, $start, $end) = @$rr;
 	my $extra = "";
 	$extra .= " :$km{tariefgroep}=" . $km{"tg_".lc(BTWTARIEVEN->[$btg])};
 	if ( $btg != BTWTARIEF_NUL ) {
 	    $extra .= " :$km{perc}=".btwfmt($perc);
 	    $extra .= " :$km{exclusief}" unless $incl;
 	}
+	$extra .= " :$km{vanaf}=$start" if $start;
+	$extra .= " :$km{tot}=$end" if $end;
 	if ( $id >= BTW_CODE_AUTO ) {
 	    next unless $alias;
 	    $alias = sprintf("%-10s", $alias);

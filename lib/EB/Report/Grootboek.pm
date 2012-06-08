@@ -10,8 +10,8 @@ package EB::Report::Grootboek;
 # Author          : Johan Vromans
 # Created On      : Wed Jul 27 11:58:52 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:37:10 2010
-# Update Count    : 286
+# Last Modified On: Thu Jun  7 13:59:31 2012
+# Update Count    : 287
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -92,7 +92,7 @@ sub perform {
 				 " AND jnl_bsk_id = bsk_id".
 				 " AND jnl_acc_id = ?".
 				 " AND jnl_date >= ? AND jnl_date <= ?".
-				 " ORDER BY jnl_bsr_date, jnl_bsk_id, jnl_bsr_seq",
+				 " ORDER BY jnl_bsr_date, jnl_bsk_id, jnl_seq",
 				 $acc_id, $begin, $end);
 
 	my $rr = $sth->fetchrow_arrayref;

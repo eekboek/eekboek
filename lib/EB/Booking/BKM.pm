@@ -10,8 +10,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue May 29 15:05:50 2012
-# Update Count    : 535
+# Last Modified On: Fri Jun  8 22:23:42 2012
+# Update Count    : 536
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -223,11 +223,27 @@ sub perform {
 		}
 	    }
 	    if ( $btw_id ) {
-		my $tg = $dbh->lookup($btw_id, qw(BTWTabel btw_id btw_tariefgroep));
+		my $res = $dbh->do( "SELECT btw_tariefgroep, btw_start, btw_end, btw_alias, btw_desc".
+				    " FROM BTWTabel".
+				    " WHERE btw_id = ?",
+				    $btw_id );
+
+		my $tg;
+		unless ( defined($res) && defined( $tg = $res->[0] ) ) {
+		    warn("?".__x("Onbekende BTW-code: {code}", code => $btw_id)."\n");
+		    return;
+		}
 		croak("INTERNAL ERROR: btw code $btw_id heeft tariefgroep $tg")
 		  unless $tg;
-		croak("INTERNAL ERROR: Onbekende tariefgroep $tg")
-		  unless my $tp = BTWTARIEVEN->[$tg];
+		if ( defined( $res->[1] ) && $res->[1] gt $date ) {
+		    warn("!".__x("BTW-code: {code} is nog niet geldig op de boekingsdatum",
+				 code => $res->[3]||$res->[4]||$btw_id)."\n");
+		}
+		if ( defined( $res->[2] ) && $res->[2] lt $date ) {
+		    warn("!".__x("BTW-code: {code} is niet meer geldig op de boekingsdatum",
+				 code => $res->[3]||$res->[4]||$btw_id)."\n");
+		}
+		my $tp = BTWTARIEVEN->[$tg];
 		my $t = qw(v i)[$kstomz] . lc(substr($tp, 0, 1));
 		$btw_acc = $dbh->std_acc("btw_$t");
 	    }

@@ -11,8 +11,8 @@ package EB::Booking::Delete;
 # Author          : Johan Vromans
 # Created On      : Mon Sep 19 22:19:05 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:26:13 2010
-# Update Count    : 87
+# Last Modified On: Thu Jun  7 13:58:47 2012
+# Update Count    : 88
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -105,7 +105,7 @@ sub perform {
 	# de saldi van bankrekeningen.
 	$sth = $dbh->sql_exec("SELECT jnl_acc_id, jnl_amount".
 			      " FROM Journal".
-			      " WHERE jnl_bsk_id = ? AND jnl_bsr_seq > 0", $bsk);
+			      " WHERE jnl_bsk_id = ? AND jnl_seq > 0", $bsk);
 	while ( my $rr = $sth->fetchrow_arrayref ) {
 	    $dbh->upd_account($rr->[0], -$rr->[1]);
 	}

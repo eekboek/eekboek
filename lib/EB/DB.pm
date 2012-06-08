@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon May  7 14:16:26 2012
-# Update Count    : 446
+# Last Modified On: Thu Jun  7 14:23:32 2012
+# Update Count    : 448
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -190,7 +190,8 @@ sub store_journal {
     my ($self, $jnl) = @_;
     foreach ( @$jnl ) {
 	$self->sql_insert("Journal",
-			  [qw(jnl_date jnl_dbk_id jnl_bsk_id jnl_bsr_date jnl_bsr_seq jnl_acc_id jnl_amount
+			  [qw(jnl_date jnl_dbk_id jnl_bsk_id jnl_bsr_date jnl_bsr_seq jnl_seq
+			      jnl_type jnl_acc_id jnl_amount
 			      jnl_damount jnl_desc jnl_rel jnl_rel_dbk  jnl_bsk_ref)],
 			  @$_);
     }
