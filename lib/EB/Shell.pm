@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May 18 20:55:27 2012
-# Update Count    : 228
+# Last Modified On: Mon Jun 11 13:18:59 2012
+# Update Count    : 242
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -1319,11 +1319,13 @@ sub do_verwijder {
     my ($self, @args) = @_;
     my $b = $bsk;
     my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
+		 verbose      => $self->{verbose},
 	       };
 
     return unless
     parse_args(\@args,
 	       [ 'boekjaar=s',
+		 'verbose',
 	       ], $opts);
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
 
@@ -1474,12 +1476,41 @@ sub do_sql {
 
 sub help_sql {
     _T( <<EOS );
-Voer een SQL opdracht uit via de database driver. Met het gebruik
+Voert een SQL opdracht uit via de database driver. Met het gebruik
 hiervan vervalt alle garantie op correcte financiële resultaten.
 
   sql [ <opdracht> ]
 
 Deze opdracht is alleen in de command line versie beschikbaar.
+EOS
+}
+
+sub do_verifieer {
+    my ( $self, @args ) = @_;
+    my $opts = { saldo	      => undef,
+		 verbose      => $self->{verbose},
+	       };
+
+    my $args = \@args;
+    return unless
+    parse_args($args,
+	       [ __xt('cmo:boeking:saldo').'=s' => \$opts->{saldo},
+		 'verbose',
+	       ], $opts);
+
+    require EB::Tools::Assertions;
+    my $action = EB::Tools::Assertions->new;
+    $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
+    my $ok = $action->perform($args, $opts);
+}
+
+sub help_verifieer {
+    _T( <<EOS );
+Verfieert een aspect van de huidige status van de administratie.
+
+  verifieer { grootboekrekening } <nr> [ --saldo=<saldo> ]
+
+Verifieert dat grootboekrekening <nr> het opgegeven saldo heeft.
 EOS
 }
 
