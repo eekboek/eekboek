@@ -10,8 +10,8 @@ package EB::Report::Open;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 30 17:48:16 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:38:34 2010
-# Update Count    : 205
+# Last Modified On: Sun Jun 24 22:29:59 2012
+# Update Count    : 206
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -117,6 +117,7 @@ sub perform {
 			amt  => numfmt($gtot),
 		      });
 	    $gtot = 0;
+	    $rtot = 0;
 	}
 
 	$bsk_amount = 0-$bsk_amount if $dbk_type == DBKTYPE_INKOOP;
