@@ -10,8 +10,8 @@ package EB::Report::Debcrd;
 # Author          : Johan Vromans
 # Created On      : Wed Dec 28 16:08:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:34:29 2010
-# Update Count    : 187
+# Last Modified On: Sun Jun 24 22:23:55 2012
+# Update Count    : 188
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -193,9 +193,11 @@ sub _perform {
 			      " AND bsr_type = 0".
 			      " AND bsr_nr = 1".
 			      " AND bsr_rel_code = ?".
+			      " AND dbk_type = ?".
 			      " ORDER BY bsk_date, bsk_nr",
 			      @{$rep->{periode}},
-			      $rel);
+			      $rel,
+			      $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP);
 
 	while ( my $rr = $sth->fetchrow_arrayref ) {
 	    my ($bsk_id, $bsk_desc, $bsk_date,
