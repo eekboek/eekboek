@@ -8,7 +8,7 @@ default :
 	@test -f META.yml && echo "However, it looks as if this has been done already." 1>&1
 	@test -f META.yml && echo "Please double check before proceeding." 1>&1
 
-MAKEFLAGS += -j1		# all serial
+.NOTPARALLEL :			# all serial
 
 bootstrap : locales schemas dummies
 
