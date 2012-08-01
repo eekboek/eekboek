@@ -8,6 +8,8 @@ default :
 	@test -f META.yml && echo "However, it looks as if this has been done already." 1>&1
 	@test -f META.yml && echo "Please double check before proceeding." 1>&1
 
+MAKEFLAGS += -j1		# all serial
+
 bootstrap : locales schemas dummies
 
 # Locales. Currently we have parts in english that get translated into
