@@ -10,8 +10,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  8 22:23:42 2012
-# Update Count    : 536
+# Last Modified On: Wed Aug  1 17:15:29 2012
+# Update Count    : 537
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -372,7 +372,7 @@ sub perform {
 			      "  AND bsr_rel_code = ?".
 				" AND bsr_nr = 1".
 				  ( $delta ? " AND bsr_date <= ?" : "" ).
-				    " ORDER BY bsk_id";
+				    " ORDER BY bsr_date";
 		@sql_args = ( $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP,
 			      $rel, $delta ? $ddd : () );
 
@@ -506,7 +506,7 @@ sub perform {
 			  "  AND bsk_dbk_id = dbk_id".
 			    "  AND bsr_bsk_id = bsk_id".
 			      "  AND bsr_rel_code = ?".
-				" ORDER BY bsk_id";
+				" ORDER BY bsr_date";
 		@sql_args = ( $amt ? $amt : (),
 			       $debcrd ? DBKTYPE_VERKOOP : DBKTYPE_INKOOP,
 			      $rel);
