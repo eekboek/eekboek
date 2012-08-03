@@ -33,7 +33,7 @@ if ( -d ".git" || -f ".git" ) {
 }
 
 # Parse the existing VERSION-FILE.
-my $vprev;
+my $vprev = "";
 if ( open( my $vf, '<', $vfile ) ) {
     $vprev = scalar(<$vf>);
     $vprev = $1 if $vprev =~ /VERSION\s*=\s*"(.*)"/;
