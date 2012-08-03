@@ -14,6 +14,13 @@ my $DEFAULT_VERSION = "UNKNOWN";
 
 my $version = $DEFAULT_VERSION;
 
+# Parse the existing VERSION-FILE.
+my $vprev = "";
+if ( open( my $vf, '<', $vfile ) ) {
+    $vprev = scalar(<$vf>);
+    $vprev = $1 if $vprev =~ /VERSION\s*=\s*"(.*)"/;
+}
+
 if ( -d ".git" || -f ".git" ) {
     $version = `git describe --tags --abbrev=4 HEAD 2>/dev/null` || "";
     if ( $version =~ /^R0?(\d+)_(\d+)_(\d+)(.*)/ ) {
@@ -31,12 +38,8 @@ if ( -d ".git" || -f ".git" ) {
 	$version = $DEFAULT_VERSION;
     }
 }
-
-# Parse the existing VERSION-FILE.
-my $vprev = "";
-if ( open( my $vf, '<', $vfile ) ) {
-    $vprev = scalar(<$vf>);
-    $vprev = $1 if $vprev =~ /VERSION\s*=\s*"(.*)"/;
+else {
+    $version = $vprev;
 }
 
 # If version has changed, update VERSION-FILE.

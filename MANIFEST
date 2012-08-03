@@ -173,6 +173,7 @@ lib/EB/Tools/Opening.pm
 lib/EB/Tools/SQLEngine.pm
 lib/EB/Tools/Schema.pm
 lib/EB/Utils.pm
+lib/EB/Version.pm
 lib/EB/Wx/FakeApp.pm
 lib/EB/Wx/Help.pm
 lib/EB/Wx/IniWiz.pm
