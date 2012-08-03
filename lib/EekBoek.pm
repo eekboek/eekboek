@@ -10,8 +10,11 @@ use utf8;
 # Minimal version to prevent many Unicode bugs.
 use 5.008003;
 
+require EB::Version;
+
 our $PACKAGE = 'EekBoek';
-our $VERSION = '2.01.03';
+
+our $VERSION = $EB::Version::VERSION;
 
 =head1 NAME
 
