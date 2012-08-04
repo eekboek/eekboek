@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug  4 18:02:41 2012
-# Update Count    : 135
+# Last Modified On: Sat Aug  4 19:56:57 2012
+# Update Count    : 138
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -73,55 +73,16 @@ my $build = $class->new
      provides	       => {
        'EekBoek' =>
 	  { file => "lib/EekBoek.pm",
-	    version => "1.04.00_01",
+	    version => $EB::Version::VERSION,
 	  },
      },
    },
   );
 
-# Rerun to get the version right for provides => EekBoek.
-$build = $class->new
-  (
-   module_name	       => $data->{distname},
-   dist_name	       => $data->{distname},
-   dist_author	       => $data->{author},
-   dist_abstract       => $data->{abstract},
-   license	       => $data->{license},
-   requires	       => $data->{prereq_pm},
-   build_requires      => $data->{buildreq_pm},
-   recommends	       => $data->{recomm_pm},
-   script_files	       => $data->{script_files},
-   pm_files	       => filelist("lib"),
-   PL_files	       => $data->{PL_files},
-   get_options	       => { skipdbtests => { } },
-   dist_version        => $EB::Version::VERSION,
-   add_to_cleanup      =>
-     [ 'pod2htm*',
-       map { +"t/ivp/*.$_" } qw(sql log txt html csv)
-     ],
-   meta_merge	       =>
-     { resources =>
-	{ homepage    => 'http://www.eekboek.nl',
-	  MailingList => 'http://lists.sourceforge.net/lists/listinfo/eekboek',
-	}
-     },
-   meta_add            => {
-     no_index          => { directory => [ qw(inc lib) ] },
-     provides	       => {
-       'EekBoek' =>
-	  { file => "lib/EekBoek.pm",
-	    version => $build->dist_version,
-	  },
-     },
-   },
-  ) if 0;
-
 $build->create_build_script;
 
-if ( $build->os_type eq "Unix" ) {
-    # Write .spec file, Debian control, ...
-    ProcessTemplates($build->dist_name, $EB::Version::VERSION);
-}
+# Update some files.
+ProcessTemplates( $build->dist_name, $EB::Version::VERSION );
 
 # Debian needs this.
 1;
