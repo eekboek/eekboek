@@ -740,7 +740,7 @@ kunt u zich abonneren op de mailing list voor gebruikers op
 <a href="http://lists.sourceforge.net/lists/listinfo/eekboek-users">SourceForge</a>.</p>
 <p>De <font color='#C81900'>EekBoek</font> gebruikers houden zelf
 <a href="http://wiki.eekboek.nl/" target="_blank">een wiki</a> bij met
-tips en ander wetenswaardigheden.</p>
+tips en andere wetenswaardigheden.</p>
 <p><font color='#C81900'>EekBoek</font> kan gratis worden gedownload en
 gebruikt. Mocht u echter aanvullende wensen hebben op het gebied van
 ondersteuning dan kan dat ook.
@@ -748,7 +748,7 @@ ondersteuning dan kan dat ook.
 is gaarne bereid u betaalde ondersteuning te bieden, bijvoorbeeld bij het
 installeren van <font color='#C81900'>EekBoek</font>, het opzetten van
 administraties, en het overzetten van uw bestaande administraties naar
-font color='#C81900'>EekBoek</font>. Ook kunnen specifieke uitbreidingen
+<font color='#C81900'>EekBoek</font>. Ook kunnen specifieke uitbreidingen
 of aanpassingen naar uw wens worden gerealiseerd.</p>
 <p>Voor meer informatie:
 <a href="mailto:info\@squirrel.nl">info\@squirrel.nl</a>.</p>
