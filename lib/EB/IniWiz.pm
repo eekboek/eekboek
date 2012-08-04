@@ -228,7 +228,7 @@ EOD
 		   },
 		   { code => "begindate",
 		     text => _T(<<EOD),
-Geef het boekjaar voor deze administatie. De administatie
+Geef het boekjaar voor deze administratie. De administratie
 begint op 1 januari van het opgegeven jaar.
 EOD
 		     prompt => _T("Begindatum"),
