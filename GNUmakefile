@@ -10,7 +10,10 @@ default :
 
 .NOTPARALLEL :			# all serial
 
-bootstrap : locales schemas dummies
+bootstrap : version locales schemas dummies
+
+version :
+	perl git-version.pl
 
 # Locales. Currently we have parts in english that get translated into
 # dutch, and parts in dutch that get translated into english. Someday
