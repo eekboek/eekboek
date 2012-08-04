@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue May 22 21:44:59 2012
-# Update Count    : 437
+# Last Modified On: Sat Aug  4 21:33:04 2012
+# Update Count    : 438
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -97,9 +97,9 @@ sub run {
     Wx::InitAllImageHandlers();
 
     #### WHAT THE ***** IS GOING ON HERE????
-    *Fcntl::O_NOINHERIT = sub() { 0 };
-    *Fcntl::O_EXLOCK = sub() { 0 };
-    *Fcntl::O_TEMPORARY = sub() { 0 };
+    #*Fcntl::O_NOINHERIT = sub() { 0 };
+    #*Fcntl::O_EXLOCK = sub() { 0 };
+    #*Fcntl::O_TEMPORARY = sub() { 0 };
 
     if ( ( defined($opts->{wizard}) ? $opts->{wizard} : 1 )
 	 && !$opts->{config}
