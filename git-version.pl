@@ -17,8 +17,9 @@ my $version = $DEFAULT_VERSION;
 # Parse the existing VERSION-FILE.
 my $vprev = "";
 if ( open( my $vf, '<', $vfile ) ) {
+    local $/;
     $vprev = scalar(<$vf>);
-    $vprev = $1 if $vprev =~ /VERSION\s*=\s*"(.*)"/;
+    $vprev = $1 if $vprev =~ /VERSION\s*=\s*"([^"]+)"/ms;
 }
 
 if ( -d ".git" || -f ".git" ) {
@@ -45,7 +46,9 @@ else {
 # If version has changed, update VERSION-FILE.
 if ( $version ne $vprev ) {
     open( my $vf, '>', $vfile );
-    print { $vf } ("\$EB::Version::VERSION = \"$version\";\n");
+    print { $vf } ( "# This file is generated. Do not edit!\n",
+		    "package EB::Version;\n",
+		    "our \$VERSION = \"$version\";\n");
     close($vf) or die;
     # Show the version to the user via STDERR.
     warn("new version: $version\n") if -t STDERR;

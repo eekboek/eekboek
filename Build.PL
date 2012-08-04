@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar 29 17:26:53 2010
-# Update Count    : 133
+# Last Modified On: Sat Aug  4 18:02:41 2012
+# Update Count    : 135
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -17,6 +17,7 @@ use File::Find;
 
 our $data = {};
 require "inc/build_common.pl";
+require "lib/EB/Version.pm";
 
 # Warn on non-standard install locations.
 checkbin(<<EOD);
@@ -56,6 +57,7 @@ my $build = $class->new
    pm_files	       => filelist("lib"),
    PL_files	       => $data->{PL_files},
    get_options	       => { skipdbtests => { } },
+   dist_version        => $EB::Version::VERSION,
    add_to_cleanup      =>
      [ 'pod2htm*',
        map { +"t/ivp/*.$_" } qw(sql log txt html csv)
@@ -92,6 +94,7 @@ $build = $class->new
    pm_files	       => filelist("lib"),
    PL_files	       => $data->{PL_files},
    get_options	       => { skipdbtests => { } },
+   dist_version        => $EB::Version::VERSION,
    add_to_cleanup      =>
      [ 'pod2htm*',
        map { +"t/ivp/*.$_" } qw(sql log txt html csv)
@@ -111,13 +114,13 @@ $build = $class->new
 	  },
      },
    },
-  );
+  ) if 0;
 
 $build->create_build_script;
 
 if ( $build->os_type eq "Unix" ) {
     # Write .spec file, Debian control, ...
-    ProcessTemplates($build->dist_name, $build->dist_version);
+    ProcessTemplates($build->dist_name, $EB::Version::VERSION);
 }
 
 # Debian needs this.
