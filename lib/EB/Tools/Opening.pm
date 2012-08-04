@@ -661,7 +661,7 @@ EOS
 
 sub help_naam {
     _T( <<EOS );
-Specificeert de naam van de administatie, te gebruiken voor rapportages.
+Specificeert de naam van de administratie, te gebruiken voor rapportages.
 
   adm_naam "Naam van de administratie"
 

@@ -490,7 +490,7 @@ msgstr "An administration with that name already exists."
 
 #: ../lib/EB/IniWiz.pm:231
 msgid ""
-"Geef het boekjaar voor deze administatie. De administatie\n"
+"Geef het boekjaar voor deze administratie. De administratie\n"
 "begint op 1 januari van het opgegeven jaar.\n"
 msgstr ""
 "Provide the financial year for this administration. The administration\n"
@@ -1956,7 +1956,7 @@ msgstr ""
 
 #: ../lib/EB/Tools/Opening.pm:664
 msgid ""
-"Specificeert de naam van de administatie, te gebruiken voor rapportages.\n"
+"Specificeert de naam van de administratie, te gebruiken voor rapportages.\n"
 "\n"
 "  adm_naam \"Naam van de administratie\"\n"
 "\n"
