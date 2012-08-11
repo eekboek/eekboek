@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar 31 21:28:13 2011
-# Update Count    : 1006
+# Last Modified On: Sat Aug 11 21:13:47 2012
+# Update Count    : 1009
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -48,7 +48,7 @@ sub run {
 	#file,				# file voor in/export
 	#dir,				# directory voor in/export
 	#title,				# title for export
-	errexit	      => 0,		# disallow errors in batch
+	#errexit			# disallow errors in batch
 	verbose	      => 0,		# verbose processing
 	#boekjaar,			# boekjaar
 
@@ -143,7 +143,7 @@ sub run {
       ({ HISTFILE	   => $userdir."/history",
 	 command	   => $opts->{command},
 	 interactive	   => $opts->{interactive},
-	 errexit	   => $opts->{errexit},
+	 errexit	   => defined($opts->{errexit})?$opts->{errexit}:$cfg->val(qw(shell errexit),0),
 	 verbose	   => $opts->{verbose},
 	 trace		   => $opts->{trace},
 	 journal	   => $cfg->val(qw(preferences journal), 0),
@@ -200,7 +200,7 @@ sub app_options {
 		      'file=s',
 		      'interactive!',
 		      'wizard!',
-		      'errexit',
+		      'errexit!',
 		      'trace',
 		      'help|?',
 		      'debug',
@@ -246,7 +246,7 @@ Voor experts:
     --define=XXX -D	definieer configuratiesetting
     --printconfig -P	print config waarden
     --[no]interactive	forceer [non]interactieve modus
-    --errexit		stop direct na een fout in de invoer
+    --[no]errexit	stop direct na een fout in de invoer
 EndOfUsage
     CORE::exit $exit if defined $exit && $exit != 0;
 }
