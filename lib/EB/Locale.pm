@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar 17 11:26:19 2011
-# Update Count    : 161
+# Last Modified On: Tue Aug 14 12:28:39 2012
+# Update Count    : 165
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -60,7 +60,7 @@ sub __init__ {
 	require Locale::Messages;
 	Locale::Messages::bindtextdomain( COREPACKAGE, $dir );
 	Locale::Messages::textdomain(COREPACKAGE);
-	eval 'sub _T { Locale::Messages::gettext($_[0]) }';
+	eval 'sub _T { package Locale::Messages; turn_utf_8_on(gettext($_[0])) }';
 	$LOCALISER = "Locale::Messages";
     } and return;
     return if $core_localiser;
