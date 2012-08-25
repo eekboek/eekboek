@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar 19 23:17:34 2011
-# Update Count    : 293
+# Last Modified On: Sat Aug 25 22:48:50 2012
+# Update Count    : 294
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -60,7 +60,7 @@ sub new {
 	$self->{readline} = sub { $self->readline_file(sub { <STDIN> }) };
     }
     $self->{inputstack} = [];
-    $self->{errexit} = $opts->{errexit};
+    $self->{errexit} = -t STDIN ? 0 : $opts->{errexit};
     $self;
 }
 
