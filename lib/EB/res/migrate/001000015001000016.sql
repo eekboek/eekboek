@@ -12,11 +12,11 @@ UPDATE BTWTabel SET btw_end = '2012-10-01' WHERE btw_perc = 1900 AND btw_tariefg
 -- Voeg nieuwe 'hoog' tarief toe.
 INSERT INTO BTWTabel
        (btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl, btw_alias, btw_start, btw_end)
-       VALUES(1024, 'BTW 21% incl.', 2100, 1, 't', 'h21', '2012-10-01', NULL);
+       VALUES(1024, 'BTW 21% incl.', 2100, 1, '1', 'h21', '2012-10-01', NULL);
 
 INSERT INTO BTWTabel
        (btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl, btw_alias, btw_start, btw_end)
-       VALUES(1025, 'h21-',          2100, 1, 'f', NULL,  '2012-10-01', NULL);
+       VALUES(1025, 'h21-',          2100, 1, '0', NULL,  '2012-10-01', NULL);
 
 -- Aanpassen Journaal.
 -- column jnl_bsr_seq wordt jnl_seq

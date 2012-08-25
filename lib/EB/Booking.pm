@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  8 20:23:15 2012
-# Update Count    : 202
+# Last Modified On: Sat Aug 25 21:28:41 2012
+# Update Count    : 205
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -126,11 +126,13 @@ sub in_bky {
 
 sub amount_with_btw {
     my ($self, $amt, $btw_spec) = @_;
+    my $explicit;
     if ( $amt =~ /^(.+)\@(.+)$/ ) {
 	$amt = $1;
 	$btw_spec = $2;
+	$explicit = 1;
     }
-    return (amount($amt), $btw_spec);
+    return (amount($amt), $btw_spec, $explicit);
 }
 
 sub parse_btw_spec {

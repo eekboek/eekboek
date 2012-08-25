@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jun  7 16:48:50 2012
-# Update Count    : 323
+# Last Modified On: Sat Aug 25 22:35:52 2012
+# Update Count    : 339
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -221,7 +221,8 @@ sub perform {
 	}
 
 	# Amount can override BTW id with @X postfix.
-	my ($namt, $btw_spec) = $does_btw ? $self->amount_with_btw($amt, $btw_id) : amount($amt);
+	my ($namt, $btw_spec, $btw_explicit) =
+	  $does_btw ? $self->amount_with_btw($amt, $btw_id) : amount($amt);
 	unless ( defined($namt) ) {
 	    warn("?".__x("Ongeldig bedrag: {amt}", amt => $amt)."\n");
 	    return;
@@ -244,6 +245,7 @@ sub perform {
 	# door $btw_acc geen waarde te geven.
 	my $btwclass = 0;
 	my $btw_acc;
+	my $btw_adapt = $cfg->val(qw(strategy btw_adapt), 0);
 	if ( defined($kstomz) ) {
 	    # BTW toepassen.
 	    if ( $kstomz ? !$iv : $iv ) {
@@ -257,10 +259,11 @@ sub perform {
 	    # Void BTW voor non-EU en verlegd.
 	    if ( $btw_id && ($rel_btw == BTWTYPE_NORMAAL || $rel_btw == BTWTYPE_INTRA) ) {
 
-		my $res = $dbh->do( "SELECT btw_tariefgroep, btw_start, btw_end, btw_alias, btw_desc".
+		my $res = $dbh->do( "SELECT btw_tariefgroep, btw_start, btw_end, btw_alias, btw_desc, btw_incl".
 				    " FROM BTWTabel".
 				    " WHERE btw_id = ?",
 				    $btw_id );
+		my $incl = $res->[5];
 
 		my $tg;
 		unless ( defined($res) && defined( $tg = $res->[0] ) ) {
@@ -268,12 +271,50 @@ sub perform {
 		    return;
 		}
 		if ( defined( $res->[1] ) && $res->[1] gt $date ) {
-		    warn("!".__x("BTW-code: {code} is nog niet geldig op de boekingsdatum",
-				 code => $res->[3]||$res->[4]||$btw_id)."\n");
+		    my $ok = 0;
+		    if ( $btw_adapt && !$btw_explicit ) {
+			my $rr = $dbh->do( "SELECT btw_id, btw_desc".
+					   " FROM BTWTabel".
+					   " WHERE btw_tariefgroep = ?".
+					   " AND btw_end >= ?".
+					   " AND " . ( $incl ? "" : "NOT " ) . "btw_incl",
+					   $tg, $date );
+			if ( $rr && $rr->[0] ) {
+			    warn("%".__x("BTW-code: {code} aangepast naar {new} i.v.m. de boekingsdatum",
+					 code => $res->[3]||$res->[4]||$btw_id,
+					 new => $rr->[1]||$rr->[0],
+					)."\n");
+			    $btw_id = $rr->[0];
+			    $ok++;
+			}
+		    }
+		    unless ( $ok ) {
+			warn("!".__x("BTW-code: {code} is nog niet geldig op de boekingsdatum",
+				     code => $res->[3]||$res->[4]||$btw_id)."\n");
+		    }
 		}
-		if ( defined( $res->[2] ) && $res->[2] lt $date ) {
-		    warn("!".__x("BTW-code: {code} is niet meer geldig op de boekingsdatum",
-				 code => $res->[3]||$res->[4]||$btw_id)."\n");
+		if ( defined( $res->[2] ) && $res->[2] le $date ) {
+		    my $ok = 0;
+		    if ( $btw_adapt && !$btw_explicit ) {
+			my $rr = $dbh->do( "SELECT btw_id, btw_desc".
+					   " FROM BTWTabel".
+					   " WHERE btw_tariefgroep = ?".
+					   " AND btw_start <= ?".
+					   " AND " . ( $incl ? "" : "NOT " ) . "btw_incl",
+					   $tg, $date );
+			if ( $rr && $rr->[0] ) {
+			    warn("%".__x("BTW-code: {code} aangepast naar {new} i.v.m. de boekingsdatum",
+					 code => $res->[3]||$res->[4]||$btw_id,
+					 new => $rr->[1]||$rr->[0],
+					)."\n");
+			    $btw_id = $rr->[0];
+			    $ok++;
+			}
+		    }
+		    unless ( $ok ) {
+			warn("!".__x("BTW-code: {code} is niet meer geldig op de boekingsdatum",
+				     code => $res->[3]||$res->[4]||$btw_id)."\n");
+		    }
 		}
 		my $tp = BTWTARIEVEN->[$tg];
 		my $t = qw(v i)[$iv] . lc(substr($tp, 0, 1));
