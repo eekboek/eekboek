@@ -2,12 +2,14 @@
 
 use strict;
 use warnings;
+use File::Spec;
 
 # Tag revisions like this:
 # $ git tag -a -m "Version 2.01.03" R02_01_03 HEAD
 
 my $vfile = "lib/EB/Version.pm";
 my $DEFAULT_VERSION = "UNKNOWN";
+my $devnull = File::Spec->devnull;
 
 # First see if there is a version file (included in release tarballs),
 # then try git-describe, then default.
@@ -23,7 +25,7 @@ if ( open( my $vf, '<', $vfile ) ) {
 }
 
 if ( -d ".git" || -f ".git" ) {
-    $version = `git describe --tags --abbrev=4 HEAD 2>/dev/null` || "";
+    $version = `git describe --tags --abbrev=4 HEAD 2>$devnull` || "";
     if ( $version =~ /^R0?(\d+)_(\d+)_(\d+)(.*)/ ) {
 	if ( $3 % 2 == 0 ) {
 	    $version = "$1.$2.$3";
