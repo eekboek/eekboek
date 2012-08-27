@@ -7,9 +7,10 @@ ALTER TABLE BTWTabel ADD COLUMN btw_start date;
 ALTER TABLE BTWTabel ADD COLUMN btw_end	  date;
 
 -- Markeer 'oude' hoog-tarief.
-UPDATE BTWTabel SET btw_end = '2012-10-01' WHERE btw_perc = 1900 AND btw_tariefgroep = 1;
+UPDATE BTWTabel SET btw_end = '2012-09-30' WHERE btw_perc = 1900 AND btw_tariefgroep = 1;
 
 -- Voeg nieuwe 'hoog' tarief toe.
+--  We have to use '1' for true and '0' for false to satisfy both PostgreSQL and SQLite.
 INSERT INTO BTWTabel
        (btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl, btw_alias, btw_start, btw_end)
        VALUES(1024, 'BTW 21% incl.', 2100, 1, '1', 'h21', '2012-10-01', NULL);

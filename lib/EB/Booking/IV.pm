@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug 25 22:35:52 2012
-# Update Count    : 339
+# Last Modified On: Mon Aug 27 13:23:24 2012
+# Update Count    : 343
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -144,6 +144,7 @@ sub perform {
     my ($rel_acc_id, $rel_btw);
     ($debcode, $rel_acc_id, $rel_btw) = @$rr;
 
+    my $btw_adapt = $cfg->val(qw(strategy btw_adapt), 0);
     my $nr = 1;
     my $bsk_id;
     my $bsk_nr;
@@ -245,7 +246,6 @@ sub perform {
 	# door $btw_acc geen waarde te geven.
 	my $btwclass = 0;
 	my $btw_acc;
-	my $btw_adapt = $cfg->val(qw(strategy btw_adapt), 0);
 	if ( defined($kstomz) ) {
 	    # BTW toepassen.
 	    if ( $kstomz ? !$iv : $iv ) {
@@ -277,7 +277,8 @@ sub perform {
 					   " FROM BTWTabel".
 					   " WHERE btw_tariefgroep = ?".
 					   " AND btw_end >= ?".
-					   " AND " . ( $incl ? "" : "NOT " ) . "btw_incl",
+					   " AND " . ( $incl ? "" : "NOT " ) . "btw_incl".
+					   " ORDER BY btw_id",
 					   $tg, $date );
 			if ( $rr && $rr->[0] ) {
 			    warn("%".__x("BTW-code: {code} aangepast naar {new} i.v.m. de boekingsdatum",
@@ -293,14 +294,15 @@ sub perform {
 				     code => $res->[3]||$res->[4]||$btw_id)."\n");
 		    }
 		}
-		if ( defined( $res->[2] ) && $res->[2] le $date ) {
+		if ( defined( $res->[2] ) && $res->[2] lt $date ) {
 		    my $ok = 0;
 		    if ( $btw_adapt && !$btw_explicit ) {
 			my $rr = $dbh->do( "SELECT btw_id, btw_desc".
 					   " FROM BTWTabel".
 					   " WHERE btw_tariefgroep = ?".
 					   " AND btw_start <= ?".
-					   " AND " . ( $incl ? "" : "NOT " ) . "btw_incl",
+					   " AND " . ( $incl ? "" : "NOT " ) . "btw_incl".
+					   " ORDER BY btw_id",
 					   $tg, $date );
 			if ( $rr && $rr->[0] ) {
 			    warn("%".__x("BTW-code: {code} aangepast naar {new} i.v.m. de boekingsdatum",
