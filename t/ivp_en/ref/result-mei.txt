@@ -1,0 +1,13 @@
+                             Profit/Loss
+Period 2011-05-01 through 2011-05-31
+EekBoek Sample Administration                      EekBoek, 2011-12-31
+
+AccNr   Account                                       Debet     Credit
+----------------------------------------------------------------------
+6900    Phone costs and fax costs                     85.90
+6905    Internet costs                                19.16
+6980    Bank costs                                     2.70
+8100    Revenue consultancy                                     600.00
+        << Profit >>                                 492.24
+----------------------------------------------------------------------
+        TOTAL Results                                600.00     600.00
