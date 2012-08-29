@@ -25,7 +25,7 @@ if ( open( my $vf, '<', $vfile ) ) {
 }
 
 if ( -d ".git" || -f ".git" ) {
-    $version = `git describe --tags --abbrev=4 HEAD 2>$devnull` || "";
+    $version = `git describe --tags --abbrev=6 HEAD 2>$devnull` || "";
     if ( $version =~ /^R0?(\d+)_(\d+)_(\d+)(.*)/ ) {
 	if ( $3 % 2 == 0 ) {
 	    $version = "$1.$2.$3";
