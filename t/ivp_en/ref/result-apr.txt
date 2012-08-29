@@ -1,0 +1,12 @@
+                             Profit/Loss
+Period 2011-04-01 through 2011-04-30
+EekBoek Sample Administration                      EekBoek, 2011-12-31
+
+AccNr   Account                                       Debet     Credit
+----------------------------------------------------------------------
+6905    Internet costs                                19.16
+6980    Bank costs                                     2.70
+8400    Revenue courses                                         500.00
+        << Profit >>                                 478.14
+----------------------------------------------------------------------
+        TOTAL Results                                500.00     500.00
