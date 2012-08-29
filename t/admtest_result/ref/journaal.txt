@@ -1,32 +1,32 @@
-                                                          Journaal
+                                                                        Journaal
 Periode: 2009-01-01 t/m 2009-12-31
-testadministratie 2009                                                                                    EekBoek, 31-12-2009
+testadministratie 2009                                                                                                                EekBoek, 31-12-2009
 
-Datum       Boekstuk/Grootboek                Rek           Debet          Credit  Boekstuk/regel                  Relatie
------------------------------------------------------------------------------------------------------------------------------
-2009-01-07  Verkopen:1                                                             test                            testrel
-2009-01-07    Debiteuren                     1200          119,00                    test
-2009-01-07    BTW Verkoop Hoog               1500                           19,00    BTW test
-2009-01-07    Omzet BTW Hoog                 8000                          100,00    test
+Datum       Boekstuk/Grootboek                Rek           Debet          Credit           BTW %  Tarief      Boekstuk/regel                  Relatie
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+2009-01-07  Verkopen:1                                                                                         test                            testrel
+2009-01-07    Debiteuren                     1200          119,00                                                test
+2009-01-07    BTW Verkoop Hoog               1500                           19,00                                BTW test
+2009-01-07    Omzet BTW Hoog                 8000                          100,00           19,00  Hoog          test
 
-2009-02-07  Verkopen:2                                                             test                            testrel
-2009-02-07    BTW Verkoop Hoog               1500           19,00                    BTW test
-2009-02-07    Omzet BTW Hoog                 8000          100,00                    test
-2009-02-07    Debiteuren                     1200                          119,00    test
+2009-02-07  Verkopen:2                                                                                         test                            testrel
+2009-02-07    BTW Verkoop Hoog               1500           19,00                                                BTW test
+2009-02-07    Omzet BTW Hoog                 8000          100,00                           19,00  Hoog          test
+2009-02-07    Debiteuren                     1200                          119,00                                test
 
-2009-03-07  Verkopen:3                                                             test                            testrel
-2009-03-07    Debiteuren                     1200          119,00                    test
-2009-03-07    BTW Verkoop Hoog               1500                           19,00    BTW test
-2009-03-07    Omzet BTW Hoog                 8000                          100,00    test
+2009-03-07  Verkopen:3                                                                                         test                            testrel
+2009-03-07    Debiteuren                     1200          119,00                                                test
+2009-03-07    BTW Verkoop Hoog               1500                           19,00                                BTW test
+2009-03-07    Omzet BTW Hoog                 8000                          100,00           19,00  Hoog          test
 
-2009-04-08  Verkopen:4                                                             test                            testrel
-2009-04-08    Debiteuren                     1200           11,90                    test
-2009-04-08    BTW Verkoop Hoog               1500                            1,90    BTW test
-2009-04-08    Omzet BTW Hoog                 8000                           10,00    test
+2009-04-08  Verkopen:4                                                                                         test                            testrel
+2009-04-08    Debiteuren                     1200           11,90                                                test
+2009-04-08    BTW Verkoop Hoog               1500                            1,90                                BTW test
+2009-04-08    Omzet BTW Hoog                 8000                           10,00           19,00  Hoog          test
 
-2009-04-09  Verkopen:5                                                             test                            testrel
-2009-04-09    BTW Verkoop Hoog               1500            1,90                    BTW test
-2009-04-09    Omzet BTW Hoog                 8000           10,00                    test
-2009-04-09    Debiteuren                     1200                           11,90    test
------------------------------------------------------------------------------------------------------------------------------
+2009-04-09  Verkopen:5                                                                                         test                            testrel
+2009-04-09    BTW Verkoop Hoog               1500            1,90                                                BTW test
+2009-04-09    Omzet BTW Hoog                 8000           10,00                           19,00  Hoog          test
+2009-04-09    Debiteuren                     1200                           11,90                                test
+---------------------------------------------------------------------------------------------------------------------------------------------------------
             Totaal                                         380,80          380,80
