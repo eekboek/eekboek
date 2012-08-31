@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  8 21:02:03 2012
-# Update Count    : 931
+# Last Modified On: Fri Aug 31 17:27:23 2012
+# Update Count    : 932
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -1199,7 +1199,7 @@ sub dump_btw {
 	    $extra .= " :$km{exclusief}" unless $incl;
 	}
 	$extra .= " :$km{vanaf}=$start" if $start;
-	$extra .= " :$km{tot}=$end" if $end;
+	$extra .= " :$km{tot}=".parse_date($end, undef, 1) if $end;
 	if ( $id >= BTW_CODE_AUTO ) {
 	    next unless $alias;
 	    $alias = sprintf("%-10s", $alias);
