@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Wed Sep 21 13:09:01 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 30 13:25:32 2011
-# Update Count    : 111
+# Last Modified On: Fri Aug 31 18:13:45 2012
+# Update Count    : 118
 # Status          : Unknown, Use with caution!
 
 package EB::Utils;
@@ -74,11 +74,14 @@ sub parse_date {
     else {
 	return;		# invalid format
     }
+    my $time = eval { timelocal(0, 0, 0, $d, $m-1, $y) };
+    return unless $time;	# invalid date
     $y = $y + $delta_y if $delta_y;
     $m = $m + $delta_m if $delta_m;
-    $m = 1, $y++ if $m > 12;
-    $m = 12, $y-- if $m < 0;
-    my $time = eval { timelocal(0, 0, 0, $d, $m-1, $y) };
+    while ( $m > 12 ) { $m -= 12, $y++ }
+    while ( $m < 1  ) { $m += 12; $y-- }
+    $delta_d += $d - 1;
+    $time = eval { timelocal(0, 0, 0, 1, $m-1, $y) };
     return unless $time;	# invalid date
     $time += $delta_d * 24*60*60 if $delta_d;
     my @tm = localtime($time);
