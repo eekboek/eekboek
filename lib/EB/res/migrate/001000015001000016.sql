@@ -54,6 +54,8 @@ INSERT INTO Journal
     jnl_date, jnl_dbk_id, jnl_bsk_id, jnl_bsk_ref, jnl_bsr_date, NULL, jnl_bsr_seq, NULL, jnl_acc_id, jnl_amount, jnl_damount, jnl_desc, jnl_rel, jnl_rel_dbk
     FROM tmp_Journal;
 
+DROP TABLE tmp_Journal;
+
 ALTER TABLE Journal
   ADD CONSTRAINT "jnl_type"
     	CHECK(jnl_type >= 0 AND jnl_type <= 1);
