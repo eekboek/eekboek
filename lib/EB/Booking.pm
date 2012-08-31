@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug 25 21:28:41 2012
-# Update Count    : 205
+# Last Modified On: Fri Aug 31 19:07:41 2012
+# Update Count    : 208
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -130,7 +130,7 @@ sub amount_with_btw {
     if ( $amt =~ /^(.+)\@(.+)$/ ) {
 	$amt = $1;
 	$btw_spec = $2;
-	$explicit = 1;
+	$explicit = $btw_spec !~ /^[hlgn]?[-+]?[ko]?$/i;
     }
     return (amount($amt), $btw_spec, $explicit);
 }
