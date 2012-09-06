@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Aug 31 17:27:23 2012
-# Update Count    : 932
+# Last Modified On: Thu Sep  6 14:38:33 2012
+# Update Count    : 934
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -253,7 +253,7 @@ sub scan_dagboeken {
 }
 
 sub scan_btw {
-    return 0 unless /^\s+(\w+)\s+(.*)/;
+    return 0 unless /^\s+(\w+-?)\s+(.*)/;
 
     my ($id, $desc) = ($1, $2);
     my $id0 = $id;		# for messages
@@ -403,7 +403,7 @@ sub scan_balres {
 	    error(__x("Rekening {id}: onherkenbare vlaggetjes {flags}",
 		      id => $id, flags => $flags)."\n");
 	}
-#sleep 10 if $id == 9380;
+
 	my $btw_type = 'n';
 	my $btw_ko;
 	my $extra;
@@ -421,14 +421,17 @@ sub scan_balres {
 		    if ( $balres && /^($km{kosten}|$km{omzet})$/ ) {
 			$btw_ko = $1 eq $km{kosten};
 		    }
-		    elsif ( defined $btwmap{$_} ) {
-			$btw_type = $btwmap{$_};
-		    }
+		    # elsif ( defined $btwmap{$_} ) {
+		    # 	$btw_type = $btwmap{$_};
+		    # }
 		    elsif ( /^($km{tg_hoog}|$km{tg_laag}|$km{tg_nul}|prive|$km{tg_privé}|$km{tg_anders})$/ ) {
 			$btw_type = substr(_xtr("scm:tg:$1"), 0, 1);
 		    }
 		    elsif ( /^\d+$/ ) {
 			$btw_type = $_;
+			warn("!".__x("Rekening {id}: gelieve BTW tariefcode {code} te vervangen door een tariefgroep",
+				    id => $id,
+				    code => $_)."\n")
 		    }
 		    elsif ( $_ eq $km{tg_geen} ) {
 			$btw_type = 0;

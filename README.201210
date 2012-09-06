@@ -15,14 +15,8 @@ BTW Tarieven
 
 De codes worden hoofdletterongevoelig toegepast.
 
-BTW codes kunnen worden gebruikt in het schema
-
-Resultaatrekeningen
-  ...
-  6  Kosten
-     61  Verkoopkosten
-         6100  K   Reis- en verblijfkosten              :btw=hoog19
-
+Numerieke BTW codes voor grootboekrekeningen worden uitgefaseerd. Deze
+dienen te worden vervangen door de corresponderende tariefgroep.
 
 BTW codes kunnen worden gebruikt in boekingen
 
@@ -59,7 +53,7 @@ Let op: de 'tot' datum is tot, en niet tot en met.
 
 Het is mogelijk in boekingen om de btw code automatisch te laten corrigeren. Daarbij moet rekening worden gehouden met het feit dat wettelijk de leverdatum van het product of dienst bepalend is, niet de boekingsdatum of de factuurdatum. Als dat geen probleem is, dan kan de volgende setting in de EekBoek config worden aangebracht:
 
-[stategy]
+[strategy]
 btw_adapt = 1
 
 EekBoek zal nu voor boekingen waarvoor de btw code niet geldig is proberen de juiste, wel geldige, btw code toe te passen. Uiteraard wordt daarvan melding gemaakt.

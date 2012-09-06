@@ -13,11 +13,11 @@ UPDATE BTWTabel SET btw_end = '2012-09-30' WHERE btw_perc = 1900 AND btw_tariefg
 --  We have to use '1' for true and '0' for false to satisfy both PostgreSQL and SQLite.
 INSERT INTO BTWTabel
        (btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl, btw_alias, btw_start, btw_end)
-       VALUES(1024, 'BTW 21% incl.', 2100, 1, '1', 'h21', '2012-10-01', NULL);
+       VALUES(1024, 'BTW 21% incl.', 2100, 1, '1', 'h21',  '2012-10-01', NULL);
 
 INSERT INTO BTWTabel
        (btw_id, btw_desc, btw_perc, btw_tariefgroep, btw_incl, btw_alias, btw_start, btw_end)
-       VALUES(1025, 'h21-',          2100, 1, '0', NULL,  '2012-10-01', NULL);
+       VALUES(1025, 'BTW 21% excl.', 2100, 1, '0', 'h21-', '2012-10-01', NULL);
 
 -- Aanpassen Journaal.
 -- column jnl_bsr_seq wordt jnl_seq
