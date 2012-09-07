@@ -14,6 +14,12 @@ BEGIN {
 	"01-02"				=> "2004-02-01",
 	"01-02-2003"			=> "2003-02-01",
 	"2003-02-01"			=> "2003-02-01",
+	"2011-09-01+3d"			=> "2011-09-04",
+	"2011-09-01+30d"		=> "2011-10-01",
+	"2011-09-01+30d+1m"		=> "2011-10-31",
+	"2011-09-01+30d-1m"		=> "2011-08-31",
+        "2011-12-31+1d"			=> "2012-01-01",
+        map { sprintf("2012-10-%02d", $_) => sprintf("2012-10-%02d", $_) } 1..31,
       );
     @tests2 =
       (
@@ -50,10 +56,14 @@ EB->app_init( { app => "Test", nostdconf => 1 } );
 while ( @tests1 ) {
     my $date = shift(@tests1);
     my $exp = shift(@tests1);
-    my $res = parse_date($date, 2004);
+    my ($dy, $dm, $dd);
+    $dy = $1 if $date =~ s/([-+]\d+)y//;
+    $dm = $1 if $date =~ s/([-+]\d+)m//;
+    $dd = $1 if $date =~ s/([-+]\d+)d//;
+    my $res = parse_date($date, 2004, $dd, $dm, $dy);
     #ok(1, "$date -> undef"), next unless $exp || $res;
     is($res, $exp, "date $date");
-    my @res = parse_date($date, 2004);
+    my @res = parse_date($date, 2004, $dd, $dm, $dy);
     $res = sprintf("%04d-%02d-%02d", @res);
     is($res, $exp, "date $date");
 }

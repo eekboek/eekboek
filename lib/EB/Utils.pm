@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Wed Sep 21 13:09:01 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 30 13:25:32 2011
-# Update Count    : 111
+# Last Modified On: Fri Aug 31 22:08:52 2012
+# Update Count    : 126
 # Status          : Unknown, Use with caution!
 
 package EB::Utils;
@@ -64,6 +64,7 @@ sub parse_date {
 	($d, $m, $y) = ($1, $2, $3);
     }
     elsif ( $date =~ /^(\d\d?)-(\d\d?)$/ ) {
+	return unless $default_year;
 	($d, $m, $y) = ($1, $2, $default_year);
     }
     elsif ( $date =~ /^(\d\d?) (\w+)$/ ) {
@@ -74,13 +75,26 @@ sub parse_date {
     else {
 	return;		# invalid format
     }
-    $y = $y + $delta_y if $delta_y;
-    $m = $m + $delta_m if $delta_m;
-    $m = 1, $y++ if $m > 12;
-    $m = 12, $y-- if $m < 0;
-    my $time = eval { timelocal(0, 0, 0, $d, $m-1, $y) };
+
+    # The date, as delivered, must be valid.
+    my $time = eval { timelocal(0, 0, 12, $d, $m-1, $y) };
     return unless $time;	# invalid date
+
+    # Handle deltas.
+    $y += $delta_y if $delta_y;
+    $m += $delta_m if $delta_m;
+    while ( $m > 12 ) { $m -= 12, $y++ }
+    while ( $m < 1  ) { $m += 12; $y-- }
+    $delta_d += $d - 1;
+
+    # New date, as of 1st of the month.
+    $time = eval { timelocal(0, 0, 12, 1, $m-1, $y) };
+    return unless $time;	# invalid date
+
+    # Apply delta.
     $time += $delta_d * 24*60*60 if $delta_d;
+
+    # Convert and return.
     my @tm = localtime($time);
     @tm = (1900 + $tm[5], 1 + $tm[4], $tm[3]);
     wantarray ? @tm : sprintf("%04d-%02d-%02d", @tm);

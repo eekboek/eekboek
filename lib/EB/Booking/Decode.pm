@@ -10,8 +10,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 16 15:17:01 2012
-# Update Count    : 176
+# Last Modified On: Tue May 29 14:38:52 2012
+# Update Count    : 182
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -177,12 +177,22 @@ sub decode {
 
 	# Refactor later.
 	if ( $bsr_btw_class & BTWKLASSE_BTW_BIT ) {
+	    my $alias = $bsr_btw_id;
+	    if ( $bsr_btw_id > BTW_CODE_AUTO ) {
+		if ( $bsr_btw_id & 1 ) {
+		    $alias = $dbh->lookup($bsr_btw_id, qw(BTWTabel btw_id btw_desc));
+		}
+		else {
+		    $alias = $dbh->lookup($bsr_btw_id, qw(BTWTabel btw_id btw_alias));
+		    $alias .= qw( - + )[$dbh->lookup($bsr_btw_id, qw(BTWTabel btw_id btw_incl))];
+		}
+	    }
 	    my $ko = $bsr_btw_class & BTWKLASSE_KO_BIT ? 1 : 0;
 	    if ( $ex_btw ) {
-		$btw = $bsr_btw_id . qw(O K)[$ko];
+		$btw = $alias . qw(O K)[$ko];
 	    }
 	    else {
-		$btw .= $bsr_btw_id
+		$btw .= $alias
 		  if btw_code($bsr_acc_id) != $bsr_btw_id
 		    || ($bsr_type == 0 && $dbktype == DBKTYPE_MEMORIAAL);
 		$btw .= qw(O K)[$ko]

@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Nov  1 10:01:20 2011
-# Update Count    : 106
+# Last Modified On: Wed May 30 16:07:58 2012
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -147,7 +147,9 @@ sub do_import {
 	    $dbh->cleardb if $opts->{clean};
 
 	    # Schema.
-	    EB::Tools::Schema->_create(sub { shift(@$d_schema) });
+	    my @s = @$d_schema;	# copy for 2nd pass
+	    EB::Tools::Schema->_create1(sub { shift(@$d_schema) });
+	    EB::Tools::Schema->_create2(sub { shift(@s) });
 	    $dbh->setup;
 
 	    # Add daybook-associated shell functions.

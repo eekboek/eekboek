@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 13 14:41:43 2011
-# Update Count    : 298
+# Last Modified On: Fri Aug 31 18:18:52 2012
+# Update Count    : 308
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -523,7 +523,9 @@ sub reopen {
 
     # New begin date is old + one year.
     my $y = parse_date($dbh->adm("end"), undef, 1);
-    if ( $y gt iso8601date() ) {
+
+    # Avoid opening a new book year too soon.
+    if ( $y gt parse_date(iso8601date(), undef, 0, 6) ) {
 	warn(__x("Begindatum {year} komt in de toekomst te liggen",
 		 year => $y)."\n");
 	$fail++;

@@ -10,6 +10,7 @@ README
 README.emacs
 README.gui
 README.postgres
+README.201210
 TODO
 doc/html/bookings/bank.html
 doc/html/bookings/btw.html
@@ -219,6 +220,7 @@ lib/EB/res/migrate/001000011001000012.sql
 lib/EB/res/migrate/001000012001000013.sql
 lib/EB/res/migrate/001000013001000014.sql
 lib/EB/res/migrate/001000014001000015.sql
+lib/EB/res/migrate/001000015001000016.sql
 lib/EB/res/schema/eekboek.sql
 lib/EB/res/templates/en/sampledb.ebz
 lib/EB/res/templates/en/templates.txt

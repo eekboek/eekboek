@@ -231,6 +231,14 @@ Dagboeken
 # rekeningen met deze tariefgroep standaard het bedrag exclusief BTW
 # aangeven.
 #
+# Indien een BTW-tarief niet geldig is op de boekingsdatum wordt
+# gekeken naar de configuratiesetting [strategy] btw_adapt. Indien
+# deze is gezet op een niet-nul waarde dan wordt gezocht naar een
+# alternatief BTW-tarief en deze gebruikt. In alle gevallen wordt een
+# adequate medlding gegeven.
+# Dit kan per boeking(sregel) worden onderdrukt door de tariefcode
+# expliciet mee te geven.
+#
 # BELANGRIJK: Mutaties die middels de command line shell of de API
 # worden uitgevoerd maken gebruik van het geassocieerde BTW tarief van
 # de grootboekrekeningen. Wijzigingen hierin kunnen dus consequenties
@@ -239,10 +247,12 @@ Dagboeken
 BTW Tarieven
 
    0  BTW 0%                 :tariefgroep=nul
-   1  BTW 19% incl.          :tariefgroep=hoog :perc=19,00
-   2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief
+   1  BTW 19% incl.          :tariefgroep=hoog :perc=19,00 :tot=2012-10-01
+   2  BTW 19% excl.          :tariefgroep=hoog :perc=19,00 :exclusief :tot=2012-10-01
    3  BTW 6,0% incl.         :tariefgroep=laag :perc=6,00
    4  BTW 6,0% excl.         :tariefgroep=laag :perc=6,00 :exclusief
    5  BTW Privé 12% ex.	     :tariefgroep=privé :perc=12,00 :exclusief
+   6  BTW 21% incl.          :tariefgroep=hoog :perc=21,00 :vanaf=2012-10-01
+   7  BTW 21% excl.          :tariefgroep=hoog :perc=21,00 :exclusief :vanaf=2012-10-01
 
 # Einde EekBoek schema
