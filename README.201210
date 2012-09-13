@@ -15,8 +15,9 @@ BTW Tarieven
 
 De codes worden hoofdletterongevoelig toegepast.
 
-Numerieke BTW codes voor grootboekrekeningen worden uitgefaseerd. Deze
-dienen te worden vervangen door de corresponderende tariefgroep.
+Numerieke BTW codes voor grootboekrekeningen worden uitgefaseerd.
+
+Deze dienen te worden vervangen door de corresponderende tariefgroep.
 
 BTW codes kunnen worden gebruikt in boekingen
 
@@ -68,7 +69,7 @@ De auto-migratie faciliteit van EekBoek voert automatisch de volgende wijziginge
 
 1. De BTW en Journaal tabellen worden bijgewerkt met nieuwe attributen.
 2. Bestaande BTW tarieven van 19% en tariefgroep Hoog worden gemarkeerd als geldig tot 1-10-2012.
-3. Een nieuw BTW tarief met naam 'H21' wordt aangemaakt en gemarkeerd als geldig vanaf 1-10-2012.
+3. Twee nieuwe BTW tarieven met naam 'H21' (inclusief) en 'H21-' (exclusief) worden aangemaakt en gemarkeerd als geldig vanaf 1-10-2012.
 
 Na de migratie
 
