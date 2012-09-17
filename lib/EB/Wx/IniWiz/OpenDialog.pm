@@ -13,9 +13,10 @@ use EB qw(_T);
 
 use Wx qw[wxID_OK wxID_CANCEL
 	  wxID_NEW wxID_REMOVE
+	  wxID_ANY wxBITMAP_TYPE_ANY
 	  wxDefaultPosition wxDefaultSize
 	  wxDEFAULT_DIALOG_STYLE
-	  wxHORIZONTAL wxVERTICAL
+	  wxHORIZONTAL wxVERTICAL wxALIGN_CENTER_VERTICAL
 	  wxLEFT wxRIGHT wxALL wxTOP wxBOTTOM
 	  wxEXPAND
 	  wxLB_SINGLE
@@ -33,29 +34,31 @@ sub new {
 	$size   = wxDefaultSize      unless defined $size;
 	$name   = ""                 unless defined $name;
 
-# begin wxGlade: EB::Wx::IniWiz::OpenDialog::new
+    # begin wxGlade: EB::Wx::IniWiz::OpenDialog::new
 
-	$style = wxDEFAULT_DIALOG_STYLE 
-		unless defined $style;
+    $style = wxDEFAULT_DIALOG_STYLE 
+        unless defined $style;
 
-	$self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-	$self->{label_1} = Wx::StaticText->new($self, -1, _T("Beschikbare administraties"), wxDefaultPosition, wxDefaultSize, );
-	$self->{lb_adm} = Wx::ListBox->new($self, -1, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
-	$self->{b_new} = Wx::Button->new($self, wxID_NEW, "");
-	$self->{b_remove} = Wx::Button->new($self, wxID_REMOVE, "");
-	$self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
-	$self->{b_accept} = Wx::Button->new($self, wxID_OK, "");
+    $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->{bm_logo} = Wx::StaticBitmap->new($self, wxID_ANY, Wx::Bitmap->new("ebwiz.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, );
+    $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, _T("Beschikbare administraties"), wxDefaultPosition, wxDefaultSize, );
+    $self->{lb_adm} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
+    $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
+    $self->{b_new} = Wx::Button->new($self, wxID_NEW, "");
+    $self->{b_remove} = Wx::Button->new($self, wxID_REMOVE, "");
+    $self->{b_cancel} = Wx::Button->new($self, wxID_CANCEL, "");
+    $self->{b_accept} = Wx::Button->new($self, wxID_OK, "");
 
-	$self->__set_properties();
-	$self->__do_layout();
+    $self->__set_properties();
+    $self->__do_layout();
 
-	Wx::Event::EVT_LISTBOX_DCLICK($self, $self->{lb_adm}->GetId, \&OnSelectAndGo);
-	Wx::Event::EVT_BUTTON($self, $self->{b_new}->GetId, \&OnNew);
-	Wx::Event::EVT_BUTTON($self, $self->{b_remove}->GetId, \&OnRemove);
-	Wx::Event::EVT_BUTTON($self, $self->{b_cancel}->GetId, \&OnCancel);
-	Wx::Event::EVT_BUTTON($self, $self->{b_accept}->GetId, \&OnOpen);
+    Wx::Event::EVT_LISTBOX_DCLICK($self, $self->{lb_adm}->GetId, \&OnSelectAndGo);
+    Wx::Event::EVT_BUTTON($self, $self->{b_new}->GetId, \&OnNew);
+    Wx::Event::EVT_BUTTON($self, $self->{b_remove}->GetId, \&OnRemove);
+    Wx::Event::EVT_BUTTON($self, $self->{b_cancel}->GetId, \&OnCancel);
+    Wx::Event::EVT_BUTTON($self, $self->{b_accept}->GetId, \&OnOpen);
 
-# end wxGlade
+    # end wxGlade
 
 	$self->SetSize(0, 0, $self->GetSizeWH);
 	$self->Center;
@@ -81,37 +84,49 @@ sub GetSelection {
 sub __set_properties {
     my $self = shift;
 
-# begin wxGlade: EB::Wx::IniWiz::OpenDialog::__set_properties
+    # begin wxGlade: EB::Wx::IniWiz::OpenDialog::__set_properties
 
-	$self->SetTitle(_T("Administratiekeuze"));
-	$self->SetSize(Wx::Size->new(500, 240));
-	$self->{lb_adm}->SetSelection(0);
+    $self->SetTitle(_T("Administratiekeuze"));
+    $self->SetSize(Wx::Size->new(776, 353));
+    $self->{lb_adm}->SetSelection(0);
 
-# end wxGlade
+    # end wxGlade
 }
 
 sub __do_layout {
 	my $self = shift;
 
-# begin wxGlade: EB::Wx::IniWiz::OpenDialog::__do_layout
+    # begin wxGlade: EB::Wx::IniWiz::OpenDialog::__do_layout
 
-	$self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
-	$self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
-	$self->{sizer_2}->Add($self->{label_1}, 0, wxBOTTOM|wxADJUST_MINSIZE, 5);
-	$self->{sizer_2}->Add($self->{lb_adm}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sizer_2}->Add(5, 5, 0, wxADJUST_MINSIZE, 0);
-	$self->{sizer_3}->Add(5, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-	$self->{sizer_3}->Add($self->{b_new}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sizer_3}->Add($self->{b_remove}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
-	$self->{sizer_3}->Add($self->{b_cancel}, 0, wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
-	$self->{sizer_3}->Add($self->{b_accept}, 0, wxADJUST_MINSIZE, 0);
-	$self->{sizer_2}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
-	$self->{sizer_1}->Add($self->{sizer_2}, 1, wxALL|wxEXPAND, 5);
-	$self->SetSizer($self->{sizer_1});
-	$self->Layout();
+    $self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_1a} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_5} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_6} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_7} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_7}->Add(20, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sizer_7}->Add($self->{bm_logo}, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
+    $self->{sizer_7}->Add(20, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sizer_5}->Add($self->{sizer_7}, 0, wxRIGHT|wxEXPAND, 15);
+    $self->{sizer_6}->Add($self->{label_1}, 0, wxBOTTOM|wxADJUST_MINSIZE, 5);
+    $self->{sizer_6}->Add($self->{lb_adm}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sizer_6}->Add(5, 5, 0, wxADJUST_MINSIZE, 0);
+    $self->{sizer_5}->Add($self->{sizer_6}, 1, wxEXPAND, 0);
+    $self->{sizer_2}->Add($self->{sizer_5}, 1, wxEXPAND, 0);
+    $self->{sizer_2}->Add($self->{static_line_1}, 0, wxTOP|wxBOTTOM|wxEXPAND, 10);
+    $self->{sizer_3}->Add(5, 5, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
+    $self->{sizer_3}->Add($self->{b_new}, 0, wxADJUST_MINSIZE, 0);
+    $self->{sizer_3}->Add($self->{b_remove}, 0, wxLEFT|wxADJUST_MINSIZE, 5);
+    $self->{sizer_3}->Add($self->{b_cancel}, 0, wxLEFT|wxRIGHT|wxADJUST_MINSIZE, 5);
+    $self->{sizer_3}->Add($self->{b_accept}, 0, wxADJUST_MINSIZE, 0);
+    $self->{sizer_2}->Add($self->{sizer_3}, 0, wxEXPAND, 0);
+    $self->{sizer_1a}->Add($self->{sizer_2}, 1, wxEXPAND, 5);
+    $self->{sizer_1}->Add($self->{sizer_1a}, 1, wxALL|wxEXPAND, 10);
+    $self->SetSizer($self->{sizer_1});
+    $self->Layout();
 
-# end wxGlade
+    # end wxGlade
 }
 
 sub OnNew {
