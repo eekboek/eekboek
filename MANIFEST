@@ -249,6 +249,7 @@ locale/ebcore-en.pox
 locale/ebcore.pot
 locale/make_locales_en
 relnotes-2.00.html
+relnotes-2.02.html
 script/ebshell
 script/ebwxshell
 t/10_basic.t
