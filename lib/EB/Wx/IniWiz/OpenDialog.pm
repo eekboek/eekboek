@@ -40,8 +40,8 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->{sizer_6_staticbox} = Wx::StaticBox->new($self, wxID_ANY, _T("Beschikbare administraties") );
     $self->{bm_logo} = Wx::StaticBitmap->new($self, wxID_ANY, Wx::Bitmap->new("ebwiz.jpg", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, );
-    $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, _T("Beschikbare administraties"), wxDefaultPosition, wxDefaultSize, );
     $self->{lb_adm} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], wxLB_SINGLE);
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, );
     $self->{b_new} = Wx::Button->new($self, wxID_NEW, "");
@@ -87,7 +87,7 @@ sub __set_properties {
     # begin wxGlade: EB::Wx::IniWiz::OpenDialog::__set_properties
 
     $self->SetTitle(_T("Administratiekeuze"));
-    $self->SetSize(Wx::Size->new(776, 353));
+    $self->SetSize(Wx::Size->new(776, 376));
     $self->{lb_adm}->SetSelection(0);
 
     # end wxGlade
@@ -103,15 +103,11 @@ sub __do_layout {
     $self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
     $self->{sizer_3} = Wx::BoxSizer->new(wxHORIZONTAL);
     $self->{sizer_5} = Wx::BoxSizer->new(wxHORIZONTAL);
-    $self->{sizer_6} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_6}= Wx::StaticBoxSizer->new($self->{sizer_6_staticbox}, wxVERTICAL);
     $self->{sizer_7} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_7}->Add(20, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
     $self->{sizer_7}->Add($self->{bm_logo}, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxADJUST_MINSIZE, 0);
-    $self->{sizer_7}->Add(20, 1, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
     $self->{sizer_5}->Add($self->{sizer_7}, 0, wxRIGHT|wxEXPAND, 15);
-    $self->{sizer_6}->Add($self->{label_1}, 0, wxBOTTOM|wxADJUST_MINSIZE, 5);
-    $self->{sizer_6}->Add($self->{lb_adm}, 1, wxEXPAND|wxADJUST_MINSIZE, 0);
-    $self->{sizer_6}->Add(5, 5, 0, wxADJUST_MINSIZE, 0);
+    $self->{sizer_6}->Add($self->{lb_adm}, 1, wxALL|wxEXPAND|wxADJUST_MINSIZE, 2);
     $self->{sizer_5}->Add($self->{sizer_6}, 1, wxEXPAND, 0);
     $self->{sizer_2}->Add($self->{sizer_5}, 1, wxEXPAND, 0);
     $self->{sizer_2}->Add($self->{static_line_1}, 0, wxTOP|wxBOTTOM|wxEXPAND, 10);
