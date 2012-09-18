@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jan 22 21:44:27 2011
-# Update Count    : 193
+# Last Modified On: Tue Sep 18 13:42:09 2012
+# Update Count    : 194
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -176,10 +176,10 @@ sub test {
 			   $opts->{user} || undef,
 			   $opts->{password} || undef,
 			 );
-	$d->{RaiseError} = 1;
     };
     return $@ if $@;
     return DBI->errstr unless $d;
+    $d->{RaiseError} = 1;
 
     unless ( $db eq "template1" ) {
 	# Check if we really can access the db.
