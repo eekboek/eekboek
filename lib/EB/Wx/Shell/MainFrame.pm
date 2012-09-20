@@ -686,12 +686,15 @@ sub OnAbout {
 
 	my $year = 1900 + (localtime(time))[5];
 
+	# Sometimes version numbers are localized...
+	my $dd = sub { my $v = $_[0]; $v =~ s/,/./g; $v };
+
 	my $md = Wx::MessageDialog->new
 	  ($self,
 	   __x("{pkg} {app} versie {ver}",
 	       pkg => $EekBoek::PACKAGE,
 	       app => "WxShell",
-	       ver => $EekBoek::VERSION)."\n".
+	       ver => $dd->($EekBoek::VERSION))."\n".
 	   "Copyright 2007-$year Squirrel Consultancy\n\n".
 	   __x("Geschreven door {author}",
 	       author => "Johan Vromans")."\n".
@@ -704,17 +707,17 @@ sub OnAbout {
 	       wxglade => "wxGlade, http://wxglade.sourceforge.net")."\n\n".
 	   __x("{pkg} versie {ver}",
 	       pkg => "Perl",
-	       ver => sprintf("%vd",$^V))."\n".
+	       ver => $dd->(sprintf("%vd",$^V)))."\n".
 	   __x("{pkg} versie {ver}",
 	       pkg => "WxPerl",
-	       ver => $Wx::VERSION)."\n".
+	       ver => $dd->($Wx::VERSION))."\n".
 	   __x("{pkg} versie {ver}",
 	       pkg => "wxWidgets",
-	       ver => Wx::wxVERSION)."\n".
+	       ver => $dd->(Wx::wxVERSION))."\n".
 	   ( $Cava::Packager::PACKAGED
 	     ? __x("{pkg} versie {ver}",
 		   pkg => "CAVA Packager",
-		   ver => $Cava::Packager::VERSION)."\n"
+		   ver => $dd->($Cava::Packager::VERSION))."\n"
 	     : () ),
 	   __x("Over {pkg} {app}",
 	       pkg => $EekBoek::PACKAGE,
