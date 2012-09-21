@@ -1,0 +1,14 @@
+verkopen:0 2009-01-07 testrel test  100@H-
+verkopen:1 2009-01-07 testrel test  200@H-
+
+inkopen:0 2009-02-07 testrel test 100@H-
+inkopen:1 2009-02-07 testrel test 200@H-
+
+postbank:0 2009-02-10 "Afschrijving nul" \
+  deb testrel 119 \
+  crd testrel -119 
+
+postbank:1 2009-02-10 "Afschrijving een" \
+  deb testrel 238 \
+  crd testrel -238 
+

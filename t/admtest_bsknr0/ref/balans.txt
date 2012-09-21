@@ -1,0 +1,10 @@
+                                     Balans
+Periode: t/m 2009-12-31
+testadministratie 2009                                       EekBoek, 31-12-2009
+
+RekNr   Grootboekrekening                                  Debet          Credit
+--------------------------------------------------------------------------------
+1500    BTW Verkoop Hoog                                                   57,00
+1520    BTW Inkoop Hoog                                    57,00
+--------------------------------------------------------------------------------
+        TOTAAL Balans                                      57,00           57,00

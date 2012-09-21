@@ -1,0 +1,14 @@
+balans                   --output=balans.txt
+result                   --output=result.txt
+crediteuren              --output=crediteuren.txt
+debiteuren               --output=debiteuren.txt
+journaal all             --output=journaal.txt
+
+export --file=foo.ebz
+import --file=foo.ebz
+
+balans                   --output=balans2.txt
+result                   --output=result2.txt
+crediteuren              --output=crediteuren2.txt
+debiteuren               --output=debiteuren2.txt
+journaal all             --output=journaal2.txt

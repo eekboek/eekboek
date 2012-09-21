@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Aug 31 19:07:41 2012
-# Update Count    : 208
+# Last Modified On: Fri Sep 21 18:01:10 2012
+# Update Count    : 209
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -59,7 +59,8 @@ sub bsk_nr {
     my ($self, $opts) = @_;
     my $bsk_nr;
     my $prev = defined($opts->{boekjaar}) && $opts->{boekjaar} ne $dbh->adm("bky");
-    if ( $bsk_nr = $opts->{boekstuk} ) {
+    $bsk_nr = $opts->{boekstuk};
+    if ( defined $bsk_nr ) {
 	unless ( $bsk_nr =~ /^[0-9]+$/ ) {
 	    warn("?"._T("Het boekstuknummer moet een geheel getal (volgnummer) zijn")."\n");
 	    return;

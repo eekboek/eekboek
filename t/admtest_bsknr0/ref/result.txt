@@ -1,0 +1,10 @@
+                                 Verlies/Winst
+Periode: 2009-01-01 t/m 2009-12-31
+testadministratie 2009                                       EekBoek, 31-12-2009
+
+RekNr   Grootboekrekening                                  Debet          Credit
+--------------------------------------------------------------------------------
+4990    Overige algemene kosten                           300,00
+8000    Omzet BTW Hoog                                                    300,00
+--------------------------------------------------------------------------------
+        TOTAAL Resultaten                                 300,00          300,00

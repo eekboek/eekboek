@@ -1,0 +1,37 @@
+                                                                        Journaal
+Periode: 2009-01-01 t/m 2009-12-31
+testadministratie 2009                                                                                                                EekBoek, 31-12-2009
+
+Datum       Boekstuk/Grootboek                Rek           Debet          Credit           BTW %  Tarief      Boekstuk/regel                  Relatie
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+2009-01-07  Verkopen:0                                                                                         test                            testrel
+2009-01-07    Debiteuren                     1200          119,00                                                test
+2009-01-07    BTW Verkoop Hoog               1500                           19,00                                BTW test
+2009-01-07    Omzet BTW Hoog                 8000                          100,00           19,00  Hoog          test
+
+2009-01-07  Verkopen:1                                                                                         test                            testrel
+2009-01-07    Debiteuren                     1200          238,00                                                test
+2009-01-07    BTW Verkoop Hoog               1500                           38,00                                BTW test
+2009-01-07    Omzet BTW Hoog                 8000                          200,00           19,00  Hoog          test
+
+2009-02-07  Inkopen:0                                                                                          test                            testrel
+2009-02-07    BTW Inkoop Hoog                1520           19,00                                                BTW test
+2009-02-07    Overige algemene kosten        4990          100,00                           19,00  Hoog          test
+2009-02-07    Crediteuren                    1600                          119,00                                test
+
+2009-02-07  Inkopen:1                                                                                          test                            testrel
+2009-02-07    BTW Inkoop Hoog                1520           38,00                                                BTW test
+2009-02-07    Overige algemene kosten        4990          200,00                           19,00  Hoog          test
+2009-02-07    Crediteuren                    1600                          238,00                                test
+
+2009-02-10  Postbank:0                                                                                         Afschrijving nul
+2009-02-10    Crediteuren                    1600          119,00                                                *test                         testrel
+2009-02-10    Postbank                       1120                                                                Afschrijving nul
+2009-02-10    Debiteuren                     1200                          119,00                                *test                         testrel
+
+2009-02-10  Postbank:1                                                                                         Afschrijving een
+2009-02-10    Crediteuren                    1600          238,00                                                *test                         testrel
+2009-02-10    Postbank                       1120                                                                Afschrijving een
+2009-02-10    Debiteuren                     1200                          238,00                                *test                         testrel
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+            Totaal                                       1.071,00        1.071,00

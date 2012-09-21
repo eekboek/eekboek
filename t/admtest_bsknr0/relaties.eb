@@ -1,0 +1,3 @@
+relatie --dagboek=verkopen testrel "testrelatie" 8000
+relatie --dagboek=inkopen testrel "testrelatie" 4990
+
