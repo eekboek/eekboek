@@ -23,6 +23,8 @@ uw systeem te installeren.</p>
   <li><a href="#config">Configuratiebestand</a>
   <li><a href="#bugfixes">Bugfixes</a>
   <li><a href="#migratie">Migratie</a>
+  <li><a href="#packaging">Packaging en installers</a>
+  <li><a href="#repos">Uitfasering EekBoek repositories</a>
   <li><a href="#diversen">Diversen</a>
 </ul>
 
@@ -205,13 +207,76 @@ importeren. </p>
 allen die hebben meegewerkt aan het vinden en oplossen van deze
 bugs.</p>
 
+<a name="packaging"></a><h3>Packaging</h3>
+
+<p>Met ingang van deze release worden installeerbare kits beschikbaar
+gesteld voor verschillende platforms. Met behulp van de <a
+href="http://www.cavapackager.org" target="_blank">Cava Packager</a>
+wordt EekBoek gepackaged met <a href="http://www.citrusperl.org"
+target="_blank">Citrus Perl</a> en alle verder benodigde libraries en
+modules, waarna van dit package een installeerbare kit wordt
+gemaakt.</p>
+
+<p>Het grote voordeel van deze aanpak is dat de gebruiker zich niet
+langer hoeft te bekommeren om de installatie van Perl, wxWidgets,
+enzovoorts. Alles zit verpakt in de kit.</p>
+
+<p>Installeerbare kits zijn beschikbaar voor:</p>
+<ul>
+  <li>Microsoft Windows (GUI installer)
+  <li>Linux (GUI of command line installer)
+  <li>Mac OSX (DMG container)
+</ul>
+
+<p>Alle kits zijn beschikbaar op
+<a href="https://sourceforge.net/projects/eekboek/files/eekboek/2.02.00/"
+   target="_blank">SourceForge</a>.</p>
+
+<p>De interne structuur van de EekBoek bestanden is gewijzigd om
+deze packaging mogelijk te maken. Dit heeft verder
+geen consequenties voor het normale gebruik.</p>
+
+<a name="repos"></a><h3>Uitfasering EekBoek repositories</h3>
+
+[% sf_git = 'Test versies kunnen worden aangemaakt vanuit de <a href="https://sourceforge.net/scm/?type=git&group_id=154512" target="_blank">GIT repository</a>';
+   sf_files = '<a href="https://sourceforge.net/projects/eekboek/files/eekboek/2.02.00/" target="_blank">SourceForge</a>'; 
+%]
+
+<p>Met het beschikbaar komen van standaard EekBoek kits voor verschillende
+systemen is het niet langer van belang eigen repositories te
+onderhouden. De volgende repositories zullen daarom worden uitgefaseerd:</p>
+
+<ul>
+  <li><p>http://www.eekboek.nl/repo/debian/
+      <br>EekBoek zit in de standaard Debian repositories</p>
+
+  <li><p>http://www.eekboek.nl/repo/debian-testing/
+      <br>[% sf_git %]</p>
+  <li><p>http://www.eekboek.nl/repo/fedora/
+      <br>EekBoek zit in de standaard Fedora repositories</p>
+
+  <li><p>http://www.eekboek.nl/repo/fedora-testing/
+      <br>[% sf_git %]
+
+  <li><p>http://www.eekboek.nl/repo/macosx/
+      <br>DMG container beschikbaar op [% sf_files %]</p>
+
+  <li><p>http://www.eekboek.nl/repo/macosx-testing/</p>
+
+  <li><p>http://www.eekboek.nl/repo/ubuntu_10.10/</p>
+
+  <li><p>http://www.eekboek.nl/repo/windows/
+      <br>Installer beschikbaar op [% sf_files %]</p>
+
+  <li><p>http://www.eekboek.nl/repo/windows-testing/
+      <br>[% sf_git %]</p>
+
+</ul>
+
 <a name="diversen"></a><h3>Diversen</h3>
 
 <p>Grote delen van EekBoek zijn inmiddels vertaald in het Engels.
 Binnenkort zal een engelstalige productieversie worden gelanceerd.</p>
 
-<p>De interne structuur van de EekBoek bestanden is gewijzigd om
-platform-onafhankelijke packaging mogelijk te maken. Dit heeft geen
-consequenties voor het normale gebruik.</p>
 
 
