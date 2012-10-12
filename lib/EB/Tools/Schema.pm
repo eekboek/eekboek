@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep  6 14:38:33 2012
-# Update Count    : 934
+# Last Modified On: Fri Oct 12 20:17:33 2012
+# Update Count    : 935
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -124,6 +124,7 @@ sub init_kmap {
     $km{tg_nul}		 = __xt("scm:tg:nul");
     $km{tg_geen}	 = __xt("scm:tg:geen");
     $km{tg_privé}	 = __xt("scm:tg:privé");
+    $km{tg_prive}	 = __xt("scm:tg:prive");
     $km{tg_anders}	 = __xt("scm:tg:anders");
 
     # Koppelingen.
