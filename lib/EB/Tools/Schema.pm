@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct 12 20:17:33 2012
-# Update Count    : 935
+# Last Modified On: Fri Oct 12 20:40:53 2012
+# Update Count    : 945
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -564,6 +564,11 @@ sub load_schema1 {
 	error(__x("Ongeldige invoer in schema bestand, regel {lno}:\n{line}",
 		  line => $_, lno => $.)."\n");
 
+    }
+
+    if ( @btw && !defined $btwmap{n} ) {
+	$btw[0] = [ 0,  undef, _T("BTW 0%"), BTWTARIEF_NUL, 0, 1 ];
+	$btwmap{n} = 0;
     }
 
 }
