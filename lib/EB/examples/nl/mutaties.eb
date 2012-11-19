@@ -16,9 +16,9 @@
 # tarief gebruikt. Dit kan worden gewijzigd door een toevoeging aan
 # het bedrag:
 #     @0         geen BTW
-#     @H         pas het hoge tarief toe
-#     @L         pas het lage tarief toe
-#     @n         pas BTW code n toe (afgeraden)
+#     @H19       pas het hoge 19% tarief toe
+#     @H21       pas het hoge 21% tarief toe
+#     @L06       pas het lage 6% tarief toe
 #
 # Een credit-boeking kan worden gespecificeerd door een negatief
 # bedrag.
@@ -116,9 +116,9 @@ verkoop 19-08 "Pocket Reference" ORA  "Produktie boek"      1.000 8300
 # Daarom moet in dat geval de toepassing van BTW expliciet worden
 # opgegeven met de "@" toevoeging:
 #     @0         geen BTW (onderdrukt de warschuwing)
-#     @H         pas het hoge tarief toe
-#     @L         pas het lage tarief toe
-#     @n         pas BTW code n toe (afgeraden)
+#     @H19       pas het hoge 19% tarief toe
+#     @H21       pas het hoge 21% tarief toe
+#     @L06       pas het lage 6% tarief toe
 # BTW wordt geboekt op de BTW-Omzetrekening voor positieve bedragen,
 # en op de BTW-Kostenrekening voor negatieve bedragen. Dit kan worden
 # gewijzigd door aan de codering een "O" (Omzet) of "K" (Kosten) toe
