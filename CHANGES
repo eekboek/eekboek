@@ -1,4 +1,15 @@
-2.02.00
+2.03.01	2012-11-19
+
+	* Sta :btw=prive toe in het schema.
+
+	* Automatisch toevoegen van BTW 0 als deze in het schema
+          ontbreekt.
+
+	* Aanpassen examples aan moderne BTW codes.
+
+	* Elimineer de waarschuwing over de taalinstelling.
+
+2.02.00 2012-09-18 14:37
 
 	* Update documentation, site, help documents.
 
