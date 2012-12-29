@@ -201,7 +201,7 @@ Result Accounts
 # Daybooks of type Cash or Bank must also be specified with a contra
 # account, for the other daybooks a contra account is optional.
 #
-# The option :dc can be used to indicate that the journals
+# The option :dc can be used to indicate that the reports
 # for this daybook have the totals of the debits and credits
 # displayed separately.
 

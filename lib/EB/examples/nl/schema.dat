@@ -203,8 +203,8 @@ Resultaatrekeningen
 # tegenrekening worden opgegeven, voor de overige dagboeken mag een
 # tegenrekening worden opgegeven.
 # De optie :dc kan worden gebruikt om aan te geven dat het journaal
-# voor dit dagboek de boekstuktotalen in gescheiden debet en credit
-# moet tonen.
+# en het grootboek voor dit dagboek de boekstuktotalen in gescheiden
+# debet en credit moet tonen.
 
 Dagboeken
 
