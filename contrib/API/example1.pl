@@ -5,8 +5,8 @@
 # Author          : Johan Vromans
 # Created On      : Sun Apr 13 17:25:07 2008
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar  9 22:03:24 2011
-# Update Count    : 96
+# Last Modified On: Wed Jan 23 13:31:52 2013
+# Update Count    : 97
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -24,6 +24,13 @@ use EB;			# common
 binmode( STDOUT, ':encoding(utf-8)' );
 
 ################ The Process ################
+
+#### W A R N I N G #### W A R N I N G #### W A R N I N G #####
+#
+# Querying the database may give unexpected results except for
+# trivial things like names of customers, grootboekrekeningen.
+#
+################ ################ ################ ###########
 
 # Initialise.
 # The app name passed will be used for the config files,
