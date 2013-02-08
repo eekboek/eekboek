@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 20:27:25 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 14 12:28:39 2012
-# Update Count    : 165
+# Last Modified On: Fri Feb  8 21:47:52 2013
+# Update Count    : 168
 # Status          : Unknown, Use with caution!
 
 package EB::Locale;
@@ -94,12 +94,13 @@ sub __init__ {
 }
 
 sub get_language {
-    $ENV{LANG};
+    $::cfg->val( qw(locale lang) );
 }
 
 sub set_language {
     # Set/change language.
-    setlocale( LC_MESSAGES, $ENV{LANG} = $_[1] );
+    setlocale( LC_MESSAGES,
+	       $::cfg->newval( qw(locale lang), $_[1] ) );
 }
 
 __init__();

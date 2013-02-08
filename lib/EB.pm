@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Mar 23 11:17:11 2011
-# Update Count    : 320
+# Last Modified On: Fri Feb  8 21:43:31 2013
+# Update Count    : 322
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -122,7 +122,7 @@ sub __init__ {
 	require EB::Locale;
     }
     EB::Locale::->import;
-    EB::Locale->set_language($ENV{LANG});
+    EB::Locale->set_language( $::cfg->val(qw(locale lang)) );
 
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
