@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Mar  8 15:32:24 2012
-# Update Count    : 648
+# Last Modified On: Thu Jan 31 11:58:20 2013
+# Update Count    : 649
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -699,24 +699,21 @@ sub report {
     my @msg;
     if ( $data->{btw_i_delta} ) {
 	push(@msg,
-	     __x("Er is een verschil van {round}{amount}".
+	     __x("Er is een verschil van {amount}".
 		 " tussen de berekende en werkelijk ingehouden BTW.".
 		 " Voor de aangifte is de werkelijk ingehouden waarde gebruikt.",
-		 round  => $noround ? "" : "(afgerond) ",
-		 amount => numfmt($noround ? $data->{btw_i_delta}
-				 : AMTSCALE*roundup($data->{btw_i_delta}))));
+		 amount => numfmt($data->{btw_i_delta})));
     }
 
     foreach my $type ( @{BTWTARIEVEN()} ) {
 	my $t = lc(substr($type, 0, 1));
 	if ( $data->{"btw_v".$t."_delta"} ) {
 	    push(@msg,
-		 __x("Er is een verschil van {round}{amount}".
+		 __x("Er is een verschil van {amount}".
 		     " tussen de berekende en werkelijk afgedragen BTW {type}.".
 		     " Voor de aangifte is de werkelijk afgedragen waarde gebruikt.",
 		     type   => $type,
-		     round  => $noround ? "" : "(afgerond) ",
-		     amount => numfmt(($noround ? 1 : AMTSCALE) * $data->{"btw_v".$t."_delta"})));
+		     amount => numfmt($data->{"btw_v".$t."_delta"})));
 	}
     }
 
