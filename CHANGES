@@ -1,5 +1,7 @@
 2.02.02
 
+	* Emergency bugfix release.
+
 	* Fix probleem dat maart 2013 loopt van 2013-03-01 t/m 2013-03-30.
           Oorzaak is de zomertijd die op 30 maart 2013 inging.
 
