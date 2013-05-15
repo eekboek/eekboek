@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Wed Sep 21 13:09:01 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Aug 31 22:08:52 2012
-# Update Count    : 126
+# Last Modified On: Tue May 14 20:21:30 2013
+# Update Count    : 127
 # Status          : Unknown, Use with caution!
 
 package EB::Utils;
@@ -195,9 +195,9 @@ sub parse_date_range {
 	$m2 = 1, $y2++ if ++$m2 > 12;
     }
 
-    my $time1 = eval { timelocal(0, 0, 0, $d1, $m1-1, $y1) };
+    my $time1 = eval { timelocal(0, 0, 12, $d1, $m1-1, $y1) };
     return unless $time1;	# invalid date
-    my $time2 = eval { timelocal(0, 0, 0, $d2, $m2-1, $y2) };
+    my $time2 = eval { timelocal(0, 0, 12, $d2, $m2-1, $y2) };
     return unless $time2;	# invalid date
     $time2 -= $datefix if $datefix;
 
