@@ -1,4 +1,24 @@
-2.03.01	2012-11-19
+2.03.02
+
+	* Fix probleem dat maart 2013 loopt van 2013-03-01 t/m 2013-03-30.
+  	  Oorzaak is de zomertijd die op 30 maart 2013 inging.
+
+	* Rond bedragen niet af in de melding "Er is een verschil...".
+
+	* Meer consistent gedrag met language settings.
+   
+	  Use, but no not set EB_LANG. Use [locale]lang instead.
+	  Use, but do not set LANG. Use [locale]lang instead.
+	  Disable LANGUAGE since that conflicts with our settings
+
+	* (contrib/API/example1.pl) Waarschuwing inzake SQL op de database.
+
+	* (example schemas) Aanpassen beschrijving van het :dc attribuut.
+
+	* Onderdruk de INTERNAL ERROR op open transacties tenzij
+          gevraagd via de config settings.
+
+2.03.01	2012-09-20
 
 	* Sta :btw=prive toe in het schema.
 
