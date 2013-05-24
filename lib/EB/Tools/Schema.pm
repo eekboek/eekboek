@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct 12 20:40:53 2012
-# Update Count    : 945
+# Last Modified On: Fri May 24 22:23:00 2013
+# Update Count    : 950
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -305,7 +305,7 @@ sub scan_btw {
 	    warn("!"._T("Gelieve BTW tariefgroep \"Geen\" te vervangen door \"Nul\"")."\n")
 	      if lc($1) eq $km{tg_geen};
 	}
-	elsif ( $extra =~ m/^$km{tariefgroep}=(prive|$km{tg_privé})$/i ) {
+	elsif ( $extra =~ m/^$km{tariefgroep}=(prive|$km{tg_privé}|$km{tg_prive})$/i ) {
 	    $groep = BTWTARIEF_PRIV;
 	}
 	elsif ( $extra =~ m/^$km{tariefgroep}=$km{tg_anders}$/i ) {
@@ -425,7 +425,7 @@ sub scan_balres {
 		    # elsif ( defined $btwmap{$_} ) {
 		    # 	$btw_type = $btwmap{$_};
 		    # }
-		    elsif ( /^($km{tg_hoog}|$km{tg_laag}|$km{tg_nul}|prive|$km{tg_privé}|$km{tg_anders})$/ ) {
+		    elsif ( /^($km{tg_hoog}|$km{tg_laag}|$km{tg_nul}|prive|$km{tg_privé}|$km{tg_prive}|$km{tg_anders})$/ ) {
 			$btw_type = substr(_xtr("scm:tg:$1"), 0, 1);
 		    }
 		    elsif ( /^\d+$/ ) {
