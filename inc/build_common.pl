@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 28 21:32:23 2012
-# Update Count    : 107
+# Last Modified On: Wed May 29 08:37:33 2013
+# Update Count    : 108
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -36,6 +36,10 @@ $data =
     { # These are required for the build/test, and will be included.
       'Module::Build'	    => '0.26',
       'IPC::Run3'	    => '0.034',
+    },
+    confreq_pm =>
+    { # These are required for setting up the build.
+      'Module::Build'	    => '0.26',
     },
     recomm_pm =>
     { 'Getopt::Long'        => '2.32',

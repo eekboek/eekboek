@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug  4 19:56:57 2012
-# Update Count    : 138
+# Last Modified On: Wed May 29 08:36:49 2013
+# Update Count    : 139
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -51,6 +51,7 @@ my $build = $class->new
    dist_abstract       => $data->{abstract},
    license	       => $data->{license},
    requires	       => $data->{prereq_pm},
+   configure_requires  => $data->{confreq_pm},
    build_requires      => $data->{buildreq_pm},
    recommends	       => $data->{recomm_pm},
    script_files	       => $data->{script_files},
