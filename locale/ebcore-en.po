@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-30 13:15+0200\n"
+"POT-Creation-Date: 2013-05-30 12:12+0200\n"
 "PO-Revision-Date: 2012-03-22 11:45+0100\n"
 "Last-Translator: Automatically generated <>\n"
 "Language-Team: none <>\n"
@@ -287,7 +287,7 @@ msgid "Periode: {from} t/m {to}"
 msgstr "Period {from} through {to}"
 
 #: ../lib/EB/Report/BTWAangifte.pm:702
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "Er is een verschil van {amount} tussen de berekende en werkelijk ingehouden "
 "BTW. Voor de aangifte is de werkelijk ingehouden waarde gebruikt."
@@ -296,7 +296,7 @@ msgstr ""
 "deducted VAT. For the submission the deducted amount has been used."
 
 #: ../lib/EB/Report/BTWAangifte.pm:712
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "Er is een verschil van {amount} tussen de berekende en werkelijk afgedragen "
 "BTW {type}. Voor de aangifte is de werkelijk afgedragen waarde gebruikt."
@@ -436,11 +436,11 @@ msgstr "Acc"
 
 #: ../lib/EB/Report/Journal.pm:48
 msgid "BTW %"
-msgstr ""
+msgstr "VAT %"
 
 #: ../lib/EB/Report/Journal.pm:49
 msgid "Tarief"
-msgstr ""
+msgstr "Tariff"
 
 #: ../lib/EB/Report/Journal.pm:50 ../lib/EB/Tools/Einde.pm:95
 msgid "Boekstuk/regel"
@@ -979,7 +979,6 @@ msgid "cmo:journaal:totaal"
 msgstr "cmo:journaal:total"
 
 #: ../lib/EB/Shell.pm:509
-#, fuzzy
 msgid "cmo:journaal:bkstsort"
 msgstr "cmo:journaal:bkstsort"
 
@@ -992,7 +991,6 @@ msgid "cmo:journaal:periode"
 msgstr "cmo:journaal:period"
 
 #: ../lib/EB/Shell.pm:525
-#, fuzzy
 msgid ""
 "Overzicht journaalposten.\n"
 "\n"
@@ -1024,7 +1022,7 @@ msgstr ""
 "\n"
 "  --[no]detail\t\tLevel of detail, default is all details\n"
 "  --total\t\tOnly the overall total (detail = 0)\n"
-"  --bkstsort\t\tSort on booking, default is sort on date\n"
+"  --bkstsort\t\tSort on booking number, default is sort on date\n"
 "  --period=XXX\t\tOnly over this period\n"
 "\n"
 "See \"help reports\" for general information on creating reports.\n"
@@ -2710,14 +2708,12 @@ msgid "scm:btw"
 msgstr "scm:vat"
 
 #: ../lib/EB/Tools/Schema.pm:167
-#, fuzzy
 msgid "scm:vanaf"
-msgstr "scm:balance"
+msgstr "scm:from"
 
 #: ../lib/EB/Tools/Schema.pm:168
-#, fuzzy
 msgid "scm:tot"
-msgstr "scm:revenue"
+msgstr "scm:to"
 
 #: ../lib/EB/Tools/Schema.pm:169
 msgid "scm:kosten"
@@ -2809,9 +2805,9 @@ msgid "Dubbel: BTW tarief {id}"
 msgstr "Duplicate: VAT tariff {id}"
 
 #: ../lib/EB/Tools/Schema.pm:274
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "Ongeldige code voor BTW tarief: {id}"
-msgstr "Invalid value for VAT status: \"{btw}\""
+msgstr "Invalid code for VAT tariff: \"{id}\""
 
 # TODO
 #: ../lib/EB/Tools/Schema.pm:305
@@ -2819,9 +2815,9 @@ msgid "Gelieve BTW tariefgroep \"Geen\" te vervangen door \"Nul\""
 msgstr "Please replace VAT class \"None\" with \"Zero\""
 
 #: ../lib/EB/Tools/Schema.pm:326 ../lib/EB/Tools/Schema.pm:335
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "Ongeldige datumaanduiding in {key}: {value}"
-msgstr "Invalid period identifier: {per}"
+msgstr "Invalid date specification in {key}: {value}"
 
 # TODO
 #: ../lib/EB/Tools/Schema.pm:339
@@ -2871,11 +2867,11 @@ msgstr "Account {id}: unknown flags \"{flags}\""
 
 # TODO
 #: ../lib/EB/Tools/Schema.pm:433
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "Rekening {id}: gelieve BTW tariefcode {code} te vervangen door een "
 "tariefgroep"
-msgstr "Please replace VAT class \"None\" with \"Zero\""
+msgstr "Account {id}: please replace VAT code {code} with a VAT class"
 
 #: ../lib/EB/Tools/Schema.pm:445
 #, perl-brace-format
