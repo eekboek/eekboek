@@ -1,8 +1,8 @@
-verkopen:0 2009-01-07 testrel test  100@H-
 verkopen:1 2009-01-07 testrel test  200@H-
+verkopen:0 2009-01-08 testrel test  100@H-
 
-inkopen:0 2009-02-07 testrel test 100@H-
 inkopen:1 2009-02-07 testrel test 200@H-
+inkopen:0 2009-02-08 testrel test 100@H-
 
 postbank:0 2009-02-10 "Afschrijving nul" \
   deb testrel 119 \

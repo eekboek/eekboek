@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Jun 11 13:44:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Jun  8 22:38:39 2012
-# Update Count    : 340
+# Last Modified On: Thu May 30 12:01:17 2013
+# Update Count    : 341
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -59,9 +59,17 @@ sub journal {
 
     # Sort order (boekstukken).
     my $so = join(", ",
+		  $opts->{bkstsort}
+		  ? (
+		  "jnl_dbk_id",					# dagboek
+		  "bsk_nr",					# boekstuk
+		  "jnl_date",					# date
+		  )
+		  : (
 		  "jnl_date",					# date
 		  "jnl_dbk_id",					# dagboek
 		  "bsk_nr",					# boekstuk
+		  ),
 		  "CASE WHEN jnl_seq = 0 THEN 0 ELSE 1 END",# bsr 0 eerst
 		  "sign(jnl_amount) DESC",			# debet eerst
 		  "jnl_acc_id",					# rekeningnummer

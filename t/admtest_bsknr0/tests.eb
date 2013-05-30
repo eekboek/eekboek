@@ -3,6 +3,7 @@ result                   --output=result.txt
 crediteuren              --output=crediteuren.txt
 debiteuren               --output=debiteuren.txt
 journaal all             --output=journaal.txt
+journaal --bkstsort all  --output=journaal1.txt
 
 export --file=foo.ebz
 import --file=foo.ebz
@@ -12,3 +13,4 @@ result                   --output=result2.txt
 crediteuren              --output=crediteuren2.txt
 debiteuren               --output=debiteuren2.txt
 journaal all             --output=journaal2.txt
+journaal --bkstsort all  --output=journaal3.txt

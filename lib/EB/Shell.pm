@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May 18 20:55:27 2012
-# Update Count    : 228
+# Last Modified On: Thu May 30 12:14:54 2013
+# Update Count    : 230
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -506,6 +506,7 @@ sub do_journaal {
     parse_args(\@args,
 	       [ __xt('cmo:journaal:detail|details').'!' => \$opts->{journal},
 		 __xt('cmo:journaal:totaal') => sub { $opts->{detail} = 0 },
+		 __xt('cmo:journaal:bkstsort') => \$opts->{bkstsort},
 		 __xt('cmo:journaal:boekjaar').'=s' => \$opts->{boekjaar},
 		 __xt('cmo:journaal:periode').'=s' => sub { periode_arg($opts, "periode", $_[1]) },
 		 EB::Report::GenBase->backend_options(EB::Report::Journal::, $opts),
@@ -533,6 +534,7 @@ Opties
 
   --[no]detail		Mate van detail, standaard is met details
   --totaal		Alleen het totaal (detail = 0)
+  --bkstsort		Sorteer op boekstuk, standaard is sorteren op datum
   --periode=XXX		Alleen over deze periode
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
