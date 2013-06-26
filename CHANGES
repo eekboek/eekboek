@@ -1,3 +1,10 @@
+2.03.03
+
+	* Check relatiecodes voor geldigheid: max. 10 tekens, niet
+          beginnend met NN- ivm parseproblemen.
+
+	... meer ...
+
 2.03.02
 
 	* Fix probleem dat maart 2013 loopt van 2013-03-01 t/m 2013-03-30.

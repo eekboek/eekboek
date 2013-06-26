@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 11:04:05 2012
-# Update Count    : 118
+# Last Modified On: Wed Jun 26 13:35:35 2013
+# Update Count    : 121
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -78,6 +78,16 @@ sub add {
 	}
 	$dbk = $id;
 	$ddesc = $desc;
+    }
+
+    # There are virtually no restrictions on what can go in a relation
+    # code. Relation codes that start with digits and a dash may lead
+    # to parse errors.
+    # Except for the schema SQL this is the only place where the length
+    # constraint is explicit.
+    if ( $code =~ /^\d+-/ || length($code) > 10 ) {
+	warn("?".__x("Ongeldige relatiecode: {rel}", rel => $code)."\n");
+	return;
     }
 
     # Invoeren nieuwe relatie.
