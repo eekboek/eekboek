@@ -29,9 +29,9 @@ use Wx qw[
           wxLEFT
           wxMAXIMIZE_BOX
           wxMINIMIZE_BOX
-          wxOVERWRITE_PROMPT
+          wxFD_OVERWRITE_PROMPT
           wxRESIZE_BORDER
-          wxSAVE
+          wxFD_SAVE
           wxTHICK_FRAME
           wxVERTICAL
        ];
@@ -132,7 +132,7 @@ sub OnSave {
     my $d = Wx::FileDialog->new($self, _T("Opslaan als..."),
 				"", _T("raport.html"),
 				_T("HTML bestanden (*.html)|*.html"),
-				wxSAVE | wxOVERWRITE_PROMPT);
+				wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     my $result = $d->ShowModal;
     if ( $result == wxID_OK ) {
 	my $file = $d->GetPath;
