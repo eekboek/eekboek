@@ -83,14 +83,14 @@ Hiermee kan snel visueel worden vastgesteld of de juiste BTW code is opgegeven b
 </p>
 
 <pre>
-Datum       Boekstuk/Grootboek                Rek      Debet     Credit      BTW %  Tarief      Boekstuk/regel                  Relatie
-------------------------------------------------------------------------------------------------------------------------------------------
-2012-01-11  Inkopen:27                                                                          Contributie 2012                FNVZZP
-2012-01-11    BTW Inkoop Hoog                4220      31,13                                      BTW Contributie 2012
-2012-01-11    Vakbond                        6320     163,87                 19,00  Hoog          Contributie 2012
-2012-01-11    Crediteuren                    4100                195,00                           Contributie 2012
-------------------------------------------------------------------------------------------------------------------------------------------
-            Totaal Boekstuk 46                        195,00     195,00
+Datum       Boekstuk/Grootboek    Rek      Debet   Credit   BTW %  Tarief   Boekstuk/regel           Relatie
+------------------------------------------------------------------------------------------------------------
+2012-01-11  Inkopen:27                                                      Contributie 2012         FNVZZP
+2012-01-11    BTW Inkoop Hoog    4220    31,13                                BTW Contributie 2012
+2012-01-11    Vakbond            6320   163,87              19,00  Hoog       Contributie 2012
+2012-01-11    Crediteuren        4100             195,00                      Contributie 2012
+------------------------------------------------------------------------------------------------------------
+            Totaal Boekstuk 46          195,00    195,00
 </pre>
 
 
@@ -311,3 +311,5 @@ kunt u verrekenen met de eerstvolgende BTW-aangifte.</p>
 
 <p>Op sommige systemen crashte de GUI shell wanneer bij het bekijken
 van een rapport window op de [Opslaan] button wordt gedrukt.</p>
+
+<p>Op Windows systemen werkten de pijltjestoetsen niet in command line mode.</p>
