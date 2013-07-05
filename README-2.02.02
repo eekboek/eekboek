@@ -1,0 +1,14 @@
+EekBoek versie 2.02.02, released 2012-05-15
+
+Dit is een emergency bugfix release.
+
+Er is gebleken dat bij het bepalen van de periode maart 2013 per
+ongeluk de data 2013-03-01 t/m 2013-03-30 werd gebruikt. De fout werd
+veroorzaakt doordat precies op 30 maart de zomertijd is ingegaan.
+
+Let op: Dit kan mogelijke consequenties hebben voor een BTW-aangifte
+die eindigde in maart 2013, du seen aangifte over de maand maart, of
+een over het eerste kwartaal van 2013. Maak daarom eerst een afdruk
+van de BTW-aangifte zoals gedaan is met EekBoek 2.02.00, en maak na de
+upgrade een nieuwe afdruk met EekBoek 2.02.02. Eventuele verschillen
+kunt u verrekenen met de eerstvolgende BTW-aangifte.
