@@ -1,4 +1,8 @@
-2.02.02
+2.02.04
+
+	* Fix issue #38, crash bij rapport 'save' knop.
+
+2.02.02	2013-05-15 21:45
 
 	* Emergency bugfix release.
 
