@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 21 18:01:10 2012
-# Update Count    : 209
+# Last Modified On: Thu Jan 23 12:21:12 2014
+# Update Count    : 212
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -323,9 +323,10 @@ sub journalise {
 	my $bsr_bsk_id = $bsk_id;
 	my $btw = 0;
 	my $amt = $bsr_amount;
+	my $btw_intra = ($bsr_btw_class & BTWKLASSE_TYPE_BITS) == BTWTYPE_INTRA;
 	$g_bsr_rel_code = $bsr_rel_code if defined $iv && $bsr_rel_code;
 
-	if ( ($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id && $bsr_btw_acc ) {
+	if ( ($bsr_btw_class & BTWKLASSE_BTW_BIT) && $bsr_btw_id && $bsr_btw_acc && !$btw_intra ) {
 	    ( $bsr_amount, $btw, my $perc ) =
 	      @{$self->norm_btw($bsr_amount, $bsr_btw_id)};
 	    $amt = $bsr_amount - $btw;
