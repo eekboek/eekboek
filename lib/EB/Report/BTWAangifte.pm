@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 31 11:58:20 2013
-# Update Count    : 649
+# Last Modified On: Thu Jan 23 12:28:25 2014
+# Update Count    : 651
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -530,6 +530,7 @@ sub collect {
 			  $dbh->std_acc("btw_ia",0), $dbh->std_acc("btw_ip",0),
 			  $begin, $end)};
     $vb ||= 0;	# prevent warnings
+    $vb += $intra_crd_btw;	# geheven intra btw terugvorderen
     my $btw_i_delta = $vb - $crd_btw - $intra_crd_btw;
     $v = roundup($vb);
     $data{vb} = $v;
