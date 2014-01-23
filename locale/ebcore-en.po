@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: EekBoek\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-30 12:12+0200\n"
-"PO-Revision-Date: 2012-03-22 11:45+0100\n"
+"PO-Revision-Date: 2014-01-23 13:33+0100\n"
 "Last-Translator: Automatically generated <>\n"
 "Language-Team: none <>\n"
 "Language: \n"
@@ -3083,11 +3083,11 @@ msgstr ""
 
 #: ../lib/EB/Booking.pm:339
 msgid "BTW "
-msgstr ""
+msgstr "VAT "
 
 #: ../lib/EB/Booking.pm:366
 msgid "BTW Afr. "
-msgstr ""
+msgstr "VAT Rnd "
 
 #: ../lib/EB/Booking.pm:368
 #, perl-brace-format
