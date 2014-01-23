@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Aug 27 13:23:24 2012
-# Update Count    : 343
+# Last Modified On: Thu Jan 23 13:56:26 2014
+# Update Count    : 344
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -367,9 +367,8 @@ sub perform {
 
     if ( $fail ) {
 	$dbh->rollback;
-	return "?"._T("Boeking ".
-		      join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr).
-		      " is niet uitgevoerd!")." ".
+	return "?".__x("Boeking {bk} is niet uitgevoerd!",
+		       bk => join(":", $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_desc)), $bsk_nr))." ".
 	  __x(" Boekstuk totaal is {act} in plaats van {exp}",
 	      act => numfmt($tot), exp => numfmt($totaal)) . ".";
     }
