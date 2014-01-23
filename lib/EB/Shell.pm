@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu May 30 12:14:54 2013
-# Update Count    : 230
+# Last Modified On: Thu Jan 23 09:51:23 2014
+# Update Count    : 234
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -726,9 +726,22 @@ sub do_grootboek {
 	    }
 	    next;
 	}
-	warn("?".__x("Ongeldig rekeningnummer: {acct}",
-		     acct => $_)."\n");
-	$fail++;
+      else {
+          # Search on Account name.
+          my $sth = $dbh->sql_exec
+	    ( "SELECT acc_id from Accounts ".
+              "WHERE acc_desc ILIKE ? ".
+              "ORDER BY acc_id DESC", '%' . $_ . '%' );
+          while ( my $rr = $sth->fetch ) {
+              unshift( @accts, $rr->[0] );
+          }
+          if ( @accts == 0 ) {
+              warn("?".__x("Onbekende rekeningnaam: {acct}",
+			   acct => $_)."\n");
+              $fail++;
+          }
+          next;
+      }
     }
     return if $fail;
 
@@ -742,7 +755,7 @@ sub help_grootboek {
     _T( <<EOS );
 Toont het Grootboek, of een selectie daaruit.
 
-  grootboek [ <nr> ... ]
+  grootboek [ <nr> | <naam> ] ...
 
 Opties:
 
@@ -750,7 +763,8 @@ Opties:
   --periode=<periode>	Alleen over deze periode
 
 Naast rekeningnummers kunnen ook nummers van verdichtingen en
-hoofdverdichtingen worden opgegeven.
+hoofdverdichtingen worden opgegeven, en gehele of gedeeltelijke namen
+van de rekeningen.
 
 Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
