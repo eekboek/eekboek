@@ -1,12 +1,27 @@
-# English translations for EekBoek.
-# Copyright (C) 2005 Squirrel Consultancy.
-# This file is distributed under the same license as the EekBoek package.
-# Automatically generated, 2005.
-# Automatically generated <>, 2011.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: EekBoek\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#~ # English translations for EekBoek.
+#~ # Copyright (C) 2005 Squirrel Consultancy.
+#~ # This file is distributed under the same license as the EekBoek package.
+#~ # Automatically generated, 2005.
+#~ # Automatically generated <>, 2011.
+#~ msgid ""
+#~ msgstr ""
+#~ "Project-Id-Version: EekBoek\n"
+#~ "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-24 17:25+0100\n"
 "PO-Revision-Date: 2014-02-24 17:33+0100\n"
 "Last-Translator: Automatically generated <>\n"
