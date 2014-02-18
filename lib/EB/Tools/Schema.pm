@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Aug 14 18:10:49 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri May 24 22:23:00 2013
-# Update Count    : 950
+# Last Modified On: Tue Feb 18 13:45:04 2014
+# Update Count    : 952
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -657,7 +657,17 @@ sub load_schema2 {
     foreach ( @dbk ) {
 	next unless defined($_); # sparse
 	my ($id, $desc, $type, $dc, $rek) = @$_;
-	next if defined($rek);
+
+	if ( defined($rek) ) {
+	    # Controleer of de tegenrekening isgedefinieerd.
+	    next if defined $acc{$rek};
+	    error(__x("Tegenrekening {acct} van dagboek {id} is niet gedefinieerd",
+		      acct => $rek,
+		      id => $id)."\n");
+	    $fail++;
+	    next;
+	}
+
 	if ( $type == DBKTYPE_INKOOP ) {
 	    $need_crd++;
 	    $_->[4] = $std{"crd"};
