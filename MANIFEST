@@ -12,6 +12,13 @@ README.gui
 README.postgres
 README.201210
 TODO
+contrib/API/example1.pl
+contrib/API/example2.pl
+contrib/API/example3.pl
+contrib/API/example4.pl
+contrib/afschrijvingen/afschr-gewoon.dat
+contrib/afschrijvingen/afschr-group.dat
+contrib/afschrijvingen/afschr.pl
 doc/html/bookings/bank.html
 doc/html/bookings/btw.html
 doc/html/bookings/cash.html
