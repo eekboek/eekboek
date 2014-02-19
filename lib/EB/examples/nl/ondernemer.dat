@@ -483,8 +483,7 @@ Dagboeken
 
 BTW Tarieven
 
-   H19  BTW 19%          :tariefgroep=hoog  :perc=19,00 :tot=2012-10-01
-   H21  BTW 21%          :tariefgroep=hoog  :perc=21,00 :vanaf=2012-10-01
+   H21  BTW 21%          :tariefgroep=hoog  :perc=21,00
    L06  BTW 6,0%         :tariefgroep=laag  :perc=06,00
    P12  BTW Privé 12%    :tariefgroep=privé :perc=12,00
 
