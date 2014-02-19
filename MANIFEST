@@ -80,10 +80,6 @@ doc/html/yearend.html
 ebwxshell.desktop
 emacs/eekboek-mode.el
 emacs/eekboek-site-start.el
-import/daviaccount/README
-import/daviaccount/dvimport.pl
-import/daviaccount/eximut.pl
-import/daviaccount/exirel.pl
 inc/IPC/Run3.pm
 inc/IPC/Run3/ProfArrayBuffer.pm
 inc/IPC/Run3/ProfLogReader.pm
