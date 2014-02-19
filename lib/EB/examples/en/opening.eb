@@ -1,10 +1,8 @@
 # Opening data for administration EekBoek Sample Administration
-# Created by EekBoek 2.01.03 on 2012-01-16
-# Content-Type: text/plain; charset = UTF-8
 
 adm_name         "EekBoek Sample Administration"
-adm_startdate   2011
-adm_finyear     "2011"
+adm_startdate   2013
+adm_finyear     "2013"
 adm_vatperiod   quarter
 
 # Opening balance

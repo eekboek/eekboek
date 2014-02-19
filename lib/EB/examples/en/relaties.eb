@@ -1,6 +1,4 @@
 # Relations for administration EekBoek Sample Administration
-# Created by EekBoek 2.01.03 on 2012-01-16
-# Content-Type: text/plain; charset = UTF-8
 
 relation --daybook=purchase \
         "KPN"        "KPN"                                    6900 \
