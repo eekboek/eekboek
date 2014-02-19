@@ -10,8 +10,8 @@ package EB::Booking::BKM;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Feb 18 13:36:59 2014
-# Update Count    : 551
+# Last Modified On: Wed Feb 19 14:43:01 2014
+# Update Count    : 552
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -94,7 +94,7 @@ sub perform {
     my $bsk_id;
     my $gacct = $dbh->lookup($dagboek, qw(Dagboeken dbk_id dbk_acc_id));
     # Be slightly paranoid...
-    unless ( $gacct == $dbh->lookup( $gacct, qw(Accounts acc_id acc_id) ) ) {
+    if ( defined($gacct) && $gacct != $dbh->lookup( $gacct, qw(Accounts acc_id acc_id) ) ) {
 	croak("INTERNAL ERROR: ".
 	      __x("Grootboekrekening {acct} voor dagboek {dbk} is niet gedefinieerd",
 		  acct => $gacct,
