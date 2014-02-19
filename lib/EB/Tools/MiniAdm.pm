@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Oct  4 15:11:05 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Nov 19 13:41:10 2012
-# Update Count    : 112
+# Last Modified On: Wed Feb 19 14:50:46 2014
+# Update Count    : 113
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -474,8 +474,7 @@ EOD
 
 BTW Tarieven
 
-   H19  BTW 19%          :tariefgroep=hoog  :perc=19,00 :tot=2012-10-01
-   H21  BTW 21%          :tariefgroep=hoog  :perc=21,00 :vanaf=2012-10-01
+   H21  BTW 21%          :tariefgroep=hoog  :perc=21,00
    L06  BTW 6,0%         :tariefgroep=laag  :perc=06,00
    P12  BTW Privé 12%    :tariefgroep=privé :perc=12,00
 EOD
