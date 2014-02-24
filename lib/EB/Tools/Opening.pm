@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Aug 31 18:18:52 2012
-# Update Count    : 308
+# Last Modified On: Mon Feb 24 16:23:11 2014
+# Update Count    : 309
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -592,45 +592,63 @@ dan ook in één enkele EekBoek shell sessie worden afgehandeld.
 Mogelijke opdrachten voor openen van een boekjaar:
 
   adm_btwperiode [ jaar | kwartaal | maand ]
+
   adm_boekjaarcode <code>
-		Een code van max 4 letters en/of cijfers waarmee het
-		boekjaar kan worden geïdentificeerd.
-		Standaard wordt het jaartal van het boekjaar genomen.
+
+Een code van max 4 letters en/of cijfers waarmee het
+boekjaar kan worden geïdentificeerd.
+Standaard wordt het jaartal van het boekjaar genomen.
+
   adm_open
-		Alle informatie die met de bovenstaande opdrachten is
-		ingevoerd, wordt verwerkt.
+
+Alle informatie die met de bovenstaande opdrachten is
+ingevoerd, wordt verwerkt.
 
 Opdrachten voor het openen van een administratie:
 
   adm_naam "Naam van de administratie"
+
   adm_btwperiode [ jaar | kwartaal | maand ]
+
   adm_begindatum <jaar>
-		Een administratie loopt altijd van 1 januari tot en
-		met 31 december van een kalenderjaar.
+
+Een administratie loopt altijd van 1 januari tot en
+met 31 december van een kalenderjaar.
+
   adm_boekjaarcode <code>
-		Een code van max 4 letters en/of cijfers waarmee het
-		boekjaar kan worden geïdentificeerd.
-		Standaard wordt het jaartal van het boekjaar genomen.
-		De boekjaarcode is alleen relevant indien er meerdere
-		boekjaren in één administratie worden bijgehouden.
+
+Een code van max 4 letters en/of cijfers waarmee het
+boekjaar kan worden geïdentificeerd.
+
+Standaard wordt het jaartal van het boekjaar genomen.
+De boekjaarcode is alleen relevant indien er meerdere
+boekjaren in één administratie worden bijgehouden.
+
   adm_balanstotaal <bedrag>
-		Als een balanstotaal is opgegeven, moeten er ook
-		openingsbalansboekingen worden uitgevoerd met een of
-		meer adm_balans opdrachten.
+
+Als een balanstotaal is opgegeven, moeten er ook
+openingsbalansboekingen worden uitgevoerd met een of
+meer adm_balans opdrachten.
+
   adm_balans <balansrekening> <bedrag>
-		De debet en credit boekingen moeten uiteindelijk
-		allebei gelijk zijn aan het opgegeven balanstotaal.
-		Indien er een bedrag is opgegeven voor de balansrekening
-		Crediteuren of Debiteuren, dan moet er voor dit bedrag
-		ook openstaande posten worden ingevoerd met een of
-		meer adm_relatie opdrachten.
+
+De debet en credit boekingen moeten uiteindelijk
+allebei gelijk zijn aan het opgegeven balanstotaal.
+Indien er een bedrag is opgegeven voor de balansrekening
+Crediteuren of Debiteuren, dan moet er voor dit bedrag
+ook openstaande posten worden ingevoerd met een of
+meer adm_relatie opdrachten.
+
   adm_relatie <boekstuk> <datum> <code> <omschrijving> <bedrag>
-		Invoeren van een openstaande post uit het voorgaande
-		boekjaar. Het <boekstuk> moet volledig zijn, dus
-		<dagboek>:<boekjaar>:<nummer>.
+
+Invoeren van een openstaande post uit het voorgaande
+boekjaar. Het <boekstuk> moet volledig zijn, dus
+<dagboek>:<boekjaar>:<nummer>.
+
   adm_open
-		Alle informatie die met de bovenstaande opdrachten is
-		ingevoerd, wordt verwerkt.
+
+Alle informatie die met de bovenstaande opdrachten is
+ingevoerd, wordt verwerkt.
 EOS
 }
 

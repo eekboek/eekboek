@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 23 09:51:23 2014
-# Update Count    : 234
+# Last Modified On: Mon Feb 24 16:12:14 2014
+# Update Count    : 241
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -302,7 +302,7 @@ sub _help {
 
     if ( $dbk_type == DBKTYPE_INKOOP ) {
 	$text .= _T( <<EOS );
-  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving> <crediteur>
+  <dagboek>[:<nr>] [ <datum> ] <boekstukomschrijving> <crediteur>
 
 gevolgd door een of meer:
 
@@ -314,7 +314,7 @@ EOS
     }
     elsif ( $dbk_type == DBKTYPE_VERKOOP ) {
 	$text .= _T( <<EOS );
-  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving> <debiteur>
+  <dagboek>[:<nr>] [ <datum> ] <boekstukomschrijving> <debiteur>
 
 gevolgd door een of meer
 
@@ -328,7 +328,7 @@ EOS
 	    || $dbk_type == DBKTYPE_MEMORIAAL
 	  ) {
 	$text .= _T( <<EOS );
-  <dagboek>[:nr] [ <datum> ] <boekstukomschrijving>
+  <dagboek>[:<nr>] [ <datum> ] <boekstukomschrijving>
 
 gevolgd door een of meer:
 
@@ -575,6 +575,7 @@ sub help_balans {
 Toont de balansrekening.
 
 Opties:
+
   <geen>		Balans op grootboekrekening
   --verdicht		Verdicht, gedetailleerd
   --detail=<n>		Verdicht, mate van detail <n> = 0, 1 of 2
@@ -614,6 +615,7 @@ sub help_result {
 Toont de resultatenrekening.
 
 Opties:
+
   <geen>		Overzicht op grootboekrekening
   --verdicht		Verdicht, gedetailleerd
   --detail=<n>		Verdicht, mate van detail <n> = 0,1,2
@@ -652,6 +654,7 @@ sub help_proefensaldibalans {
 Toont de Proef- en Saldibalans.
 
 Opties:
+
   <geen>		Proef- en Saldibalans op grootboekrekening
   --verdicht		Verdicht, gedetailleerd (hetzelfde als --detail=2)
   --detail=<n>		Verdicht, mate van detail <n> = 0,1,2
@@ -1073,16 +1076,18 @@ Aanmaken grootboekrekening
 
   schema gbk <rekening> [ <type> <omschrijving> <verdichting> ]
 
-     <rekening>		de gewenste grootboekrekening
-     <type>		D/C voor Debet / Credit
-			K/O/N voor Kosten / Omzet / Neutraal
-			Eventueel gevolgd door ! als deze 
-			balansrekening vast staat aan één kant
-     <omschrijving>	De omschrijving van deze grootboekrekening
-     <verdichting>	De verdichting waaronder deze rekening valt
+Opties:
 
-     Wanneer enkel een nummer wordt opgegeven dan worden de gegevens
-     van de betreffende grootboekrekening getoond.
+  <rekening>	    de gewenste grootboekrekening
+  <type>	    D/C voor Debet / Credit
+		    K/O/N voor Kosten / Omzet / Neutraal
+		    Eventueel gevolgd door ! als deze
+		    balansrekening vast staat aan één kant
+  <omschrijving>    De omschrijving van deze grootboekrekening
+  <verdichting>	    De verdichting waaronder deze rekening valt
+
+Wanneer enkel een nummer wordt opgegeven dan worden de gegevens
+van de betreffende grootboekrekening getoond.
 EOS
 }
 
@@ -1129,7 +1134,6 @@ EOS
   --btw=<type>		BTW type: normaal, verlegd, intra, extra
 
 *** BTW type 'verlegd' wordt nog niet ondersteund ***
-*** BTW type 'intra' wordt nog niet geheel ondersteund ***
 EOS
     $ret;
 }
