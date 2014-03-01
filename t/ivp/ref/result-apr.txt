@@ -1,12 +1,12 @@
                             Verlies/Winst
-Periode: 2007-04-01 t/m 2007-04-30
-EekBoek Demo Administratie                         EekBoek, 2007-12-31
+Periode: 2013-04-01 t/m 2013-04-30
+EekBoek Demo Administratie                         EekBoek, 2013-12-31
 
 RekNr   Grootboekrekening                             Debet     Credit
 ----------------------------------------------------------------------
-6905    Internetkosten                                19,16
+6905    Internetkosten                                18,84
 6980    Bankkosten                                     2,70
-8400    Omzet cursussen                                         504,20
-        << Winst >>                                  482,34
+8400    Omzet cursussen                                         495,87
+        << Winst >>                                  474,33
 ----------------------------------------------------------------------
-        TOTAAL Resultaten                            504,20     504,20
+        TOTAAL Resultaten                            495,87     495,87
