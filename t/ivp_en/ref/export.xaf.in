@@ -1142,7 +1142,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>1</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1171,7 +1171,7 @@
           <accountID>4220</accountID>
           <custSupID>KPN</custSupID>
           <documentID>2</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.86</debitAmount>
         </line>
         <line>
@@ -1187,7 +1187,7 @@
           <accountID>4220</accountID>
           <custSupID>KPN</custSupID>
           <documentID>2</documentID>
-          <description>BTW Telefoonkosten</description>
+          <description>VAT Telefoonkosten</description>
           <debitAmount>12.84</debitAmount>
         </line>
         <line>
@@ -1216,7 +1216,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>3</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1245,7 +1245,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>4</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1274,7 +1274,7 @@
           <accountID>4220</accountID>
           <custSupID>KPN</custSupID>
           <documentID>5</documentID>
-          <description>BTW ADSL + Telefoon</description>
+          <description>VAT ADSL + Telefoon</description>
           <debitAmount>16.21</debitAmount>
         </line>
         <line>
@@ -1303,7 +1303,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>6</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1332,7 +1332,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>7</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1361,7 +1361,7 @@
           <accountID>4220</accountID>
           <custSupID>KPN</custSupID>
           <documentID>8</documentID>
-          <description>BTW ADSL + Telefoon</description>
+          <description>VAT ADSL + Telefoon</description>
           <debitAmount>16.32</debitAmount>
         </line>
         <line>
@@ -1390,7 +1390,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>9</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1419,7 +1419,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>10</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1448,7 +1448,7 @@
           <accountID>4220</accountID>
           <custSupID>KPN</custSupID>
           <documentID>11</documentID>
-          <description>BTW ADSL + Telefoon</description>
+          <description>VAT ADSL + Telefoon</description>
           <debitAmount>16.71</debitAmount>
         </line>
         <line>
@@ -1477,7 +1477,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>12</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1506,7 +1506,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>13</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1535,7 +1535,7 @@
           <accountID>4220</accountID>
           <custSupID>KPN</custSupID>
           <documentID>14</documentID>
-          <description>BTW ADSL + Telefoon</description>
+          <description>VAT ADSL + Telefoon</description>
           <debitAmount>17.36</debitAmount>
         </line>
         <line>
@@ -1564,7 +1564,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>15</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1593,7 +1593,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>16</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1622,7 +1622,7 @@
           <accountID>4220</accountID>
           <custSupID>KPN</custSupID>
           <documentID>17</documentID>
-          <description>BTW ADSL + Telefoon</description>
+          <description>VAT ADSL + Telefoon</description>
           <debitAmount>17.51</debitAmount>
         </line>
         <line>
@@ -1651,7 +1651,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>18</documentID>
-          <description>BTW ÁDSL</description>
+          <description>VAT ÁDSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1680,7 +1680,7 @@
           <accountID>4220</accountID>
           <custSupID>XS4ALL</custSupID>
           <documentID>20</documentID>
-          <description>BTW ADSL</description>
+          <description>VAT ADSL</description>
           <debitAmount>3.64</debitAmount>
         </line>
         <line>
@@ -1714,7 +1714,7 @@
           <accountID>4200</accountID>
           <custSupID>ACME</custSupID>
           <documentID>1</documentID>
-          <description>BTW Perl Cursus 1e bet.</description>
+          <description>VAT Perl Cursus 1e bet.</description>
           <creditAmount>570.00</creditAmount>
         </line>
         <line>
@@ -1743,7 +1743,7 @@
           <accountID>4200</accountID>
           <custSupID>ACME</custSupID>
           <documentID>2</documentID>
-          <description>BTW Perl Cursus 2e bet.</description>
+          <description>VAT Perl Cursus 2e bet.</description>
           <creditAmount>570.00</creditAmount>
         </line>
         <line>
@@ -1772,7 +1772,7 @@
           <accountID>4200</accountID>
           <custSupID>ACME</custSupID>
           <documentID>3</documentID>
-          <description>BTW Perl Cursus rest</description>
+          <description>VAT Perl Cursus rest</description>
           <creditAmount>95.00</creditAmount>
         </line>
         <line>
@@ -1801,7 +1801,7 @@
           <accountID>4200</accountID>
           <custSupID>ACME</custSupID>
           <documentID>4</documentID>
-          <description>BTW Consultancy</description>
+          <description>VAT Consultancy</description>
           <creditAmount>114.00</creditAmount>
         </line>
         <line>
@@ -1830,7 +1830,7 @@
           <accountID>4200</accountID>
           <custSupID>ACME</custSupID>
           <documentID>5</documentID>
-          <description>BTW Consultancy</description>
+          <description>VAT Consultancy</description>
           <creditAmount>114.00</creditAmount>
         </line>
         <line>

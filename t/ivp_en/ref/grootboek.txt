@@ -113,36 +113,36 @@ EekBoek Sample Administration                                                   
 
  4200  VAT Revenue high
         Initial balance                                 0.00       0.00
-         BTW Perl Cursus 1e bet.       2011-02-18       0.00     570.00  Sales:1
-         BTW Perl Cursus 2e bet.       2011-03-18       0.00     570.00  Sales:2
-         BTW Perl Cursus rest          2011-04-18       0.00      95.00  Sales:3
-         BTW Consultancy               2011-05-14       0.00     114.00  Sales:4
-         BTW Consultancy               2011-07-16       0.00     114.00  Sales:5
+         VAT Perl Cursus 1e bet.       2011-02-18       0.00     570.00  Sales:1
+         VAT Perl Cursus 2e bet.       2011-03-18       0.00     570.00  Sales:2
+         VAT Perl Cursus rest          2011-04-18       0.00      95.00  Sales:3
+         VAT Consultancy               2011-05-14       0.00     114.00  Sales:4
+         VAT Consultancy               2011-07-16       0.00     114.00  Sales:5
         Mutations total                                         1463.00
  4200  Total VAT Revenue high                                   1463.00
 
  4220  VAT Procurement high
         Initial balance                                 0.00       0.00
-         BTW ADSL                      2011-01-05       3.64       0.00  Purchase:1
-         BTW ADSL                      2011-01-15       3.86       0.00  Purchase:2
-         BTW Telefoonkosten            2011-01-15      12.84       0.00  Purchase:2
-         BTW ADSL                      2011-02-09       3.64       0.00  Purchase:3
-         BTW ADSL                      2011-03-08       3.64       0.00  Purchase:4
-         BTW ADSL + Telefoon           2011-03-18      16.21       0.00  Purchase:5
-         BTW ADSL                      2011-04-05       3.64       0.00  Purchase:6
-         BTW ADSL                      2011-05-10       3.64       0.00  Purchase:7
-         BTW ADSL + Telefoon           2011-05-20      16.32       0.00  Purchase:8
-         BTW ADSL                      2011-06-07       3.64       0.00  Purchase:9
-         BTW ADSL                      2011-07-05       3.64       0.00  Purchase:10
-         BTW ADSL + Telefoon           2011-07-15      16.71       0.00  Purchase:11
-         BTW ADSL                      2011-08-09       3.64       0.00  Purchase:12
-         BTW ADSL                      2011-09-06       3.64       0.00  Purchase:13
-         BTW ADSL + Telefoon           2011-09-16      17.36       0.00  Purchase:14
-         BTW ADSL                      2011-10-11       3.64       0.00  Purchase:15
-         BTW ADSL                      2011-11-07       3.64       0.00  Purchase:16
-         BTW ADSL + Telefoon           2011-11-17      17.51       0.00  Purchase:17
-         BTW ÁDSL                      2011-12-06       3.64       0.00  Purchase:18
-         BTW ADSL                      2011-12-07       3.64       0.00  Purchase:20
+         VAT ADSL                      2011-01-05       3.64       0.00  Purchase:1
+         VAT ADSL                      2011-01-15       3.86       0.00  Purchase:2
+         VAT Telefoonkosten            2011-01-15      12.84       0.00  Purchase:2
+         VAT ADSL                      2011-02-09       3.64       0.00  Purchase:3
+         VAT ADSL                      2011-03-08       3.64       0.00  Purchase:4
+         VAT ADSL + Telefoon           2011-03-18      16.21       0.00  Purchase:5
+         VAT ADSL                      2011-04-05       3.64       0.00  Purchase:6
+         VAT ADSL                      2011-05-10       3.64       0.00  Purchase:7
+         VAT ADSL + Telefoon           2011-05-20      16.32       0.00  Purchase:8
+         VAT ADSL                      2011-06-07       3.64       0.00  Purchase:9
+         VAT ADSL                      2011-07-05       3.64       0.00  Purchase:10
+         VAT ADSL + Telefoon           2011-07-15      16.71       0.00  Purchase:11
+         VAT ADSL                      2011-08-09       3.64       0.00  Purchase:12
+         VAT ADSL                      2011-09-06       3.64       0.00  Purchase:13
+         VAT ADSL + Telefoon           2011-09-16      17.36       0.00  Purchase:14
+         VAT ADSL                      2011-10-11       3.64       0.00  Purchase:15
+         VAT ADSL                      2011-11-07       3.64       0.00  Purchase:16
+         VAT ADSL + Telefoon           2011-11-17      17.51       0.00  Purchase:17
+         VAT ÁDSL                      2011-12-06       3.64       0.00  Purchase:18
+         VAT ADSL                      2011-12-07       3.64       0.00  Purchase:20
         Mutations total                               148.13
  4220  Total VAT Procurement high                     148.13
 

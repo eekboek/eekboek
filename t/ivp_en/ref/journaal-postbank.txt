@@ -2,7 +2,7 @@
 Period 2011-01-01 through 2011-12-31
 EekBoek Sample Administration                                                                                          EekBoek, 2011-12-31
 
-Date        Booking/Account                   Acc      Debet     Credit      BTW %  Tarief      Posting/line                    Relation
+Date        Booking/Account                   Acc      Debet     Credit      VAT %  Tariff      Posting/line                    Relation
 ------------------------------------------------------------------------------------------------------------------------------------------
 2011-01-31  Postbank:1                                                                          Afschrift 1
 2011-01-31    Creditors                      4100     104.65                                      *ADSL + Telefoon              KPN

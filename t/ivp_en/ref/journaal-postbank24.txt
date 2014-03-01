@@ -2,7 +2,7 @@
 Period 2011-01-01 through 2011-12-31
 EekBoek Sample Administration                                                                                          EekBoek, 2011-12-31
 
-Date        Booking/Account                   Acc      Debet     Credit      BTW %  Tarief      Posting/line                    Relation
+Date        Booking/Account                   Acc      Debet     Credit      VAT %  Tariff      Posting/line                    Relation
 ------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------
             Total Posting Postbank:24                   0.00       0.00
