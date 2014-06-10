@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 23 13:56:26 2014
-# Update Count    : 344
+# Last Modified On: Sat Mar  1 22:22:17 2014
+# Update Count    : 348
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -264,6 +264,15 @@ sub perform {
 				    " WHERE btw_id = ?",
 				    $btw_id );
 		my $incl = $res->[5];
+
+		if ( $incl && $rel_btw == BTWTYPE_INTRA ) {
+		    if ( $btw_explicit ) {	# user specified -> warning
+			warn("!".__x("BTW code {code} is inclusief BTW maar relatie {rel} is intra-communautair",
+				     code => $btw_id, rel => $debcode)."\n" );
+		    }
+		    warn("!".__x("Er wordt geen BTW berekend voor intra-relatie {rel}",
+				     rel => $debcode)."\n" );
+		}
 
 		my $tg;
 		unless ( defined($res) && defined( $tg = $res->[0] ) ) {

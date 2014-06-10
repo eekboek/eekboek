@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jun 26 13:35:35 2013
-# Update Count    : 121
+# Last Modified On: Sat Mar  1 22:19:37 2014
+# Update Count    : 122
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -49,9 +49,6 @@ sub add {
 	if ( $bstate == BTWTYPE_VERLEGD ) {	#### TODO
 	    warn("?"._T("Relaties met verlegde BTW worden nog niet ondersteund")."\n");
 	    return;
-	}
-	if ( $bstate == BTWTYPE_INTRA ) { #### TODO
-	    warn("!"._T("Relaties met intra-communautaire BTW worden nog niet volledig ondersteund")."\n");
 	}
     }
     my $debiteur;
