@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 24 16:23:11 2014
-# Update Count    : 309
+# Last Modified On: Thu Mar 13 17:55:41 2014
+# Update Count    : 313
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -209,7 +209,7 @@ sub set_relatie {
     return __x("Ongeldig bedrag: {amount}", amount => $amt)."\n" unless defined($anew = amount($amt));
 
     $self->check_open(0);
-    push(@{$self->{o}->{relatie}}, [$bky, $nr, $date, $desc, $type, $code, $acct, $anew]);
+    push(@{$self->{o}->{relatie}}, [$bky, $nr, $date, $desc, $type, $code, $dbk, $acct, $anew]);
     "";
 }
 
@@ -330,7 +330,7 @@ sub open {
 
 	    # Process relations.
 	    foreach my $r ( @{$o->{relatie}} ) {
-		my ($bky, $nr, $date, $desc, $debcrd, $code, $acct, $amt) = @$r;
+		my ($bky, $nr, $date, $desc, $debcrd, $code, $dbk, $acct, $amt) = @$r;
 
 		if ( $debcrd ) {
 		    $adeb = $acct;
@@ -456,13 +456,13 @@ sub open {
 	my $dbk_inkoop;
 	my $dbk_verkoop;
 	foreach my $r ( @{$o->{relatie}} ) {
-	    my ($bky, $nr, $date, $desc, $debcrd, $code, $acct, $amt) = @$r;
+	    my ($bky, $nr, $date, $desc, $debcrd, $code, $dagboek, $acct, $amt) = @$r;
 	    $nr = $dbh->get_sequence("bsk_nr_0_seq") unless defined $nr;
 
-	    my ($dagboek) = @{$dbh->do("SELECT dbk_id".
-				       " FROM Dagboeken".
-				       " WHERE dbk_acc_id = ?",
-				       $acct)};
+#	    my ($dagboek) = @{$dbh->do("SELECT dbk_id".
+#				       " FROM Dagboeken".
+#				       " WHERE dbk_acc_id = ?",
+#				       $acct)};
 
 	    if ( $debcrd ) {
 #		unless ( $dbk_verkoop ) {
