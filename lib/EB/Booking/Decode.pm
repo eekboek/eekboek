@@ -10,8 +10,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue May 29 14:38:52 2012
-# Update Count    : 182
+# Last Modified On: Tue Sep  1 11:27:04 2015
+# Update Count    : 184
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -222,7 +222,11 @@ sub decode {
 		|| $dbktype == DBKTYPE_MEMORIAAL ) {
 	    $bsr_amount = -$bsr_amount;
 	    my $dd = "";
-	    $dd = " ".datefmt_full($bsr_date) unless $bsr_date eq $bsk_date;
+	    # Explicitly add the date if it is different, or when the
+	    # description could be parsed as a date (bug #40).
+	    $dd = " ".datefmt_full($bsr_date)
+	      if $bsr_date ne $bsk_date || $bsr_desc =~ /^[[:digit:]]+-/;
+
 	    if ( $bsr_type == 0 ) {
 		$cmd .= $single ? " " : " \\\n\t";
 		$cmd .= "std$dd " . _quote($bsr_desc) . " " .
