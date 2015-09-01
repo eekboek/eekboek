@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 23 12:28:25 2014
-# Update Count    : 651
+# Last Modified On: Tue Sep  1 10:36:47 2015
+# Update Count    : 652
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -261,7 +261,7 @@ sub parse_periode {
     };
 
     my $yrpat = _T("j(aar)?");
-    if ( $v =~ /^$yrpat$|j(aar)?$/i ) {
+    if ( $v =~ /^$yrpat$|^j(aar)?$/i ) {
 	$pp->(1, 1);
 	return;
     }
