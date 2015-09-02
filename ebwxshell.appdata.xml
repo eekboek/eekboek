@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2015 Johan Vromans <jvromans@squirrel.nl> -->
+
+<component type="desktop">
+
+<id>ebwxshell.desktop</id>
+<metadata_license>CC-BY-3.0</metadata_license>
+<project_license>AGPL and GPL-1+</project_license>
+<name>EekBoek</name>
+<summary xml:lang="en">Personal and business accounting</summary>
+<summary xml:lang="nl">Boekhouden voor midden- en kleinbedrijf</summary>
+
+<description>
+
+<p xml:lang="en">EekBoek is open source financial accounting software
+for small and medium-sized enterprises based on European style
+bookkeeping.</p>
+
+<p xml:lang="en">It supports opening balances, end of year bookings,
+P&amp;L, accounts payables, accounts receivables, journals, and more.
+It can support the creation of income tax, corporate tax, VAT and
+other tax filings.</p>
+
+<p xml:lang="en">EekBoek has a fully customisable administration
+scheme and can be extended by writing your own plug-ins. Multiple
+adminstrations are possible, and when using a suitable database
+multiple users can work on the same adminstration simultaneously. A
+scriptable command line interface can be used to deploy EekBoek from
+other tools.</p>
+
+<p xml:lang="en">Important: EekBoek is designed according to the laws
+and regulations in the Netherlands, and available in Dutch only.</p>
+
+<p xml:lang="nl">EekBoek is een open source boekhoudprogramma voor het
+midden- en kleinbedrijf. Het is bedoeld voor bedrijfsvoerders die zelf
+hun boekhouding willen doen, maar geen ervaren boekhouder zijn.</p>
+
+<p xml:lang="nl">De werkwijze van EekBoek is conform de geaccepteerde
+standaard van een grootboek met dagboeken voor inkoop, verkoop en
+bank. Het rekeningschema kent verdichtingen en hoofdverdichtingen,
+geïnspireerd door het alom gerespecteerde en veelvuldig toegepaste
+‘Stelsel Bakker’. Het schema is verder geheel vrij in te delen.</p>
+
+<p xml:lang="nl">EekBoek is robuust en betrouwbaar, gegevens worden
+opgeslagen in een relationeel databasesysteem. Meerdere administraties
+zijn mogelijk en afhankelijk van het gekozen databasesysteem kunnen
+meerdere gebruikers gelijktijdig werken met dezelfde administraties.</p>
+
+<p xml:lang="nl">Administraties kunnen ook worden onderhouden met een
+teksteditor, zonder tussenkomst van een GUI. Eigen plug-ins kunnen de
+functionaliteit uitbreiden en door middel van een scriptable command
+line interface kan EekBoek op eenvoudige wijze worden ingezet vanuit
+andere programma’s.</p>
+
+</description>
+
+<screenshots>
+  <screenshot type="default">
+    <image width="1440" height="810">http://www.eekboek.nl/scrshots/EekBoek-Screenshots.png</image>
+  </screenshot>
+</screenshots>
+
+<provides>
+  <binary>ebwxshell</binary>
+  <binary>ebshell</binary>
+</provides>
+
+<url type="homepage">http://www.eekboek.nl</url>
+<url type="help">http://www.eekboek.nl/docs/</url>
+<update_contact>jvromans_AT_squirrel.nl</update_contact>
+
+</component>
