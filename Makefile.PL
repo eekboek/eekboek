@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul  6 23:24:13 2010
-# Update Count    : 105
+# Last Modified On: Tue Sep  1 11:51:56 2015
+# Update Count    : 106
 # Status          : Unknown, Use with caution!
 
 # Ease the life of the CPAN testers.
@@ -36,7 +36,7 @@ WriteMakefile(
 	      INSTALLDIRS => $data->{installtype},
 	      DISTNAME    => $data->{distname},
 	      EXE_FILES   => $data->{script_files},
-	      VERSION_FROM => "lib/EekBoek.pm",
+	      VERSION_FROM => "lib/EB/Version.pm",
 	      PREREQ_PM   => { %{$data->{prereq_pm}},
 			       %{$data->{buildreq_pm}},
 			     },

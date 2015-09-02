@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed May 29 08:37:33 2013
-# Update Count    : 108
+# Last Modified On: Tue Sep  1 11:50:50 2015
+# Update Count    : 109
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -17,7 +17,7 @@ $data =
   { %$data,
     author          => 'Johan Vromans (jvromans@squirrel.nl)',
     abstract        => 'Elementary Bookkeeping (for the Dutch/European market)',
-    PL_files        => {},
+    pl_files        => {},
     installtype     => 'site',
     modname         => 'EekBoek',
     distname        => 'EekBoek',
