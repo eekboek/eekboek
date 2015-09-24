@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Feb 24 16:12:14 2014
-# Update Count    : 241
+# Last Modified On: Thu Sep 24 22:02:48 2015
+# Update Count    : 251
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -482,6 +482,10 @@ sub _add {
 		   || $dagboek_type == DBKTYPE_KAS )
 		 ? ( __xt('cmo:boeking:saldo').'=s' => \$opts->{saldo},
 		     __xt('cmo:boeking:beginsaldo').'=s' => \$opts->{beginsaldo} )
+		 : (),
+		 ( $dagboek_type == DBKTYPE_INKOOP
+		   || $dagboek_type == DBKTYPE_VERKOOP )
+		 ? ( 'bijlage=s' => \$opts->{bijlage} )
 		 : (),
 	       ], $opts);
 
@@ -1439,6 +1443,57 @@ Opties:
 Het getoonde boekstuk wordt in de commando-historie geplaatst.
 Met een pijltje-omhoog kan dit worden teruggehaald en na eventuele
 wijziging opnieuw ingevoerd.
+EOS
+}
+
+sub do_bijlage {
+    my ($self, @args) = @_;
+    my $b = $bsk;
+    my $opts = { verbose      => 0,
+		 d_boekjaar   => $bky || $dbh->adm("bky"),
+	       };
+
+    return unless
+    parse_args(\@args,
+	       [ 'boekjaar=s',
+		 'verbose!',
+		 'trace!',
+	       ], $opts);
+
+    $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
+
+    @args = ($bsk) if $bsk && !@args;
+    return _T("Gaarne een boekstuk") unless @args == 1;
+    my ($bsk_id, $dbs, $err) = $dbh->bskid($args[0], $opts->{boekjaar});
+    unless ( defined($bsk_id) ) {
+	warn("?".$err."\n");
+	return;
+    }
+
+    #### TODO: THIS CODE DOESN'T BELONG HERE ####
+    my ( $att_id ) = $dbh->lookup( $bsk_id,
+				   qw(Boekstukken bsk_id bsk_att =) );
+    unless ( defined($att_id) ) {
+	warn("?".__x("Geen bijlage gevonden voor boekstuk {bsk}",
+		     bsk => $args[0])."\n");
+	return;
+    }
+
+    my $file = $dbh->get_attachment($att_id);
+    system("xdg-open", $file);
+    unlink($file);
+    "";
+}
+
+sub help_bijlage {
+    _T( <<EOS );
+Toont de bijlage van een boekstuk, indien aanwezig.
+
+  bijlage [ <opties> ] <boekstuk>
+
+Opties:
+
+  --boekjaar=<code>	Selekteer boekjaar
 EOS
 }
 

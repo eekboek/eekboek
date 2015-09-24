@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  1 22:22:17 2014
-# Update Count    : 348
+# Last Modified On: Thu Sep 24 20:26:58 2015
+# Update Count    : 351
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -39,9 +39,16 @@ sub perform {
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
     my $bsk_ref = $opts->{ref};
+    my $bsk_att = $opts->{bijlage};
 
     if ( defined $bsk_ref && $bsk_ref =~ /^\d+$/ ) {
 	warn("?".__x("Boekingsreferentie moet tenminste één niet-numeriek teken bevatten: {ref}", ref => $bsk_ref)."\n");
+	return;
+    }
+
+    if ( defined $bsk_att && ! ( -f $bsk_att && -r _ ) ) {
+	warn("?".__x("Boekingsbijlage kan niet worden gevonden: {att}",
+		     att => $bsk_att)."\n");
 	return;
     }
 
@@ -382,6 +389,11 @@ sub perform {
 	      act => numfmt($tot), exp => numfmt($totaal)) . ".";
     }
     else {
+	if ( $bsk_att ) {
+	    my $att_id = $dbh->store_attachment($bsk_att);
+	    $dbh->sql_exec("UPDATE Boekstukken SET bsk_att = ? WHERE bsk_id = ?",
+			   $att_id, $bsk_id);
+	}
 	$dbh->commit;
     }
 

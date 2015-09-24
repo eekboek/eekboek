@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 18 13:42:09 2012
-# Update Count    : 194
+# Last Modified On: Thu Sep 24 22:37:02 2015
+# Update Count    : 227
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -141,7 +141,9 @@ sub clear {
     for my $tbl ( qw(Boekstukregels Journal Boekjaarbalans
 		     Metadata Standaardrekeningen Relaties
 		     Boekstukken Dagboeken Boekjaren Constants
-		     Accounts Btwtabel Verdichtingen Taccounts) ) {
+		     Accounts Btwtabel Verdichtingen Taccounts
+		     Attachments
+		   ) ) {
 	warn("+ DROP TABLE $tbl\n") if $trace;
 	eval { $dbh->do("DROP TABLE $tbl") };
     }
@@ -249,6 +251,91 @@ sub set_sequence {
     # The next call to get_sequence will return this value.
     $dbh->do("SELECT setval('$seq', $value, false)");
     $value;
+}
+
+################ Attachments ################
+
+use Digest::MD5 ();
+use MIME::Base64 ();
+use POSIX qw(O_RDONLY);
+use File::Temp ();
+use File::Basename ();
+
+sub get_attachment {
+    my ( $self, $id ) = @_;
+
+    my $rr = $dbh->selectrow_arrayref("SELECT att_name,att_encoding,att_content".
+				      " FROM Attachments".
+				      " WHERE att_id = ?", {}, $id );
+    my ( $name, $enc, $data ) = @{ $rr };
+    $data = MIME::Base64::decode_base64($data) if $enc == ATTENCODING_BASE64;
+
+    my $tmp = File::Temp->new( UNLINK => 0,
+			       SUFFIX => "__$name" );
+    syswrite( $tmp, $data, length($data) );
+    $tmp->close;
+    return $tmp->filename;
+}
+
+sub store_attachment {
+    my ( $self, $filename ) = @_;
+
+    sysopen( my $fd, $filename, O_RDONLY )
+      or die(__x("Bijlage {file} kan niet worden opgeslagen: {err}",
+		 file => $filename, err => "".$!)."\n");
+
+    my $cnt;
+    my $buf = "";
+    my $offset = 0;
+#    my $ctx = Digest::MD5->new;
+    while ( ( $cnt = sysread( $fd, $buf, 20480, $offset ) ) > 0 ) {
+
+=begin later
+
+	unless ( defined $type ) {
+	    if ( $buf =~ /^\%PDF-/ ) {
+		$type = ATTTYPE_PDF;
+	    }
+	    elsif ( $buf =~ /^\x89PNG\x0d\x0a\x1a\x0a/ ) {
+		$type = ATTTYPE_PNG;
+	    }
+	    elsif ( $buf =~ /^\xff\xd8/ ) {
+		$type = ATTTYPE_JPG;
+	    }
+	    elsif ( $buf =~ /^[[:print:]\s]*$/ ) {
+		$type = ATTTYPE_TEXT;
+	    }
+	    else {
+		die(__x("Bijlage {file} is van een niet-ondersteund type",
+			file => $filename)."\n");
+	    }
+	}
+
+=cut
+
+	$offset += $cnt;
+    }
+    die(__x("Bijlage {file} kon niet worden gelezen: {err}",
+	    file => $filename), err => !$)."\n") unless $cnt == 0;
+    close($fd);
+
+#    $ctx->add($buf);
+#    my $checksum = $ctx->hexdigest;
+    my $name = File::Basename::fileparse($filename);
+    my $att_id = $self->get_sequence("attachments_id_seq");
+    my @fields = qw( id name size encoding content );
+    $dbh->do("INSERT INTO Attachments" .
+	     " (" . join(",", map { +"att_$_" } @fields ) . ") ".
+	     " VALUES (" . join(",", ("?") x @fields) . ")", {},
+	     $att_id, $name, $offset, ATTENCODING_BASE64,
+	     MIME::Base64::encode($buf, "") );
+    return $att_id;
+
+}
+
+sub drop_attachment {
+    my ( $self, $id ) = @_;
+    $dbh->do("DELETE FROM Attachments WHERE att_id = ?", {}, $id );
 }
 
 ################ Interactive SQL ################
