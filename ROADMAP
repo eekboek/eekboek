@@ -4,24 +4,24 @@ ROADMAP voor EekBoek
 
 2.02	Stable
 
-2.01	Development voor 2.02 (of 3.00?)
+2.02.02	Stable
 
-	[90%] Vertaalbaarheid (zo volledig mogelijk) inclusief Engelse
-	vertaling.
+2.02.04	Stable
 
-	[80%] GUI maintenance panels voor relaties, dagboeken en btw
-	tarieven.
+2.03	Development
 
-	[50%] GUI maintenance panels voor grootboekrekeningen.
+	Verwijderen vertaalbaarheid (zo volledig mogelijk) inclusief
+	Engelse vertaling.
 
-	[20%] GUI maintenance panels voor boekingen.
+	Actualiseren documentatie en voorbeeldadministraties.
 
-	[50%] Packaging: Windows 64 bit.
+	Resterende bugfixes.
+
+	Packaging: Windows 64 bit.
 
 3.00	Future
 
-	Herziene aanpak BTW berekeningen in verband met gebruik in
-	andere landen.
-
 	Redesign database om sequences te elimineren waardoor het
 	gemakkelijker wordt andere database drivers toe te passen.
+
+	Herziening interne implementatie van de BTW afhandeling.
