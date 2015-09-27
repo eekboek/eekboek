@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 24 21:58:40 2015
-# Update Count    : 451
+# Last Modified On: Fri Sep 25 21:23:22 2015
+# Update Count    : 452
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -588,7 +588,7 @@ sub get_attachment {
     warn("=> GET-ATTACHMENT ", $_[0], "\n") if $trace;
     $self->connectdb;
     Carp::confess("DB backend setup failed") unless $dbpkg;
-    Carp::croak("INTERNAL ERROR: get_attachment takes only one argument") if @_ != 1;
+    Carp::croak("INTERNAL ERROR: get_attachment takes one or two arguments") if @_ < 1 || @_ > 2;
     $dbpkg->get_attachment(@_);
 }
 

@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 24 22:37:02 2015
-# Update Count    : 227
+# Last Modified On: Fri Sep 25 21:45:04 2015
+# Update Count    : 232
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -257,18 +257,19 @@ sub set_sequence {
 
 use Digest::MD5 ();
 use MIME::Base64 ();
-use POSIX qw(O_RDONLY);
+use Fcntl qw( O_RDONLY );
 use File::Temp ();
 use File::Basename ();
 
 sub get_attachment {
-    my ( $self, $id ) = @_;
+    my ( $self, $id, $ref ) = @_;
 
     my $rr = $dbh->selectrow_arrayref("SELECT att_name,att_encoding,att_content".
 				      " FROM Attachments".
 				      " WHERE att_id = ?", {}, $id );
     my ( $name, $enc, $data ) = @{ $rr };
     $data = MIME::Base64::decode_base64($data) if $enc == ATTENCODING_BASE64;
+    return \$data if $ref;
 
     my $tmp = File::Temp->new( UNLINK => 0,
 			       SUFFIX => "__$name" );
@@ -279,8 +280,8 @@ sub get_attachment {
 
 sub store_attachment {
     my ( $self, $filename ) = @_;
-
-    sysopen( my $fd, $filename, O_RDONLY )
+    my $file = $filename;
+    sysopen( my $fd, $file, O_RDONLY )
       or die(__x("Bijlage {file} kan niet worden opgeslagen: {err}",
 		 file => $filename, err => "".$!)."\n");
 
@@ -321,7 +322,7 @@ sub store_attachment {
 
 #    $ctx->add($buf);
 #    my $checksum = $ctx->hexdigest;
-    my $name = File::Basename::fileparse($filename);
+    my $name = File::Basename::fileparse($file);
     my $att_id = $self->get_sequence("attachments_id_seq");
     my @fields = qw( id name size encoding content );
     $dbh->do("INSERT INTO Attachments" .

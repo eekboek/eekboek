@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 24 22:02:48 2015
-# Update Count    : 251
+# Last Modified On: Fri Sep 25 22:02:47 2015
+# Update Count    : 253
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -490,6 +490,9 @@ sub _add {
 	       ], $opts);
 
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
+    if ( $opts->{bijlage} && $opts->{bijlage} =~ m;^int://(.+); ) {
+	$opts->{bijlage} = $self->{_int_loc_} . $1;
+    }
     $bsk = $action->perform($args, $opts);
     $bsk ? $bsk =~ /^\w+:\d+/ ? __x("Geboekt: {bsk}", bsk => $bsk) : $bsk : "";
 }

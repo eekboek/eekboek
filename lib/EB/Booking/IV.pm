@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Sep 24 20:26:58 2015
-# Update Count    : 351
+# Last Modified On: Fri Sep 25 22:02:22 2015
+# Update Count    : 356
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -46,10 +46,12 @@ sub perform {
 	return;
     }
 
-    if ( defined $bsk_att && ! ( -f $bsk_att && -r _ ) ) {
-	warn("?".__x("Boekingsbijlage kan niet worden gevonden: {att}",
+    if ( defined $bsk_att ) {
+	if ( ! ( -f $bsk_att && -r _ ) ) {
+	    warn("?".__x("Boekingsbijlage kan niet worden gevonden: {att}",
 		     att => $bsk_att)."\n");
-	return;
+	    return;
+	}
     }
 
     unless ( $dagboek_type == DBKTYPE_INKOOP || $dagboek_type == DBKTYPE_VERKOOP) {

@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed May 30 16:07:58 2012
-# Update Count    : 110
+# Last Modified On: Fri Sep 25 21:58:59 2015
+# Update Count    : 111
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -75,6 +75,8 @@ sub do_import {
 	$cmdobj->attach_file($opening);
 	$cmdobj->attach_file($relaties);
 	$cmdobj->attach_lines(["journal --quiet 0"]) if $jnl_state;
+
+	$cmdobj->{_int_loc_} = "$dir/int/";
 	return;
     }
 
