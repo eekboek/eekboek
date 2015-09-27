@@ -4,9 +4,11 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep 18 13:42:09 2012
-# Update Count    : 194
+# Last Modified On: Sun Sep 27 21:10:41 2015
+# Update Count    : 211
 # Status          : Unknown, Use with caution!
+
+#### NOTE: THE DATABASE CONNECT/CREATE LOGIC NEEDS A MAJOR OVERHAUL ####
 
 package main;
 
@@ -99,13 +101,15 @@ sub connect {
     my ($self, $dbname) = @_;
     croak("?INTERNAL ERROR: connect db without dataset name") unless $dbname;
 
+    my $schema = $cfg->val( qw(database schema), undef );
+
     if ( $dataset && $dbh && $dbname eq $dataset ) {
 	return $dbh;
     }
 
     $self->disconnect;
 
-    $dbname = "eekboek_".$dbname unless $dbname =~ /^eekboek_/;
+    $dbname = "eekboek_".$dbname unless $schema || $dbname =~ /^eekboek_/;
     $cfg->newval(qw(database fullname), $dbname);
     $dbh = DBI::->connect(_dsn($dbname))
       or die("?".__x("Database verbindingsprobleem: {err}",
@@ -118,6 +122,19 @@ sub connect {
     }
     $dbh->do("SET CLIENT_ENCODING TO 'UNICODE'");
     $dbh->{pg_enable_utf8} = 1;
+
+    if ( $schema ) {
+	my $sth = $dbh->table_info( '', '%', '' );
+	my $got = 0;
+	while ( my $rr = $sth->fetchrow_arrayref ) {
+	    $got++, last if $rr->[1] eq $schema;
+	}
+	$dbh->do("CREATE SCHEMA $schema") unless $got;
+	$dbh->do("SET SEARCH_PATH TO $schema, public");
+	my $user = $cfg->val("database", "user", undef);
+	$dbh->do("ALTER ROLE $user SET SEARCH_PATH TO $schema, public")
+	  if $user;
+    }
     return $dbh;
 }
 
@@ -222,9 +239,10 @@ sub list {
 sub get_tables {
     my $self = shift;
     my @t;
-    foreach ( $dbh->tables ) {
-	next unless /^public\.(.+)/i;
-	push(@t, lc($1));
+    my $schema = $cfg->val(qw(database schema), "public");
+    foreach ( $dbh->tables( '', $schema, '%', '' ) ) {
+	s/^.*?\.//;
+	push(@t, lc($_));
     }
     \@t;
 }
