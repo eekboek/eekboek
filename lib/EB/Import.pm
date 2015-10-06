@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 25 21:58:59 2015
-# Update Count    : 111
+# Last Modified On: Tue Oct  6 19:08:04 2015
+# Update Count    : 128
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -22,6 +22,7 @@ use warnings;
 
 use EB;
 use EB::Format;			# needs to be setup before we can use Schema
+use EB::Tools::Attachments;
 
 my $ident;
 
@@ -76,7 +77,15 @@ sub do_import {
 	$cmdobj->attach_file($relaties);
 	$cmdobj->attach_lines(["journal --quiet 0"]) if $jnl_state;
 
-	$cmdobj->{_int_loc_} = "$dir/int/";
+	my $att = EB::Tools::Attachments->new;
+	my @atts = sort glob("$dir/????????_*");
+	foreach my $file ( @atts ) {
+	    next unless substr($file, length($dir)+1) =~ m;^(\d+)_(.+);;
+	    my ($id, $name) = ( $1, $2 );
+	    $att->{id} = 0+$id;
+	    $att->{name} = $name;
+	    $att->store_from_file($file);
+	}
 	return;
     }
 
@@ -132,14 +141,18 @@ sub do_import {
 	    $fail++;
 	}
 
-	close($zipf);
-
-	die("?"._T("DE IMPORT IS NIET UITGEVOERD")."\n") if $fail;
+	if ( $fail ) {
+	    close($zipf);
+	    die("?"._T("DE IMPORT IS NIET UITGEVOERD")."\n");
+	}
 
 	foreach ( $d_mutaties, $d_relaties, $d_opening, $d_schema ) {
 	    # Do not recode, the input loop will do that for us.
 	    $_ = [ map { "$_\n" } split(/[\n\r]+/, $_) ];
 	}
+
+	# To temporary suspend journaling.
+	my $jnl_state = $cfg->val(qw(preferences journal), undef);
 
 	# Delete daybook-associated shell functions.
 	$cmdobj->_forget_cmds;
@@ -158,9 +171,24 @@ sub do_import {
 	    $cmdobj->_plug_cmds;
 
 	    # Relaties, Opening, Mutaties. In reverse order.
+	    $cmdobj->attach_lines(["journal --quiet $jnl_state"]) if $jnl_state;
 	    $cmdobj->attach_lines($d_mutaties);
 	    $cmdobj->attach_lines($d_opening );
 	    $cmdobj->attach_lines($d_relaties);
+	    $cmdobj->attach_lines(["journal --quiet 0"]) if $jnl_state;
+
+	    my @att = $zip->membersMatching( '^\d+_.+' );
+	    warn("ATT @att\n");
+	    my $att = EB::Tools::Attachments->new;
+	    foreach my $mem ( @att ) {
+		my ($id, $name) = $mem->fileName =~ m;^(\d+)_(.+);;
+		$att->{id} = 0+$id;
+		$att->{name} = $name;
+		my $d = $mem->contents;
+		$att->{content} = \$d;
+		$att->store;
+	    }
+	    close($zipf);
 	};
 	return $@;
     }

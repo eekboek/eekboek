@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 25 22:02:22 2015
-# Update Count    : 356
+# Last Modified On: Tue Oct  6 16:45:23 2015
+# Update Count    : 359
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -28,6 +28,7 @@ use EB;
 use EB::Format;
 use EB::Report::Journal;
 use base qw(EB::Booking);
+use EB::Tools::Attachments;
 
 my $trace_updates = $cfg->val(__PACKAGE__, "trace_updates", 0);	# for debugging
 
@@ -46,7 +47,7 @@ sub perform {
 	return;
     }
 
-    if ( defined $bsk_att ) {
+    if ( defined $bsk_att && $bsk_att !~ m;^int://; ) {
 	if ( ! ( -f $bsk_att && -r _ ) ) {
 	    warn("?".__x("Boekingsbijlage kan niet worden gevonden: {att}",
 		     att => $bsk_att)."\n");
@@ -392,7 +393,13 @@ sub perform {
     }
     else {
 	if ( $bsk_att ) {
-	    my $att_id = $dbh->store_attachment($bsk_att);
+	    my $att_id;
+	    if ( $bsk_att =~ m;^int://(\d+)/.+; ) {
+		$att_id = $1;
+	    }
+	    else {
+		$att_id = EB::Tools::Attachments->new->store_from_file($bsk_att);
+	    }
 	    $dbh->sql_exec("UPDATE Boekstukken SET bsk_att = ? WHERE bsk_id = ?",
 			   $att_id, $bsk_id);
 	}

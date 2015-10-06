@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 25 21:23:22 2015
-# Update Count    : 452
+# Last Modified On: Tue Oct  6 15:28:46 2015
+# Update Count    : 455
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -579,7 +579,7 @@ sub store_attachment {
     warn("=> STORE-ATTACHMENT ", $_[0], "\n") if $trace;
     $self->connectdb;
     Carp::confess("DB backend setup failed") unless $dbpkg;
-    Carp::croak("INTERNAL ERROR: store_attachment takes only one argument") if @_ != 1;
+    Carp::croak("INTERNAL ERROR: store_attachment takes one argument") if @_ != 1;
     $dbpkg->store_attachment(@_);
 }
 

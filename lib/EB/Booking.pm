@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 23 12:21:12 2014
-# Update Count    : 212
+# Last Modified On: Tue Oct  6 16:37:46 2015
+# Update Count    : 213
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -389,6 +389,11 @@ sub journalise {
 		    undef, undef, $bsk_desc, $g_bsr_rel_code, undef, $bsk_ref]);
 
     $ret;
+}
+
+sub find_attachment {
+    my ( $self, $bsk_id ) = @_;
+    $dbh->lookup( $bsk_id, qw(Boekstukken bsk_id bsk_att =) );
 }
 
 1;

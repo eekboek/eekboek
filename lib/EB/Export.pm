@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 25 21:40:19 2015
-# Update Count    : 246
+# Last Modified On: Tue Oct  6 16:31:19 2015
+# Update Count    : 260
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -24,6 +24,7 @@ use EB;
 use EB::Format;
 use Encode;
 use Fcntl qw( O_WRONLY O_CREAT );
+use EB::Tools::Attachments;
 
 my $ident;
 
@@ -43,25 +44,10 @@ sub export {
 	$self->_write("$dir/opening.eb",  sub { print { shift } $self->_opening  });
 	$self->_write("$dir/mutaties.eb", sub { print { shift } $self->_mutaties($opts) });
 
-	my $sth = $dbh->sql_exec("SELECT att_id,att_name FROM Attachments ORDER BY att_id");
-	while ( my $rr = $sth->fetchrow_arrayref ) {
-	    my ( $id, $name ) = @$rr;
-	    my $dir = $dir;
-	    $dir .= "/int";
-	    mkdir($dir, 0777) unless -d $dir;
-	    $dir .= sprintf("/%08d", $id);
-	    mkdir($dir, 0777) unless -d $dir;
-	    my $file = "$dir/$name";
-	    sysopen( my $fh, $file, O_WRONLY|O_CREAT, 0666 )
-	      or die("?".__x("Fout bij aanmaken bestand {file}: {err}",
-			     file => $file, err => $!)."\n");
-	    my $data_ref = $dbh->get_attachment($id, 1);
-	    syswrite( $fh, $$data_ref, length($$data_ref) ) == length($$data_ref)
-	      or die("?".__x("Fout bij schrijven bestand {file}: {err}",
-			     file => $file, err => $!)."\n");
-	    close($fh)
-	      or die("?".__x("Fout bij afsluiten bestand {file}: {err}",
-			     file => $file, err => $!)."\n");
+	my $att = EB::Tools::Attachments->new;
+	foreach my $rr ( @{ $att->attachments } ) {
+	    my $file = sprintf( "$dir/%08d_%s", $rr->{id}, $rr->{name} );
+	    $att->save_to_file( $file, $rr->{id} );
 	}
 	return;
 
@@ -98,6 +84,14 @@ sub export {
 	$m->desiredCompressionMethod(8);
 	$m = $zip->addString(_enc($self->_mutaties($opts)), "mutaties.eb");
 	$m->desiredCompressionMethod(8);
+
+	# Attachments.
+	my $att = EB::Tools::Attachments->new;
+	foreach my $rr ( @{ $att->attachments } ) {
+	    my $file = sprintf( "%08d_%s", $rr->{id}, $rr->{name} );
+	    $att->save_to_zip( $zip, $file, $rr->{id} );
+	}
+
 	my $status = $zip->writeToFileNamed($out);
 	unlink($tmpname);
 	die("?", __x("Fout {status} tijdens het aanmaken van exportbestand {name}",

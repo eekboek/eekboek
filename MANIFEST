@@ -171,6 +171,7 @@ lib/EB/Report/Reporter/WxHtml.pm
 lib/EB/Shell.pm
 lib/EB/Shell/Base.pm
 lib/EB/Shell/DeLuxe.pm
+lib/EB/Tools/Attachments.pm
 lib/EB/Tools/Einde.pm
 lib/EB/Tools/MiniAdm.pm
 lib/EB/Tools/Opening.pm

@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 25 22:02:47 2015
-# Update Count    : 253
+# Last Modified On: Tue Oct  6 16:39:35 2015
+# Update Count    : 260
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -25,6 +25,8 @@ use EB;
 my $bky;			# current boekjaar (if set)
 
 use base qw(EB::Shell::DeLuxe);
+
+use EB::Tools::Attachments;
 
 sub new {
     my $class = shift;
@@ -490,9 +492,6 @@ sub _add {
 	       ], $opts);
 
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};
-    if ( $opts->{bijlage} && $opts->{bijlage} =~ m;^int://(.+); ) {
-	$opts->{bijlage} = $self->{_int_loc_} . $1;
-    }
     $bsk = $action->perform($args, $opts);
     $bsk ? $bsk =~ /^\w+:\d+/ ? __x("Geboekt: {bsk}", bsk => $bsk) : $bsk : "";
 }
@@ -1473,16 +1472,15 @@ sub do_bijlage {
 	return;
     }
 
-    #### TODO: THIS CODE DOESN'T BELONG HERE ####
-    my ( $att_id ) = $dbh->lookup( $bsk_id,
-				   qw(Boekstukken bsk_id bsk_att =) );
+    require EB::Booking;
+    my ( $att_id ) = EB::Booking->find_attachment($bsk_id);
     unless ( defined($att_id) ) {
 	warn("?".__x("Geen bijlage gevonden voor boekstuk {bsk}",
 		     bsk => $args[0])."\n");
 	return;
     }
 
-    my $file = $dbh->get_attachment($att_id);
+    my $file = EB::Tools::Attachments->new->save_to_file( undef, $att_id );
     system("xdg-open", $file);
     unlink($file);
     "";

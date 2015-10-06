@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Mar  7 23:09:44 2011
-# Update Count    : 163
+# Last Modified On: Tue Oct  6 19:02:32 2015
+# Update Count    : 164
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -298,7 +298,7 @@ sub sqlfilter {
     my (@args) = @_;
 
     # No sequences.
-    return if /^(?:create|drop)\s+sequence\b/i;
+    return if /^(?:create|drop|alter)\s+sequence\b/i;
 
     # Constraints are ignored in table defs, but an
     # explicit alter needs to be skipped.

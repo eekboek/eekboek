@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Sep 25 21:45:04 2015
-# Update Count    : 232
+# Last Modified On: Tue Oct  6 15:49:28 2015
+# Update Count    : 238
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -255,83 +255,30 @@ sub set_sequence {
 
 ################ Attachments ################
 
-use Digest::MD5 ();
+# PostgreSQL stores the data into the database, base64 encoded.
+
 use MIME::Base64 ();
-use Fcntl qw( O_RDONLY );
-use File::Temp ();
-use File::Basename ();
 
 sub get_attachment {
-    my ( $self, $id, $ref ) = @_;
+    my ( $self, $id ) = @_;
 
     my $rr = $dbh->selectrow_arrayref("SELECT att_name,att_encoding,att_content".
 				      " FROM Attachments".
 				      " WHERE att_id = ?", {}, $id );
     my ( $name, $enc, $data ) = @{ $rr };
     $data = MIME::Base64::decode_base64($data) if $enc == ATTENCODING_BASE64;
-    return \$data if $ref;
-
-    my $tmp = File::Temp->new( UNLINK => 0,
-			       SUFFIX => "__$name" );
-    syswrite( $tmp, $data, length($data) );
-    $tmp->close;
-    return $tmp->filename;
+    return { name => $name, content => \$data };
 }
 
 sub store_attachment {
-    my ( $self, $filename ) = @_;
-    my $file = $filename;
-    sysopen( my $fd, $file, O_RDONLY )
-      or die(__x("Bijlage {file} kan niet worden opgeslagen: {err}",
-		 file => $filename, err => "".$!)."\n");
+    my ( $self, $atts ) = @_;
 
-    my $cnt;
-    my $buf = "";
-    my $offset = 0;
-#    my $ctx = Digest::MD5->new;
-    while ( ( $cnt = sysread( $fd, $buf, 20480, $offset ) ) > 0 ) {
-
-=begin later
-
-	unless ( defined $type ) {
-	    if ( $buf =~ /^\%PDF-/ ) {
-		$type = ATTTYPE_PDF;
-	    }
-	    elsif ( $buf =~ /^\x89PNG\x0d\x0a\x1a\x0a/ ) {
-		$type = ATTTYPE_PNG;
-	    }
-	    elsif ( $buf =~ /^\xff\xd8/ ) {
-		$type = ATTTYPE_JPG;
-	    }
-	    elsif ( $buf =~ /^[[:print:]\s]*$/ ) {
-		$type = ATTTYPE_TEXT;
-	    }
-	    else {
-		die(__x("Bijlage {file} is van een niet-ondersteund type",
-			file => $filename)."\n");
-	    }
-	}
-
-=cut
-
-	$offset += $cnt;
-    }
-    die(__x("Bijlage {file} kon niet worden gelezen: {err}",
-	    file => $filename), err => !$)."\n") unless $cnt == 0;
-    close($fd);
-
-#    $ctx->add($buf);
-#    my $checksum = $ctx->hexdigest;
-    my $name = File::Basename::fileparse($file);
-    my $att_id = $self->get_sequence("attachments_id_seq");
     my @fields = qw( id name size encoding content );
     $dbh->do("INSERT INTO Attachments" .
 	     " (" . join(",", map { +"att_$_" } @fields ) . ") ".
 	     " VALUES (" . join(",", ("?") x @fields) . ")", {},
-	     $att_id, $name, $offset, ATTENCODING_BASE64,
-	     MIME::Base64::encode($buf, "") );
-    return $att_id;
-
+	     $atts->{id}, $atts->{name}, $atts->{size}, ATTENCODING_BASE64,
+	     MIME::Base64::encode( ${ $atts->{content} }, "" ) );
 }
 
 sub drop_attachment {
