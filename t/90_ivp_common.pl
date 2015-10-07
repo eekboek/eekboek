@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 23 22:51:48 2012
-# Update Count    : 126
+# Last Modified On: Wed Oct  7 08:36:41 2015
+# Update Count    : 128
 
 use strict;
 use warnings;
@@ -73,12 +73,16 @@ SKIP: {
     eval "require $dbddrv";
     skip("DBI $dbdriver driver ($dbddrv) not installed", $remaining) if $@;
 
-    # Cleanup old files.
-    unlink( glob("out/*.sql") );
+    # Cleanup old logs and reports.
     unlink( glob("out/*.log") );
     unlink( glob("out/*.txt") );
     unlink( glob("out/*.html") );
     unlink( glob("out/*.csv") );
+    # Results from export.
+    unlink( glob("out/*.dat") );
+    unlink( glob("out/*.eb") );
+    unlink( glob("out/*.ebz") );
+    # SQLite databases.
     unlink( glob("ebsqlite_sample*") );
 
     my @ebcmd = qw(-MEB::Main -e EB::Main->run -- -X -f ivp.conf --echo);
