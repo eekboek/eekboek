@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 16:39:35 2015
-# Update Count    : 260
+# Last Modified On: Wed Oct  7 17:06:44 2015
+# Update Count    : 261
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -485,10 +485,7 @@ sub _add {
 		 ? ( __xt('cmo:boeking:saldo').'=s' => \$opts->{saldo},
 		     __xt('cmo:boeking:beginsaldo').'=s' => \$opts->{beginsaldo} )
 		 : (),
-		 ( $dagboek_type == DBKTYPE_INKOOP
-		   || $dagboek_type == DBKTYPE_VERKOOP )
-		 ? ( 'bijlage=s' => \$opts->{bijlage} )
-		 : (),
+		 'bijlage=s' => \$opts->{bijlage},
 	       ], $opts);
 
     $opts->{boekjaar} = $opts->{d_boekjaar} unless defined $opts->{boekjaar};

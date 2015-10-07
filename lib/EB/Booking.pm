@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 16:37:46 2015
-# Update Count    : 213
+# Last Modified On: Wed Oct  7 17:11:55 2015
+# Update Count    : 218
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -22,6 +22,7 @@ use warnings;
 
 use EB;
 use EB::Format;
+use EB::Tools::Attachments;
 
 sub new {
     my ($class) = @_;
@@ -389,6 +390,32 @@ sub journalise {
 		    undef, undef, $bsk_desc, $g_bsr_rel_code, undef, $bsk_ref]);
 
     $ret;
+}
+
+sub check_attachment {
+    my ( $self, $att ) = @_;
+    if ( defined $att && $att !~ m;^int://; ) {
+	if ( ! ( -f $att && -r _ ) ) {
+	    warn("?".__x("Boekingsbijlage kan niet worden gevonden: {att}",
+		     att => $att)."\n");
+	    return;
+	}
+    }
+    return 1;
+}
+
+sub add_attachment {
+    my ( $self, $att, $bsk_id ) = @_;
+    return unless defined $att;
+    my $att_id;
+    if ( $att =~ m;^int://(\d+)/.+; ) {
+	$att_id = $1;
+    }
+    else {
+	$att_id = EB::Tools::Attachments->new->store_from_file($att);
+    }
+    $dbh->sql_exec("UPDATE Boekstukken SET bsk_att = ? WHERE bsk_id = ?",
+		   $att_id, $bsk_id);
 }
 
 sub find_attachment {

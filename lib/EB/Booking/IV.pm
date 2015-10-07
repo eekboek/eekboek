@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 16:45:23 2015
-# Update Count    : 359
+# Last Modified On: Wed Oct  7 17:11:15 2015
+# Update Count    : 364
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -28,7 +28,6 @@ use EB;
 use EB::Format;
 use EB::Report::Journal;
 use base qw(EB::Booking);
-use EB::Tools::Attachments;
 
 my $trace_updates = $cfg->val(__PACKAGE__, "trace_updates", 0);	# for debugging
 
@@ -47,12 +46,8 @@ sub perform {
 	return;
     }
 
-    if ( defined $bsk_att && $bsk_att !~ m;^int://; ) {
-	if ( ! ( -f $bsk_att && -r _ ) ) {
-	    warn("?".__x("Boekingsbijlage kan niet worden gevonden: {att}",
-		     att => $bsk_att)."\n");
-	    return;
-	}
+    if ( defined $bsk_att ) {
+	return unless $self->check_attachment($bsk_att);
     }
 
     unless ( $dagboek_type == DBKTYPE_INKOOP || $dagboek_type == DBKTYPE_VERKOOP) {
@@ -391,20 +386,9 @@ sub perform {
 	  __x(" Boekstuk totaal is {act} in plaats van {exp}",
 	      act => numfmt($tot), exp => numfmt($totaal)) . ".";
     }
-    else {
-	if ( $bsk_att ) {
-	    my $att_id;
-	    if ( $bsk_att =~ m;^int://(\d+)/.+; ) {
-		$att_id = $1;
-	    }
-	    else {
-		$att_id = EB::Tools::Attachments->new->store_from_file($bsk_att);
-	    }
-	    $dbh->sql_exec("UPDATE Boekstukken SET bsk_att = ? WHERE bsk_id = ?",
-			   $att_id, $bsk_id);
-	}
-	$dbh->commit;
-    }
+
+    $self->add_attachment( $bsk_att, $bsk_id ) if $bsk_att;
+    $dbh->commit;
 
     # TODO -- need this to get a current booking.
     $opts->{verbose} || 1
