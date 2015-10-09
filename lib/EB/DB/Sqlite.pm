@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 19:02:32 2015
-# Update Count    : 164
+# Last Modified On: Thu Oct  8 21:24:08 2015
+# Update Count    : 179
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -245,6 +245,91 @@ sub set_sequence {
       : _create_sequence($seq, $value);
 
     return;
+}
+
+################ Attachments ################
+
+# SQLite stores the data into files, next to the database.
+
+use Fcntl;
+
+#### TODO: (re)factor the slurp/blurp code.
+
+sub get_attachment {
+    my ( $self, $id ) = @_;
+
+    my $rr = $dbh->selectrow_arrayref("SELECT att_name".
+				      " FROM Attachments".
+				      " WHERE att_id = ?", {}, $id );
+    my ( $name, $enc, $data ) = @{ $rr };
+    my $path = $cfg->val(qw(database path), ".");
+    my $file = File::Spec->catfile( $path, sprintf("%08d_%s", $id, $name) );
+    my $fail;
+    sysopen( my $fd, $file, O_RDONLY ) or $fail = $!;
+    my $cnt = 1;
+    my $offset = 0;
+    $data = "";
+    while ( !$fail && $cnt > 0 ) {
+	$cnt = sysread( $fd, $data, 20480, $offset );
+	$fail = $! if $cnt < 0;
+	$offset += $cnt;
+    }
+    close($fd);
+
+    if ( $fail ) {
+	die(__x("Intern probleem met bijlage {id} ({name}): {err}",
+		id => $id, name => $name, err => $fail)."\n");
+    }
+    return { name => $name, content => \$data };
+}
+
+sub store_attachment {
+    my ( $self, $atts ) = @_;
+
+    my @fields = qw( id name size encoding );
+    $dbh->do("INSERT INTO Attachments" .
+	     " (" . join(",", map { +"att_$_" } @fields ) . ") ".
+	     " VALUES (" . join(",", ("?") x @fields) . ")", {},
+	     $atts->{id}, $atts->{name}, $atts->{size}, ATTENCODING_NONE );
+
+    my $path = $cfg->val(qw(database path), ".");
+    my $file = File::Spec->catfile( $path,
+				    sprintf("%08d_%s",
+					    $atts->{id}, $atts->{name}) );
+    my $fail;
+    sysopen( my $fd, $file, O_WRONLY|O_CREAT, 0600 ) or $fail = $!;
+    my $data = $atts->{content};
+    my $cnt = length($$data);
+    my $offset = 0;
+    while ( !$fail && $cnt > 0 ) {
+	my $w = syswrite( $fd, $$data, 20480, $offset );
+	$fail = $! if $cnt < 0;
+	$offset += $w;
+	$cnt -= $w;
+    }
+    unless ( $fail ) {
+	close($fd) or $fail = $!;
+    }
+
+    if ( $fail ) {
+	die(__x("Intern probleem met bijlage {id} ({name}): {err}",
+		id => $atts->{id}, name => $atts->{name}, err => $fail)."\n");
+    }
+}
+
+sub drop_attachment {
+    my ( $self, $id ) = @_;
+    my $rr = $dbh->selectrow_arrayref("SELECT att_name".
+				      " FROM Attachments".
+				      " WHERE att_id = ?", {}, $id );
+    my ( $name ) = @{ $rr };
+    my $path = $cfg->val(qw(database path), ".");
+    my $file = File::Spec->catfile( $path, sprintf("%08d_%s", $id, $name) );
+    $dbh->do("DELETE FROM Attachments WHERE att_id = ?", {}, $id );
+    unless ( unlink($file) ) {
+	die(__x("Intern probleem met bijlage {id} ({name}): {err}",
+		id => $id, name => $name, err => $!)."\n");
+    }
 }
 
 ################ Interactive SQL ################
