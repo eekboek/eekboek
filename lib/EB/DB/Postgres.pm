@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 15:49:28 2015
-# Update Count    : 238
+# Last Modified On: Thu Oct  8 19:34:03 2015
+# Update Count    : 239
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -346,6 +346,8 @@ sub feature {
     return 1 if $feat eq "import";
 
     return 1 if $feat eq "test";
+
+    return 1 if $feat eq "blob";
 
     # Return false for all others.
     return;
