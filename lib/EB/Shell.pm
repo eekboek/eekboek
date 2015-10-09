@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct  7 17:06:44 2015
-# Update Count    : 261
+# Last Modified On: Fri Oct  9 15:25:48 2015
+# Update Count    : 264
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -1455,6 +1455,7 @@ sub do_bijlage {
     return unless
     parse_args(\@args,
 	       [ 'boekjaar=s',
+		 'export=s',
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -1477,9 +1478,12 @@ sub do_bijlage {
 	return;
     }
 
-    my $file = EB::Tools::Attachments->new->save_to_file( undef, $att_id );
-    system("xdg-open", $file);
-    unlink($file);
+    if ( $opts->{export} ) {
+	EB::Tools::Attachments->new->save_to_file( $opts->{export}, $att_id );
+	return $opts->{verbose} ? __x("Bijlage opgeslagen in {file}", file => $opts->{export}) : "";
+    }
+
+    EB::Tools::Attachments->new( id => $att_id )->open;
     "";
 }
 

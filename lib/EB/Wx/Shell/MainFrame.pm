@@ -958,6 +958,11 @@ sub ShowRGbk { shift->_HTMLCallBack( "grootboek",   @_ ) }
 sub ShowRCrd { shift->_HTMLCallBack( "crediteuren", @_ ) }
 sub ShowRDeb { shift->_HTMLCallBack( "debiteuren",  @_ ) }
 
+sub ShowRAtt {
+    my ( $self, $args ) = @_;
+    $self->_cmd("bijlage " . $args->{select});
+}
+
 # end of class EB::Wx::Shell::MainFrame
 
 1;
