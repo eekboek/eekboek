@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 21:03:23 2015
-# Update Count    : 130
+# Last Modified On: Tue Oct 13 14:12:13 2015
+# Update Count    : 132
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -86,13 +86,16 @@ sub do_import {
 
 	my $att = EB::Tools::Attachments->new;
 	my @atts = sort glob("$dir/????????_*");
+	my $max_id = -1;
 	foreach my $file ( @atts ) {
 	    next unless substr($file, length($dir)+1) =~ m;^(\d+)_(.+);;
 	    my ($id, $name) = ( $1, $2 );
 	    $att->{id} = 0+$id;
+	    $max_id = $id if $id > $max_id;
 	    $att->{name} = $name;
 	    $att->store_from_file($file);
 	}
+	$dbh->set_sequence( "attachments_id_seq", $max_id+1 );
 	return;
     }
 
@@ -184,15 +187,18 @@ sub do_import {
 
 	my @att = $zip->membersMatching( '^\d+_.+' );
 	my $att = EB::Tools::Attachments->new;
+	my $max_id = -1;
 	foreach my $mem ( @att ) {
 	    my ($id, $name) = $mem->fileName =~ m;^(\d+)_(.+);;
 	    $att->{id} = 0+$id;
+	    $max_id = $id if $id > $max_id;
 	    $att->{name} = $name;
 	    my $d = $mem->contents;
 	    $att->{content} = \$d;
 	    $att->store;
 	}
 	close($zipf);
+	$dbh->set_sequence( "attachments_id_seq", $max_id+1 );
 	return;
     }
 

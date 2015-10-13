@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct  8 19:34:03 2015
-# Update Count    : 239
+# Last Modified On: Tue Oct 13 08:33:12 2015
+# Update Count    : 242
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -267,18 +267,24 @@ sub get_attachment {
 				      " WHERE att_id = ?", {}, $id );
     my ( $name, $enc, $data ) = @{ $rr };
     $data = MIME::Base64::decode_base64($data) if $enc == ATTENCODING_BASE64;
-    return { name => $name, content => \$data };
+    return { name => $name, encoding => $enc, content => \$data };
 }
 
 sub store_attachment {
     my ( $self, $atts ) = @_;
 
     my @fields = qw( id name size encoding content );
+    my $enc = defined $atts->{encoding}
+      ? $atts->{encoding} : ATTENCODING_BASE64;
+    $atts->{name} ||= "NoName";
     $dbh->do("INSERT INTO Attachments" .
 	     " (" . join(",", map { +"att_$_" } @fields ) . ") ".
 	     " VALUES (" . join(",", ("?") x @fields) . ")", {},
-	     $atts->{id}, $atts->{name}, $atts->{size}, ATTENCODING_BASE64,
-	     MIME::Base64::encode( ${ $atts->{content} }, "" ) );
+	     $atts->{id}, $atts->{name}, $atts->{size}, $enc,
+	     $enc == ATTENCODING_BASE64
+	     ? MIME::Base64::encode( ${ $atts->{content} }, "" )
+	     : ${ $atts->{content} },
+	    );
 }
 
 sub drop_attachment {

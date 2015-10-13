@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct  6 16:31:19 2015
-# Update Count    : 260
+# Last Modified On: Tue Oct 13 13:37:10 2015
+# Update Count    : 262
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -46,6 +46,7 @@ sub export {
 
 	my $att = EB::Tools::Attachments->new;
 	foreach my $rr ( @{ $att->attachments } ) {
+	    next if $rr->{encoding} == ATTENCODING_URI;
 	    my $file = sprintf( "$dir/%08d_%s", $rr->{id}, $rr->{name} );
 	    $att->save_to_file( $file, $rr->{id} );
 	}
@@ -88,6 +89,7 @@ sub export {
 	# Attachments.
 	my $att = EB::Tools::Attachments->new;
 	foreach my $rr ( @{ $att->attachments } ) {
+	    next if $rr->{encoding} == ATTENCODING_URI;
 	    my $file = sprintf( "%08d_%s", $rr->{id}, $rr->{name} );
 	    $att->save_to_zip( $zip, $file, $rr->{id} );
 	}

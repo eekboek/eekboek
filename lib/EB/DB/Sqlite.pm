@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct  8 21:24:08 2015
-# Update Count    : 179
+# Last Modified On: Tue Oct 13 14:13:57 2015
+# Update Count    : 184
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -258,10 +258,15 @@ use Fcntl;
 sub get_attachment {
     my ( $self, $id ) = @_;
 
-    my $rr = $dbh->selectrow_arrayref("SELECT att_name".
+    my $rr = $dbh->selectrow_arrayref("SELECT att_name,att_encoding,att_content".
 				      " FROM Attachments".
 				      " WHERE att_id = ?", {}, $id );
     my ( $name, $enc, $data ) = @{ $rr };
+
+    if ( $enc == ATTENCODING_URI ) {
+	return { name => $name, encoding => $enc, content => \$data };
+    }
+
     my $path = $cfg->val(qw(database path), ".");
     my $file = File::Spec->catfile( $path, sprintf("%08d_%s", $id, $name) );
     my $fail;
@@ -280,13 +285,24 @@ sub get_attachment {
 	die(__x("Intern probleem met bijlage {id} ({name}): {err}",
 		id => $id, name => $name, err => $fail)."\n");
     }
-    return { name => $name, content => \$data };
+    return { name => $name, encoding => $enc, content => \$data };
 }
 
 sub store_attachment {
     my ( $self, $atts ) = @_;
 
     my @fields = qw( id name size encoding );
+    if ( $atts->{encoding} == ATTENCODING_URI ) {
+	push( @fields, "content" );
+	$dbh->do("INSERT INTO Attachments" .
+		 " (" . join(",", map { +"att_$_" } @fields ) . ") ".
+		 " VALUES (" . join(",", ("?") x @fields) . ")", {},
+		 $atts->{id}, $atts->{name} || "NoName",
+		 $atts->{size}, $atts->{encoding},
+		 ${ $atts->{content} } );
+	return;
+    }
+
     $dbh->do("INSERT INTO Attachments" .
 	     " (" . join(",", map { +"att_$_" } @fields ) . ") ".
 	     " VALUES (" . join(",", ("?") x @fields) . ")", {},
@@ -319,13 +335,18 @@ sub store_attachment {
 
 sub drop_attachment {
     my ( $self, $id ) = @_;
-    my $rr = $dbh->selectrow_arrayref("SELECT att_name".
+    my $rr = $dbh->selectrow_arrayref("SELECT att_name,att_encoding,att_content".
 				      " FROM Attachments".
 				      " WHERE att_id = ?", {}, $id );
-    my ( $name ) = @{ $rr };
+    my ( $name, $enc, $data ) = @{ $rr };
+
+    $dbh->do("DELETE FROM Attachments WHERE att_id = ?", {}, $id );
+    if ( $enc == ATTENCODING_URI ) {
+	return;
+    }
+
     my $path = $cfg->val(qw(database path), ".");
     my $file = File::Spec->catfile( $path, sprintf("%08d_%s", $id, $name) );
-    $dbh->do("DELETE FROM Attachments WHERE att_id = ?", {}, $id );
     unless ( unlink($file) ) {
 	die(__x("Intern probleem met bijlage {id} ({name}): {err}",
 		id => $id, name => $name, err => $!)."\n");
