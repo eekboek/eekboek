@@ -7,10 +7,14 @@ CREATE TABLE Attachments (
     att_name		 text NOT NULL,
     att_size		 int NOT NULL,
     att_encoding	 smallint,
-    att_content		 text
+    att_encoding	 smallint
+      -- 0 = none, 1 = uri, 2 = base62
 );
 CREATE SEQUENCE attachments_id_seq;
 ALTER SEQUENCE attachments_id_seq OWNED BY Attachments.att_id;
+
+-- ONLY: PostgreSQL
+ALTER TABLE Attachments ADD COLUMN att_content text;
 
 -- Foreign key toevoegen in Boekstukken tabel.
 
