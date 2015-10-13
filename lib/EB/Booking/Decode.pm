@@ -10,8 +10,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 13 13:32:44 2015
-# Update Count    : 191
+# Last Modified On: Tue Oct 13 16:58:45 2015
+# Update Count    : 194
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -98,15 +98,12 @@ sub decode {
 	    $cmd .= " --".__xt("cmo:boeking:beginsaldo")."=" . numfmt_plain($bsk_isaldo) if $ex_tot && defined $bsk_isaldo;
 	    $cmd .= " --".__xt("cmo:boeking:saldo")."=" . numfmt_plain($bsk_saldo) if $ex_tot && defined $bsk_saldo;
 	    if ( $bsk_att ) {
-		my ( $name, $enc, $contents ) = @{ $dbh->do("SELECT att_name, att_encoding, att_content".
+		my ( $name, $enc, $contents ) = @{ $dbh->do("SELECT att_name, att_encoding".
 							   " FROM Attachments".
 							   " WHERE att_id = ?", $bsk_att) };
-		if ( $enc == ATTENCODING_URI ) {
-		    $cmd .= sprintf(" --bijlage=%s", $contents);
-		}
-		else {
-		    $cmd .= sprintf(" --bijlage=int://%08d/%s", $bsk_att, $name);
-		}
+		$name = sprintf("int://%08d/%s", $bsk_att, $name)
+		  unless $enc == ATTENCODING_URI;
+		$cmd .= " --bijlage=" . _quote($name);
 	    }
 	}
 	else {

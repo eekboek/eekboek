@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Tue Jan 24 10:43:00 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 13 08:33:12 2015
-# Update Count    : 242
+# Last Modified On: Tue Oct 13 15:42:37 2015
+# Update Count    : 243
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -276,7 +276,6 @@ sub store_attachment {
     my @fields = qw( id name size encoding content );
     my $enc = defined $atts->{encoding}
       ? $atts->{encoding} : ATTENCODING_BASE64;
-    $atts->{name} ||= "NoName";
     $dbh->do("INSERT INTO Attachments" .
 	     " (" . join(",", map { +"att_$_" } @fields ) . ") ".
 	     " VALUES (" . join(",", ("?") x @fields) . ")", {},
