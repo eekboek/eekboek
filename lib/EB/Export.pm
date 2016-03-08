@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 20:47:38 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 16 15:11:32 2012
-# Update Count    : 243
+# Last Modified On: Tue Mar  8 09:19:12 2016
+# Update Count    : 245
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -149,7 +149,7 @@ sub _relaties {
 	if ( $cur_btw != $btw || $cur_dbk ne $dbk ) {
 	    $cur_btw = $btw;
 	    $cur_dbk = $dbk;
-	    $dbk =~ s/[^[:alnum]]/_/g;
+	    $dbk =~ s/[^[:alnum:]]/_/g;
 	    $out .= "\n\n" if $out;
 	    $out .= _xt("cmd:relatie")." --".__xt("cmo:relatie:dagboek")."=".lc($dbk);
 	    $out .= " --".__xt("cmo:relatie:btw")."=".lc(BTWTYPES->[$btw]) unless $btw == BTWTYPE_NORMAAL;

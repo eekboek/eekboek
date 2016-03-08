@@ -4,6 +4,7 @@
   <li><a href="#R2_02_00">Wijzigingen in EekBoek 2.02</a></li>
   <li><a href="#R2_02_02">Wijzigingen in EekBoek 2.02.02</a></li>
   <li><a href="#R2_02_04">Wijzigingen in EekBoek 2.02.04</a></li>
+  <li><a href="#R2_02_05">Wijzigingen in EekBoek 2.02.05</a></li>
 </ul>
 
 <p><em>Voor een volledige, gedetailleerde lijst van veranderingen zie
@@ -313,3 +314,13 @@ kunt u verrekenen met de eerstvolgende BTW-aangifte.</p>
 van een rapport window op de [Opslaan] button wordt gedrukt.</p>
 
 <p>Op Windows systemen werkten de pijltjestoetsen niet in command line mode.</p>
+
+<a name="R2_02_05"><h2>Wijzigingen in EekBoek 2.02.05</h2></a>
+
+<h3>Overzicht</h3>
+
+<p>Deze versie is een bugfix release.</p>
+
+<p>De nieuwste (ontwikkel-)versies van Perl (vanaf 5.23.8) zijn
+strenger in wat ze wel en niet toelaten, en vallen over een
+kleinigheidje in de EekBoek code.</p>

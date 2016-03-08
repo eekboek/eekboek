@@ -1,4 +1,9 @@
-2.02.04
+2.02.05
+
+	* Emergency fix voor CPAN issue 112777.
+	  (Failures met de ontwikkelversie van Perl 5.24.)
+
+2.02.04	2013-07-05 08:45
 
 	* Fix issue #38, crash bij rapport 'save' knop.
 

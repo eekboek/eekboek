@@ -5,7 +5,6 @@ EekBoek.spec
 INSTALL
 MANIFEST
 META.yml
-Makefile.PL
 README
 README.emacs
 README.gui
