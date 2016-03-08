@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 23 12:21:12 2014
-# Update Count    : 212
+# Last Modified On: Tue Oct 13 13:17:02 2015
+# Update Count    : 225
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -22,6 +22,7 @@ use warnings;
 
 use EB;
 use EB::Format;
+use EB::Tools::Attachments;
 
 sub new {
     my ($class) = @_;
@@ -389,6 +390,48 @@ sub journalise {
 		    undef, undef, $bsk_desc, $g_bsr_rel_code, undef, $bsk_ref]);
 
     $ret;
+}
+
+sub check_attachment {
+    my ( $self, $att ) = @_;
+    return 1 unless defined $att;
+
+    return 1 if $att =~ m;^(\w+)://(.+);; # URI
+
+    if ( ! ( -f $att && -r _ ) ) {
+	warn("?".__x("Boekingsbijlage kan niet worden gevonden: {att}",
+		     att => $att)."\n");
+	return;
+    }
+
+    return 1;
+}
+
+sub add_attachment {
+    my ( $self, $att, $bsk_id ) = @_;
+    return unless defined $att;
+    my $att_id;
+
+    if ( $att =~ m;^(\w+)://(.+); ) { # URI
+	if ( $1 eq "int" && $2 =~ m;^(\d+)/.+; ) {
+	    $att_id = $1;
+	}
+	else {
+	    $att_id = EB::Tools::Attachments->new->store_from_uri($att);
+	}
+    }
+    else {
+	# We may at some point in time decide to turn $file into
+	# file://$url and treat as such.
+	$att_id = EB::Tools::Attachments->new->store_from_file($att);
+    }
+    $dbh->sql_exec("UPDATE Boekstukken SET bsk_att = ? WHERE bsk_id = ?",
+		   $att_id, $bsk_id);
+}
+
+sub find_attachment {
+    my ( $self, $bsk_id ) = @_;
+    $dbh->lookup( $bsk_id, qw(Boekstukken bsk_id bsk_att =) );
 }
 
 1;

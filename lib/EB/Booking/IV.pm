@@ -12,8 +12,8 @@ package EB::Booking::IV;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 14:50:41 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Mar  1 22:22:17 2014
-# Update Count    : 348
+# Last Modified On: Wed Oct  7 17:11:15 2015
+# Update Count    : 364
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -39,10 +39,15 @@ sub perform {
     my $dagboek = $opts->{dagboek};
     my $dagboek_type = $opts->{dagboek_type};
     my $bsk_ref = $opts->{ref};
+    my $bsk_att = $opts->{bijlage};
 
     if ( defined $bsk_ref && $bsk_ref =~ /^\d+$/ ) {
 	warn("?".__x("Boekingsreferentie moet tenminste één niet-numeriek teken bevatten: {ref}", ref => $bsk_ref)."\n");
 	return;
+    }
+
+    if ( defined $bsk_att ) {
+	return unless $self->check_attachment($bsk_att);
     }
 
     unless ( $dagboek_type == DBKTYPE_INKOOP || $dagboek_type == DBKTYPE_VERKOOP) {
@@ -381,9 +386,9 @@ sub perform {
 	  __x(" Boekstuk totaal is {act} in plaats van {exp}",
 	      act => numfmt($tot), exp => numfmt($totaal)) . ".";
     }
-    else {
-	$dbh->commit;
-    }
+
+    $self->add_attachment( $bsk_att, $bsk_id ) if $bsk_att;
+    $dbh->commit;
 
     # TODO -- need this to get a current booking.
     $opts->{verbose} || 1

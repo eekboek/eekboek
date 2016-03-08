@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Oct  7 08:36:41 2015
-# Update Count    : 128
+# Last Modified On: Tue Mar  8 08:39:41 2016
+# Update Count    : 132
 
 use strict;
 use warnings;
@@ -82,8 +82,11 @@ SKIP: {
     unlink( glob("out/*.dat") );
     unlink( glob("out/*.eb") );
     unlink( glob("out/*.ebz") );
+    unlink( glob("out/0???????_*") );
     # SQLite databases.
     unlink( glob("ebsqlite_sample*") );
+    # Attachments
+    unlink( glob("0???????_*") );
 
     my @ebcmd = qw(-MEB::Main -e EB::Main->run -- -X -f ivp.conf --echo);
     push(@ebcmd, "-D", "database:driver=$dbdriver") if $dbdriver;
