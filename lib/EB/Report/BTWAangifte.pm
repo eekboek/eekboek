@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep  1 10:36:47 2015
-# Update Count    : 652
+# Last Modified On: Thu Jan 26 16:40:41 2017
+# Update Count    : 653
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -407,7 +407,8 @@ sub collect {
 		    $deb_btw_p += $btw;
 		}
 		else {
-		    assert($btg_id == BTWTARIEF_ANDERS);
+		    confess( "BTWTARIEF NOT ANDERS" )
+		      unless $btg_id == BTWTARIEF_ANDERS;
 		    $tr->("Ander");
 		    $deb_a += $amt;
 		    $deb_btw_a += $btw;

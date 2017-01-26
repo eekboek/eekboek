@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct 15 23:36:51 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 13 13:17:02 2015
-# Update Count    : 225
+# Last Modified On: Thu Jan 26 16:39:38 2017
+# Update Count    : 226
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -256,7 +256,7 @@ sub norm_btw {
 	my $rr = $dbh->do("SELECT btw_perc, btw_incl, btw_tariefgroep".
 			  " FROM BTWTabel".
 			  " WHERE btw_id = ?", $bsr_btw_id);
-	assert($rr, "Unk BTW: $bsr_btw_id");
+	confess( "Unknown BTW: $bsr_btw_id" ) unless $rr;
 	($btw_perc, $btw_incl) = @$rr;
     }
 

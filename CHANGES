@@ -1,5 +1,10 @@
 2.03.03
 
+	* Fix IVP tests to use bsd_glob instead of glob.
+	  This is only necessary for Perl 5.25.9 and above.
+
+	* Fix Build.PL for no_index.
+
 	* Check relatiecodes voor geldigheid: max. 10 tekens, niet
           beginnend met NN- ivm parseproblemen.
 

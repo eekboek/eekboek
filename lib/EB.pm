@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb  8 21:43:31 2013
-# Update Count    : 322
+# Last Modified On: Thu Jan 26 16:41:07 2017
+# Update Count    : 324
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -91,17 +91,15 @@ use lib ( grep { defined } findlib("CPAN") );
 use EB::Globals;
 use Carp;
 use Data::Dumper;
-use Carp::Assert;
 use EB::Utils;
 
 # Export our and the imported globals.
 @EXPORT = ( @EB::Globals::EXPORT,
 	    @EB::Utils::EXPORT,
 	    "_T",			# @EB::Locale::EXPORT,
-	    qw(carp croak),		# Carp
+	    qw(carp croak confess),	# Carp
 	    qw(Dumper),			# Data::Dumper
 	    qw(findlib libfile),	# <self>
-	    qw(assert affirm),		# Carp::Assert
 	  );
 
 our $ident;
