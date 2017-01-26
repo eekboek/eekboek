@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 16:41:07 2017
-# Update Count    : 324
+# Last Modified On: Thu Jan 26 17:09:23 2017
+# Update Count    : 325
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -31,9 +31,9 @@ sub libfile {
     my ($f) = @_;
 
     unless ( $lib ) {
-	# Cava.
-	if ( $Cava::Packager::PACKAGED ) {
-	    return Cava::Packager::GetResourcePath()."/$f";
+	# Packaged.
+	if ( $App::Packager::PACKAGED ) {
+	    return App::Packager::GetResourcePath()."/$f";
 	}
 	else {
 	    $lib = $INC{"EB.pm"};
@@ -70,10 +70,10 @@ sub findlib {
     }
 
     # Cava.
-    if ( $Cava::Packager::PACKAGED ) {
-	my $found = Cava::Packager::GetUserFile($file);
+    if ( $App::Packager::PACKAGED ) {
+	my $found = App::Packager::GetUserFile($file);
 	return $found if -e $found;
-	$found = Cava::Packager::GetResource($file);
+	$found = App::Packager::GetResource($file);
 	return $found if -e $found;
     }
 
@@ -111,7 +111,7 @@ sub __init__ {
     $imsg_saved = $imsg || "";
 
     # The CLI and GUI use different EB::Locale modules.
-    if ( $app || $Cava::Packager::PACKAGED && !Cava::Packager::IsLinux() ) {
+    if ( $app || $App::Packager::PACKAGED && !App::Packager::IsLinux() ) {
 	# We do not have a good gettext for Windows, so use Wx.
 	# It's packaged anyway.
 	require EB::Wx::Locale;	# provides EB::Locale, really

@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Dec 18 21:54:24 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Nov 19 13:46:54 2012
-# Update Count    : 114
+# Last Modified On: Thu Jan 26 17:05:25 2017
+# Update Count    : 115
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -56,9 +56,7 @@ if ( ( $Wx::VERSION =~ /^0[.,]9[56]$/ )
      &&
      ( not exists($ENV{PAR_0}) )
      &&
-     !$PerlApp::VERSION
-     &&
-     !$Cava::Packager::PACKAGED
+     !$App::Packager::PACKAGED
    ) {
     no warnings;
     *Wx::load_dll = sub {
@@ -90,7 +88,7 @@ EB::Wx::Shell::Main->run;
 
 sub findfile {
     my ( $file ) = @_;
-    return if $Cava::Packager::PACKAGED;
+    return if $App::Packager::PACKAGED;
 
     foreach ( @INC ) {
 	my $f = File::Spec->catfile( $_, $file );
@@ -101,7 +99,7 @@ sub findfile {
 
 sub check_install {
     # Trust packager.
-    return 1 if $Cava::Packager::PACKAGED;
+    return 1 if $App::Packager::PACKAGED;
 
     my ( $what, @checks ) = @_;
     foreach ( @checks ) {

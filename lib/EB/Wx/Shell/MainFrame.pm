@@ -714,10 +714,10 @@ sub OnAbout {
 	   __x("{pkg} versie {ver}",
 	       pkg => "wxWidgets",
 	       ver => $dd->(Wx::wxVERSION))."\n".
-	   ( $Cava::Packager::PACKAGED
+	   ( $App::Packager::PACKAGED
 	     ? __x("{pkg} versie {ver}",
-		   pkg => "CAVA Packager",
-		   ver => $dd->($Cava::Packager::VERSION))."\n"
+		   pkg => App::Packager::Packager(),
+		   ver => $dd->($App::Packager::Version()))."\n"
 	     : () ),
 	   __x("Over {pkg} {app}",
 	       pkg => $EekBoek::PACKAGE,

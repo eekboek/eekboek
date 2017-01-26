@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 16 15:56:26 2012
-# Update Count    : 176
+# Last Modified On: Thu Jan 26 17:06:16 2017
+# Update Count    : 177
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -211,7 +211,7 @@ sub backend_options {
     my @opts = ( __xt("cmo:report:output")."=s",
 		 __xt("cmo:report:page")."=i" );
 
-    if ( $Cava::Packager::PACKAGED ) {
+    if ( $App::Packager::PACKAGED ) {
 	$be{wxhtml}++;
 	unless ( $be{wxhtml} ) {
 	    # Ignored, but forces the packager to include these modules.

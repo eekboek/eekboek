@@ -876,9 +876,9 @@ sub OnOk {
 sub find_db_drivers {
     my %drivers;
 
-    if ( $Cava::Packager::PACKAGED ) {
+    if ( $App::Packager::PACKAGED ) {
 	# Trust packager.
-	unless ( $Cava::Packager::PACKAGED ) {
+	unless ( $App::Packager::PACKAGED ) {
 	    # Ignored, but force packaging.
 	    require EB::DB::Postgres;
 	    require EB::DB::Sqlite;
