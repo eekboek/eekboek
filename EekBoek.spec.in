@@ -35,7 +35,6 @@ Requires: perl(Term::ReadLine)
 Requires: perl(Term::ReadLine::Gnu)
 Requires: perl(DBI) >= 1.40
 Requires: perl(DBD::SQLite) >= 1.12
-Requires: perl(Carp::Assert) >= 0.20
 
 BuildRequires: perl >= 5.8.8
 BuildRequires: perl(Module::Build) >= 0.32
@@ -46,7 +45,6 @@ BuildRequires: perl(Term::ReadLine)
 BuildRequires: perl(Term::ReadLine::Gnu)
 BuildRequires: perl(DBI) >= 1.40
 BuildRequires: perl(DBD::SQLite) >= 1.12
-BuildRequires: perl(Carp::Assert) >= 0.20
 BuildRequires: perl(Test::More)
 BuildRequires: desktop-file-utils
 BuildRequires: zip
@@ -67,7 +65,7 @@ interface (CLI) and a graphical user-interface (GUI, currently under
 development and not included in this package). Furthermore, it has a
 complete Perl API to create your own custom applications. EekBoek is
 designed for the Dutch/European market and currently available in
-Dutch only. An English translation is in the works (help appreciated).
+Dutch only.
 
 EekBoek can make use of several database systems for its storage.
 Support for the SQLite database is included.
@@ -86,7 +84,6 @@ AutoReqProv: 0
 Requires: %{name} = %{version}-%{release}
 Requires: perl(Wx) >= 0.89
 Requires: wxGTK >= 2.8.8
-Requires: gettext
 
 %description gui
 This package contains the wxWidgets (GUI) extension for %{name}.
@@ -119,7 +116,6 @@ chmod 0664 MANIFEST
 %{__perl} -ni~ -e 'print unless m;^inc/(Module|IPC)/;;' MANIFEST
 
 # Remove some library modules since we Require them.
-%{__rm} -fr lib/EB/CPAN/Carp
 %{__rm} -fr lib/EB/CPAN/Wx
 %{__perl} -ni~ -e 'print unless m;^lib/EB/CPAN/;;' MANIFEST
 
@@ -145,15 +141,6 @@ chmod 0664 MANIFEST
 # Install the default, system-wide config file.
 %{__install} -p -m 0644 blib/lib/EB/examples/%{lcname}.conf %{buildroot}%{ebconf}/%{lcname}.conf
 
-# Install locales.
-for lang in blib/lib/EB/res/locale/*
-do
-  l=`basename ${lang}`
-  %{__mkdir_p} %{buildroot}%{_datadir}/locale/${l}/LC_MESSAGES
-  %{__mv} blib/lib/EB/res/locale/${l}/* %{buildroot}%{_datadir}/locale/${l}/LC_MESSAGES
-  %{__rmdir} blib/lib/EB/res/locale/${l}
-done
-%{__rmdir} blib/lib/EB/res/locale
 
 # Create lib dirs and copy files.
 %{__find} blib/lib -type d -printf "%{__mkdir} %{buildroot}%{ebshare}/lib/%%P\n" | sh -x
@@ -228,11 +215,50 @@ done
 %{ebshare}/lib/EB/DB/Postgres.pm
 
 %changelog
-* Thu Sep 13 2012 Johan Vromans <jvromans@squirrel.nl> - 2.01.06-1
-- Upgrade to upstream 2.01.06.
+* Wed Mar 09 2016 Johan Vromans <jvromans@squirrel.nl> - 2.02.05-1
+- Upgrade to upstream 2.02.05 (emergency bugfix).
 
-* Fri Jul 09 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.02-2
-- Adjust emacs support files.
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.02.02-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Tue Jun 16 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.02.02-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Wed Jul 16 2014 Richard Hughes <richard@hughsie.com> - 2.02.02-5
+- Do not create the invalid path /usr/share/locale/en/LC_MESSAGES/LC_MESSAGES
+
+* Fri Jun 06 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.02.02-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Fri Aug 02 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.02.02-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Fri Aug 02 2013 Petr Pisar <ppisar@redhat.com> - 2.02.02-2
+- Perl 5.18 rebuild
+
+* Tue Jun 11 2013 Johan Vromans <jvromans@squirrel.nl> - 2.02.02-1
+- Upgrade to upstream 2.02.02.
+
+* Wed Feb 13 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.02.00-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
+* Fri Sep 21 2012 Johan Vromans <jvromans@squirrel.nl> - 2.02.00-1
+- Upgrade to upstream 2.02.00.
+
+* Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.00.04-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Thu Mar 15 2012 Johan Vromans <jvromans@squirrel.nl> - 2.00.04-1
+- Upgrade to upstream 2.00.04.
+
+* Thu Jan 12 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.00.03-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Tue Mar 22 2011 Johan Vromans <jvromans@squirrel.nl> - 2.00.03-1
+- Upgrade to upstream 2.00.03.
+
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.00.02-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
 * Thu May 06 2010 Johan Vromans <jvromans@squirrel.nl> - 2.00.02-1
 - Upgrade to upstream 2.00.02.
@@ -306,7 +332,7 @@ done
 * Fri Jan 30 2009 Johan Vromans <jvromans@squirrel.nl> - 1.04.02-1
 - Adapt to Fedora guidelines
 
-* Sun Jan 26 2009 Johan Vromans <jvromans@squirrel.nl> - 1.04.02
+* Mon Jan 26 2009 Johan Vromans <jvromans@squirrel.nl> - 1.04.02
 - Remove QUICKSTART.
 
 * Sat Jul 19 2008 Johan Vromans <jvromans@squirrel.nl> - 1.03.90
@@ -359,11 +385,11 @@ done
 * Fri Dec 23 2005 Wytze van der Raay <wytze@nlnet.nl> 0.23
 - Fixes for x86_64 building problems.
 
-* Wed Dec 12 2005 Johan Vromans <jvromans@squirrel.nl> 0.22
+* Mon Dec 12 2005 Johan Vromans <jvromans@squirrel.nl> 0.22
 - Change some wordings.
 - Add man1.
 
-* Tue Dec 11 2005 Johan Vromans <jvromans@squirrel.nl> 0.21
+* Sun Dec 11 2005 Johan Vromans <jvromans@squirrel.nl> 0.21
 - Add INSTALL QUICKSTART
 
 * Thu Dec 08 2005 Johan Vromans <jvromans@squirrel.nl> 0.20
