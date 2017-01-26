@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 17:09:23 2017
-# Update Count    : 325
+# Last Modified On: Thu Jan 26 17:34:45 2017
+# Update Count    : 326
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -190,10 +190,6 @@ EekBoek is a bookkeeping package for small and medium-size businesses.
 Unlike other accounting software, EekBoek has both a command-line
 interface (CLI) and a graphical user-interface (GUI). Furthermore, it
 has a complete Perl API to create your own custom applications.
-
-EekBoek is designed for the Dutch/European market and currently
-available in Dutch only. An English translation is in the works (help
-appreciated).
 
 =head1 DESCRIPTION
 
