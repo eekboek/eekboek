@@ -18,7 +18,7 @@ use EB;
 use EB::Tools::MiniAdm;
 use File::Basename;
 use Encode;
-use File::Glob qw(:glob);
+use File::Glob qw( :bsd_glob );
 
 my @adm_dirs;
 my @adm_names;

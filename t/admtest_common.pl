@@ -1,9 +1,9 @@
 #! perl
 
-# $Id: 90_ivp_common.pl,v 1.5 2009/10/28 22:12:17 jv Exp $  -*-perl-*-
-
 use strict;
 use warnings;
+use File::Glob qw( :bsd_glob );
+
 our $tag;
 my @files;
 my @tests;

@@ -27,7 +27,7 @@ use base qw(Wx::Frame);
 use EB;
 use File::Spec;
 use File::Basename;
-use File::Glob qw(:glob);	# glob that allows space (for Windows);
+use File::Glob qw( :bsd_glob );	# glob that allows space (for Windows);
 
 my @db_drivers;
 my @adm_dirs;
