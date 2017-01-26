@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 19:47:47 2017
-# Update Count    : 261
+# Last Modified On: Thu Jan 26 20:15:45 2017
+# Update Count    : 262
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -86,20 +86,6 @@ sub init_config {
 	    }
 	}
     }
-
-    if ( $ENV{EB_LANG} || $cfg->val( qw(locale lang), undef) ) {
-	# User takes control over the language setting.
-	# Defeat other well-intented settings that may get in the way.
-	delete $ENV{LANG};
-	# See http://www.gnu.org/software/gettext/manual/gettext.html#The-LANGUAGE-variable
-	delete $ENV{LANGUAGE};
-    }
-
-    my $eb_lang = $cfg->val( 'locale','lang',
-			     $ENV{EB_LANG}||$ENV{LANG}||
-			     ($^O =~ /^(ms)?win/i ? "nl_NL.utf8" : "nl_NL") );
-
-    $cfg->newval( qw(locale lang), $eb_lang );
 
     $cfg->_plug(qw(database     name         EB_DB_NAME));
 

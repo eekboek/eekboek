@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Sep  1 11:50:50 2015
-# Update Count    : 109
+# Last Modified On: Thu Jan 26 20:14:12 2017
+# Update Count    : 110
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -121,12 +121,8 @@ sub ProcessTemplates {
 	   _dst	    => "$name.spec",
 	   %vars);
 
-    vcopy( _tag	    => "XAF ref file (NL)",
+    vcopy( _tag	    => "XAF ref file",
 	   _dst	    => "t/ivp/ref/export.xaf",
-	   %vars);
-
-    vcopy( _tag	    => "XAF ref file (EN)",
-	   _dst	    => "t/ivp_en/ref/export.xaf",
 	   %vars);
 
 =begin Debian

@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 17:34:45 2017
-# Update Count    : 326
+# Last Modified On: Thu Jan 26 20:11:19 2017
+# Update Count    : 330
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -44,32 +44,20 @@ sub libfile {
 }
 
 sub findlib {
-    my ($file, $section) = @_;
+    my ( $file, $section ) = @_;
 
-    # The two-argument form supports locale-dependent paths.
-    if ( $section && $cfg ) {
-	my $lang = $cfg->val( qw( locale lang ), "" );
-	if ( $lang =~ /\./ ) {
-	    my $found = findlib( "$section/$lang/$file" );
-	    return $found if $found;
-	    $lang =~ s/\..*//;	# strip .utf8
-	}
-	if ( $lang =~ /_/  ) {
-	    my $found = findlib( "$section/$lang/$file" );
-	    return $found if $found;
-	    $lang =~ s/_.*//;	# strip _US
-	}
-	if ( $lang ) {
-	    my $found = findlib( "$section/$lang/$file" );
-	    return $found if $found;
-	}
+    # The two-argument form supports locale-dependent paths, but
+    # we hard-wire this to 'nl'.
+    if ( $section ) {
+	my $lang = 'nl';
+	my $found = findlib( "$section/$lang/$file" );
+	return $found if $found;
+	$found = findlib( "$section/$file" );
+	return $found if $found;
 	return undef;
     }
-    elsif ( $section ) {
-	$file = "$section/$file";
-    }
 
-    # Cava.
+    # Packaged.
     if ( $App::Packager::PACKAGED ) {
 	my $found = App::Packager::GetUserFile($file);
 	return $found if -e $found;
@@ -79,8 +67,8 @@ sub findlib {
 
     foreach ( @INC ) {
 	return "$_/EB/user/$file" if -e "$_/EB/user/$file";
-	return "$_/EB/res/$file" if -e "$_/EB/res/$file";
-	return "$_/EB/$file" if -e "$_/EB/$file";
+	return "$_/EB/res/$file"  if -e "$_/EB/res/$file";
+	return "$_/EB/$file"      if -e "$_/EB/$file";
     }
     undef;
 }
@@ -93,10 +81,13 @@ use Carp;
 use Data::Dumper;
 use EB::Utils;
 
+# Even though we do not use translations, most of the code is in place.
+sub _T { $_[0] }
+
 # Export our and the imported globals.
 @EXPORT = ( @EB::Globals::EXPORT,
 	    @EB::Utils::EXPORT,
-	    "_T",			# @EB::Locale::EXPORT,
+	    "_T",
 	    qw(carp croak confess),	# Carp
 	    qw(Dumper),			# Data::Dumper
 	    qw(findlib libfile),	# <self>
@@ -110,30 +101,15 @@ our $url = "http://www.eekboek.nl";
 sub __init__ {
     $imsg_saved = $imsg || "";
 
-    # The CLI and GUI use different EB::Locale modules.
-    if ( $app || $App::Packager::PACKAGED && !App::Packager::IsLinux() ) {
-	# We do not have a good gettext for Windows, so use Wx.
-	# It's packaged anyway.
-	require EB::Wx::Locale;	# provides EB::Locale, really
-    }
-    else {
-	require EB::Locale;
-    }
-    EB::Locale::->import;
-    EB::Locale->set_language( $::cfg->val(qw(locale lang)) );
-
     my $year = 2005;
     my $thisyear = (localtime(time))[5] + 1900;
     $year .= "-$thisyear" unless $year == $thisyear;
     $ident = __x("{name} {version}",
 		 name    => $EekBoek::PACKAGE,
 		 version => $EekBoek::VERSION);
-    my @locextra;
-    push(@locextra, _T("Nederlands")) if $EB::Locale::LOCALISER;
-    $imsg = __x("{ident}{extra}{locale} -- Copyright {year} Squirrel Consultancy",
+    $imsg = __x("{ident}{extra} -- Copyright {year} Squirrel Consultancy",
 		ident   => $ident,
 		extra   => ($app ? " Wx" : ""),
-		locale  => (@locextra ? " (".join(", ", @locextra).")" : ""),
 		year    => $year);
     if ( $imsg ne $imsg_saved
 	 && !( @ARGV && $ARGV[0] =~ /-(P|-?printconfig)$/ )
