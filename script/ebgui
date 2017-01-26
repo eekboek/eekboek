@@ -25,10 +25,10 @@ if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
     $ENV{PATH} = File::Spec->rel2abs($dir) . $sep . $ENV{PATH};
 }
 
-check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/schema/eekboek.sql" );
+check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/res/schema/eekboek.sql" );
 
 require EekBoek;
-check_version( "EekBoek", $EekBoek::VERSION, "1.05.00" );
+check_version( "EekBoek", $EekBoek::VERSION, "2.02" );
 
 check_install( "De EekBoek GUI", "EB/Wx/Main.pm", "EB/Wx/IniWiz.pm" );
 
@@ -121,8 +121,7 @@ interface (CLI) and a graphical user-interface (GUI). Furthermore, it
 has a complete Perl API to create your own custom applications.
 
 EekBoek is designed for the Dutch/European market and currently
-available in Dutch only. An English translation is in the works (help
-appreciated).
+available in Dutch only.
 
 =head1 DESCRIPTION
 

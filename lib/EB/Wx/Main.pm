@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Jun 19 00:51:21 2010
-# Update Count    : 371
+# Last Modified On: Thu Jan 26 22:21:15 2017
+# Update Count    : 374
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -52,6 +52,9 @@ use base qw(Wx::App);
 
 sub OnInit {
     my( $self ) = shift;
+
+    require EB::Format;
+    EB::Format->init_formats();
 
     my $locale = Wx::Locale->new( Wx::Locale::GetSystemLanguage );
 
