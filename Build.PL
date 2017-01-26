@@ -57,7 +57,7 @@ my $build = $class->new
    pm_files	       => filelist("lib"),
    PL_files	       => $data->{PL_files},
    get_options	       => { skipdbtests => { } },
-   dist_version        => $EB::Version::VERSION,
+   dist_version        => "2.02.05.1",
    add_to_cleanup      =>
      [ 'pod2htm*',
        map { +"t/ivp/*.$_" } qw(sql log txt html csv)
@@ -69,7 +69,7 @@ my $build = $class->new
 	}
      },
    meta_add            => {
-     no_index          => { directory => [ qw(inc lib) ] },
+     no_index          => { directory => [ qw(inc lib/EB) ] },
      provides	       => {
        'EekBoek' =>
 	  { file => "lib/EekBoek.pm",
