@@ -717,7 +717,7 @@ sub OnAbout {
 	   ( $App::Packager::PACKAGED
 	     ? __x("{pkg} versie {ver}",
 		   pkg => App::Packager::Packager(),
-		   ver => $dd->($App::Packager::Version()))."\n"
+		   ver => $dd->(App::Packager::Version()))."\n"
 	     : () ),
 	   __x("Over {pkg} {app}",
 	       pkg => $EekBoek::PACKAGE,
