@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed May 29 08:36:49 2013
-# Update Count    : 139
+# Last Modified On: Tue Jun  7 09:48:33 2016
+# Update Count    : 140
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -70,7 +70,7 @@ my $build = $class->new
 	}
      },
    meta_add            => {
-     no_index          => { directory => [ qw(inc lib) ] },
+     no_index          => { directory => [ qw(inc lib/EB) ] },
      provides	       => {
        'EekBoek' =>
 	  { file => "lib/EekBoek.pm",
