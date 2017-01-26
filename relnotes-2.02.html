@@ -4,6 +4,7 @@
   <li><a href="#R2_02_00">Wijzigingen in EekBoek 2.02</a></li>
   <li><a href="#R2_02_02">Wijzigingen in EekBoek 2.02.02</a></li>
   <li><a href="#R2_02_04">Wijzigingen in EekBoek 2.02.04</a></li>
+  <li><a href="#R2_02_05">Wijzigingen in EekBoek 2.02.05</a></li>
 </ul>
 
 <p><em>Voor een volledige, gedetailleerde lijst van veranderingen zie
@@ -246,9 +247,7 @@ geen consequenties voor het normale gebruik.</p>
 
 <a name="repos"></a><h3>Uitfasering EekBoek repositories</h3>
 
-[% sf_git = 'Test versies kunnen worden aangemaakt vanuit de <a href="https://sourceforge.net/scm/?type=git&group_id=154512" target="_blank">GIT repository</a>';
-   sf_files = '<a href="https://sourceforge.net/projects/eekboek/files/eekboek/2.02.00/" target="_blank">SourceForge</a>'; 
-%]
+
 
 <p>Met het beschikbaar komen van standaard EekBoek kits voor verschillende
 systemen is het niet langer van belang eigen repositories te
@@ -259,25 +258,25 @@ onderhouden. De volgende repositories zullen daarom worden uitgefaseerd:</p>
       <br>EekBoek zit in de standaard Debian repositories</p>
 
   <li><p>http://www.eekboek.nl/repo/debian-testing/
-      <br>[% sf_git %]</p>
+      <br>Test versies kunnen worden aangemaakt vanuit de <a href="https://sourceforge.net/scm/?type=git&group_id=154512" target="_blank">GIT repository</a></p>
   <li><p>http://www.eekboek.nl/repo/fedora/
       <br>EekBoek zit in de standaard Fedora repositories</p>
 
   <li><p>http://www.eekboek.nl/repo/fedora-testing/
-      <br>[% sf_git %]
+      <br>Test versies kunnen worden aangemaakt vanuit de <a href="https://sourceforge.net/scm/?type=git&group_id=154512" target="_blank">GIT repository</a>
 
   <li><p>http://www.eekboek.nl/repo/macosx/
-      <br>DMG container beschikbaar op [% sf_files %]</p>
+      <br>DMG container beschikbaar op <a href="https://sourceforge.net/projects/eekboek/files/eekboek/2.02.00/" target="_blank">SourceForge</a></p>
 
   <li><p>http://www.eekboek.nl/repo/macosx-testing/</p>
 
   <li><p>http://www.eekboek.nl/repo/ubuntu_10.10/</p>
 
   <li><p>http://www.eekboek.nl/repo/windows/
-      <br>Installer beschikbaar op [% sf_files %]</p>
+      <br>Installer beschikbaar op <a href="https://sourceforge.net/projects/eekboek/files/eekboek/2.02.00/" target="_blank">SourceForge</a></p>
 
   <li><p>http://www.eekboek.nl/repo/windows-testing/
-      <br>[% sf_git %]</p>
+      <br>Test versies kunnen worden aangemaakt vanuit de <a href="https://sourceforge.net/scm/?type=git&group_id=154512" target="_blank">GIT repository</a></p>
 
 </ul>
 
@@ -313,3 +312,13 @@ kunt u verrekenen met de eerstvolgende BTW-aangifte.</p>
 van een rapport window op de [Opslaan] button wordt gedrukt.</p>
 
 <p>Op Windows systemen werkten de pijltjestoetsen niet in command line mode.</p>
+
+<a name="R2_02_05"><h2>Wijzigingen in EekBoek 2.02.05</h2></a>
+
+<h3>Overzicht</h3>
+
+<p>Deze versie is een bugfix release.</p>
+
+<p>De nieuwste (ontwikkel-)versies van Perl (vanaf 5.23.8) zijn
+strenger in wat ze wel en niet toelaten, en vallen over een
+kleinigheidje in de EekBoek code.</p>
