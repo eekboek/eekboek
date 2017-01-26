@@ -46,13 +46,9 @@ doc/html/ebwxshell/ebwxshell.png
 doc/html/ebwxshell/edit.png
 doc/html/ebwxshell/files.html
 doc/html/ebwxshell/index.html
-doc/html/images/bg.gif
 doc/html/images/eb.jpg
 doc/html/images/ebname.jpg
 doc/html/images/perl_powered.png
-doc/html/images/valid-html401-blue.png
-doc/html/images/valid-html401.png
-doc/html/images/validcss.png
 doc/html/index.html
 doc/html/inex.html
 doc/html/intro/backups.html
@@ -237,10 +233,6 @@ lib/EB/user/css/openstaand.css
 lib/EB/user/css/proef.css
 lib/EB/user/css/result.css
 lib/EekBoek.pm
-locale/ebcore-en.po
-locale/ebcore-en.pox
-locale/ebcore.pot
-locale/make_locales_en
 relnotes-2.00.html
 relnotes-2.02.html
 script/ebshell
