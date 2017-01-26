@@ -703,9 +703,6 @@ sub OnWizardFinished {
 # wxGlade: EB::Wx::IniWiz::OnWizardFinished <event_handler>
     my %opts;
 
-    $opts{lang} = $ENV{EB_LANG} || $ENV{LANG};
-    $opts{lang} =~ s/\..*//;	# strip .utf8
-
     $opts{adm_naam} = $self->{t_adm_name}->GetValue;
     $opts{adm_code} = $self->{t_adm_code}->GetValue;
     $opts{adm_begindatum} = $self->{sp_adm_begin}->GetValue;
