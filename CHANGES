@@ -1,15 +1,6 @@
-2.02.05.2 2017-01-26
+2.02.05.4
 
-	* Fix IVP tests to use bsd_glob instead of glob.
-	  This is only necessary for Perl 5.25.9 and above.
-
-2.02.05.1 2016-06-07
-
-	* Emergency fix Build.PL for no_index.
-
-2.02.05	2016-03-08
-
-	* Emergency fix voor CPAN issue 112777.
+	* Emergency fix voor CPAN issues 112777 and 120013.
 	  (Failures met de ontwikkelversie van Perl 5.24.)
 
 2.02.04	2013-07-05 08:45

@@ -57,7 +57,7 @@ my $build = $class->new
    pm_files	       => filelist("lib"),
    PL_files	       => $data->{PL_files},
    get_options	       => { skipdbtests => { } },
-   dist_version        => "2.02.05.2",
+   dist_version        => "2.02.05.4",
    add_to_cleanup      =>
      [ 'pod2htm*',
        map { +"t/ivp/*.$_" } qw(sql log txt html csv)
