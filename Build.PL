@@ -2,14 +2,14 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jun  7 09:48:33 2016
-# Update Count    : 140
+# Last Modified On: Mon Jan 30 16:43:12 2017
+# Update Count    : 142
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
-exit 0 if $ENV{AUTOMATED_TESTING} && $] < 5.008003;
+exit 0 if $ENV{AUTOMATED_TESTING} && $] < 5.008005;
 
-use 5.008003;
+use 5.008005;
 use strict;
 use lib 'inc';
 use Module::Build 0.32;
