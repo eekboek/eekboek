@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug  4 21:33:04 2012
-# Update Count    : 438
+# Last Modified On: Tue Jan 31 17:08:50 2017
+# Update Count    : 440
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -234,7 +234,7 @@ sub app_usage {
     my ($exit) = @_;
     app_ident();
     warn _T(<<EndOfUsage);
-Gebruik: {prog} [options] [file ...]
+Opstartopties:
 
     --config=XXX -f     specificeer configuratiebestand
     --nostdconf -X      gebruik uitsluitend dit configuratiebestand
