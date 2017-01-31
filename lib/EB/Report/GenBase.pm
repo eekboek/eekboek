@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 29 20:23:06 2017
-# Update Count    : 177
+# Last Modified On: Tue Jan 31 12:02:01 2017
+# Update Count    : 178
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -21,7 +21,7 @@ use EB;
 
 use IO::File;
 use EB::Format;
-use File::Glob ( $] >= 5.014 ? ":bsd_glob" : ":glob" );
+use File::Glob ( $] >= 5.016 ? ":bsd_glob" : ":glob" );
 
 sub new {
     my ($class, $opts) = @_;

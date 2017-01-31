@@ -1,4 +1,6 @@
-2.02.05.4
+2.02.05.5
+
+	* Verwijder internationalisatie.
 
 	* Emergency fix voor CPAN issues 112777 and 120013.
 	  (Failures met de ontwikkelversie van Perl 5.24.)

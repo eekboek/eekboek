@@ -27,7 +27,7 @@ use base qw(Wx::Frame);
 use EB;
 use File::Spec;
 use File::Basename;
-use File::Glob ( $] >= 5.014 ? ":bsd_glob" : ":glob" );
+use File::Glob ( $] >= 5.016 ? ":bsd_glob" : ":glob" );
 
 my @db_drivers;
 my @adm_dirs;

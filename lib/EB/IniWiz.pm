@@ -18,7 +18,7 @@ use EB;
 use EB::Tools::MiniAdm;
 use File::Basename;
 use Encode;
-use File::Glob ( $] >= 5.014 ? ":bsd_glob" : ":glob" );
+use File::Glob ( $] >= 5.016 ? ":bsd_glob" : ":glob" );
 
 my @adm_dirs;
 my @adm_names;

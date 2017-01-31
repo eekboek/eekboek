@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat May  7 09:18:15 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sun Jan 29 20:22:37 2017
-# Update Count    : 449
+# Last Modified On: Tue Jan 31 12:01:50 2017
+# Update Count    : 450
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -22,7 +22,7 @@ use warnings;
 
 use EB;
 use DBI;
-use File::Glob ( $] >= 5.014 ? ":bsd_glob" : ":glob" );
+use File::Glob ( $] >= 5.016 ? ":bsd_glob" : ":glob" );
 
 my $dbh;			# singleton for DB
 

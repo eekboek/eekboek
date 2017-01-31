@@ -2,14 +2,14 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Sat Aug  4 19:56:57 2012
-# Update Count    : 138
+# Last Modified On: Tue Jan 31 12:15:22 2017
+# Update Count    : 140
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
-exit 0 if $ENV{AUTOMATED_TESTING} && $] < 5.008003;
+exit 0 if $ENV{AUTOMATED_TESTING} && $] < 5.008005;
 
-use 5.008003;
+use 5.008005;
 use strict;
 use lib 'inc';
 use Module::Build 0.32;
@@ -57,7 +57,7 @@ my $build = $class->new
    pm_files	       => filelist("lib"),
    PL_files	       => $data->{PL_files},
    get_options	       => { skipdbtests => { } },
-   dist_version        => "2.02.05.4",
+   dist_version        => "2.02.05.5",
    add_to_cleanup      =>
      [ 'pod2htm*',
        map { +"t/ivp/*.$_" } qw(sql log txt html csv)
