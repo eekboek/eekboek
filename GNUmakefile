@@ -12,6 +12,12 @@ default :
 
 bootstrap : version schemas dummies
 
+release : bootstrap
+	perl Build.PL
+	./Build
+	./Build test
+	./Build dist
+
 version :
 	perl git-version.pl
 
