@@ -12,7 +12,7 @@ default :
 
 bootstrap : version schemas dummies
 
-release : bootstrap
+release : bootstrap docs
 	perl Build.PL
 	./Build
 	./Build test
@@ -69,4 +69,6 @@ dummies :
 	echo '---' >META.yml
 	echo '' > EekBoek.spec
 	echo '' > t/ivp/ref/export.xaf
-	unzip -q -o doc/docs.zip
+
+docs :
+	cd ../doc; make all install
