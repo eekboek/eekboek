@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Dec 18 21:54:24 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 20:18:17 2017
-# Update Count    : 116
+# Last Modified On: Wed Feb  1 15:13:55 2017
+# Update Count    : 119
 # Status          : Unknown, Use with caution!
 
 use strict;
@@ -152,7 +152,13 @@ EekBoek - Bookkeeping software for small and medium-size businesses
 
 =head1 SYNOPSIS
 
-  ebgui
+The graphical EekBoek shell:
+
+  ebwxshell
+
+The standalone documentation browser:
+
+  ebwxshell --showhelp
 
 EekBoek is a bookkeeping package for small and medium-size businesses.
 Unlike other accounting software, EekBoek has both a command-line
@@ -179,7 +185,7 @@ Web site: L<http://www.eekboek.nl>.
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-This program is Copyright 2005-2010 by Squirrel Consultancy. All
+This program is Copyright 2005-2017 by Squirrel Consultancy. All
 rights reserved.
 
 This program is free software; you can redistribute it and/or modify

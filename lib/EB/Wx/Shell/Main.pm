@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 31 17:08:50 2017
-# Update Count    : 440
+# Last Modified On: Wed Feb  1 14:47:19 2017
+# Update Count    : 446
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -95,6 +95,14 @@ sub run {
     mkdir($app_dir) unless -d $app_dir;
 
     Wx::InitAllImageHandlers();
+
+    if ( $opts->{showhelp} ) {
+	# Standalone help browser.
+	require EB::Wx::Help;
+	my $h = EB::Wx::Help->new(1);
+	$h->show_html_help;
+	exit;
+    }
 
     #### WHAT THE ***** IS GOING ON HERE????
     #*Fcntl::O_NOINHERIT = sub() { 0 };
@@ -200,6 +208,7 @@ sub app_options {
 		      'open=s',
 		      'wizard!',
 		      'printconfig|P',
+		      'showhelp',
 		      'ident',
 		      'verbose',
 		      'trace!',
@@ -236,6 +245,7 @@ sub app_usage {
     warn _T(<<EndOfUsage);
 Opstartopties:
 
+    --showhelp		start de documentatiebrowser
     --config=XXX -f     specificeer configuratiebestand
     --nostdconf -X      gebruik uitsluitend dit configuratiebestand
     --define=XXX -D     definieer configuratiesetting
