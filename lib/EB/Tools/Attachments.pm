@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Oct  6 13:55:54 2015
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb  3 13:07:25 2017
-# Update Count    : 86
+# Last Modified On: Fri Feb  3 21:26:38 2017
+# Update Count    : 92
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -124,6 +124,11 @@ sub save_to_file {
 	$self->{$_} = $atts->{$_};
     }
 
+    if ( $atts->{encoding} == ATTENCODING_URI ) {
+	my $content = $self->{name} . "\n";
+	$self->{content} = \$content;
+    }
+
     my $fd;
     if ( $filename ) {
 	sysopen( $fd, $filename, O_WRONLY|O_CREAT, 0666 )
@@ -154,21 +159,12 @@ sub save_to_zip {
 }
 
 sub open {
-    my ( $self, $id, $print ) = @_;
+    my ( $self, $id, $output ) = @_;
     $id ||= $self->{id};
     my $href = EB::Tools::Attachments->new->get($id);
 
-    my $file;
-    if ( $href->{encoding} == ATTENCODING_URI ) {
-	$file = $href->{name};
-    }
-    else {
-	$file = $self->save_to_file( undef, $id );
-    }
-    if ( $print ) {
-	print( "$file\n" );
-	return;
-    }
+    my $file = $self->save_to_file( $output, $id );
+    return if defined $output;
 
     if ( $^O eq "MSWin32" ) {
 	if ( $Wx::VERSION ) {
