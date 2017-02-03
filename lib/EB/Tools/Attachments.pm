@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Oct  6 13:55:54 2015
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Oct 13 17:17:07 2015
-# Update Count    : 85
+# Last Modified On: Fri Feb  3 13:07:25 2017
+# Update Count    : 86
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -154,7 +154,7 @@ sub save_to_zip {
 }
 
 sub open {
-    my ( $self, $id ) = @_;
+    my ( $self, $id, $print ) = @_;
     $id ||= $self->{id};
     my $href = EB::Tools::Attachments->new->get($id);
 
@@ -164,6 +164,10 @@ sub open {
     }
     else {
 	$file = $self->save_to_file( undef, $id );
+    }
+    if ( $print ) {
+	print( "$file\n" );
+	return;
     }
 
     if ( $^O eq "MSWin32" ) {

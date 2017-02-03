@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Oct  9 15:25:48 2015
-# Update Count    : 264
+# Last Modified On: Fri Feb  3 13:14:38 2017
+# Update Count    : 266
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -1456,6 +1456,7 @@ sub do_bijlage {
     parse_args(\@args,
 	       [ 'boekjaar=s',
 		 'export=s',
+		 'print',
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -1483,7 +1484,7 @@ sub do_bijlage {
 	return $opts->{verbose} ? __x("Bijlage opgeslagen in {file}", file => $opts->{export}) : "";
     }
 
-    EB::Tools::Attachments->new( id => $att_id )->open;
+    EB::Tools::Attachments->new( id => $att_id )->open( undef, $opts->{print} );
     "";
 }
 
@@ -1496,6 +1497,7 @@ Toont de bijlage van een boekstuk, indien aanwezig.
 Opties:
 
   --boekjaar=<code>	Selekteer boekjaar
+  --print		Schrijf de filenaam of url van de bijlage naar standaard uitvoer
 EOS
 }
 
