@@ -41,7 +41,7 @@ sampledb : sampledb.ebz
 sampledb.ebz : schema.dat relaties.eb mutaties.eb opening.eb
 	( echo "Dataset sampledb.ebz aangemaakt door bootstrap"; \
 	  echo "Omschrijving: EekBoek voorbeeldadministratie"; \
-	) | zip -zqj $@ $<
+	) | zip -zqj $@ schema.dat relaties.eb mutaties.eb opening.eb
 
 ################ Other ################
 
