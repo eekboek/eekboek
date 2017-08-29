@@ -1,7 +1,0 @@
-Deze kit bevat de YUM repository file voor EekBoek, alsmede de RPM PGP
-key. De YUM file wordt geplaatst in /etc/yum.repos.d/eekboek.repo.
-De RPM PGP key wordt geplaatst in /etc/pki/rpm-gpg.
-
-Naast de repo voor de normale versie, eekboek, bevat de file ook de
-repo eekboek-testing voor development versies. Deze laatste entry is
-disabled en dient handmatig enabled te worden.
