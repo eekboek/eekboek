@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jan 30 16:43:12 2017
-# Update Count    : 142
+# Last Modified On: Thu Jul 13 12:01:34 2017
+# Update Count    : 143
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -16,8 +16,8 @@ use Module::Build 0.32;
 use File::Find;
 
 our $data = {};
-require "inc/build_common.pl";
-require "lib/EB/Version.pm";
+require "./inc/build_common.pl";
+require "./lib/EB/Version.pm";
 
 # Warn on non-standard install locations.
 checkbin(<<EOD);
