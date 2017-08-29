@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Sep  1 17:28:26 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jul 13 12:01:34 2017
-# Update Count    : 143
+# Last Modified On: Tue Aug 29 13:25:21 2017
+# Update Count    : 144
 # Status          : Experimental
 
 # Ease the life of the CPAN testers.
@@ -65,8 +65,8 @@ my $build = $class->new
      ],
    meta_merge	       =>
      { resources =>
-	{ homepage    => 'http://www.eekboek.nl',
-	  MailingList => 'http://lists.sourceforge.net/lists/listinfo/eekboek',
+	{ homepage    => 'https://www.eekboek.nl',
+	  MailingList => 'https://lists.sourceforge.net/lists/listinfo/eekboek',
 	}
      },
    meta_add            => {
