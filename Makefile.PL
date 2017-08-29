@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 29 16:11:21 2017
-# Update Count    : 117
+# Last Modified On: Tue Aug 29 16:22:07 2017
+# Update Count    : 119
 # Status          : Unknown, Use with caution!
 
 # Ease the life of the CPAN testers.
@@ -65,7 +65,7 @@ WriteMakefile
  PM          => filelist("lib", '$(INST_LIBDIR)/'),
 
  META_MERGE => {
-     license   => "perl_5",
+     license   => "perl",
      resources => {
 	 license    => "https://dev.perl.org/licenses/",
 	 homepage   => "https://www.eekboek.nl",
@@ -74,6 +74,11 @@ WriteMakefile
 	     url  => "git://git.code.sf.net/p/eekboek/code",
 	     type => "git",
 	 },
+     },
+     recommends => {
+         'DBD::Pg'        => 1.41,
+	 'Getopt::Long'   => 2.32,
+         'HTML::Entities' => 1.35,
      },
      provides => {
 	 'EekBoek' => { file => "lib/EekBoek.pm",
