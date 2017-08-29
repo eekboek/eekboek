@@ -1,8 +1,0 @@
-EekBoek versie 2.02.04, released 2013-07-05
-
-Dit is een bugfix release.
-
-Op sommige systemen crashte de GUI shell wanneer bij het bekijken van
-een rapport window op de [Opslaan] button wordt gedrukt.
-
-Op Windows systemen werkten de pijltjestoetsen niet in command line mode.
