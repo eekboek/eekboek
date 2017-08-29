@@ -3,10 +3,12 @@
 # The bootstrap procedure must be executed ONCE after a fresh checkout
 # of the development sources from git.
 
+BSTF = t/ivp/ref/export.xaf
+
 default :
 	@echo "Use the 'bootstrap' target if you know what you are doing." 1>&2
-	@test -f META.yml && echo "However, it looks as if this has been done already." 1>&1
-	@test -f META.yml && echo "Please double check before proceeding." 1>&1
+	@test -f ${BSTF} && echo "However, it looks as if this has been done already." 1>&1
+	@test -f ${BSTF} && echo "Please double check before proceeding." 1>&1
 
 .NOTPARALLEL :			# all serial
 
@@ -25,20 +27,18 @@ examples :
 # something there already.
 
 dummies :
-	echo '---' >META.yml
-	echo '' > EekBoek.spec
-	echo '' > t/ivp/ref/export.xaf
+	echo '' >${BSTF}
 
 ################ Release ################
 
 release : version verify_bootstrapped verify_releasable docs
-	perl Build.PL
-	./Build
-	./Build test
-	./Build dist
+	perl Makefile.PL
+	${MAKE} -f Makefile all
+	${MAKE} -f Makefile test
+	${MAKE} -f Makefile dist
 
 verify_bootstrapped :
-	@if ! test -f META.yml; then \
+	@if ! test -f ${BSTF}; then \
 	  echo ""; echo ">>>> OOPS <<<<"; echo ""; \
 	  echo "I have reason to believe you" "haven't" run '"make bootstrap"' yet.; \
 	  echo ""; \
