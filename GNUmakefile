@@ -15,7 +15,7 @@ default :
 bootstrap : version examples dummies
 
 version :
-	perl git-version.pl
+	perl check-version.pl
 
 examples :
 	$(foreach l,nl,${MAKE} -C lib/EB/examples/$l install;)
