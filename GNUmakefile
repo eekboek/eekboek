@@ -12,7 +12,7 @@ default :
 
 ################ Bootstrap ################
 
-bootstrap : version examples dummies
+bootstrap : examples dummies
 
 version :
 	perl check-version.pl
@@ -31,7 +31,7 @@ dummies :
 
 ################ Release ################
 
-release : verify_bootstrapped verify_releasable docs
+release : version verify_bootstrapped verify_releasable docs
 	perl Build.PL
 	./Build
 	./Build test
