@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 31 17:05:23 2017
-# Update Count    : 1016
+# Last Modified On: Tue Aug 29 11:16:43 2017
+# Update Count    : 1019
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -199,12 +199,13 @@ sub app_options {
 		      'ident',
 		      'journaal',
 		      'boekjaar=s',
-		      'verbose',
+		      'verbose|v',
 		      'dir=s',
 		      'file=s',
 		      'interactive!',
 		      'wizard!',
 		      'errexit!',
+		      'version',
 		      'trace',
 		      'help|?',
 		      'debug',
@@ -213,7 +214,7 @@ sub app_options {
 	app_usage(2);
     }
     app_usage(2) if @ARGV && !($opts->{command} || $opts->{printconfig});
-    app_ident() if $opts->{ident};
+    app_ident() if $opts->{ident} || $opts->{version};
 }
 
 sub app_ident {
