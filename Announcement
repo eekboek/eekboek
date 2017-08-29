@@ -1,45 +1,51 @@
-To: eekboek-announce@lists.sourceforge.net
+To: eekboek-users@lists.sourceforge.net
 Reply-To: eekboek-users@lists.sourceforge.net
 Bcc: jv
-Subject: EekBoek 2.00.02 is beschikbaar
+Subject: EekBoek 2.03 is beschikbaar
 From: Johan Vromans <jvromans@squirrel.nl>
 Sender: jvromans@squirrel.nl
 Reply-To: jvromans@squirrel.nl
 X-PGP-Key: http://www.squirrel.nl/people/jvromans/pubkey.asc
 Organisation: Squirrel Consultancy, Exloo, The Netherlands
---text follows this line--
+
 Beste EekBoek users,
 
-EekBoek versie 2.00.02 is beschikbaar.
+EekBoek versie 2.03 is beschikbaar.
 
-Sources:
-* http://www.eekboek.nl/dl/EekBoek-2.00.02.tar.gz
+https://www.eekboek.nl/dl/EekBoek-2.03.tar.gz
 
-Install kits voor Fedora zijn te vinden in de eekboek repo.
-* http://www.eekboek.nl/repo/fedora/repoview/
+Deze release is het resultaat van een grootscheepse opruimaktie. Veel
+oude, overbodige en anderszins ongebruikte code is verwijderd wat
+leidt tot een stabieler en beter te onderhouden produkt.
 
-Install kit (PPM) voor MS Windows zijn te vinden in de windows repo.
-* http://www.eekboek.nl/repo/windows/Eekboek.ppd
+Er is één nieuwe feature: boekingen kunnen een bijlage hebben. Hiermee
+kun je bv. een faktuur aan de boeking koppelen. Alle boekingsopdrachten
+hebben daartoe een "--bijlage" optie waarmee je het bestand kunt
+aangeven. Dit bestand wordt opgenomen in de database.
 
-Wijzigingen ten opzichte van 2.00.01:
+Andere, mogelijk zichtbare verschillen met 2.02:
 
-* (ebwxshell, linux) Workaround voor het HTML rendering probleem met
-  wxPerl versies 0.95 en 0.95. Dit probleem treft met name Ubuntu 10.4
-  LTS.
+* Geen losse documentatie meer. De documentatie zit in de hulp-browser
+  en is tevens te bekijken via de web site.
+  https://www.eekboek.nl/docs/
+  
+* Het bouwen verloopt weer via een Makefile.PL. De Module::Builder, die
+  met een Build.PL werkte, is verdwenen uit de perl distributie.
 
-* (ebshell) Meer flexibele invoer. Accepteer newlines en returns als
-  regeleinde. Negeer trailing whitespace. Dit elimineert het probleem
-  van spaties achter de laatste backslash.
+* Taalinstellingen zijn afgeschaft. Niemand gebruikte EekBoek in een
+  andere taal, en te vaak leverde foutief geconfigureerde
+  besturingssystemen verwarrende problemen op.
 
-* (eekboek-mode.el) Kleine, niet strict noodzakelijke verbetering.
+* Versienummering is vereenvoudigd. 2.03 is de opvolger van 2.02.xx.
+  Hierna komt 2.04.
 
-* (ebshell, errexit) Invoerverwerking afbreken indien er een
-  foutboodschap is gegeven.
+* De eigen repo's voor YUM, PPM etc zijn vervallen. Het vanuit de CPAN
+  source installeren mag tegenwoordig geen enkel probleem meer
+  opleveren.
 
-* INSTALL: Refereer naar de wiki.
-
-* (2.00.01.01) Packaging for Windows: (build_common.pl) use PL_files
-  to avoid .pl files to be processed.
+* Voor systemen die niet standaard zijn voorzien van Perl adviseren we
+  Citrus Perl.
+  https://sourceforge.net/projects/citrusperl/
 
 ----------------------------------------------------------------------------
 Johan Vromans                                           jvromans@squirrel.nl
