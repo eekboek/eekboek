@@ -130,8 +130,9 @@ lib/EB/user/css/openstaand.css
 lib/EB/user/css/proef.css
 lib/EB/user/css/result.css
 lib/EekBoek.pm
-script/ebshell
-script/ebwxshell
+script/ebpp.PL
+script/ebshell.pl
+script/ebwxshell.pl
 t/10_basic.t
 t/20_dates.t
 t/30_amounts.t
