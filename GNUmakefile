@@ -57,6 +57,7 @@ verify_releasable :
 
 docs :
 	if test -f ../doc/GNUmakefile; then \
-	  ${MAKE} -C ../doc all install; \
+	  ( cd ../doc; \
+	    ${MAKE} all install VERSION="`perl ../src/lib/EB/Version.pm`" ) \
 	fi
 
