@@ -1,27 +1,30 @@
-2.03.03
+2.03
+
+	* Boekingen kunnen een bijlage krijgen, b.v. een PDF van de
+          faktuur.
 
 	* Fix IVP tests to use bsd_glob instead of glob.
-	  This is only necessary for Perl 5.25.9 and above.
+	  This is necessary for Perl 5.26 and above.
 
 	* Fix Build.PL for no_index.
+
+	* Actualiseren URLs in documentatie etc..
 
 	* Check relatiecodes voor geldigheid: max. 10 tekens, niet
           beginnend met NN- ivm parseproblemen.
 
-	... meer ...
+	* Build procedure verloopt weer via ExtUtils::MakeMaker
+          (Makefile.PL) aangezien Module::Build (Build.PL) obsoleet is.
 
-2.03.02
+	* Fix problemen met het verwijderen van '.' in @INC (perl 5.26).
 
 	* Fix probleem dat maart 2013 loopt van 2013-03-01 t/m 2013-03-30.
   	  Oorzaak is de zomertijd die op 30 maart 2013 inging.
 
 	* Rond bedragen niet af in de melding "Er is een verschil...".
 
-	* Meer consistent gedrag met language settings.
-   
-	  Use, but no not set EB_LANG. Use [locale]lang instead.
-	  Use, but do not set LANG. Use [locale]lang instead.
-	  Disable LANGUAGE since that conflicts with our settings
+	* Taalinstellingen zijn niet langer mogelijk. Deze
+          veroorzaakten teveel problemen en misverstanden.
 
 	* (contrib/API/example1.pl) Waarschuwing inzake SQL op de database.
 
@@ -30,8 +33,6 @@
 	* Onderdruk de INTERNAL ERROR op open transacties tenzij
           gevraagd via de config settings.
 
-2.03.01	2012-09-20
-
 	* Sta :btw=prive toe in het schema.
 
 	* Automatisch toevoegen van BTW 0 als deze in het schema
@@ -39,7 +40,17 @@
 
 	* Aanpassen examples aan moderne BTW codes.
 
-	* Elimineer de waarschuwing over de taalinstelling.
+	* Op sommige systemen crashte de GUI shell wanneer bij het
+	  bekijken van een rapport window op de [Opslaan] button wordt
+	  gedrukt.
+
+	* Op Windows systemen werkten de pijltjestoetsen niet in
+          command line mode.
+
+	* Aangezien de volledige documentatie beschikbaar is in de
+          EekBoek hulp browser wordt deze niet meer apart meegeleverd.
+
+	* Diverse kleine bugfixes en optimalisaties.
 
 2.02.00 2012-09-18 14:37
 
