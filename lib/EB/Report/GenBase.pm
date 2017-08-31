@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sat Oct  8 16:40:43 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 19:51:03 2017
-# Update Count    : 178
+# Last Modified On: Thu Aug 31 10:01:19 2017
+# Update Count    : 179
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -21,7 +21,6 @@ use EB;
 
 use IO::File;
 use EB::Format;
-use File::Glob qw( :bsd_glob );	# glob that allows space (for Windows);
 
 sub new {
     my ($class, $opts) = @_;

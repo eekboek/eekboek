@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Sep 16 18:38:45 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 20:11:19 2017
-# Update Count    : 330
+# Last Modified On: Thu Aug 31 09:57:36 2017
+# Update Count    : 331
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -81,6 +81,9 @@ use Carp;
 use Data::Dumper;
 use EB::Utils;
 
+# We need a glob() that deals with spaces.
+use File::Glob ( $] >= 5.016 ? ":bsd_glob" : ":glob" );
+
 # Even though we do not use translations, most of the code is in place.
 sub _T { $_[0] }
 
@@ -89,6 +92,7 @@ sub _T { $_[0] }
 	    @EB::Utils::EXPORT,
 	    "_T",
 	    qw(carp croak confess),	# Carp
+	    qw(glob),			# File::Glob
 	    qw(Dumper),			# Data::Dumper
 	    qw(findlib libfile),	# <self>
 	  );

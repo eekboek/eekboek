@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use File::Glob qw( :bsd_glob );
 
 our $tag;
 my @files;

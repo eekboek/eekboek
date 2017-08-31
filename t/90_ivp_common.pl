@@ -4,12 +4,11 @@
 # Author          : Johan Vromans
 # Created On      : Thu Oct 15 16:27:04 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 19:48:55 2017
-# Update Count    : 133
+# Last Modified On: Thu Aug 31 10:01:42 2017
+# Update Count    : 134
 
 use strict;
 use warnings;
-use File::Glob qw( :bsd_glob );
 
 # The actual number of database tests, as executed by report_tests.
 use constant NUMTESTS => 38;

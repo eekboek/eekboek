@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Feb  7 11:56:50 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 19:50:38 2017
-# Update Count    : 138
+# Last Modified On: Thu Aug 31 10:01:16 2017
+# Update Count    : 139
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -19,7 +19,6 @@ package EB::Import;
 
 use strict;
 use warnings;
-use File::Glob qw( :bsd_glob );
 
 use EB;
 use EB::Format;			# needs to be setup before we can use Schema

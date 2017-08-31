@@ -6,8 +6,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Fri Jan 20 17:57:13 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 20:15:45 2017
-# Update Count    : 262
+# Last Modified On: Thu Aug 31 10:01:04 2017
+# Update Count    : 263
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -21,7 +21,6 @@ use strict;
 use warnings;
 use Carp;
 use File::Spec;
-use File::Glob qw( :bsd_glob );
 
 sub init_config {
     my ($pkg, $opts) = @_;
