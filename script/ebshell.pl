@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 20:18:24 2017
-# Update Count    : 120
+# Last Modified On: Fri Sep  1 11:01:32 2017
+# Update Count    : 124
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -13,9 +13,6 @@ package main;
 use strict;
 use warnings;
 use utf8;
-
-# use lib qw(EekBoekLibrary);
-
 use File::Spec;
 use File::Basename;
 
@@ -34,10 +31,12 @@ if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
     $ENV{PATH} = File::Spec->rel2abs($lib) . $sep . $ENV{PATH};
 }
 
+# use App::Packager;
+
 check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/res/schema/eekboek.sql" );
 
 require EekBoek;
-check_version( "EekBoek", $EekBoek::VERSION, "2.01.00" );
+check_version( "EekBoek", $EekBoek::VERSION, "2.030" );
 
 require EB::Main;
 exit EB::Main->run;
