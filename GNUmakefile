@@ -32,7 +32,7 @@ cleanup : Makefile
 	$(MAKE) -f Makefile clean
 
 .PHONY : dist
-dist : Makefile resources
+dist : Makefile
 	$(MAKE) -f Makefile dist
 
 .PHONY : install
