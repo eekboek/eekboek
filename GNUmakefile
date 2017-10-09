@@ -50,6 +50,7 @@ version :
 	perl check-version.pl
 
 examples :
+	cp lib/EB/examples/eekboek.conf lib/EB/res/templates/sample.conf
 	$(foreach l,nl,${MAKE} -C lib/EB/examples/$l install;)
 
 # Dummies are files that are (re)created by running perl Build.PL.
