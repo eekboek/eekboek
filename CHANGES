@@ -1,3 +1,12 @@
+2.04
+
+	* (Relation) Verwijder de lengtecontrole voor relatiecodes. Let
+          the database handle it (or not).
+
+	* (Opening) Fix probleem dat openingsdata voor
+          debiteuren/crediteuren openstaande posten eiste, ook als het
+          bedrag nul was.
+
 2.030.1	Aug 31, 2017
 
 	* File::Glob fix for Perls older than 5.16. Not really an emergency.
