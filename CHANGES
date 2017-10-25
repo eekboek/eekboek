@@ -3,6 +3,8 @@
 	* (Relation) Verwijder de lengtecontrole voor relatiecodes. Let
           the database handle it (or not).
 
+	* Verhoog de lengte van de code voor relaties naar 80.
+
 	* (Opening) Fix probleem dat openingsdata voor
           debiteuren/crediteuren openstaande posten eiste, ook als het
           bedrag nul was.
