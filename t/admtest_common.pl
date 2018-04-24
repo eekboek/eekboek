@@ -141,6 +141,13 @@ sub diff {
 
 sub syscmd {
     my ($cmd, $in, $out, $err) = @_;
+    my $fd;
+    open( $fd, ">>", $out );
+    print $fd "CMD: @$cmd";
+    print $fd " < $in" if $in;
+    print $fd "\n";
+    print $fd "INC: @INC\n";
+    $out = $fd;
     $in = \undef unless defined($in);
     $err = $out if @_ < 4;
     #warn("+ @$cmd\n");

@@ -5,6 +5,10 @@
 
 	* Verhoog de lengte van de code voor relaties naar 80.
 
+	* (IV) In inkoop/verkoopboekingen kan de boekingsreferentie ook
+          worden opgegeven in de relatiecode, zoals bij bankboekingen.
+	  RELATIE --ref=Ref is equivalent aan RELATIE:Ref.
+
 	* (Opening) Fix probleem dat openingsdata voor
           debiteuren/crediteuren openstaande posten eiste, ook als het
           bedrag nul was.
