@@ -142,6 +142,11 @@ pp/windows/ebinst.bmp
 pp/windows/innosetup.iss
 pp/windows/ebwxshell.pp
 pp/windows/vfix.pl
+pp/windows/ppl.c
+pp/windows/infoafter.txt
+pp/windows/ebshell.rc
+pp/windows/ebwxshell.rc
+pp/pp2ppl.pl
 script/ebpp.PL
 script/ebshell.pl
 script/ebwxshell.pl
