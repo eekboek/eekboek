@@ -13,6 +13,11 @@
           debiteuren/crediteuren openstaande posten eiste, ook als het
           bedrag nul was.
 
+	* Wijziging kleine-ondernemersregeling per 2020. Indien de
+          onderneming slechts geringe omzet draait kan bij de
+          belastingdienst volledige vrijstelling van BTW-aangifte (en
+          dus afdracht) worden aangevraagd.
+
 2.030.1	Aug 31, 2017
 
 	* File::Glob fix for Perls older than 5.16. Not really an emergency.
