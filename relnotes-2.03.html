@@ -1,0 +1,82 @@
+<h2>Inhoud</h2>
+
+<ul>
+  <li><a href="#R02_03">Wijzigingen in EekBoek 2.03</a></li>
+  <li><a href="#R02_030_01">Wijzigingen in EekBoek 2.030.1</a></li>
+</ul>
+
+<p><em>Voor een volledige, gedetailleerde lijst van veranderingen zie
+het bestand CHANGES.</em><p>
+
+<p><strong>LEES OOK HET ITEM "<a href="#migratie">MIGRATIE</a>" AAN
+HET EIND VAN DIT BESTAND.</strong></a></p>
+
+<p>Raadpleeg <a href="https://wiki.eekboek.nl">de EekBoek wiki</a> om EekBoek op
+uw systeem te installeren.</p>
+
+<a href="R02_03"><h2>Wijzigingen in EekBoek 2.03</h2></a>
+
+<h3>Overzicht</h3>
+
+<ul>
+  <li><a href="#bijlagen">Bijlagen bij boekingen</a>
+  <li><a href="#lang">Taalinstellingen</a>
+  <li><a href="#docs">Documentatie</a>
+  <li><a href="#diversen">Diversen</a>
+  <li><a href="#bugfixes">Bugfixes</a>
+</ul>
+
+<a name="bijlagen"></a><h3>Bijlagen bij boekingen</h3>
+
+<p>Alle boekingen kunnen een bijlage krijgen door aan de
+boekingsopdracht de optie <strong>--bijlage=</strong><i>bestand</i>
+mee te geven.</p>
+
+<pre>   triodos:5 01-05   "Afschrift 05 2017" --saldo=1.234,56 \
+        --bijlage=Afschriften/Triodos-2017-05.pdf \
+        ...
+</pre>
+
+<p>Het genoemde bestand, bijvoorbeeld de faktuur, wordt in
+de database opgenomen en kan later worden ingezien met de
+<strong>bijlage</strong> opdracht.</p>
+
+<pre>bijlage triodos:5
+   bijlage triodos:5 --output=bijlage.pdf
+</pre>
+
+<a name="lang"></a><h3>Taalinstellingen</h3>
+
+<p>De mogelijkheid om een taal in te stellen is vervallen. Met name de
+gebrekkige implementatie van de ondersteuning van vertaalsystemen
+leverde meer problemen dan voordelen op.</p>
+
+<a name="docs"></a><h3>Documentatie</h3>
+
+<p>De on-line documentatie wordt niet langer los meegeleverd. De
+documentatie is beschikbaar in de hulp-browser en op de web site.</p>
+
+<a name="migratie"></a><h3>Migratie</h3>
+
+<p>De database-structuur is gewijzigd. Auto-migratie is beschikbaar.
+Het wordt echter ten sterkste aangeraden VOOR INSTALLATIE VAN 2.03
+eerst een export te doen, en deze na installatie van 2.03 te
+importeren. </p>
+
+<a name="bugfixes"></a><h3>Bugfixes</h3>
+
+<p>Zoals gebruikelijk zijn er verschillende bugs gefixed. Ook zijn er
+aanpassingen gemaakt ten behoeve van nieuwe Perl versies. Dank aan
+allen die hebben meegewerkt aan het vinden en oplossen van deze
+bugs.</p>
+
+<a name="diversen"></a><h3>Diversen</h3>
+
+<p>Deze release is het resultaat van een grootscheepse opruimaktie. Veel
+oude, overbodige en anderszins ongebruikte code is verwijderd wat
+leidt tot een stabieler en beter te onderhouden produkt.</p>
+
+<a href="R02_030_1"><h2>Wijzigingen in EekBoek 2.030.1</h2></a>
+
+<p>Deze fix-release bevat enkele aanpassingen ten behoeve van
+Perl implementaties ouder dan 5.16.</p>
