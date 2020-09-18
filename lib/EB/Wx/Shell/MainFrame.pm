@@ -699,12 +699,12 @@ sub OnAbout {
 	   __x("Geschreven door {author}",
 	       author => "Johan Vromans")."\n".
 	   "<jvromans\@squirrel.nl>\n".
-	   "http://www.squirrel.nl\n".
+	   "https://www.squirrel.nl\n".
 	   __x("Voor ondersteuning: {url}",
-	       url => "http://www.eekboek.nl/support.html")."\n".
+	       url => "https://www.eekboek.nl/support.html")."\n".
 	   "\n".
 	   __x("GUI ontwerp met {wxglade}",
-	       wxglade => "wxGlade, http://wxglade.sourceforge.net")."\n\n".
+	       wxglade => "wxGlade, https://wxglade.sourceforge.net")."\n\n".
 	   __x("{pkg} versie {ver}",
 	       pkg => "Perl",
 	       ver => $dd->(sprintf("%vd",$^V)))."\n".
