@@ -1,4 +1,4 @@
-2.04
+2.04	2021-01-14
 
 	* (Relation) Verwijder de lengtecontrole voor relatiecodes. Let
           the database handle it (or not).
@@ -17,6 +17,9 @@
           onderneming slechts geringe omzet draait kan bij de
           belastingdienst volledige vrijstelling van BTW-aangifte (en
           dus afdracht) worden aangevraagd.
+
+	* (Import) Fix probleem dat willekeurige bestanden tijdens
+	  import als bijlage werden gezien.
 
 2.030.1	Aug 31, 2017
 
