@@ -1,8 +1,3 @@
-# EekBoek
-
-EekBoek is een boekhoudprogramma bedoeld voor het midden- en
-kleinbedrijf.
-
 ![](https://img.shields.io/badge/-Nederlands-blueviolet)
 ![](https://img.shields.io/badge/Language-Dutch-blue)
 ![](https://img.shields.io/badge/Written%20in-Perl-brightgreen)
@@ -10,7 +5,7 @@ kleinbedrijf.
 ![](https://img.shields.io/badge/-MSWindows-red)
 ![](https://img.shields.io/badge/-MacOS-red)
 
-------
+# EekBoek
 
 EekBoek is een boekhoudprogramma bedoeld voor het midden- en
 kleinbedrijf.
