@@ -1,4 +1,4 @@
-2.04	2021-01-14
+2.04	2021-01-24
 
 	* (Relation) Verwijder de lengtecontrole voor relatiecodes. Let
           the database handle it (or not).
