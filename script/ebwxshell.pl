@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Dec 18 21:54:24 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Oct 26 13:41:42 2017
-# Update Count    : 126
+# Last Modified On: Tue Jan 26 22:34:21 2021
+# Update Count    : 127
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -40,7 +40,7 @@ if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
     $ENV{PATH} = File::Spec->rel2abs($lib) . $sep . $ENV{PATH};
 }
 
-# use App::Packager;
+use App::Packager qw( :name EekBoek );
 
 check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/res/schema/eekboek.sql" );
 
