@@ -7,7 +7,7 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>English</string>
   <key>CFBundleExecutable</key>
-  <string>ebwxshell</string>
+  <string>dndhandler</string>
   <key>CFBundleIconFile</key>
   <string>eb.icns</string>
   <key>CFBundleIdentifier</key>
@@ -24,5 +24,22 @@
   <string>2.04.0.0</string>
   <key>NSHumanReadableCopyright</key>
   <string>ⓒ 2005,2021 Johan Vromans, www.eekboek.nl</string>
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeExtensions</key>
+      <array>
+	<string>conf</string>
+      </array>
+      <key>CFBundleTypeIconFile</key>
+      <string>eb-doc.icns</string>
+      <key>LSIsAppleDefaultForType</key>
+      <string>No</string>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleTypeName</key>
+      <string>EekBoek starter document</string>
+    </dict>
+  </array>
 </dict>
 </plist>

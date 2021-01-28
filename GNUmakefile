@@ -100,8 +100,7 @@ TMP_DST := ${HOME}/tmp/${PROJECT}
 
 to_tmp :
 	rsync -avH --files-from=MANIFEST    ./ ${TMP_DST}/
-	cp script/ebshell.pl script/ebwxshell.pl ${TMP_DST}/pp/
-	${PERL} -pi -e 's;# (use App::Packager);$$1;' ${TMP_DST}/pp/eb*shell.pl
+	${PERL} -pi -e 's;# (use App::Packager);$$1;' ${TMP_DST}/script/eb*shell.pl
 
 to_tmp_cpan :
 	test -d ${TMP_DST}/CPAN || mkdir ${TMP_DST}/CPAN

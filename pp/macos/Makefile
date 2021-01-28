@@ -37,7 +37,8 @@ ppl :: clean ebshell ebwxshell unpack copy_coredll loaders
 unpack :
 	perl ../pp2ppl.pl --dest=${DEST} ebwxshell --quiet
 	perl ../pp2ppl.pl --dest=${DEST} ebshell   --quiet
-	cp "${DEST}/res/Wx/icons/eb.icns" ${DEST}
+	cp "${DEST}/res/Wx/icons/eb.icns" ${DEST}/eb.icns
+	cp "${DEST}/res/Wx/icons/eb.icns" ${DEST}/eb-doc.icns
 	mv "${DEST}/res" "${DEST}/lib/EB/"
 	rm -f "${DEST}/script/main.pl"
 
@@ -61,8 +62,11 @@ loaders : "${DEST}/ebwxshell" "${DEST}/ebshell"
 _loaders : "${DEST}/ebshell"
 	cp "${DEST}/ebshell" "${DEST}/perl"
 
-"${DEST}/ebwxshell" : ppl.c
+"${DEST}/ebwxshell" : ppl.c dndhandler.cpp
 	${CC} ${CCOPTS} -o "${DEST}/ebwxshell" -L${DEST} ${LDOPTS} ppl.c
+	${CXX} -o "${DEST}/dndhandler" \
+		dndhandler.cpp `${WXCNFG} --cxxflags --libs`
+	perl ./reloc.pl "${DEST}/dndhandler"
 
 "${DEST}/ebshell" : ppl.c
 	${CC} ${CCOPTS} -o "${DEST}/ebshell" -L${DEST} ${LDOPTS} ppl.c
@@ -88,7 +92,8 @@ app1 :
 	mkdir -p "${APPDIR}/Contents/Resources"
 	cp PkgInfo Info.plist "${APPDIR}/Contents"
 	cp "${DEST}/eb.icns" "${APPDIR}/Contents/Resources"
-	cd "${APPDIR}"; mv ebshell ebwxshell Contents/MacOS
+	cp "${DEST}/eb-doc.icns" "${APPDIR}/Contents/Resources"
+	cd "${APPDIR}"; mv ebshell ebwxshell dndhandler Contents/MacOS
 	cd "${APPDIR}"; mv script lib Contents/MacOS
 	cd "${APPDIR}"; mv lib*.dylib Contents/MacOS
 	cd "${APPDIR}"; rm -f MANIFEST META.yml
@@ -106,7 +111,15 @@ dmg1 :
 		--window-pos 200 200 \
 		--window-size 600 300 \
 		--icon "${APPDIR}" 50 50 \
+		--add-file "READ ME FIRST.html" README.html 300 50 \
+		--hide-extension "READ ME FIRST.html" \
 		EekBoek-Installer.dmg "${APPDIR}"
 
 clean ::
 	rm -fr ${APPDIR}
+
+mount ::
+	open EekBoek-Installer.dmg
+
+umount ::
+	hdiutil detach "/Volumes/EekBoek 2.04"

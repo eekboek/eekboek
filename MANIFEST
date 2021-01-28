@@ -140,9 +140,11 @@ pp/macos/Info.plist
 pp/macos/Makefile
 pp/macos/PkgInfo
 pp/macos/create-dmg
+pp/macos/dndhandler.cpp
 pp/macos/ebshell.pp
 pp/macos/ebwxshell.pp
 pp/macos/ppl.c
+pp/macos/README.html
 pp/macos/reloc.pl
 pp/windows/GNUmakefile
 pp/windows/ebshell.pp
