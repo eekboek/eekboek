@@ -136,6 +136,14 @@ pp/common/ebwxshell.pp
 pp/linux/GNUmakefile
 pp/linux/ebshell.pp
 pp/linux/ebwxshell.pp
+pp/macos/Info.plist
+pp/macos/Makefile
+pp/macos/PkgInfo
+pp/macos/create-dmg
+pp/macos/ebshell.pp
+pp/macos/ebwxshell.pp
+pp/macos/ppl.c
+pp/macos/reloc.pl
 pp/windows/GNUmakefile
 pp/windows/ebshell.pp
 pp/windows/ebinst.bmp
