@@ -1,3 +1,11 @@
+2.05	2021-07-27
+
+	* Support DBD::SQLite 1.68. This version of SQLite breaks
+          existing code due to incompatible changes in unicode
+          handling.
+
+	* Prevent writing command history if the ReadLine does not support it.
+
 2.04	2021-01-24
 
 	* (Relation) Verwijder de lengtecontrole voor relatiecodes. Let
