@@ -105,3 +105,7 @@ to_tmp :
 to_tmp_cpan :
 	test -d ${TMP_DST}/CPAN || mkdir ${TMP_DST}/CPAN
 	rsync -avH lib/EB/CPAN/App/ ${TMP_DST}/CPAN/App
+
+to_macky : to_tmp to_tmp_cpan
+	ssh macky "test -d src || mkdir src"
+	rsync -avHi --delete ${TMP_DST}/ macky:src/EekBoek/
