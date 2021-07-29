@@ -1,7 +1,7 @@
-2.50.1	2021-07-28
+2.051	2021-07-28
 
-	* Switch to semantic versioning. Since 2.05 is considered
-          2.50.0 we must skip some minor versions...
+	* Cannot switch to semantic versioning, since 2.05 is
+          considered 2.50.0. Use pseudo-semantic x.yyz.
 
 2.05.1	2021-07-28
 
