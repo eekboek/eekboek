@@ -22,7 +22,6 @@ lib/EB/Booking/BKM.pm
 lib/EB/Booking/Decode.pm
 lib/EB/Booking/Delete.pm
 lib/EB/Booking/IV.pm
-lib/EB/CPAN/App/Packager.pm
 lib/EB/CPAN/Term/ReadLine/Perl.pm
 lib/EB/CPAN/Term/ReadLine/readline.pm
 lib/EB/Config.pm
