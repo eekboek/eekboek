@@ -1,3 +1,7 @@
+2.05.1	2021-07-28
+
+	* (Makefile.PL) Add dependency App::Packager.
+
 2.05	2021-07-27
 
 	* Support DBD::SQLite 1.68. This version of SQLite breaks
