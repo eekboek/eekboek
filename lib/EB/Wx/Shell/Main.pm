@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 28 20:44:43 2021
-# Update Count    : 448
+# Last Modified On: Wed Aug  4 12:53:08 2021
+# Update Count    : 455
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -41,6 +41,8 @@ use Wx qw[
 	  wxICON_ERROR
 	  wxOK
        ];
+
+my $is_macos = $^O =~ /darwin/;
 
 sub OnInit {
     my( $self ) = shift;
@@ -113,6 +115,17 @@ sub run {
     if ( ( defined($opts->{wizard}) ? $opts->{wizard} : 1 )
 	 && !$opts->{config}
        ) {
+	if ( $is_macos ) {
+	    my $md = Wx::MessageDialog->new
+	      (undef,
+	       _T("Selecteer eerst een geldige eekboek.conf"),
+	       _T("Geen configuratie"), wxOK|wxICON_ERROR,
+	       wxDefaultPosition);
+	    $md->ShowModal;
+	    sleep(5);
+	    $md->Destroy;
+	    return;
+	}
 	require EB::Wx::IniWiz;
 	EB::Wx::IniWiz->run($opts); # sets $opts->{runeb}
 	return unless $opts->{runeb};

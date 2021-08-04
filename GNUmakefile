@@ -103,8 +103,8 @@ to_tmp :
 	${PERL} -pi -e 's;# (use App::Packager);$$1;' ${TMP_DST}/script/eb*shell.pl
 
 to_tmp_cpan :
-	test -d ${TMP_DST}/CPAN || mkdir ${TMP_DST}/CPAN
-	rsync -avH lib/EB/CPAN/App/ ${TMP_DST}/CPAN/App
+	test -d ${TMP_DST}/lib/App || mkdir ${TMP_DST}/lib/App
+	cp -p ${HOME}/lib/perl5/App/Packager.pm ${TMP_DST}/lib/App/
 
 to_macky : to_tmp to_tmp_cpan
 	ssh macky "test -d src || mkdir src"

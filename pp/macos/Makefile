@@ -106,7 +106,7 @@ dmg : app dmg1
 dmg1 :
 	rm -f EekBoek-Installer.dmg
 	bash ./create-dmg \
-		--volname "EekBoek 2.04" \
+		--volname "EekBoek 2.05" \
 		--volicon "${APPDIR}/eb.icns" \
 		--window-pos 200 200 \
 		--window-size 600 300 \

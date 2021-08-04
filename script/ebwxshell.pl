@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Dec 18 21:54:24 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jan 26 22:34:21 2021
-# Update Count    : 127
+# Last Modified On: Wed Aug  4 12:54:08 2021
+# Update Count    : 129
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -40,12 +40,12 @@ if ( -s File::Spec->catfile( $lib, "EekBoek.pm" ) ) {
     $ENV{PATH} = File::Spec->rel2abs($lib) . $sep . $ENV{PATH};
 }
 
-use App::Packager qw( :name EekBoek );
+require App::Packager; App::Packager->import( qw( :name EekBoek ) );
 
 check_install( "EekBoek", "EekBoek.pm", "EB.pm", "EB/res/schema/eekboek.sql" );
 
 require EekBoek;
-check_version( "EekBoek", $EekBoek::VERSION, "2.030" );
+check_version( "EekBoek", $EekBoek::VERSION, "2.051" );
 
 check_install( "De EekBoek WxShell", "EB/Wx/Shell/Main.pm", "EB/Wx/IniWiz.pm" );
 
