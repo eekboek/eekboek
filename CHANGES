@@ -3,6 +3,8 @@
 	* (Shell) Wijzig 'result' in 'resultaat' voor consistentie.
 	  'result' is nu een alias naar 'resultaat'.
 
+	* (relaties) Verbeter leesbaarheid + correcties.
+
 2.051	2021-07-28
 
 	* Cannot switch to semantic versioning, since 2.05 is
