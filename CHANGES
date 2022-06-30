@@ -1,3 +1,8 @@
+0.000
+
+	* (Shell) Wijzig 'result' in 'resultaat' voor consistentie.
+	  'result' is nu een alias naar 'resultaat'.
+
 2.051	2021-07-28
 
 	* Cannot switch to semantic versioning, since 2.05 is

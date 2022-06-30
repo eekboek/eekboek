@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Fri Feb  3 21:09:54 2017
-# Update Count    : 269
+# Last Modified On: Thu Jun 30 13:39:00 2022
+# Update Count    : 270
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -591,7 +591,7 @@ rapporten.
 EOS
 }
 
-sub do_result {
+sub do_resultaat {
     my ($self, @args) = @_;
     my $opts = { d_boekjaar   => $bky || $dbh->adm("bky"),
 	       };
@@ -613,7 +613,9 @@ sub do_result {
     undef;
 }
 
-sub help_result {
+sub do_result { goto \&do_resultaat }
+
+sub help_resultaat {
     _T( <<EOS );
 Toont de resultatenrekening.
 
@@ -629,6 +631,8 @@ Zie verder "help rapporten" voor algemene informatie over aan te maken
 rapporten.
 EOS
 }
+
+sub help_result { goto \&help_resultaat }
 
 sub do_proefensaldibalans {
     my ($self, @args) = @_;
