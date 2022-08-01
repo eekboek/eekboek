@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Thu Jul  7 15:53:48 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Aug 29 11:16:43 2017
-# Update Count    : 1019
+# Last Modified On: Mon Aug  1 21:29:34 2022
+# Update Count    : 1021
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -215,6 +215,7 @@ sub app_options {
     }
     app_usage(2) if @ARGV && !($opts->{command} || $opts->{printconfig});
     app_ident() if $opts->{ident} || $opts->{version};
+    exit if $opts->{version};
 }
 
 sub app_ident {
@@ -243,6 +244,7 @@ Gebruik: {prog} [options] [file ...]
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
+    --versrion		toon de programma-versie en stop
 
 Voor experts:
 

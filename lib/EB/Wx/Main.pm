@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Sun Jul 31 23:35:10 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jan 26 22:21:15 2017
-# Update Count    : 374
+# Last Modified On: Mon Aug  1 21:29:49 2022
+# Update Count    : 377
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -253,7 +253,8 @@ sub app_options {
 		      'nowizard|no-wizard|nw',
 		      'printconfig|P',
 		      'ident'	=> \$ident,
-		      'verbose',
+		      'version',
+		      'verbose|v',
 		      'trace!',
 		      'help|?',
 		      'debug',
@@ -262,7 +263,8 @@ sub app_options {
 	app_usage(2);
     }
     app_usage(2) if @ARGV && !$opts->{printconfig};
-    app_ident() if $ident;
+    app_ident() if $ident || $opts->{version};
+    exit if $opts->{version};
 }
 
 sub app_ident {
@@ -287,6 +289,7 @@ Gebruik: {prog} [options] [file ...]
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
+    --version		toon de programma-versie en stop
 EndOfUsage
     CORE::exit $exit if defined $exit && $exit != 0;
 }

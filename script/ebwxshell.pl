@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Dec 18 21:54:24 2009
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Aug  4 12:54:08 2021
-# Update Count    : 129
+# Last Modified On: Mon Aug  1 21:26:48 2022
+# Update Count    : 136
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -73,6 +73,16 @@ check_version( "wxWidgets", $Wx::wxVERSION, "2.008" );
 
 require EB::Wx::Shell::Main;
 exit if @ARGV == 1 && $ARGV[0] eq "--quit";
+if ( @ARGV == 1 && $ARGV[0] eq "--version" ) {
+    my $year = 2005;
+    my $thisyear = (localtime(time))[5] + 1900;
+    $year .= "-$thisyear" unless $year == $thisyear;
+    warn( $EekBoek::PACKAGE, " ", $EekBoek::VERSION. " Wx -- ",
+	  "Copyright {year} Squirrel Consultancy\n");
+    exit;
+    warn( $EekBoek::PACKAGE );
+}
+
 EB::Wx::Shell::Main->run;
 
 ################ Subroutines ################
