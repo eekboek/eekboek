@@ -1,3 +1,4 @@
+![Versie](https://img.shields.io/github/v/release/eekboek/eekboek)
 ![](https://img.shields.io/badge/-Nederlands-blueviolet)
 ![](https://img.shields.io/badge/Language-Dutch-blue)
 ![](https://img.shields.io/badge/Written%20in-Perl-brightgreen)
