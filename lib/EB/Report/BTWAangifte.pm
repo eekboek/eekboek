@@ -5,8 +5,8 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Jul 19 19:01:33 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Sep 14 16:52:07 2020
-# Update Count    : 655
+# Last Modified On: Thu Jun 18 14:28:04 2026
+# Update Count    : 659
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -185,13 +185,17 @@ sub perform {
 	  #sep => "|",
 	  width  => 1 },
         { name	 => "num",
+	  title  => _T("Vak"),
 	  width	 => 4 },
 	{ name	 => "desc",
+	  title  => _T("Omschrijving"),
 	  width	 => 40 },
 	{ name	 => "col1",
+	  title  => _T("Bedrag"),
 	  width	 => $amount_width,
 	  align	 => ">" },
 	{ name	 => "col2",
+	  title  => _T("BTW"),
 	  width	 => $amount_width,
 	  align	 => ">" },
       ];
@@ -896,6 +900,11 @@ package EB::Report::BTWAangifte::Csv;
 use strict;
 use warnings;
 use base qw(EB::Report::Reporter::Csv);
+
+sub add {
+    my ( $self, $data ) = @_;
+    $self->SUPER::add($data) if $data->{desc};
+}
 
 sub finish {
     shift->SUPER::finish;
