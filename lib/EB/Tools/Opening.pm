@@ -5,14 +5,14 @@ use utf8;
 # Author          : Johan Vromans
 # Created On      : Tue Aug 30 09:49:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Oct 23 20:20:12 2017
-# Update Count    : 318
+# Last Modified On: Wed Jun 24 15:59:34 2026
+# Update Count    : 331
 # Status          : Unknown, Use with caution!
 
 package main;
 
 our $dbh;
-our $config;
+our $cfg;
 
 package EB::Tools::Opening;
 
@@ -227,8 +227,13 @@ sub open {
     my $fail = 0;
     $fail++, warn(_T("De naam van de administratie is nog niet opgegeven")."\n")
       unless $o->{naam};
+
+    if ( my $t = $cfg->val(qw(internal bky), 0) ) {
+	$self->set_begindatum( $t eq "auto" ? substr(iso8601date(),0,4) : $t );
+    }
     $fail++, warn(_T("De begindatum is nog niet opgegeven")."\n")
       unless $o->{begindatum};
+
     my $does_btw = $dbh->does_btw;
 
     my $gbj;

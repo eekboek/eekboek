@@ -12,6 +12,8 @@
 	  Belangrijk: Voor ebwxshell moet --version de enige command
 	  line optie zijn.
 
+	* Betere CVS rapportages.
+
 2.051	2021-07-28
 
 	* Cannot switch to semantic versioning, since 2.05 is
