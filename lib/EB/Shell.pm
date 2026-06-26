@@ -3,8 +3,8 @@
 # Author          : Johan Vromans
 # Created On      : Thu Jul 14 12:54:08 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Thu Jun 30 13:39:00 2022
-# Update Count    : 270
+# Last Modified On: Fri Jun 26 15:31:19 2026
+# Update Count    : 277
 # Status          : Unknown, Use with caution!
 
 use utf8;
@@ -1406,6 +1406,7 @@ sub do_toon {
 		 'bky!',
 		 'totaal!',
 		 'boekjaar=s',
+		 'json',
 		 'verbose!',
 		 'trace!',
 	       ], $opts);
@@ -1423,10 +1424,21 @@ sub do_toon {
     }
     my $res = EB::Booking::Decode->decode($id, $opts);
     if ( $self->{interactive} && $res !~ /^[?!]/ && $opts->{trail} ) {	# no error
-	my $t = $res;
-	$t =~ s/\s+\\\s+/ /g;
-	$self->term->addhistory($t);
+	my $t;
+	if ( $opts->{json} ) {
+	    require JSON;
+	    $res = JSON->new->pretty->utf8(0)->encode($res);
+	}
+	else {
+	    ( $t = $res ) =~ s/\s+\\\s+/ /g;
+	    $self->term->addhistory($t);
+	}
     }
+    elsif ( ref($res) && $opts->{json} ) {
+	require JSON;
+	$res = JSON->new->pretty->utf8(0)->encode($res);
+    }
+
     $res;
 }
 

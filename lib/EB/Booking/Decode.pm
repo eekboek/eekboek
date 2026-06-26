@@ -10,8 +10,8 @@ package EB::Booking::Decode;
 # Author          : Johan Vromans
 # Created On      : Tue Sep 20 15:16:31 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Apr 24 08:39:59 2018
-# Update Count    : 198
+# Last Modified On: Thu Jun 25 14:07:24 2026
+# Update Count    : 212
 # Status          : Unknown, Use with caution!
 
 ################ Common stuff ################
@@ -41,6 +41,7 @@ sub decode {
     my ($self, $bsk, $opts) = @_;
 
     my $trail	   = $opts->{trail};
+    my $want_json  = $opts->{json};
     my $single	   = $opts->{single};
     my $ex_btw	   = $opts->{btw};
     my $ex_bsknr   = $opts->{bsknr};
@@ -75,29 +76,40 @@ sub decode {
 						 " FROM Dagboeken".
 						 " WHERE dbk_id = ?", $bsk_dbk_id)};
     my $cmd = "";
+    my $json = {};
 
     my $setup = sub {
 	my ($rel_code) = @_;
 	if ( $trail ) {
 	    $cmd = lc($dbk_desc);
+	    $json->{dagboek} = $cmd;
 	    $cmd =~ s/[^[:alnum:]]/_/g;
 	    $cmd .= ":$bsk_bky" if $ex_bky;
 	    $cmd .= ":$bsk_nr" if $ex_bsknr;
+	    $json->{boekstuk} = $bsk_nr if $ex_bsknr;
 #	    $cmd .= " --".__xt("cmo:boeking:ref")."=" . _quote($bsk_ref) if defined $bsk_ref;
 	    $rel_code .= ":" . $bsk_ref if defined $bsk_ref;
+	    $json->{ref} = $bsk_ref if defined $bsk_ref;
 	    $cmd .= " ".datefmt_full($bsk_date)." ";
 	    if ( $dbktype == DBKTYPE_INKOOP || $dbktype == DBKTYPE_VERKOOP ) {
 		$cmd .= $no_ivbskdesc ? _quote($rel_code) : _quote($bsk_desc, $rel_code);
+		$json->{relatie} = $rel_code;
+		$json->{omschrijving} = $bsk_desc;
 	    }
 	    if ($dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS || $dbktype == DBKTYPE_MEMORIAAL) {
 		$cmd .= _quote($bsk_desc);
+		$json->{omschrijving} = $bsk_desc;
 	    }
 	    else {
 		$cmd .= " --".__xt("cmo:boeking:totaal")."=" . numfmt_plain($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
 		  if $ex_tot && $acct;
+		$json->{totaal} = numfmt_plain($dbktype == DBKTYPE_INKOOP ? 0-$bsk_amount : $bsk_amount)
+		  if $ex_tot && $acct;
 	    }
 	    $cmd .= " --".__xt("cmo:boeking:beginsaldo")."=" . numfmt_plain($bsk_isaldo) if $ex_tot && defined $bsk_isaldo;
+	    $json->{beginsaldo} = numfmt_plain($bsk_isaldo) if $ex_tot && defined $bsk_isaldo;
 	    $cmd .= " --".__xt("cmo:boeking:saldo")."=" . numfmt_plain($bsk_saldo) if $ex_tot && defined $bsk_saldo;
+	    $json->{saldo} = numfmt_plain($bsk_saldo) if $ex_tot && defined $bsk_saldo;
 	    if ( $bsk_att ) {
 		my ( $name, $enc, $contents ) = @{ $dbh->do("SELECT att_name, att_encoding".
 							   " FROM Attachments".
@@ -105,6 +117,7 @@ sub decode {
 		$name = sprintf("int://%08d/%s", $bsk_att, $name)
 		  unless $enc == ATTENCODING_URI;
 		$cmd .= " --bijlage=" . _quote($name);
+		$json->{bijlage} = $name;
 	    }
 	}
 	else {
@@ -140,10 +153,12 @@ sub decode {
 			     " WHERE bsr_bsk_id = ?".
 			     " ORDER BY bsr_nr", $bsk);
 
+    $json->{regels} = [];
     $rr = $sth->fetchrow_arrayref;
     unless ( $rr ) {
 	# Special case for boekstuk zonder boekstukregels.
 	$setup->(undef);
+	return $json if $want_json;
 	return $cmd;
     }
 
@@ -228,7 +243,12 @@ sub decode {
 	    $cmd .= $single ? " " : " \\\n\t";
 	    $cmd .= _quote($bsr_desc) . " " .
 	      numfmt_plain($bsr_amount) . $btw . " " .
-		$bsr_acc_id;
+	      $bsr_acc_id;
+	    push( @{$json->{regels}},
+		  { omschrijving => $bsr_desc,
+		    bedrag => numfmt_plain($bsr_amount) . $btw,
+		    rekening => $bsr_acc_id,
+		  } );
 	}
 	elsif ( $dbktype == DBKTYPE_BANK || $dbktype == DBKTYPE_KAS
 		|| $dbktype == DBKTYPE_MEMORIAAL ) {
@@ -244,12 +264,25 @@ sub decode {
 		$cmd .= "std$dd " . _quote($bsr_desc) . " " .
 		  numfmt_plain($bsr_amount) . $btw . " " .
 		    $bsr_acc_id;
+		push( @{$json->{regels}},
+		      { type => "std",
+			omschrijving => $bsr_desc,
+			bedrag => numfmt_plain($bsr_amount) . $btw,
+			rekening => $bsr_acc_id,
+		      } );
 	    }
 	    elsif ( $bsr_ref && ( $bsr_type == 1 || $bsr_type == 2 ) ) {
 		my $type = $bsr_type == 1 ? "deb" : "crd";
 		$cmd .= $single ? " " : " \\\n\t";
 		$cmd .= "$type$dd " . _quote($bsr_ref) . " " .
 		  numfmt_plain($bsr_amount);
+		push( @{$json->{regels}},
+		      { type => $type,
+			$dd ? ( datum => substr($dd,1) ) : (),
+			omschrijving => $bsr_desc,
+			bedrag => numfmt_plain($bsr_amount) . $btw,
+			ref => $bsr_ref,
+		      } );
 	    }
 	    elsif ( $bsr_type == 1 || $bsr_type == 2 ) {
 		my $type = $bsr_type == 1 ? "deb" : "crd";
@@ -267,6 +300,12 @@ sub decode {
 		    # Matches -> Full payment
 		    $cmd .= "$type$dd " . _quote($bsr_rel_code) . " " .
 		      numfmt_plain($bsr_amount);
+		    push( @{$json->{regels}},
+			  { type => $type,
+			    $dd ? ( datum => substr($dd,1) ) : (),
+			    relatie => $bsr_rel_code,
+			    bedrag => numfmt_plain($bsr_amount),
+			  } );
 		}
 		else {
 		    # Partial payment. Use boekstuknummer.
@@ -284,11 +323,19 @@ sub decode {
 			$t .= ":$nr";
 		    }
 		    $cmd .= join(" ", $type.$dd, _quote($t), numfmt_plain($bsr_amount));
+		    push( @{$json->{regels}},
+			  { type => $type,
+			    $dd ? ( datum => substr($dd,1) ) : (),
+			    boekstuk => $t,
+			    bedrag => numfmt_plain($bsr_amount),
+			  } );
 		}
 	    }
 	}
 	$rr = $sth->fetchrow_arrayref;
     }
+
+    return $json if $want_json;
     return ($cmd, $tot, $bsk_amount, $acct)
       if wantarray;
     $cmd;
