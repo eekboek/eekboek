@@ -14,6 +14,12 @@
 
 	* Betere CVS rapportages.
 
+	* De opdracht 'toon' ondersteunt nu een optie '--json' die de
+          boeking toont in JSON formaat. EXPERIMENTEEL.
+
+	* Environment variablelen worden toegepast in de naam van de
+          sqlite databae file.
+	
 2.051	2021-07-28
 
 	* Cannot switch to semantic versioning, since 2.05 is

@@ -4,8 +4,8 @@
 # Author          : Johan Vromans
 # Created On      : Sat Oct  7 10:10:36 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Tue Jul 27 21:32:20 2021
-# Update Count    : 194
+# Last Modified On: Thu Jun 25 21:16:38 2026
+# Update Count    : 195
 # Status          : Unknown, Use with caution!
 
 package main;
@@ -39,8 +39,10 @@ sub type { "SQLite" }
 sub _dbname {
     my ($dbname) = @_;
 
-    $dbname = File::Spec->catfile( $cfg->val(qw(database path)), $dbname )
-      if $cfg->val(qw(database path), undef);
+    if ( my $path = $cfg->val(qw(database path), undef) ) {
+	$path =~ s/\$([A-Z_]+)/$ENV{$1}/ge;
+	$dbname = File::Spec->catfile( $path, $dbname );
+    }
     $dbname =~ s;(^|.*[/\\])(ebsqlite_|eekboek_)?([^/\\]+)$;${1}ebsqlite_$3;;
 
     return $dbname;
