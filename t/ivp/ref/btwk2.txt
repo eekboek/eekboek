@@ -2,6 +2,7 @@
 Periode: 2e kwartaal 2013
 EekBoek Demo Administratie                    EekBoek, 2013-12-31
 
+Vak  Omschrijving                                Bedrag       BTW
 -----------------------------------------------------------------
 
 Binnenland
