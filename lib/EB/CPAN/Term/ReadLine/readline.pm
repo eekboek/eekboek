@@ -187,7 +187,7 @@ $VERSION = $VERSION = '1.0303';
 ## Added support for ReadKey, 
 ##
 ## Added customization variable $minlength
-## to denote minimal lenth of a string to be put into history buffer.
+## to denote minimal length of a string to be put into history buffer.
 ##
 ## Added support for a bug in debugger: preinit cannot be a subroutine ?!!!
 ## (See immendiately below)
@@ -3488,7 +3488,7 @@ sub complete_internal
 ## The FUNC should return a list of items that might match.
 ##
 ## completion_matches will return that list, with the longest common
-## prefix prepended as the first item of the list.  Therefor, the list
+## prefix prepended as the first item of the list.  Therefore, the list
 ## will either be of zero length (meaning no matches) or of 2 or more.....
 ##
 
@@ -4288,7 +4288,7 @@ sub vi_input_mode
 }
 
 # The previous keystroke was an escape, but the sequence was not recognized
-#     as a mapped sequence (like an arrow key).  Enter vi comand mode and
+#     as a mapped sequence (like an arrow key).  Enter vi command mode and
 #     process this keystroke.
 sub F_ViAfterEsc {
     my($n, $ord) = @_;

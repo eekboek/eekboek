@@ -27,7 +27,7 @@ EB::Config::IniFiles - A module for reading .ini-style configuration files.
 =head1 DESCRIPTION
 
 EB::Config::IniFiles is a slightly modified version of
-L<Config::IniFiles>. It is modifed for the EekBoek program
+L<Config::IniFiles>. It is modified for the EekBoek program
 L<http://www.eekboek.nl> and B<NOT> intended for general use. Please
 use L<Config::IniFiles> instead.
 
@@ -278,7 +278,7 @@ sub new {
   # make sure that comment character is always allowed
   $self->{allowed_comment_char} .= $self->{comment_char};
 
-  # Any other parameters are unkown
+  # Any other parameters are unknown
   while (($k, $v) = each %parms) {
     carp "Unknown named parameter $k=>$v";
     $errs++;
@@ -394,7 +394,7 @@ sub setval {
 
 =head2 newval($section, $parameter, $value [, $value2, ...])
 
-Assignes a new value, C<$value> (or set of values) to the 
+Assigns a new value, C<$value> (or set of values) to the 
 parameter C<$parameter> in section C<$section> in the configuration 
 file.
 
@@ -1155,7 +1155,7 @@ sub OutputConfig {
 
 Sets the comment for section $section to the lines contained in @comment.
 
-Each comment line will be prepended with the comment charcter (default
+Each comment line will be prepended with the comment character (default
 is C<#>) if it doesn't already have a comment character (ie: if the
 line does not start with whitespace followed by an allowed comment
 character, default is C<#> and C<;>).
@@ -1316,7 +1316,7 @@ sub GetParameterComment
 	return (wantarray)?@comment:join " ", @comment;
 }
 
-=head2 DeleteParameterComment ($section, $parmeter)
+=head2 DeleteParameterComment ($section, $parameter)
 
 Deletes the comment attached to a parameter.
 
@@ -1405,7 +1405,7 @@ sub SetParameterEOT
     $self->{EOT}{$sect}{$parm} = $EOT;
 }
 
-=head2 DeleteParameterEOT ($section, $parmeter)
+=head2 DeleteParameterEOT ($section, $parameter)
 
 Removes the EOT marker for the given section and parameter.
 When writing a configuration file, if no EOT marker is defined 
@@ -1605,7 +1605,7 @@ section is defined in the file.
 # These methods allow you to tie a hash to the 
 # EB::Config::IniFiles object. Note that, when tied, the 
 # user wants to look at thinks like $ini{sec}{parm}, but the 
-# TIEHASH only provides one level of hash interace, so the 
+# TIEHASH only provides one level of hash interface, so the 
 # root object gets asked for a $ini{sec}, which this 
 # implements. To further tie the {parm} hash, the internal 
 # class EB::Config::IniFiles::_section, is provided, below.
@@ -1819,7 +1819,7 @@ sub _make_filehandle {
 # This package is used to provide a single-level TIEHASH
 # interface to the sections in the IniFile. When tied, the 
 # user wants to look at thinks like $ini{sec}{parm}, but the 
-# TIEHASH only provides one level of hash interace, so the 
+# TIEHASH only provides one level of hash interface, so the 
 # root object gets asked for a $ini{sec} and must return a 
 # has reference that accurately covers the '{parm}' part.
 #
@@ -1872,7 +1872,7 @@ sub TIEHASH {
   $self->{v} = $parms{-_current_value};
   
   # Get all other the parms, removing leading '-', if any
-  # Option checking is already handled in the EB::Config::IniFiles contructor
+  # Option checking is already handled in the EB::Config::IniFiles constructor
   foreach( keys %parms ) {
     s/^-//g;
     $self->{$_} = $parms{-$_};
@@ -2030,7 +2030,7 @@ sub FIRSTKEY {
 # Sub: EB::Config::IniFiles::_section::NEXTKEY
 #
 # Args: $last
-#	$last	The last key accessed by the interator
+#	$last	The last key accessed by the iterator
 #
 # Description: Returns the next key in line
 # ----------------------------------------------------------
@@ -2277,7 +2277,7 @@ modify it under the same terms as Perl itself.
      Updates for task 22401 (no more reloadsig) and 22402 (Group and GroupMember doco)
 
      Revision 1.13  2000/11/28 12:41:42  grail
-     Added test for being able to add sections with wierd names like section|version2
+     Added test for being able to add sections with weird names like section|version2
 
      Revision 1.11  2000/11/24 21:20:11  rbowen
      Resolved SourceForge bug #122445 - a parameter should be split from its value on the first = sign encountered, not on the last one. Added test suite to test this, and put test case in test.ini
@@ -2334,7 +2334,7 @@ modify it under the same terms as Perl itself.
      2000-07-30  Adrian Phillips  <adrianp@powertech.no>
  
      * test.pl: Fixed some tests which use $\, and made those that try
-     to check a non existant val check against ! defined.
+     to check a non existent val check against ! defined.
 
      * IniFiles.pm: hopefully fixed use of $\ when this is unset
      (problems found when running tests with -w).  Similar problem with
@@ -2355,7 +2355,7 @@ modify it under the same terms as Perl itself.
      0.04 Thu Jun 15 - Fri Jun 16, 2000 by JW/WADG
      * Added support for -import option on ->new
      * Added support for tying a hash
-     * Edited POD for grammer, clarity and updates
+     * Edited POD for grammar, clarity and updates
      * Updated test.pl file
      * Fixed bug in multiline/single line output
      * Fixed bug in default handling with tie interface

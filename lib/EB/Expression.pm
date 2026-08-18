@@ -509,7 +509,7 @@ sub EvalTree {
 	return ($left, $right) 		     if($oper eq ':');	# Should not be used, done in '?'
 #	return $left ? $right[0] : $right[1] if($oper eq '?');	# Non lazy version
 
-	# Everthing else is an arithmetic operator, check for left & right being numeric. NB: '-' 'cos may be -ve.
+	# Everything else is an arithmetic operator, check for left & right being numeric. NB: '-' 'cos may be -ve.
 	# Returning undef may result in a cascade of errors.
 	# Perl would treat 012 as an octal number, that would confuse most people, convert to a decimal interpretation.
 	unless($left =~ /^(-?)0*([\d.]+)/) {
@@ -585,7 +585,7 @@ sub FuncValue {
 
 =cut
 
-# Create a new parse/evalutation object.
+# Create a new parse/evaluation object.
 # Initialise default options.
 sub new {
 	my $class = shift;

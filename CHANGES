@@ -18,7 +18,7 @@
           boeking toont in JSON formaat. EXPERIMENTEEL.
 
 	* Environment variablelen worden toegepast in de naam van de
-          sqlite databae file.
+          sqlite database file.
 	
 2.051	2021-07-28
 

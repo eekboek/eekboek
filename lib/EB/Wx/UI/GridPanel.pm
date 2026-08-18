@@ -9,7 +9,7 @@
 # Status          : Unknown, Use with caution!
 
 # GridPanel implements a widget that is row/column oriented, and
-# wehere each cell can contain an arbitrary other widget provided it
+# where each cell can contain an arbitrary other widget provided it
 # implements the GridPanel cell API. Wrappers are provided for some
 # common types of widgets.
 #

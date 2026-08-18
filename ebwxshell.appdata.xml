@@ -23,8 +23,8 @@ other tax filings.</p>
 
 <p xml:lang="en">EekBoek has a fully customisable administration
 scheme and can be extended by writing your own plug-ins. Multiple
-adminstrations are possible, and when using a suitable database
-multiple users can work on the same adminstration simultaneously. A
+administrations are possible, and when using a suitable database
+multiple users can work on the same administration simultaneously. A
 scriptable command line interface can be used to deploy EekBoek from
 other tools.</p>
 
