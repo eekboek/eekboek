@@ -244,7 +244,7 @@ Gebruik: {prog} [options] [file ...]
     --help		deze hulpboodschap
     --ident		toon identificatie
     --verbose		geef meer uitgebreide information
-    --versrion		toon de programma-versie en stop
+    --version		toon de programma-versie en stop
 
 Voor experts:
 

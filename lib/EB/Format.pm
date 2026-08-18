@@ -35,7 +35,7 @@ our $amount_width;
 our $date_width;
 
 sub numround_ieee {
-    # This somethimes does odd things.
+    # This sometimes does odd things.
     # E.g. 892,5 -> 892 and 891,5 -> 892.
     0 + sprintf("%.0f", $_[0]);
 }

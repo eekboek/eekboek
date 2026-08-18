@@ -8,12 +8,12 @@ BEGIN WORK;
 ALTER TABLE ONLY Boekstukken ADD COLUMN temp int;
 -- Copy current values
 UPDATE Boekstukken SET temp = int4(bsk_nr);
--- Delete contraint and old column
+-- Delete constraint and old column
 ALTER TABLE ONLY Boekstukken DROP CONSTRAINT boekstukken_bsk_nr_key;
 ALTER TABLE ONLY Boekstukken DROP COLUMN bsk_nr;
 -- Rename temp column
 ALTER TABLE ONLY Boekstukken RENAME COLUMN temp TO bsk_nr;
--- Add contraints
+-- Add constraints
 ALTER TABLE ONLY Boekstukken ALTER COLUMN bsk_nr SET NOT NULL;
 ALTER TABLE ONLY boekstukken
   ADD CONSTRAINT boekstukken_bsk_nr_key UNIQUE (bsk_nr, bsk_dbk_id);
