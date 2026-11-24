@@ -2,6 +2,7 @@
 Periode: 2006
 Test1                                         EekBoek, 2006-01-28
 
+Vak  Omschrijving                                Bedrag       BTW
 -----------------------------------------------------------------
 
 Binnenland
