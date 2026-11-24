@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Mon Jan 16 11:07:02 2006
 # Last Modified By: Johan Vromans
-# Last Modified On: Mon Jun 14 22:15:34 2010
-# Update Count    : 1
+# Last Modified On: Tue Nov 24 11:53:04 2026
+# Update Count    : 14
 
 use strict;
 use warnings;
@@ -22,9 +22,9 @@ SKIP: {
     skip("DBI PostgreSQL driver (DBD::Pg) not installed", 3) if $@;
 
     # Check minimal Pg interface version.
-    my $minpg = 1.31;
-    ok($DBD::Pg::VERSION >= $minpg,
-       "DBD::PG version = $DBD::Pg::VERSION, should be at east $minpg");
+    my $minpg = "3";
+    ok($DBD::Pg::VERSION gt $minpg,
+       "DBD::Pg version = $DBD::Pg::VERSION, should be at least $minpg");
 
     SKIP: {
 	skip("Database tests skipped on request", 2)
@@ -41,7 +41,7 @@ SKIP: {
 	    diag("Connect error:\n\t" . ($DBI::errstr||"")) if $DBI::errstr;
 
 	    ok(!$DBI::errstr, "Database Connect");
-	};
+	} or diag($@);
 	ok(@ds > 1, "Check databases");
     }
 }

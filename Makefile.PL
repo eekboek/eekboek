@@ -2,8 +2,8 @@
 # Author          : Johan Vromans
 # Created On      : Fri Sep  2 14:25:11 2005
 # Last Modified By: Johan Vromans
-# Last Modified On: Wed Jul 28 08:32:29 2021
-# Update Count    : 120
+# Last Modified On: Tue Nov 24 11:26:44 2026
+# Update Count    : 121
 # Status          : Unknown, Use with caution!
 
 # Ease the life of the CPAN testers.
@@ -77,7 +77,7 @@ WriteMakefile
 	 },
      },
      recommends => {
-         'DBD::Pg'        => 1.41,
+         'DBD::Pg'        => 3.0.0,
 	 'Getopt::Long'   => 2.32,
          'HTML::Entities' => 1.35,
      },
