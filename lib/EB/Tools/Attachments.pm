@@ -20,6 +20,7 @@ use strict;
 use warnings;
 use Fcntl qw(O_RDONLY O_WRONLY O_CREAT);
 use File::Temp;
+use POSIX ();
 
 use EB;
 
@@ -137,7 +138,7 @@ sub save_to_file {
     }
     else {
 	$fd = File::Temp->new( UNLINK => 0,
-			       SUFFIX => "__" . $self->{name} );
+			       SUFFIX => "__" . _safe_name($self->{name}) );
 	$filename = $fd->filename;
     }
 
@@ -177,12 +178,33 @@ sub open {
     }
     elsif ( $^O eq "OSX" ) {
 	# Do we need to sleep here?
-	system("sh -c 'open \"$file\"; rm -f \"$file\"'&");
+	_spawn_viewer( "open", $file, 0 );
     }
     else {
 	# xdg-open spawns the right tool and exits immediately.
-	system("sh -c 'xdg-open \"$file\"; sleep 5; rm -f \"$file\"'&");
+	_spawn_viewer( "xdg-open", $file, 5 );
     }
+}
+
+# Start the viewer in the background without going through the shell,
+# then remove the temporary file.
+sub _spawn_viewer {
+    my ( $cmd, $file, $delay ) = @_;
+    my $pid = fork();
+    return unless defined $pid;
+    return if $pid;
+    system( $cmd, $file );
+    sleep($delay) if $delay;
+    unlink($file);
+    POSIX::_exit(0);
+}
+
+# Keep the temporary file name to plain characters.
+sub _safe_name {
+    my ( $name ) = @_;
+    $name = "" unless defined $name;
+    $name =~ s/[^\w.\-]+/_/g;
+    return $name;
 }
 
 sub attachments {
